@@ -123,7 +123,7 @@ export default function RegisterForm({ navigation }) {
                     </View>
 
                     <TouchableOpacity
-         onPress={() => navigation.navigate("Homepage")}
+         onPress={() => navigation.navigate("Home")}
         style={styles.loginBtn}>
         <Text style={styles.loginText}>आगे बढ़ें</Text>
       </TouchableOpacity>
@@ -136,7 +136,7 @@ export default function RegisterForm({ navigation }) {
 
 const styles = StyleSheet.create({
     inputView: {
-        borderColor: "#0070C0",
+        borderColor: "#0099FF",
         borderRadius: 7,
         // borderBottomRightRadius: 7,
         width: "80%",
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     },
 
     DoubleView : {
-        borderColor: "#0070C0",
+        borderColor: "#0099FF",
         borderRadius: 7,
         // borderBottomRightRadius: 7,
         width: "42%",
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     },
 
     MaleCheckView: {
-        borderColor: "#0070C0",
+        borderColor: "#0099FF",
         borderRadius: 7,
         borderBottomRightRadius: 0,
         borderTopRightRadius:0,
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     },
 
     FemalecheckView:{
-        borderColor: "#0070C0",
+        borderColor: "#0099FF",
         borderRadius: 7,
         borderBottomLeftRadius: 0,
         borderTopLeftRadius:0,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-    backgroundColor: "#0070C0",
+    backgroundColor: "#0099FF",
   },
   loginText: {
     color: "#fff",

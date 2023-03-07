@@ -26,6 +26,9 @@ import RegisterForm from "./src/ResgiterForm";
 import Homepage from "./src/HomePage";
 import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
+import Profile from "./src/Profile";
+import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
+import HomePageStack from "./navigations/HomePageStack";
 
 
 let persistor = persistStore(store);
@@ -51,15 +54,24 @@ export default function App() {
           }}
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} initialRouteName="SplashScreen" />
-                    <Stack.Screen name="Home" component={Login} />
+                    <Stack.Screen name="Login" component={Login} />
+                             <Stack.Screen name="Verification" component={Verification} /> 
+                             <Stack.Screen name="Register" component={Register} /> 
 
-          <Stack.Screen name="Dashboard" component={Dashboard} />
-          <Stack.Screen name="SupportPage" component={SupportPage} />
+                             <Stack.Screen name="RegisterForm" component={RegisterForm} />
+                             <Stack.Screen name="Home" component={BottomTab} />
+                             
+
+
+          {/* <Stack.Screen name="Dashboard" component={Dashboard} />
+          
+          <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Verify" component={Verification} />
+                             <Stack.Screen name="SahayakBooking" component={SahayakBooking} />
           <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="RegisterForm" component={RegisterForm} />
-          <Stack.Screen name="Homepage" component={BottomTab} />
-          <Stack.Screen name="SahayakBooking" component={SahayakBooking} />
+          <Stack.Screen name="Home" component={BottomTab} />
+         
+          <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> */}
         </Stack.Navigator>
       </PersistGate>
     </Provider>

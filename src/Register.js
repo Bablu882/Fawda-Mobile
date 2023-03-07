@@ -1,8 +1,12 @@
 import React from "react";
 import { View , Text , StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
+
 
 
 export default function Register ({navigation}) {
+  const isfocused = useIsFocused()
+
     return(
         <>
         
@@ -19,17 +23,17 @@ export default function Register ({navigation}) {
       </View>
 
       <View style={styles.OptionButton}>
-      <TouchableOpacity style={[styles.sahayak, {borderColor:"none"}]}>
+      <TouchableOpacity style={[styles.sahayak, {borderColor:"none"}]} onPress={() => navigation.navigate("RegisterForm")}>
         <Text style={[styles.loginText, {color:"#fff"}]}>ग्राहक</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.machine} onPress={() => navigation.navigate("Verify")}>
+      <TouchableOpacity style={styles.machine} >
         <Text style={styles.loginText}>सहायक </Text>
         <Text style={styles.loginText}>(मजदूर ) </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.machine} onPress={() => navigation.navigate("Verify")}>
-        <Text style={styles.loginText}>मशीन</Text>
+      <TouchableOpacity style={styles.machine}>
+        <Text style={styles.loginText}>मशीन मालिक </Text>
       </TouchableOpacity>
 
 
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
 
     machine: {
         width: "30%",
-        flexDirection:"row",
+        flexDirection:"column",
         // borderRadius: 7,
         color:"#505050",
         height: 50,
@@ -145,7 +149,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "center",
       marginTop: 30,
-      backgroundColor: "#0070C0",
+      backgroundColor: "#0099FF",
     },
 
 

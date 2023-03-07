@@ -97,6 +97,10 @@ export default function Verification({ navigation }) {
           />
       </View>
 
+      <View style={{marginTop:10}}>
+        <Text style={{color:"#0099FF"}}>1:30</Text>
+      </View>
+
       <TouchableOpacity
          onPress={() => navigation.navigate("Register")}
         style={styles.loginBtn}>
