@@ -76,10 +76,12 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/image/fawda-logo.png")} style={{ width: 200, height: 200, alignItems: "center", marginBottom:30 }} />
+      <View style={{justifyContent:"center", alignItems:"center", width:"100%" , flex:1}}>
+      <Image source={require("../assets/image/Fawda-logo.png")} style={{ width: 220, height: 200, alignItems: "center", marginBottom:30 }} />
 
       <View style={{ flexDirection: "row", alignItems:'center' , marginTop:30 }}>
-      <Text style={[styles.codeText,styles.CountryCode]}>(+91)</Text>
+      {/* <Text >(+91)</Text> */}
+      <Image source={require("../assets/image/Flag.png")} style={[styles.codeText,styles.CountryCode]} />
       <TextInput
             style={[styles.TextInput,styles.inputView]}
             placeholder="फ़ोन नंबर लिखें"
@@ -92,12 +94,18 @@ export default function Login({ navigation }) {
       </View>
 
       <TouchableOpacity
-         onPress={() => navigation.navigate("SupportPage")}
+         onPress={() => navigation.navigate('Verification')}
         style={styles.loginBtn}>
-        <Text style={styles.loginText}>LOGIN</Text>
+        <Text style={styles.loginText}>आगे बढ़ें</Text>
       </TouchableOpacity>
+      </View>
 
-
+         <View style={{display:"flex" , flexDirection:"row", width:"70%", marginBottom:20}}>
+          <View style={{backgroundColor:"#0099FF", height:18, width:20, justifyContent:"center", alignItems:"center"}}>
+          <Image source={require('../assets/image/check.png')} style={{ width:15, height:20}} resizeMode="contain" />
+          </View>
+          <Text style={{textAlign:"center"}}>अगर आप आगे बढ़ते है आप हमारी नियम और शर्तों और प्राइवेसी नीति से सहमत हैं</Text>
+         </View>
 
 
 
@@ -118,6 +126,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 7,
     borderBottomLeftRadius: 7,
     width: "15%",
+    resizeMode:"contain",
     height: 45,
     alignItems: "center",
     borderWidth:1
@@ -153,7 +162,7 @@ fontWeight:"600"
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-    backgroundColor: "#44A347",
+    backgroundColor: "#0099FF",
   },
   loginText: {
     color: "#fff"
