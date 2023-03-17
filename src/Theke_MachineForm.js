@@ -1,20 +1,19 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
+import {View, Text, TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Image,
-} from "react-native";
-import Icon from "react-native-vector-icons/AntDesign";
+  Image} from 'react-native';
+  import Icon from "react-native-vector-icons/AntDesign";
+  // import { RadioButton } from 'react-native-paper'; 
+function Theke_MachineForm({navigation}){
 
-export default function Theke_MachineForm({ navigation }) {
-  return (
+  const [checked, setChecked] = React.useState('first');
+
+  return(
     <>
-      <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
-        <View style={{ padding: 20, marginTop: 25 }}>
+     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+    <View style={{ padding: 20, marginTop: 25 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
@@ -28,7 +27,6 @@ export default function Theke_MachineForm({ navigation }) {
             </Text>
           </View>
         </View>
-
         <View
           style={{
             justifyContent: "center",
@@ -62,36 +60,25 @@ export default function Theke_MachineForm({ navigation }) {
             />
           </View>
 
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "92%",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <View style={styles.TaxView}>
-              {/* <Text style={{position:'absolute', top:-10, left:30, width:"18%", textAlign:"center", backgroundColor:'#fff'}}>राज्य</Text> */}
-              <TextInput
-                style={styles.TextInput}
-                placeholder="टेक्स्ट "
-                placeholderTextColor={"#000"}
-                // onChangeText={(email) => setEmail(email)}
-                // defaultValue={email}
-                // value={email}
-              />
-            </View>
-            <View style={styles.BhumiView}>
-              {/* <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>जिला </Text> */}
-              <TextInput
-                style={styles.TextInput}
-                placeholder="भूमि क्षेत्र "
-                placeholderTextColor={"#000"}
-                // onChangeText={(email) => setEmail(email)}
-                // defaultValue={email}
-                // value={email}
-              />
-            </View>
+          <View style={[styles.inputView, {display:"flex", flexDirection:"row", justifyContent:"space-between"}]}>
+            {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
+            <TextInput
+              style={styles.TextInput}
+              placeholder="तारीख़  dd/mm/yyyy"
+              placeholderTextColor={"#000"}
+              // onChangeText={(email) => setEmail(email)}
+              // defaultValue={email}
+              // value={email}
+            />
+            <TextInput
+              style={styles.TextInput}
+              placeholder="समय  2:00pm"
+              placeholderTextColor={"#000"}
+              // onChangeText={(email) => setEmail(email)}
+              // defaultValue={email}
+              // value={email}
+            />
+
           </View>
 
           <View
@@ -149,6 +136,8 @@ export default function Theke_MachineForm({ navigation }) {
               </Text>
             </View>
           </View>
+
+          <View></View>
 
           <View
             style={[
@@ -229,12 +218,6 @@ export default function Theke_MachineForm({ navigation }) {
                     // value={email}
                     />
                     </View>
-
-
-
-
-          
-
           <TouchableOpacity
             style={styles.BhuktanBtn}
             onPress={() => navigation.navigate("Payment")}
@@ -243,19 +226,12 @@ export default function Theke_MachineForm({ navigation }) {
               काम शुरू करें
             </Text>
           </TouchableOpacity>
-
-          {/* <TouchableOpacity
-         onPress={() => navigation.navigate("Profile")}
-        style={styles.loginBtn}>
-        <Text style={[styles.loginText, {color:"#fff"}]}>रद्द करें </Text>
-      </TouchableOpacity> */}
-        </View>
-
-        {/* <BottomTab/> */}
-      </SafeAreaView>
-    </>
-  );
+          </View>
+        </SafeAreaView>
+        </>
+  )
 }
+export default Theke_MachineForm;
 
 const styles = StyleSheet.create({
   OptionButton: {

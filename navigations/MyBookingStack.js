@@ -7,6 +7,9 @@ import Theke_MachineForm from "../src/Theke_MachineForm";
 import MyBook_SahayakForm from "../src/MyBook_SahayakForm";
 import Payment from "../src/Payment";
 import ThekeForm1 from "../src/ThekeForm1";
+import ThekeParKaam_Form from "../src/ThekeParKaam_Form";
+import SahayakForm from "../src/SahayakForm";
+import MachineBooking from "../src/MachineBooking";
 // import Homepage from "../src/HomePage";
 
 export default function MyBookingStack () {
@@ -18,8 +21,12 @@ export default function MyBookingStack () {
             headerShown: false,
           }}
         >
+          
         <Stack.Screen name="MyBooking" component={MyBooking} />
         {/* <Stack.Screen name="ThekeForm1" component={ThekeForm1} /> */}
+        <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} />
+        <Stack.Screen name="SahayakForm" component={SahayakForm} />
+        <Stack.Screen name="MachineBooking" component={MachineBooking} />
         <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
         <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
         <Stack.Screen name="Payment" component={Payment} />

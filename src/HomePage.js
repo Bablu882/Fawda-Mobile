@@ -5,9 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 
 export default function Homepage ({navigation}) {
-  const [sahayak , setSahyak] = useState([
-    {label:"ठेके पर काम"}
-  ])
+  const [show , setShow] = useState(false);
   const isfocused = useIsFocused()
 
     return(
@@ -21,20 +19,20 @@ export default function Homepage ({navigation}) {
       </View>
 
       <View style={styles.OptionButton1} >
-      <TouchableOpacity style={[styles.sahayak]} onPress={() => navigation.navigate("Thekeparkaam")}>
+      <TouchableOpacity style={[styles.sahayak]} onPress={() => setShow(true)}>
         <Text style={[styles.loginText, {color:"#fff"}]}>सहायक</Text>
         <Text style={[styles.loginText, {color:"#fff"}]}>(मजदूर )</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.machine}  onPress={() => navigation.navigate("MachineBooking")} >
+      <TouchableOpacity style={styles.machine}  onPress={() => navigation.navigate('MyBookingStack', {screen:"MachineBooking"})} >
         <Text style={styles.loginText}>मशीन</Text>
       </TouchableOpacity>
 
       
-
       </View>
+      { show && 
       <View style={styles.OptionButton}>
-      <TouchableOpacity style={styles.theke} onPress={() => navigation.navigate("Thekeparkaam")}>
+      <TouchableOpacity style={styles.theke} onPress={() => navigation.navigate('MyBookingStack', { screen: 'Thekeparkaam' })}>
         <Text style={styles.loginText}>ठेके पर काम</Text>
         {/* <Text style={styles.loginText}>(मजदूर )</Text> */}
       </TouchableOpacity>
@@ -44,7 +42,7 @@ export default function Homepage ({navigation}) {
       </TouchableOpacity>
 
       </View>
-
+ } 
       <TouchableOpacity
         style={styles.loginBtn}>
         <Text style={styles.VerifyText}>आगे बढ़ें</Text>

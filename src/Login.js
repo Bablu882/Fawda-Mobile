@@ -9,70 +9,76 @@ import { useIsFocused } from '@react-navigation/native';
 // import SupportPage from "./SupportPage";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('eve.holt@reqres.in');
-  const [password, setPassword] = useState('cityslicka');
+  const [phone , setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [tokenn, setTokenn] = useState()
   const [loading, setloading] = useState('');
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
   const isfocused = useIsFocused()
 
-  // React.useEffect(() => {
-  //   if (isLoggedIn) {
-  //     // alert(isLoggedIn)
-  //     setTimeout(() => {
-  //       navigation.replace('SupportPage')
-  //     }, 0)
+  // useEffect(() => {
+  //   if(isLoggedIn) {
+  //       navigation.replace('Verification')
   //   }
-  // }, [isLoggedIn])
+  // },[isLoggedIn])
 
   // const redirect = (to) => {
   //   alert(to)
   //   navigation.replace(to)
   // }
+  
+  const login = value => {
+    setloading(true);
+    let params = {
+      
+      phone: phone
+      
+    };
+   
+    console.log('paramsverify pin:', params);
+    Service.post('/api/login/', params, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then(response => {
+        setloading(false);
+        let data = response.data;
 
-  // const login = value => {
-  //   setloading(true);
-  //   let params = {
+        // console.log('login', data);
+        if (data?.token) {
+          dispatch(setToken(data.token))
+          Toast.show(JSON.stringify(data.otp) , Toast.LONG)
 
-  //     email,
-  //     password
+          // Toast.show('Login successfully.', Toast.SHORT);
+          navigation.replace("Verification")
+        }
+        else{
+          
+          Toast.show("User is not Registered", Toast.SHORT);
+          navigation.replace("Register")
 
-  //   };
-  //   console.log('paramsverify pin:', params);
-  //   Service.post('login', params, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //   })
-  //     .then(response => {
-  //       setloading(false);
-  //       let data = response.data;
+        }
 
-  //       console.log('login', data);
-  //       if (data?.token) {
-  //         dispatch(setToken(data.token))
+      })
+      .catch(error => {
+        console.log(error);
+        setloading(false);
+        Toast.show('Invalid Credentials', Toast.SHORT);
 
-
-  //         Toast.show('Login successfully.', Toast.SHORT);
-  //         navigation.replace('Dashboard')
-  //       }
-  //       else {
-  //         Toast.show(data?.error, Toast.SHORT);
-
-  //       }
-
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       setloading(false);
-  //       Toast.show('Invalid Credentials', Toast.SHORT);
-
-  //     });
-  // };
-
-
+      });
+    };
+      
+      // handleSubmit = () => {
+      //   if (!phone) {
+      //     // setPhoneError('Please enter your name');
+      //     Toast.show('enter no.', Toast.SHORT);
+      //     return;
+      //   }
+      // }
+        
 
   return (
     <View style={styles.container}>
@@ -85,16 +91,20 @@ export default function Login({ navigation }) {
       <TextInput
             style={[styles.TextInput,styles.inputView]}
             placeholder="फ़ोन नंबर लिखें"
+            required={true}
+            keyboardType="numeric"
             placeholderTextColor={"#000"}
-            // onChangeText={(email) => setEmail(email)}
+            onChangeText={(phone) => setPhone(phone)}
             // defaultValue={email}
-            // value={email}
+            value={phone}
           />
+          <Text>{phoneError}</Text>
 
       </View>
 
       <TouchableOpacity
-         onPress={() => navigation.navigate('Verification')}
+        //  onPress={() => login()}
+        onPress={() => {login()}}
         style={styles.loginBtn}>
         <Text style={styles.loginText}>आगे बढ़ें</Text>
       </TouchableOpacity>
