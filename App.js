@@ -22,13 +22,18 @@ import { translate } from '@vitalets/google-translate-api';
 import SupportPage from "./src/SupportPage";
 import Verification from "./src/Verification";
 import Register from "./src/Register";
-import RegisterForm from "./src/ResgiterForm";
+import RegisterForm from "./src/GrahakResgiterForm";
 import Homepage from "./src/HomePage";
 import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
 import Profile from "./src/Profile";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
 import HomePageStack from "./navigations/HomePageStack";
+import GrahakRegisterForm from "./src/GrahakResgiterForm";
+import SahayakRegisterForm from "./src/SahayakRegisterForm";
+import BottomTabSahayak from "./Component/BottomTabSahayak";
+import MachineMachine_Registration from "./src/MachineMalik_Registration";
+import BottomTabMachine from "./Component/BottomTabMachine";
 
 
 let persistor = persistStore(store);
@@ -58,8 +63,12 @@ export default function App() {
                              <Stack.Screen name="Verification" component={Verification} /> 
                              <Stack.Screen name="Register" component={Register} /> 
 
-                             <Stack.Screen name="RegisterForm" component={RegisterForm} />
+                             <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
+                             <Stack.Screen name="SahayakRegisterForm" component={SahayakRegisterForm} />
+                             <Stack.Screen name="MachineMalik_Registration" component={MachineMachine_Registration} />
                              <Stack.Screen name="Home" component={BottomTab} />
+                             <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
+                             <Stack.Screen name="Homethird" component={BottomTabMachine} />
                              
 
 

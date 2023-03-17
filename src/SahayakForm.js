@@ -50,18 +50,31 @@ export default function SahayakForm ({navigation}) {
                      
                      
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
+                    <View style={{display:"flex", flexDirection:"row",width:"100%" , justifyContent:"space-evenly"}}>
+                    <View style={styles.TaxView}>
+                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"18%", textAlign:"center", backgroundColor:'#fff'}}>राज्य</Text> */}
                     <TextInput
                         style={styles.TextInput}
-                        placeholder="समय    1-12 AM / PM"
+                        placeholder="समय  1-12 "
                         placeholderTextColor={"#000"}
                     // onChangeText={(email) => setEmail(email)}
                     // defaultValue={email}
                     // value={email}
                     />
-                   <Image source={require('../assets/image/clock.png')} style={{width:20, height:20 , marginTop:14 , right:10}} />
                     </View>
+                    <View style={styles.BhumiView}>
+                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>जिला </Text> */}
+                    <TextInput
+                        style={styles.TextInput}
+                        placeholder="AM / PM"
+                        placeholderTextColor={"#B4B4B4"}
+                    // onChangeText={(email) => setEmail(email)}
+                    // defaultValue={email}
+                    // value={email}
+                    />
+                    </View>
+                    </View>
+
 
                     <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
                     {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
@@ -184,7 +197,7 @@ export default function SahayakForm ({navigation}) {
                     <TouchableOpacity
          onPress={() => navigation.navigate("MyBooking")}
         style={styles.loginBtn}>
-        <Text style={[styles.loginText, {color:"#fff"}]}>बुकिंग  करें</Text>
+        <Text style={[styles.loginText, {color:"#fff"}]}>बुकिंग करें</Text>
       </TouchableOpacity>
                 </View>
                 </ScrollView>
@@ -254,7 +267,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 30,
-        backgroundColor: "#0070C0",
+        backgroundColor: "#0099FF",
       },
   
   

@@ -6,7 +6,7 @@ import Toast from 'react-native-simple-toast';
 
 
 class Service {
-  baseUrl = 'https://reqres.in/api';
+  baseUrl = 'http://fawda.demoserver.in/';
   // assetUrl = 'https://actively-black.demoserver.in/';
   // assetBannerUrl = 'https://actively-black.demoserver.in';
   // checkoutBaseUrl = 'https://actively-black-demo.myshopify.com/';

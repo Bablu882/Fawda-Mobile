@@ -23,16 +23,16 @@ export default function Register ({navigation}) {
       </View>
 
       <View style={styles.OptionButton}>
-      <TouchableOpacity style={[styles.sahayak, {borderColor:"none"}]} onPress={() => navigation.navigate("RegisterForm")}>
+      <TouchableOpacity style={[styles.sahayak, {borderColor:"none"}]} onPress={() => navigation.navigate("GrahakRegisterForm")}>
         <Text style={[styles.loginText, {color:"#fff"}]}>ग्राहक</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.machine} >
+      <TouchableOpacity style={styles.machine} onPress={() => navigation.navigate("SahayakRegisterForm")}>
         <Text style={styles.loginText}>सहायक </Text>
         <Text style={styles.loginText}>(मजदूर ) </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.machine}>
+      <TouchableOpacity style={styles.machine} onPress={() => navigation.navigate("MachineMalik_Registration")}>
         <Text style={styles.loginText}>मशीन मालिक </Text>
       </TouchableOpacity>
 

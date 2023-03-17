@@ -4,18 +4,18 @@ import React, { useEffect, useState } from 'react';
 import Service from '../service/index';
 import Toast from 'react-native-simple-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsLoggedIn, setToken } from '../slices/authSlice';
+import { selectIsLoggedIn, setToken , selectToken} from '../slices/authSlice';
 import { useIsFocused } from '@react-navigation/native';
 // import SupportPage from "./SupportPage";
 
 export default function Verification({ navigation }) {
-  const [email, setEmail] = useState('eve.holt@reqres.in');
-  const [password, setPassword] = useState('cityslicka');
+  const [otp , setOtp] = useState('');
   const [tokenn, setTokenn] = useState()
   const [loading, setloading] = useState('');
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
   const isfocused = useIsFocused()
+  const token = useSelector(selectToken);
 
   // React.useEffect(() => {
   //   if (isLoggedIn) {
@@ -70,9 +70,38 @@ export default function Verification({ navigation }) {
   //       Toast.show('Invalid Credentials', Toast.SHORT);
 
   //     });
-  // };
-
-
+  // };  
+  const Verify = () => {
+    // console.log("token", token)
+    // setloading(true);
+    let params = {
+     otp: otp
+    };
+    console.log("registerparams", params);
+    Service.post("/api/verify/", params, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: "Bearer " + token.access,
+      },
+    })
+      .then((response) => {
+        // setloading(false);
+        let data = response?.data;
+        console.log("register", data);
+        if (data.verified == true) {
+          // let token = data?.data?.token;
+          // dispatch(setToken(token));
+          Toast.show("Login successfull", Toast.SHORT);
+          navigation.replace("Home");
+        } else {
+          Toast.show(data.error , Toast.SHORT);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        // setloading(false);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -91,7 +120,7 @@ export default function Verification({ navigation }) {
             placeholder="ओटीपी डालें "
             placeholderTextColor={"#848484"}
             secureTextEntry={true}
-            // onChangeText={(email) => setEmail(email)}
+            onChangeText={(text) => setOtp(text , "otp")}
             // defaultValue={email}
             // value={email}
           />
@@ -102,7 +131,8 @@ export default function Verification({ navigation }) {
       </View>
 
       <TouchableOpacity
-         onPress={() => navigation.navigate("Register")}
+         onPress={() => Verify()}
+        // onPress={() => navigation.navigate("Home")}
         style={styles.loginBtn}>
         <Text style={styles.VerifyText}>वेरीफाई एंड लॉगिन </Text>
       </TouchableOpacity>

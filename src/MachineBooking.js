@@ -62,6 +62,7 @@ function close() {
               <Picker.Item label="रोटावेटर" value="रोटावेटर" />
               <Picker.Item label="टिलर" value="टिलर" />
               <Picker.Item label="कंप्यूटराइज्ड जन्द्र" value="कंप्यूटराइज्ड जन्द्र" />
+              <Picker.Item label="हैरो" value="हैरो" />
             </Picker>
           </View>
 
@@ -90,7 +91,7 @@ function close() {
             >
               <Picker.Item enabled={false} label="-कटाई-" value="" />
               <Picker.Item label="रीपर" value="रीपर" />
-              <Picker.Item label="कंबाइन" value="कंबाइन" />
+              <Picker.Item label="कंबाइन मशीन " value="कंबाइन मशीन " />
               <Picker.Item label="हार्वेस्टर" value="हार्वेस्टर" />
             </Picker>
           </View>
@@ -153,7 +154,7 @@ function close() {
                     {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
                     <TextInput
                         style={styles.TextInput}
-                        placeholder="कीमत"
+                        placeholder="वेतन"
                         placeholderTextColor={"#000"}
                     // onChangeText={(email) => setEmail(email)}
                     // defaultValue={email}
@@ -242,7 +243,7 @@ loginText: {
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-    backgroundColor: "#0070C0",
+    backgroundColor: "#0099FF",
   },
 
 

@@ -1,10 +1,10 @@
 import React from "react";
-import { View , Text ,TouchableOpacity , StyleSheet ,SafeAreaView ,TextInput, Image, ScrollView } from "react-native";
+import { View , Text ,TouchableOpacity , StyleSheet ,SafeAreaView ,TextInput, Image } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 
 
 
-export default function MyBook_SahayakForm ({navigation}) {
+export default function SahayakkKaam ({navigation}) {
     return(
         <>
          <SafeAreaView style={{backgroundColor:'#fff', flex:1 }}>
@@ -19,8 +19,7 @@ export default function MyBook_SahayakForm ({navigation}) {
                     <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>सहायक </Text>
                 </View>
       </View>
-        
-        <ScrollView>
+
       <View style={{ justifyContent: "center", alignItems: "center", marginTop:20 }} >
                     <View style={[styles.inputView, {height:75, display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
                     {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
@@ -116,13 +115,13 @@ export default function MyBook_SahayakForm ({navigation}) {
                     {/* <Text style={{position:'absolute', top:-10, left:30, width:"18%", textAlign:"center", backgroundColor:'#fff'}}>राज्य</Text> */}
                     <TextInput
                         style={styles.TextInput}
-                        placeholder="दिनों की संख्या"
+                        placeholder="भूमि क्षेत्र"
                         placeholderTextColor={"#000"}
                     // onChangeText={(email) => setEmail(email)}
                     // defaultValue={email}
                     // value={email}
                     />
-                    <Text style={{marginTop:13 , marginRight:8, color:"#0099FF"}}>2</Text>
+                    <Text style={{marginTop:13 , marginRight:8, color:"#0099FF"}}>8 बीघा</Text>
                     </View>
                     <View style={[styles.BhumiView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
                     {/* <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>जिला </Text> */}
@@ -477,80 +476,7 @@ export default function MyBook_SahayakForm ({navigation}) {
               </TouchableOpacity>
             </View>
           </View>
-          <View
-            style={[
-              styles.inputView,
-              {
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
-            {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-            <TextInput
-              style={styles.TextInput}
-              placeholder="काम की स्थिति"
-              placeholderTextColor={"#000"}
-              // onChangeText={(email) => setEmail(email)}
-              // defaultValue={email}
-              // value={email}
-            />
-            <View
-              
-            >
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 12,
-                    color: "#0099FF",
-                    fontSize: 15,
-                    marginRight:12
-                  }}
-                >
-                  1-4
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={[styles.inputView,{position:'relative', height:35}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>सहायक</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-
-                    <View style={[styles.inputView,{position:'relative' , height:35}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>गाँव</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-
-                    <View style={[styles.inputView,{position:'relative' , height:35}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"30%", textAlign:"center", backgroundColor:'#fff'}}>मोबाइल नंबर</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-
+                    
                     <TouchableOpacity style={styles.BhuktanBtn} onPress={() => navigation.navigate("Payment")}>
                         <Text style={[styles.loginText, {color:"#fff"}]}>भुगतान करें</Text>
                     </TouchableOpacity>
@@ -562,7 +488,6 @@ export default function MyBook_SahayakForm ({navigation}) {
         <Text style={[styles.loginText, {color:"#fff"}]}>रद्द करें </Text>
       </TouchableOpacity>
                 </View>
-                </ScrollView>
 
                 {/* <BottomTab/> */}
 

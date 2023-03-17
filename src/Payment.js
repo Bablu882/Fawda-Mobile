@@ -3,7 +3,7 @@ import { View , Text , TouchableOpacity , StyleSheet, SafeAreaView , TextInput} 
 import Icon from "react-native-vector-icons/AntDesign";
 
 
-export default function Payment () {
+export default function Payment ({navigation}) {
     return(
         <>
         <SafeAreaView style={{backgroundColor:'#fff', flex:1 }}>
@@ -19,9 +19,9 @@ export default function Payment () {
                 </View>
 
                 <View style={{borderWidth:1 , width:"90%" , height:150, borderColor:"#0099FF", marginTop:30}}>
-               <View style={{width:"100%" , display:"flex", flexDirection:"row", justifyContent:"space-evenly"}}>
-               <Text style={{marginTop:20, marginRight:30}}>ठेकेदार/सहायक/मशीन मालिक को भुगतान </Text>
-               <Text style={{marginTop:20, color:"#0099FF"}}>₹ 1200.00</Text>
+               <View style={{width:"100%" , display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
+               <Text style={{marginTop:20, marginLeft:15}}>ठेकेदार/सहायक </Text>
+               <Text style={{marginTop:20, color:"#0099FF",  marginRight:25}}>₹ 1200.00</Text>
                
                </View>
 

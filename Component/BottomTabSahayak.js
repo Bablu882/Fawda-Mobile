@@ -9,11 +9,13 @@ import HomePageStack from "../navigations/HomePageStack";
 // import SahayakBooking from "../src/SahayakBooking";
 import SahayakBookStack from "../navigations/SahayakBookStack";
 import Refer from "../src/Refer";
-import MyBookingStack from "../navigations/MyBookingStack";
+// import MyBookingStack from "../navigations/MyBookingStack";
 import MyNaukariStack from "../navigations/MyNaukariStack";
+import HomeStackTwo from "../navigations/HomeStackTwo";
+
 const Tab = createBottomTabNavigator();
 
-export default function BottomTab() {
+export default function BottomTabSahayak() {
 
   return (
     <Tab.Navigator
@@ -27,12 +29,11 @@ export default function BottomTab() {
           paddingTop: 15,
           paddingBottom: 15,
         },
-        
       })}
     >
       <Tab.Screen
-        name="HomePage"
-        component={HomePageStack}
+        name="HomeStackTwo"
+        component={HomeStackTwo}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
@@ -70,52 +71,13 @@ export default function BottomTab() {
       />
 
       <Tab.Screen
-        name="MyBookingStack"
-        component={MyBookingStack}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View style={{ alignItems: "center"}}>
-              <Image
-                source={require('../assets/image/open-book.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
-                }
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginBottom: 6,
-                  resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: focused ? 'red':'blue',
-                }}
-              >
-                बुकिंग्स
-              </Text>
-            </View>
-          ),
-        }}
-      />
-     
-      {/* <Tab.Screen
         name="MyNaukariStack"
         component={MyNaukariStack}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
               <Image
-                source={require('../assets/image/open-book.png')
+                source={require('../assets/image/jobs.png')
                   // focused
                   //   ? require("../assets/imgs/home-active.png")
                   //    : require("../assets/imgs/home.png")
@@ -145,8 +107,9 @@ export default function BottomTab() {
             </View>
           ),
         }}
-      /> */}
-    <Tab.Screen
+      />
+
+<Tab.Screen
         name="Refer"
         component={Refer}
         options={{
@@ -185,7 +148,7 @@ export default function BottomTab() {
         }}
       />
 
-      <Tab.Screen
+<Tab.Screen
         name="Profile"
         component={Profile}
         options={{
