@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -50,6 +50,8 @@ export default function ThekeParKaam_Form({ navigation }) {
   const [mode, setMode] = useState("date");
   const pickerRef = useRef();
 
+  const timings = [1,2,3,4,5,6,7,8,9,10,11,12];
+
   function open() {
     pickerRef.current.focus();
   }
@@ -86,11 +88,36 @@ export default function ThekeParKaam_Form({ navigation }) {
       value: defaultDate,
       minimumDate: new Date(),
       onChange,
+      maximumDate: dateValidate(),
       mode: currentMode,
       is24Hour: true,
     });
   };
 
+  const dateValidate = () => {
+    let currentDate = new Date();  // get the current date
+currentDate.setMonth(currentDate.getMonth() + 1);  // add one month
+
+return currentDate;  // display the new date with one month added
+  }
+
+  const validateTime = () => {
+    let currentDate = new Date();
+   let time = currentDate.getHours();
+   if (time > 12) {
+    time = time - 12
+   }
+
+   let arrayTime = [];
+   for(let i = 0 ; i < 3 ; i++){
+    arrayTime.push(time + i)
+   }
+   return arrayTime ;
+  }
+ 
+  useEffect (() => {
+    validateTime()
+  }, [0])
   const showDatepicker = () => {
     isTimeSelected = false;
     showMode("date");
@@ -162,6 +189,25 @@ export default function ThekeParKaam_Form({ navigation }) {
         // setloading(false);
       });
   };
+
+  const checkIfTimeEnabled = (timeSelect) => {
+    let currentDate = new Date();
+    let time = currentDate.getHours();
+    if (time > 12) {
+      time = time - 12
+    }
+
+
+    let enabledTime = time + 3;
+     
+
+    console.log('current' , time, timeSelect, enabledTime);
+    if(timeSelect >= time + 3){
+      return true;
+    }else {
+      return false;
+    }
+  }
 
   return (
     <>
@@ -298,8 +344,14 @@ export default function ThekeParKaam_Form({ navigation }) {
               }
             >
               <Picker.Item enabled={false} label="-समय-" value="" />
-              <Picker.Item label="1:00" value="1:00" />
-              <Picker.Item label="2:00" value="2:00" />
+              {
+                timings.map((item, index) => {
+                  return (
+                    <Picker.Item key={index} label={item.toString()} value={item} enabled={checkIfTimeEnabled(item)} />
+                  )
+                })
+              }
+              {/* <Picker.Item label="2:00" value="2:00" />
               <Picker.Item label="3:00" value="3" />
               <Picker.Item label="4" value="4" />
               <Picker.Item label="5" value="5" />
@@ -309,7 +361,7 @@ export default function ThekeParKaam_Form({ navigation }) {
               <Picker.Item label="9" value="9" />
               <Picker.Item label="10" value="10" />
               <Picker.Item label="11" value="11" />
-              <Picker.Item label="12" value="12" />
+              <Picker.Item label="12" value="12" /> */}
             </Picker>
           </View>
           <View
