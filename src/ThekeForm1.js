@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
         // height: 50,
         padding: 10,
         lineHeight:50,
-        fontFamily: "Poppin-Light"
+        //fontFamily: "Poppin-Light"
     },
 
     CheckTextInput: {
