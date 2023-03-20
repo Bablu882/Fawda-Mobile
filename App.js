@@ -22,18 +22,19 @@ import { translate } from '@vitalets/google-translate-api';
 import SupportPage from "./src/SupportPage";
 import Verification from "./src/Verification";
 import Register from "./src/Register";
-import RegisterForm from "./src/GrahakResgiterForm";
+
 import Homepage from "./src/HomePage";
 import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
 import Profile from "./src/Profile";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
 import HomePageStack from "./navigations/HomePageStack";
-import GrahakRegisterForm from "./src/GrahakResgiterForm";
+
 import SahayakRegisterForm from "./src/SahayakRegisterForm";
 import BottomTabSahayak from "./Component/BottomTabSahayak";
 import MachineMachine_Registration from "./src/MachineMalik_Registration";
 import BottomTabMachine from "./Component/BottomTabMachine";
+import GrahakRegisterForm from "./src/GrahakRegisterForm";
 
 
 let persistor = persistStore(store);

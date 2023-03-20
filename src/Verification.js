@@ -106,7 +106,7 @@ export default function Verification({ navigation }) {
   return (
     <View style={styles.container}>
       <Image source={require("../assets/image/Verify.png")} style={{ width: 160, height: 200, alignItems: "center" }} resizeMode="contain" />
-      <Text style={{fontFamily:"700" , fontSize:28 ,}}>वेरिफिकेशन</Text>
+      <Text style={{ fontSize:28 ,}}>वेरिफिकेशन</Text>
 
       <View style={{ alignItems:'center', padding:10  }}>
     <Text style={{textAlign:"center"}}>हमने आपके फ़ोन पर एक ओटीपी भेजा है</Text>
