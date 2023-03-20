@@ -183,7 +183,7 @@ fontWeight:"600"
     padding: 10,
     textAlign:"center",
     color:"#505050",
-    fontFamily: "Poppin-Light"
+    //fontFamily: "Poppin-Light"
   },
 
   loginBtn:

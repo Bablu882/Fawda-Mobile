@@ -161,7 +161,7 @@ fontWeight:"600"
     height: 50,
     padding: 10,
    
-    fontFamily: "Poppin-Light"
+    // fontFamily: "Poppin-Light"
   },
 
   loginBtn:
