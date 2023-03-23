@@ -8,33 +8,36 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
+import { RootSiblingParent } from 'react-native-root-siblings';
 import store from "./store";
 import { Provider } from "react-redux";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Dashboard from "./src/Dashboard";
+// import Dashboard from "./src/Dashboard";
 import Login from "./src/Login";
 import { PersistGate } from "redux-persist/integration/react";
 import persistStore from "redux-persist/es/persistStore";
 import SplashScreen from "./src/SplashScreen";
 import { useFonts } from "expo-font";
-import { translate } from '@vitalets/google-translate-api';
-import SupportPage from "./src/SupportPage";
+// import { translate } from '@vitalets/google-translate-api';
+// import SupportPage from "./src/SupportPage";
 import Verification from "./src/Verification";
 import Register from "./src/Register";
 
 import Homepage from "./src/HomePage";
-import SahayakBooking from "./src/SahayakBooking";
+// import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
-import Profile from "./src/Profile";
+// import Profile from "./src/Profile";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
-import HomePageStack from "./navigations/HomePageStack";
+// import HomePageStack from "./navigations/HomePageStack";
 
 import SahayakRegisterForm from "./src/SahayakRegisterForm";
 import BottomTabSahayak from "./Component/BottomTabSahayak";
 import MachineMachine_Registration from "./src/MachineMalik_Registration";
 import BottomTabMachine from "./Component/BottomTabMachine";
 import GrahakRegisterForm from "./src/GrahakRegisterForm";
+import SahayakForm from "./src/SahayakForm";
+import MachineBooking from "./src/MachineBooking";
 
 
 let persistor = persistStore(store);
@@ -50,7 +53,7 @@ export default function App() {
     }
     
     return(
-  
+      <RootSiblingParent>
     <NavigationContainer>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -59,7 +62,7 @@ export default function App() {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="SplashScreen" component={SplashScreen} initialRouteName="SplashScreen" />
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
                     <Stack.Screen name="Login" component={Login} />
                              <Stack.Screen name="Verification" component={Verification} /> 
                              <Stack.Screen name="Register" component={Register} /> 
@@ -70,9 +73,9 @@ export default function App() {
                              <Stack.Screen name="Home" component={BottomTab} />
                              <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
                              <Stack.Screen name="Homethird" component={BottomTabMachine} />
-                             
-
-
+                             <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
+                             <Stack.Screen name="SahayakForm" component={SahayakForm} />
+                             <Stack.Screen name="MachineBooking" component={MachineBooking} />
           {/* <Stack.Screen name="Dashboard" component={Dashboard} />
           
           <Stack.Screen name="Profile" component={Profile} />
@@ -86,6 +89,7 @@ export default function App() {
       </PersistGate>
     </Provider>
   </NavigationContainer>
+  </RootSiblingParent>
   );
 }
 const styles = StyleSheet.create({

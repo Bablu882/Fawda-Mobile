@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
 import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
-import Toast from "react-native-simple-toast";
+  // Toast.show('Button pressed!')
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import {
   setDate,
@@ -25,11 +25,9 @@ import {
 } from "../slices/SahayakBookingSlice";
 import moment from "moment";
 import { format } from "date-fns";
-// import DatePicker from "react-native-datepicker";
-// import TimePicker from 'react-native-simple-time-picker';
-// import DatePicker from "react-native-modern-datepicker";
+import Toast from 'react-native-root-toast';
+
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-// import { TimePicker } from "react-native-simple-time-picker";
 import { Picker } from "@react-native-picker/picker";
 
 var isTimeSelected = false;
@@ -79,6 +77,7 @@ export default function ThekeParKaam_Form({ navigation }) {
     // console.log(currentTime);
     setDate(currentDate);
     setShowDate(showDate);
+    console.log('fkdfk',showDate)
     if (isTimeSelected == true) {
       console.log("ShowTime", showTime);
       setShowTime(showTime);
@@ -103,31 +102,15 @@ export default function ThekeParKaam_Form({ navigation }) {
     return currentDate; // display the new date with one month added
   };
 
-  // const validateTime = () => {
-  //   let currentDate = new Date();
-  //   let time = currentDate.getHours();
-  //   if (time > 12) {
-  //     time = time - 12;
-  //   }
-
-  //   let arrayTime = [];
-  //   for (let i = 0; i < 3; i++) {
-  //     arrayTime.push(time + i);
-  //   }
-  //   return arrayTime;
-  // };
-
-  // useEffect(() => {
-  //   validateTime();
-  // }, [0]);
   const showDatepicker = () => {
     isTimeSelected = false;
     showMode("date");
   };
 
   const handleDateChange = (value) => {
-    setDateState(value);
-    dispatch(setDate(value));
+    // setDateState(value);
+    // dispatch(setDate(value));
+    alert(value);
   };
   // const formattedDate = date instanceof Date ? date.toLocaleDateString() : "";
 
@@ -159,37 +142,32 @@ export default function ThekeParKaam_Form({ navigation }) {
 
   const handleBooking = () => {
     let params = {
-      date: date,
-      time: time,
+      datetime: "2022-03-07T01:30:00",
       description: description,
-      land_type: landType,
+      land_type: "Killa",
       land_area: landArea,
-      totalAmount: totalAmount,
+      total_amount_theka: totalAmount,
     };
     console.log("formparam", params);
+
     Service.post("/api/post_thekepekam/", params, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + token.access,
+        Authorization: "Bearer " + token?.access,
       },
     })
       .then((response) => {
         // setloading(false);
         let data = response?.data;
         console.log("form", data);
-        if (data.success == true) {
-          let token = data?.data?.token;
-          dispatch(setToken(token));
-          Toast.show("Posted", Toast.SHORT);
-
-          navigation.replace("MyBooking");
-        } else {
-          Toast.show(data.error, Toast.SHORT);
-        }
+       
+        Toast.show('Job Posted Successfully!',  Toast.SORT);
+        console.log("formparamfffff", data);
+       navigation.replace("MyBooking");
       })
       .catch((error) => {
         console.log(error);
-        // setloading(false);
+        Toast.show('All Fields are required!',  Toast.SORT);
       });
   };
 
@@ -199,7 +177,7 @@ export default function ThekeParKaam_Form({ navigation }) {
 
     let enabledTime = time + 3;
 
-    console.log("current", time, timeSelect, enabledTime);
+    // console.log("current", time, timeSelect, enabledTime);
     if (timeSelect > time + 3) {
       return true;
     } else {
@@ -212,7 +190,7 @@ export default function ThekeParKaam_Form({ navigation }) {
       item = item - 12;
       return (item = item + " PM");
     } else {
-      console.log("tomesss", item);
+    //  console.log("tomesss", item);
       return item + " AM";
     }
   };
@@ -244,7 +222,7 @@ export default function ThekeParKaam_Form({ navigation }) {
           </View>
 
           <View style={styles.OptionButton}>
-            <TouchableOpacity style={styles.sahayak}>
+            <TouchableOpacity style={styles.sahayak}  onPress={() => navigation.navigate("Thekeparkaam")} >
               <Text style={[styles.loginText, { color: "#fff" }]}>
                 ठेके पर काम
               </Text>
@@ -280,15 +258,14 @@ export default function ThekeParKaam_Form({ navigation }) {
               <Text>{showDate ? showDate : "Select Date"}</Text>
             </TouchableOpacity>
 
-            {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
-            {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
+           
             <TextInput
               value={selectedDates}
               // placeholder="Selected date and time"
               editable={false}
               onChangeText={(date) => {
                 handleDateChange(date);
-                setDate(date);
+                // setDate(date);
               }}
             />
             <TouchableOpacity onPress={showDatepicker}>
@@ -297,24 +274,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                 style={{ width: 20, height: 20, marginTop: 14, right: 10 }}
               />
             </TouchableOpacity>
-            {/* <TextInput
-              style={[styles.TextInput]}
-              placeholder="तारीख़     dd/mm/yyyy"
-              placeholderTextColor={"#000"}
-              keyboardType="numeric"
-              onChangeText={(date) => {
-                handleDateChange(date);
-                setDate(date);
-              }}
-              // defaultValue={email}
-              value={selectedDates}
-            />
-            <TouchableOpacity
-              title={showDate ? showDate : "Select Date"}
-              onPress={showDatepicker}
-            >
-             
-            </TouchableOpacity> */}
+  
           </View>
 
 
@@ -398,35 +358,7 @@ export default function ThekeParKaam_Form({ navigation }) {
               />
             </View>
           </View>
-          <View style={[styles.inputView, {}]}>
-            {/* <Text>with intervals</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              minutesInterval={10}
-            />
-
-            <Text>with zero padding</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              zeroPadding
-            />
-
-            <Text>with am/pm picker</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              isAmpm
-            />
-
-            <Text>with picker props</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              enabled={false}
-            /> */}
-          </View>
+       
           <View
             style={[
               styles.inputView,

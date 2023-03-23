@@ -10,6 +10,10 @@ const initialState = {
     landType: '',
     landArea: '',
     totalAmount: '',
+    harvestingarea: '',
+    showingarea: '',
+    landprepration:'',
+
   };
 
 export const SahayakBookingSlice = createSlice({
@@ -44,6 +48,15 @@ export const SahayakBookingSlice = createSlice({
           setTotalAmount: (state, action) => {
             state.totalAmount = action.payload;
           },
+          setHavestingArea: (state, action) => {
+            state.harvestingarea = action.payload
+          },
+          setlandprepration: (state, action) => {
+            state.landprepration = action.payload
+          },
+          setShowingArea: (state, action) => {
+            state.showingarea = action.payload
+          }
         },
       });
       
@@ -53,7 +66,10 @@ export const SahayakBookingSlice = createSlice({
         setDescription,
         setLandType,
         setLandArea,
-        setTotalAmount  
+        setTotalAmount ,
+        setHavestingArea,
+        setShowingArea,
+        setlandprepration 
       } = SahayakBookingSlice.actions;
 
 //       export const selectToken = (state) => state.land.token;
