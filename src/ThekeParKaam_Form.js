@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
 import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
-import Toast from "react-native-simple-toast";
+  // Toast.show('Button pressed!')
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import {
   setDate,
@@ -25,18 +25,16 @@ import {
 } from "../slices/SahayakBookingSlice";
 import moment from "moment";
 import { format } from "date-fns";
-// import DatePicker from "react-native-datepicker";
-// import TimePicker from 'react-native-simple-time-picker';
-import DatePicker from "react-native-modern-datepicker";
+import Toast from 'react-native-root-toast';
+
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import { TimePicker } from "react-native-simple-time-picker";
 import { Picker } from "@react-native-picker/picker";
 
 var isTimeSelected = false;
 export default function ThekeParKaam_Form({ navigation }) {
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
-
+// const [activeItem, setActiveItem] = useState(null);
   const [time, setTimes] = useState("");
   const [description, setDescriptions] = useState("");
   const [landType, setLandTypes] = useState("");
@@ -49,8 +47,10 @@ export default function ThekeParKaam_Form({ navigation }) {
   const dispatch = useDispatch();
   const [mode, setMode] = useState("date");
   const pickerRef = useRef();
-
-  const timings = [1,2,3,4,5,6,7,8,9,10,11,12];
+  const timings = [
+    4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+    24,
+  ];
 
   function open() {
     pickerRef.current.focus();
@@ -69,14 +69,15 @@ export default function ThekeParKaam_Form({ navigation }) {
     console.log("isTimeSelected", selectedDate);
 
     const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
-    const currentTime = moment(selectedDate).format("H:mm");
+    // const currentTime = moment(selectedDate).format("H:mm");
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     const showTime = moment(selectedDate).format("H:mm");
 
-    console.log(currentDate);
-    console.log(currentTime);
+    // console.log(currentDate);
+    // console.log(currentTime);
     setDate(currentDate);
     setShowDate(showDate);
+    console.log('fkdfk',showDate)
     if (isTimeSelected == true) {
       console.log("ShowTime", showTime);
       setShowTime(showTime);
@@ -95,42 +96,27 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
 
   const dateValidate = () => {
-    let currentDate = new Date();  // get the current date
-currentDate.setMonth(currentDate.getMonth() + 1);  // add one month
+    let currentDate = new Date(); // get the current date
+    currentDate.setMonth(currentDate.getMonth() + 1); // add one month
 
-return currentDate;  // display the new date with one month added
-  }
+    return currentDate; // display the new date with one month added
+  };
 
-  const validateTime = () => {
-    let currentDate = new Date();
-   let time = currentDate.getHours();
-   if (time > 12) {
-    time = time - 12
-   }
-
-   let arrayTime = [];
-   for(let i = 0 ; i < 3 ; i++){
-    arrayTime.push(time + i)
-   }
-   return arrayTime ;
-  }
- 
-  useEffect (() => {
-    validateTime()
-  }, [0])
   const showDatepicker = () => {
     isTimeSelected = false;
     showMode("date");
   };
 
   const handleDateChange = (value) => {
-    setDateState(value);
-    dispatch(setDate(value));
+    // setDateState(value);
+    // dispatch(setDate(value));
+    alert(value);
   };
   // const formattedDate = date instanceof Date ? date.toLocaleDateString() : "";
 
   const handleTimeChange = (value) => {
     setTimes(value);
+    
     dispatch(setTime(value));
   };
 
@@ -156,59 +142,68 @@ return currentDate;  // display the new date with one month added
 
   const handleBooking = () => {
     let params = {
-      date: date,
-      time: time,
+      datetime: "2022-03-07T01:30:00",
       description: description,
-      land_type: landType,
+      land_type: "Killa",
       land_area: landArea,
-      totalAmount: totalAmount,
+      total_amount_theka: totalAmount,
     };
     console.log("formparam", params);
+
     Service.post("/api/post_thekepekam/", params, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + token.access,
+        Authorization: "Bearer " + token?.access,
       },
     })
       .then((response) => {
         // setloading(false);
         let data = response?.data;
         console.log("form", data);
-        if (data.success == true) {
-          let token = data?.data?.token;
-          dispatch(setToken(token));
-          Toast.show("Posted", Toast.SHORT);
-
-          navigation.replace("MyBooking");
-        } else {
-          Toast.show(data.error, Toast.SHORT);
-        }
+       
+        Toast.show('Job Posted Successfully!',  Toast.SORT);
+        console.log("formparamfffff", data);
+       navigation.replace("MyBooking");
       })
       .catch((error) => {
         console.log(error);
-        // setloading(false);
+        Toast.show('All Fields are required!',  Toast.SORT);
       });
   };
 
   const checkIfTimeEnabled = (timeSelect) => {
     let currentDate = new Date();
     let time = currentDate.getHours();
-    if (time > 12) {
-      time = time - 12
-    }
-
 
     let enabledTime = time + 3;
-     
 
-    console.log('current' , time, timeSelect, enabledTime);
-    if(timeSelect >= time + 3){
+    // console.log("current", time, timeSelect, enabledTime);
+    if (timeSelect > time + 3) {
       return true;
-    }else {
+    } else {
       return false;
     }
-  }
+  };
 
+  const timeConverted = (item) => {
+    if (item > 12) {
+      item = item - 12;
+      return (item = item + " PM");
+    } else {
+    //  console.log("tomesss", item);
+      return item + " AM";
+    }
+  };
+ 
+
+  // const currenttime = () => {
+  //   let currentDate = new Date();
+  //   let times = currentDate.getHours();
+  //   let timeview = times - 3
+ 
+  // console.log('currenttime',times)
+ 
+  // }
   return (
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -227,7 +222,7 @@ return currentDate;  // display the new date with one month added
           </View>
 
           <View style={styles.OptionButton}>
-            <TouchableOpacity style={styles.sahayak}>
+            <TouchableOpacity style={styles.sahayak}  onPress={() => navigation.navigate("Thekeparkaam")} >
               <Text style={[styles.loginText, { color: "#fff" }]}>
                 ठेके पर काम
               </Text>
@@ -263,15 +258,14 @@ return currentDate;  // display the new date with one month added
               <Text>{showDate ? showDate : "Select Date"}</Text>
             </TouchableOpacity>
 
-            {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
-            {/* <Button onPress={showTimepicker} title="Show time picker!" /> */}
+           
             <TextInput
               value={selectedDates}
               // placeholder="Selected date and time"
               editable={false}
               onChangeText={(date) => {
                 handleDateChange(date);
-                setDate(date);
+                // setDate(date);
               }}
             />
             <TouchableOpacity onPress={showDatepicker}>
@@ -280,62 +274,12 @@ return currentDate;  // display the new date with one month added
                 style={{ width: 20, height: 20, marginTop: 14, right: 10 }}
               />
             </TouchableOpacity>
-            {/* <TextInput
-              style={[styles.TextInput]}
-              placeholder="तारीख़     dd/mm/yyyy"
-              placeholderTextColor={"#000"}
-              keyboardType="numeric"
-              onChangeText={(date) => {
-                handleDateChange(date);
-                setDate(date);
-              }}
-              // defaultValue={email}
-              value={selectedDates}
-            />
-            <TouchableOpacity
-              title={showDate ? showDate : "Select Date"}
-              onPress={showDatepicker}
-            >
-             
-            </TouchableOpacity> */}
+  
           </View>
 
-          {/* <View
-            style={[
-              // styles.inputView,
-              {
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
-            <View style={styles.dropdownGender}>
-          <Picker
-              ref={pickerRef}
-              selectedValue={time}
-              onValueChange={(itemValue, itemIndex) =>
-                setTimes(itemValue)
-              }
-            >
-              <Picker.Item enabled={false} label="-भूमि तैयार करना-" value="" />
-              <Picker.Item label="1" value="1" />
-              <Picker.Item label="2" value="2" />
-              <Picker.Item label="3" value="3" />
-              <Picker.Item label="4" value="4" />
-              <Picker.Item label="5" value="5" />
-              <Picker.Item label="6" value="6" />
-              <Picker.Item label="7" value="7" />
-              <Picker.Item label="8" value="8" />
-              <Picker.Item label="9" value="9" />
-              <Picker.Item label="10" value="10" />
-              <Picker.Item label="11" value="11" />
-              <Picker.Item label="12" value="12" />
-            </Picker>
-            </View>
-            </View> */}
 
           <View style={styles.dropdownGender}>
+          
             <Picker
               ref={pickerRef}
               selectedValue={time}
@@ -344,24 +288,18 @@ return currentDate;  // display the new date with one month added
               }
             >
               <Picker.Item enabled={false} label="-समय-" value="" />
-              {
-                timings.map((item, index) => {
-                  return (
-                    <Picker.Item key={index} label={item.toString()} value={item} enabled={checkIfTimeEnabled(item)} />
-                  )
-                })
-              }
-              {/* <Picker.Item label="2:00" value="2:00" />
-              <Picker.Item label="3:00" value="3" />
-              <Picker.Item label="4" value="4" />
-              <Picker.Item label="5" value="5" />
-              <Picker.Item label="6" value="6" />
-              <Picker.Item label="7" value="7" />
-              <Picker.Item label="8" value="8" />
-              <Picker.Item label="9" value="9" />
-              <Picker.Item label="10" value="10" />
-              <Picker.Item label="11" value="11" />
-              <Picker.Item label="12" value="12" /> */}
+              {timings.map((item, index) => {
+                return (
+                  <Picker.Item
+                    key={index}
+                    onPress={() => setTime(item)}
+                    style={{color: checkIfTimeEnabled(item) ? 'black' : 'gray', fontSize: 14 }}
+                    label={timeConverted(item)}
+                    value={item}
+                    enabled={checkIfTimeEnabled(item)}
+                  />
+                );
+              })}
             </Picker>
           </View>
           <View
@@ -420,35 +358,7 @@ return currentDate;  // display the new date with one month added
               />
             </View>
           </View>
-          <View style={[styles.inputView, {}]}>
-            {/* <Text>with intervals</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              minutesInterval={10}
-            />
-
-            <Text>with zero padding</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              zeroPadding
-            />
-
-            <Text>with am/pm picker</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              isAmpm
-            />
-
-            <Text>with picker props</Text>
-            <TimePicker
-              value={{ hours, minutes }}
-              onChange={handleChange}
-              enabled={false}
-            /> */}
-          </View>
+       
           <View
             style={[
               styles.inputView,
@@ -576,7 +486,7 @@ const styles = StyleSheet.create({
     // height: 50,
     padding: 10,
     // lineHeight:50,
-   // fontFamily: "Poppin-Light",
+    // fontFamily: "Poppin-Light",
   },
 
   CheckTextInput: {

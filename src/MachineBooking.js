@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,172 +6,576 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  Image
+  Image,
+  ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-// import SelectDropdown from "react-native-select-dropdown";
-// import DropDownPicker from "react-native-dropdown-picker";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import service from "../service";
+import moment from "moment";
+import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-native-root-toast";
+import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
+import {
+  setDate,
+  setHavestingArea,
+  setLandArea,
+  setlandprepration,
+  setLandType,
+  setTime,
+  setTotalAmount,
+  setShowingArea,
+} from "../slices/SahayakBookingSlice";
+export default function MachineBooking({ navigation }) {
+  const token = useSelector(selectToken);
+  const [bhumiValue, setBhumiValue] = useState();
+  const [buayiValue, setBuayiValue] = useState();
+  const [katayiValue, setKatayiValue] = useState();
+  const dispatch = useDispatch();
+  const [anyeValue, setAnyeValue] = useState();
+  const [date, setDateState] = useState(new Date());
+  const [defaultDate, setDefaultDate] = useState(new Date());
+  const [landTypes, setLandTypes] = useState(null);
+  const [landArea, setLandAreas] = useState("");
+  const [time, setTimes] = useState("");
+  const [selectedDates, setSelectedDates] = useState("");
+  const [showDate, setShowDate] = useState("");
+  const [totalAmount, setTotalAmounts] = useState("");
+  const [mode, setMode] = useState("date");
+  const [selectedItem, setSelectedItem] = useState("");
+  const [landPreparation, setLandPreparation] = useState([]);
+  const [haevesting, setHaevesting] = useState([]);
+  const [other, setOther] = useState("");
+  const [sowing, setSowing] = useState([]);
+  const pickerRef = useRef();
+  var isTimeSelected = false;
+  function open() {
+    pickerRef.current.focus();
+  }
 
-export default function MachineBooking({navigation}) {
-  
-    const [bhumiValue, setBhumiValue] = useState();
-    const [buayiValue , setBuayiValue] = useState();
-    const [katayiValue , setKatayiValue] = useState();
-    const [anyeValue , setAnyeValue] = useState();
+  function close() {
+    pickerRef.current.blur();
+  }
 
-    const pickerRef = useRef();
 
-function open() {
-  pickerRef.current.focus();
-}
-
-function close() {
-  pickerRef.current.blur();
-}
 
   const onSubmit = (data) => {
     console.log(data, "data");
   };
+  const onChange = (event, selectedDate) => {
+    setDefaultDate(selectedDate);
+
+
+    const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
+    // const currentTime = moment(selectedDate).format("H:mm");
+    const showDate = moment(selectedDate).format("YYYY-MM-DD");
+    const showTime = moment(selectedDate).format("H:mm");
+    console.log("isTimeSelected", currentDate);
+    // console.log(currentDate);
+    // console.log(currentTime);
+    setDate(currentDate);
+    setShowDate(showDate);
+    console.log('fkdfk',showDate)
+    
+  };
+  const onChanges = (event, selectedDate) => {
+   // alert(selectedDate)
+    setDate(selectedDate);
+    // console.log("isTimeSelected", selectedDate);
+
+    // const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
+    // // const currentTime = moment(selectedDate).format("H:mm");
+    // const showDate = moment(selectedDate).format("YYYY-MM-DD");
+    // const showTime = moment(selectedDate).format("H:mm");
+
+    // // console.log(currentDate);
+    // // console.log(currentTime);
+    // setDate(currentDate);
+    // setShowDate(showDate);
+    // if (isTimeSelected == true) {
+    //   console.log("ShowTime", showTime);
+    //   setShowTime(showTime);
+    // }
+  };
+
+  const showMode = (currentMode) => {
+    DateTimePickerAndroid.open({
+      value: defaultDate,
+      minimumDate: new Date(),
+      onChange,
+      maximumDate: dateValidate(),
+      mode: currentMode,
+      is24Hour: true,
+    });
+  };
+
+  const dateValidate = () => {
+    let currentDate = new Date(); // get the current date
+    currentDate.setMonth(currentDate.getMonth() + 1); // add one month
+
+    return currentDate; // display the new date with one month added
+  };
+
+  const showDatepicker = () => {
+    isTimeSelected = false;
+    showMode("date");
+  };
+
+  // const formattedDate = date instanceof Date ? date.toLocaleDateString() : "";
+
+  const handleTimeChange = (value) => {
+    setTimes(value);
+
+    dispatch(setTime(value));
+  };
+  const timings = [
+    4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+    24,
+  ];
+
+  const checkIfTimeEnabled = (timeSelect) => {
+    let currentDate = new Date();
+    let time = currentDate.getHours();
+
+    let enabledTime = time + 3;
+
+    // console.log("current", time, timeSelect, enabledTime);
+    if (timeSelect > time + 3) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const timeConverted = (item) => {
+    if (item > 12) {
+      item = item - 12;
+      return (item = item + " PM");
+    } else {
+      // console.log("tomesss", item);
+      return item + " AM";
+    }
+  };
+
+  const handleLandTypeChange = (value) => {
+    setLandTypes(value);
+    dispatch(setLandType(value));
+  };
+
+  const handleLandAreaChange = (value) => {
+    setLandAreas(value);
+    dispatch(setLandArea(value));
+  };
+
+  const handleTotalAmount = (value) => {
+    setTotalAmounts(value);
+    dispatch(setTotalAmount(value));
+  };
+  const handleharvesting = (value) => {
+    setKatayiValue(value);
+    dispatch(setHavestingArea(value));
+  };
+  const handlesowing = (value) => {
+    setBuayiValue(value);
+    dispatch(setShowingArea(value));
+  };
+  const handlelandprepration = (value) => {
+    setBhumiValue(value);
+    dispatch(setlandprepration(value));
+  };
+
+  const landtypess = [
+    {
+      id: 0,
+      name: "Killa",
+    },
+    {
+      id: 1,
+      name: "Bigha",
+    },
+  ];
+
+  const machinaryBooking = () => {
+    service
+      .get("/api/machines/", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setLandPreparation(data?.landpreparation);
+        setHaevesting(data?.haevesting);
+        setSowing(data?.sowing);
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
+  };
+  const handleDateChange = (value) => {
+    // alert(value);
+    console.log('dddd', value);
+    // setDateState(value);
+    // dispatch(setDate(value));
+  };
+
+  const Booking = async () => {
+    let params = {
+      datetime: "2023-03-16 17:05:42.000000",
+      // datetime: "2022-03-07T01:30:00",
+      landpreparation: bhumiValue,
+      harvesting: katayiValue,
+      sowing: buayiValue,
+      others: other,
+      land_type: "Killa",
+      land_area: landArea,
+      total_amount_machine: totalAmount,
+    };
+    //  console.log('bookingparams', JSON.stringify(params))
+    // return;
+    service
+      .post("/api/post_machine/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token?.access,
+        },
+      })
+      .then((res) => {
+        let data = res?.data;
+        console.log("formparamfffff", data);
+
+        Toast.show("Job Posted Successfully!", Toast.SORT);
+        navigation.replace("MyBooking");
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+        Toast.show("All Fields are required!", Toast.SORT);
+      });
+  };
+
+  useEffect(() => {
+    machinaryBooking();
+  }, []);
+
   return (
-    <>
-      <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
-        <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
-        </View>
+    <SafeAreaView
+      style={{ backgroundColor: "#fff", flex: 1, paddingBottom: 20 }}
+    >
+      <View style={{ padding: 20, marginTop: 25 }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrowleft" size={25} />
+        </TouchableOpacity>
+      </View>
+      <View style={{ justifyContent: "center", marginBottom: 24 }}>
+        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
+          मशीनरी बुकिंग
+        </Text>
+      </View>
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <View style={{ justifyContent: "center" }}>
-            <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-            >
-              सहायक बुकिंग
+          <View
+            style={[
+              styles.dropdownGender,
+              {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Text style={{ color: bhumiValue ? "#000" : "#ccc", left: 5 }}>
+              {bhumiValue ? bhumiValue : "-भूमि तैयार करना-"}
             </Text>
-          </View>
-
-          <View style={styles.dropdownGender}>
             <Picker
               ref={pickerRef}
+              style={{ width: 80 }}
               selectedValue={bhumiValue}
-              onValueChange={(itemValue, itemIndex) =>
-                setBhumiValue(itemValue)
-              }
+              onValueChange={(itemValue, itemIndex) => {
+                handlelandprepration(itemValue);
+                console.log(itemValue);
+              }}
             >
-              <Picker.Item enabled={false} label="-भूमि तैयार करना-" value="" />
-              <Picker.Item label="रोटावेटर" value="रोटावेटर" />
-              <Picker.Item label="टिलर" value="टिलर" />
-              <Picker.Item label="कंप्यूटराइज्ड जन्द्र" value="कंप्यूटराइज्ड जन्द्र" />
-              <Picker.Item label="हैरो" value="हैरो" />
+              <Picker.Item label="" value="" enabled={false} />
+              {landPreparation?.map((item, index) => (
+                <Picker.Item
+                  label={item.name}
+                  value={item.name}
+                  key={item.id}
+                />
+              ))}
             </Picker>
           </View>
 
-          <View style={styles.dropdownGender}>
+          <View
+            style={[
+              styles.dropdownGender,
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              },
+            ]}
+          >
+            <Text style={{ color: buayiValue ? "#000" : "#ccc", left: 5 }}>
+              {buayiValue ? buayiValue : "-बुआई-"}
+            </Text>
             <Picker
               ref={pickerRef}
+              style={{ width: 80 }}
               selectedValue={buayiValue}
-              onValueChange={(itemValue, itemIndex) =>
-                setBuayiValue(itemValue)
-              }
+              onValueChange={(itemValue, itemIndex) => handlesowing(itemValue)}
             >
-              <Picker.Item enabled={false} label="-बुआई-" value="" />
-              <Picker.Item label="लेज़र" value="लेज़र" />
-              <Picker.Item label="ज़ेरोड्रिल" value="ज़ेरोड्रिल" />
-              <Picker.Item label="सुपर सीडर" value="सुपर सीडर" />
+              <Picker.Item
+                label="बुआई"
+                value=""
+                enabled={false}
+                style={{ color: "#ccc" }}
+              />
+              {sowing?.map((item, index) => (
+                <Picker.Item
+                  label={item.name}
+                  value={item.name}
+                  key={item.id}
+                />
+              ))}
             </Picker>
           </View>
 
-          <View style={styles.dropdownGender}>
+          <View
+            style={[
+              styles.dropdownGender,
+              {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Text style={{ color: katayiValue ? "#000" : "#ccc", left: 5 }}>
+              {katayiValue ? katayiValue : "कटाई"}
+            </Text>
             <Picker
               ref={pickerRef}
+              style={{ width: 80 }}
               selectedValue={katayiValue}
               onValueChange={(itemValue, itemIndex) =>
-                setKatayiValue(itemValue)
+                handleharvesting(itemValue)
               }
             >
-              <Picker.Item enabled={false} label="-कटाई-" value="" />
-              <Picker.Item label="रीपर" value="रीपर" />
-              <Picker.Item label="कंबाइन मशीन " value="कंबाइन मशीन " />
-              <Picker.Item label="हार्वेस्टर" value="हार्वेस्टर" />
+              <Picker.Item
+                label="कटाई"
+                value=""
+                enabled={false}
+                style={{ color: "#ccc" }}
+              />
+              {haevesting?.map((item, index) => (
+                <Picker.Item
+                  label={item.name}
+                  value={item.name}
+                  key={item.id}
+                />
+              ))}
             </Picker>
           </View>
 
           <View style={styles.dropdownGender}>
+            <TextInput
+              value={other}
+              onChangeText={(other) => setOther(other)}
+              style={styles.TextInput}
+              placeholder="अन्य"
+              placeholderTextColor={"#ccc"}
+            />
+          </View>
+          <View
+            style={[
+              styles.inputView,
+              {
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              },
+            ]}
+          >
+            <TouchableOpacity
+              style={{ paddingVertical: 10, paddingHorizontal: 5 }}
+              color="black"
+              onPress={showDatepicker}
+              title={showDate ? showDate : "Select Date"}
+            >
+              <Text>{showDate ? showDate : "Select Date"}</Text>
+              {console.log('jfjdj',showDate)}
+            </TouchableOpacity>
+
+           
+            <TextInput
+              value={selectedDates}
+              // placeholder="Selected date and time"
+              editable={false}
+              onChangeText={(date) => {
+               // console.log('ddddddddddddd');
+                //handleDateChange(date);
+                //setDate(date);
+                onChange(selectedDates)
+              }}
+          
+            />
+               
+            <TouchableOpacity onPress={showDatepicker}>
+              <Image
+                source={require("../assets/image/calendar.png")}
+                style={{ width: 20, height: 20, marginTop: 14, right: 10 }}
+              />
+            </TouchableOpacity>
+  
+          </View>
+
+
+        
+
+          <View
+            style={[
+              styles.dropdownGender,
+              {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
+              {time ? time : "-समय-"}
+            </Text>
             <Picker
               ref={pickerRef}
-              selectedValue={anyeValue}
+              selectedValue={time}
+              style={{ width: 50 }}
               onValueChange={(itemValue, itemIndex) =>
-                setAnyeValue(itemValue)
+                handleTimeChange(itemValue)
               }
             >
-              <Picker.Item enabled={false} label= "-अन्य-" value="अन्य"/>
-              <Picker.Item label="ट्रैक्टर-ट्रॉली" value="ट्रैक्टर-ट्रॉली" />
-              <Picker.Item label="बग्गी आदि" value="बग्गी आदि" />
+              {/* <Picker.Item enabled={false} label="-समय-" value="" /> */}
+              {timings.map((item, index) => {
+                return (
+                  <Picker.Item
+                    key={index}
+                    onPress={() => setTime(item)}
+                    style={{
+                      color: checkIfTimeEnabled(item) ? "black" : "#ccc",
+                      fontSize: 14,
+                    }}
+                    label={timeConverted(item)}
+                    value={item}
+                    enabled={checkIfTimeEnabled(item)}
+                  />
+                );
+              })}
             </Picker>
           </View>
 
-          <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>नाम:</Text> */}
-                    <TextInput
-                        style={[styles.TextInput]}
-                        placeholder="तारीख़ चुनें  dd/mm/yyyy"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Image source={require('../assets/image/calendar.png')} style={{width:20, height:20 , marginTop:14 , right:10}} />
-                    </View>
+          <View style={{ flexDirection: "row" }}>
+            <View style={styles.dropdownGenders}>
+              <TextInput
+                style={{ flex: 1, alignItems: "center", paddingLeft: 10 }}
+                placeholder="भूमि क्षेत्र"
+                maxLength={2}
+                placeholderTextColor={"#ccc"}
+                keyboardType="numeric"
+                onChangeText={(landArea) => handleLandAreaChange(landArea)}
+                // defaultValue={email}
+                value={landArea}
+              />
+            </View>
+            <View
+              style={[
+                styles.dropdownGenders,
+                {
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                },
+              ]}
+            >
+              {/* <Text style={{ paddingLeft: 10 }}>किल्ला/बीघा </Text> */}
+              <Text style={{ color: landTypes ? "#000" : "#ccc", left: 5 }}>
+                {landTypes ? landTypes : "किल्ला/बीघा"}
+              </Text>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="समय चुनें  1-12 AM / PM"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                   <Image source={require('../assets/image/clock.png')} style={{width:20, height:20 , marginTop:14 , right:10}} />
-                    </View>
-
-                    <View style={styles.dropdownGender}>
-            <Picker
-              ref={pickerRef}
-              selectedValue={anyeValue}
-              onValueChange={(itemValue, itemIndex) =>
-                setAnyeValue(itemValue)
-              }
-            > 
-              <Picker.Item enabled={false} label= "-भूमि क्षेत्र -" value=""/>
-              <Picker.Item label="बीघा" value="बीघा" />
-              <Picker.Item label="किल्ला" value="किल्ला" />
-            </Picker>
+              <Picker
+                style={{ width: 20 }}
+                ref={pickerRef}
+                selectedValue={landTypes}
+                onValueChange={(itemValue, itemIndex) =>
+                  setLandTypes(itemValue)
+                }
+              >
+                {landtypess.map((item) => (
+                  <Picker.Item
+                    label={item.name}
+                    value={item.name}
+                    key={item.id}
+                  />
+                ))}
+              </Picker>
+            </View>
           </View>
+          {/* <View
+            style={[
+              styles.inputView,
+              {
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              },
+            ]}
+          >
+            <Text style={{ marginTop: 14, left: 10, color: "#ccc" }}>वेतन</Text>
+   
+            <TextInput
+              placeholderTextColor={"#ccc"}
+              value={totalAmount}
+              placeholder="₹0.00"
+              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
+            />
+          </View> */}
 
-          <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="वेतन"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>₹ 0.00</Text>
-                    </View>
+<View
+            style={[
+              styles.inputView,
+              {
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              },
+            ]}
+          >
+             <Text style={{ color: "#000", marginTop: 14, left: 10 }}>
+               वेतन
+            </Text>
+           <View style={{flexDirection:'row', alignItems:'center'}}>
+           <Text style={{color:'#0099FF', paddingTop:4}}>₹ </Text>
+           <TextInput
+              style={[styles.TextInput,{right:10, color:'#0099FF'}]}
+        
+              keyboardType="numeric"
+              placeholderTextColor={"#0099FF"}
 
-                    <TouchableOpacity
-         onPress={() => navigation.navigate("Profile")}
-        style={styles.loginBtn}>
-        <Text style={[styles.loginText, {color:"#fff"}]}>बुकिंग करें</Text>
-      </TouchableOpacity>
-
+              value={totalAmount}
+              placeholder="0.00"
+              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
+            />
+          
+           </View>
+          </View>
+          <TouchableOpacity onPress={() => Booking()} style={styles.loginBtn}>
+            <Text style={[styles.loginText, { color: "#fff" }]}>
+              बुकिंग करें
+            </Text>
+          </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -204,14 +608,23 @@ const styles = StyleSheet.create({
     width: "80%",
     height: 48,
     marginTop: 15,
-    borderWidth: 1
+    borderWidth: 1,
   },
- 
+  dropdownGenders: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "38%",
+    marginHorizontal: 10,
+    height: 48,
+    marginTop: 15,
+    borderWidth: 1,
+  },
   dropdown: {
     borderColor: "#B7B7B7",
     height: 50,
   },
- 
+
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
@@ -219,24 +632,24 @@ const styles = StyleSheet.create({
     width: "80%",
     height: 48,
     marginTop: 20,
-    borderWidth: 1
-},
-
-TextInput: {
-    // height: 50,
-    padding: 10,
-    lineHeight:50,
-    // fontFamily: "Poppin-Light"
-},
-
-loginText: {
-    color: "#000",
-    fontSize:16,
-  //   flexDirection:"column",
+    borderWidth: 1,
   },
 
-  loginBtn:
-  {
+  TextInput: {
+    // height: 50,
+    paddingLeft: 10,
+    paddingTop: 5,
+
+    // fontFamily: "Poppin-Light"
+  },
+
+  loginText: {
+    color: "#000",
+    fontSize: 16,
+    //   flexDirection:"column",
+  },
+
+  loginBtn: {
     width: "85%",
     borderRadius: 7,
     height: 40,
@@ -245,8 +658,4 @@ loginText: {
     marginTop: 30,
     backgroundColor: "#0099FF",
   },
-
-
-
-
 });

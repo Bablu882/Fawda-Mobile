@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Homepage from "../src/HomePage";
 import SahayakBooking from "../src/SahayakBooking";
-import RegisterForm from "../src/GrahakResgiterForm";
+
 import Profile from "../src/Profile";
 import HomePageStack from "../navigations/HomePageStack";
 // import SahayakBooking from "../src/SahayakBooking";
