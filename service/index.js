@@ -6,10 +6,8 @@ import Toast from 'react-native-simple-toast';
 
 
 class Service {
-  baseUrl = 'http://fawda.demoserver.in/';
-  // assetUrl = 'https://actively-black.demoserver.in/';
-  // assetBannerUrl = 'https://actively-black.demoserver.in';
-  // checkoutBaseUrl = 'https://actively-black-demo.myshopify.com/';
+  baseUrl = 'https://fawda.demoserver.in/';
+ 
   constructor() {
     let service = axios.create({
       baseURL: this.baseUrl,

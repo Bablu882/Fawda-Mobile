@@ -13,37 +13,36 @@ import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import moment from "moment";
 
 export default function MyBooking({ navigation }) {
+  const dispatch = useDispatch();
   const token = useSelector(selectToken);
 
   const [machineBooking, setMachineBooking] = useState([]);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
-  const [sahaykBooking, setSahayakBooking] = useState({});
-  const dispatch = useDispatch();
+  const [sahaykBooking, setSahayakBooking] = useState([]);
+
   //=====api integration of MyBooking======//
+
   const booking = async () => {
-    service
-      .get("api/my_booking_details/", {
+    try {
+      const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token.access,
+          Authorization: `Bearer ${token?.access}`,
         },
-      })
-      .then((res) => {
-        let data = res.data;
-        //console.log("data api", data);
-        setSahayakPending(data?.sahayak_pending_booking_details);
-        console.log("jdjjk", sahayakPending);
-        let token = data?.token;
-        dispatch(setToken(token));
-        setMachineBooking(data?.machine_malik_booking_details);
-        setMachinePending(data?.machine_malik_pending_booking_details);
-      })
-      .catch((error) => {
-        console.log("Error:", error);
       });
+      const data = response.data;
+      console.log("token", token?.access);
+      setSahayakPending(data?.sahayak_pending_booking_details);
+      setSahayakBooking(data?.sahayk_booking_details?.bookings);
+      setMachineBooking(data?.machine_malik_booking_details);
+      setMachinePending(data?.machine_malik_pending_booking_details);
+      console.log("data:::", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
   };
-
+  
   useEffect(() => {
     booking();
   }, [0]);
@@ -67,8 +66,8 @@ export default function MyBooking({ navigation }) {
 
           <View
             style={{
-              borderTopWidth: 0.7,
-              borderTopColor: "#0099FF",
+              // borderTopWidth: 0.7,
+              // borderTopColor: "#0099FF",
               width: "100%",
               top: 40,
             }}
@@ -90,7 +89,7 @@ export default function MyBooking({ navigation }) {
                   {item.job_type}
                 </Text>
                 <Text style={{ color: "black" }}>
-                  {moment(item.date).format("MMMM Do YYYY")}
+                  {moment(item.date).format("l")}
                 </Text>
               </View>
               <View
@@ -102,8 +101,20 @@ export default function MyBooking({ navigation }) {
                   marginTop: 10,
                 }}
               >
+       
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Theke_MachineForm")}
+                  onPress={() => {
+                    if (item.job_type === "individuals_sahayak" && item.status === "Pending") {
+                      navigation.navigate("MyBook_SahayakForm", {
+                        id: item.id, item
+                        
+                      });
+                    } else if (item.job_type === "theke_pe_kam" && item.status === "Pending") {
+                      navigation.navigate("Theke_MachineForm", {
+                        item,
+                      });
+                    }
+                  }}
                 >
                   <Text
                     style={{
@@ -120,9 +131,8 @@ export default function MyBooking({ navigation }) {
               </View>
             </View>
           ))}
-          {sahayakPending?.map((item) => (
+          {sahaykBooking?.map((item) => (
             <View
-              key={item.id}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -135,9 +145,7 @@ export default function MyBooking({ navigation }) {
                 <Text style={{ fontWeight: "600", fontSize: 18 }}>
                   {item.job_type}
                 </Text>
-                <Text style={{ color: "black" }}>
-                  {moment(item.date).format("l")}
-                </Text>
+                <Text style={{ color: "black" }}>{item.count_female}</Text>
               </View>
               <View
                 style={{
@@ -149,7 +157,7 @@ export default function MyBooking({ navigation }) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Theke_MachineForm")}
+                
                 >
                   <Text
                     style={{
@@ -169,7 +177,6 @@ export default function MyBooking({ navigation }) {
           {machinePending?.map((item, index) => (
             // {console.log('machine', machinePending)}
             <View
-              key={item.id}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -196,7 +203,7 @@ export default function MyBooking({ navigation }) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Theke_MachineForm")}
+                // onPress={() => navigation.navigate("Theke_MachineForm")}
                 >
                   <Text
                     style={{
@@ -230,7 +237,6 @@ export default function MyBooking({ navigation }) {
                   {item.job_type}
                 </Text>
                 <Text style={{ color: "black" }}>
-                  {" "}
                   {moment(item.date).format("l")}
                 </Text>
               </View>
@@ -244,7 +250,7 @@ export default function MyBooking({ navigation }) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Theke_MachineForm")}
+                //onPress={() => navigation.navigate("Theke_MachineForm")}
                 >
                   <Text
                     style={{
@@ -262,229 +268,6 @@ export default function MyBooking({ navigation }) {
             </View>
           ))}
 
-          {/* <View
-          style={{
-            borderTopWidth: 0.7,
-            borderTopColor: "#0099FF",
-            width: "100%",
-            marginTop: 15,
-          }}
-        /> */}
-          {/* <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <View style={{ marginLeft: 30 }}>
-            <Text style={{ fontWeight: "600", fontSize: 18 }}>सहायक</Text>
-            <Text>04/03/2023</Text>
-          </View>
-          <View
-            style={{
-              width: "30%",
-              height: 33,
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              marginTop: 10,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.navigate("MyBook_SahayakForm")}
-            >
-              <Text
-                style={{
-                  textAlign: "center",
-                  marginTop: 7,
-                  color: "#fff",
-                  fontSize: 15,
-                  fontWeight: "600",
-                }}
-              >
-                पेंडिंग
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View> */}
-
-          {/* <View
-          style={{
-            borderTopWidth: 0.7,
-            borderTopColor: "#0099FF",
-            width: "100%",
-            marginTop: 15,
-          }}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <View style={{ marginLeft: 30 }}>
-            <Text style={{ fontWeight: "600", fontSize: 18 }}> मशीनरी</Text>
-            <Text>04/03/2023</Text>
-          </View>
-          <View
-            style={{
-              width: "30%",
-              height: 33,
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 7,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              पेंडिंग
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            borderTopWidth: 0.7,
-            borderTopColor: "#0099FF",
-            width: "100%",
-            marginTop: 15,
-          }}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <View style={{ marginLeft: 30 }}>
-            <Text style={{ fontWeight: "600", fontSize: 18 }}>ठेके पर काम</Text>
-            <Text>04/03/2023</Text>
-          </View>
-          <View
-            style={{
-              width: "30%",
-              height: 33,
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 7,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              पेंडिंग
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            borderTopWidth: 0.7,
-            borderTopColor: "#0099FF",
-            width: "100%",
-            marginTop: 15,
-          }}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <View style={{ marginLeft: 30 }}>
-            <Text style={{ fontWeight: "600", fontSize: 18 }}>सहायक</Text>
-            <Text>04/03/2023</Text>
-          </View>
-          <View
-            style={{
-              width: "30%",
-              height: 33,
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 7,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              पेंडिंग
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            borderTopWidth: 0.7,
-            borderTopColor: "#0099FF",
-            width: "100%",
-            marginTop: 15,
-          }}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <View style={{ marginLeft: 30 }}>
-            <Text style={{ fontWeight: "600", fontSize: 18 }}>मशीनरी</Text>
-            <Text>04/03/2023</Text>
-          </View>
-          <View
-            style={{
-              width: "30%",
-              height: 33,
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                marginTop: 7,
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              पेंडिंग
-            </Text>
-          </View>
-        </View> */}
           <View
             style={{
               borderTopWidth: 0.7,

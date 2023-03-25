@@ -53,7 +53,7 @@ export default function SahayakRegisterForm({ navigation }) {
           let token = data?.data?.token;
           dispatch(setToken(token));
           Toast.show("Registration successfully", Toast.SHORT);
-
+          Toast.show(JSON.stringify(data.otp) , Toast.LONG)
           navigation.replace("HomeTwo");
         } else {
           Toast.show(data.error , Toast.SHORT);

@@ -27,15 +27,7 @@ export default function Register({ navigation }) {
       </View>
 
       <View style={styles.OptionButton}>
-        {/* <TouchableOpacity
-          style={[
-            styles.machine,
-            activeButton === "ग्राहक" ? { backgroundColor: "#333" } : null,
-          ]}
-          onPress={() => setActiveButton("ग्राहक")}
-        >
-          <Text style={[styles.loginText, { color: "#fff" }]}>ग्राहक</Text>
-        </TouchableOpacity> */}
+      
         <TouchableOpacity
           style={[
             styles.machine,
@@ -72,11 +64,11 @@ export default function Register({ navigation }) {
       <TouchableOpacity
         onPress={() => {
           activeButton === "ग्राहक"
-            ? navigation.navigate("GrahakRegisterForm")
+            ? navigation.navigate("GrahakRegisterForm",{ from: 'ग्राहक रजिस्ट्रेशन' })
             : activeButton === "सहायक"
-            ? navigation.navigate("SahayakRegisterForm")
+            ? navigation.navigate("GrahakRegisterForm",{from: 'सहायक रजिस्ट्रेशन'})
             : activeButton === "मशीन मालिक"
-            ? navigation.navigate("MachineMalik_Registration")
+            ? navigation.navigate("GrahakRegisterForm",{from:'मशीन मालिक रजिस्ट्रेशन', hideField: true})
             : null;
         }}
         style={styles.loginBtn}

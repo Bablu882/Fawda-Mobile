@@ -221,8 +221,9 @@ export default function MachineBooking({ navigation }) {
   };
 
   const Booking = async () => {
+    const datetime = moment(showDate).format("YYYY-MM-DD") + " " + moment(time).format("HH:mm:ss") + ".000000";
     let params = {
-      datetime: "2023-03-16 17:05:42.000000",
+      datetime: datetime,
       // datetime: "2022-03-07T01:30:00",
       landpreparation: bhumiValue,
       harvesting: katayiValue,
@@ -404,19 +405,17 @@ export default function MachineBooking({ navigation }) {
               onPress={showDatepicker}
               title={showDate ? showDate : "Select Date"}
             >
-              <Text>{showDate ? showDate : "Select Date"}</Text>
+              <Text style={{color:showDate?'#000':'#ccc'}}>{showDate ? showDate : "Select Date"}</Text>
               {console.log('jfjdj',showDate)}
             </TouchableOpacity>
 
            
             <TextInput
               value={selectedDates}
-              // placeholder="Selected date and time"
+          
               editable={false}
               onChangeText={(date) => {
-               // console.log('ddddddddddddd');
-                //handleDateChange(date);
-                //setDate(date);
+              
                 onChange(selectedDates)
               }}
           
@@ -425,7 +424,7 @@ export default function MachineBooking({ navigation }) {
             <TouchableOpacity onPress={showDatepicker}>
               <Image
                 source={require("../assets/image/calendar.png")}
-                style={{ width: 20, height: 20, marginTop: 14, right: 10 }}
+                style={{ width: 20, height: 20, right: 10 , marginTop:10}}
               />
             </TouchableOpacity>
   
@@ -550,7 +549,7 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-             <Text style={{ color: "#000", marginTop: 14, left: 10 }}>
+             <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
                वेतन
             </Text>
            <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -560,7 +559,6 @@ export default function MachineBooking({ navigation }) {
         
               keyboardType="numeric"
               placeholderTextColor={"#0099FF"}
-
               value={totalAmount}
               placeholder="0.00"
               onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
