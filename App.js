@@ -40,6 +40,7 @@ import SahayakForm from "./src/SahayakForm";
 import MachineBooking from "./src/MachineBooking";
 import MyBooking from "./src/MyBooking";
 import Theke_MachineForm from "./src/Theke_MachineForm";
+import MyBook_SahayakForm from "./src/MyBook_SahayakForm";
 
 
 let persistor = persistStore(store);
@@ -80,6 +81,7 @@ export default function App() {
                              <Stack.Screen name="SahayakForm" component={SahayakForm} />
                              <Stack.Screen name="MachineBooking" component={MachineBooking} />
                              <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
+                             <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           {/* <Stack.Screen name="Dashboard" component={Dashboard} />
           
           <Stack.Screen name="Profile" component={Profile} />
