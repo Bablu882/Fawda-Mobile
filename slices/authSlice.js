@@ -21,7 +21,7 @@ export const authSlice = createSlice({
             state.userData = action.payload;
         },
        
-        clearAuth: state => initialState
+      //  clearAuth: state => initialState
     }
 });
 

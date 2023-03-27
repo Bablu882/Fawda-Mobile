@@ -41,12 +41,12 @@ export default function MachineMachine_Registration ({navigation}) {
       .then((response) => {
         // setloading(false);
         let data = response?.data;
-        console.log("register", data);
+        console.log("register", token);
         if (data.success == true) {
           let token = data?.data?.token;
           dispatch(setToken(token));
           Toast.show("Registration successfully", Toast.SHORT);
-
+          Toast.show(JSON.stringify(data.otp) , Toast.LONG)
           navigation.replace("HomeThird");
         } else {
           Toast.show(data.error , Toast.SHORT);
