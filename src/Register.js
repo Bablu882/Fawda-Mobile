@@ -68,7 +68,7 @@ export default function Register({ navigation }) {
             : activeButton === "सहायक"
             ? navigation.navigate("GrahakRegisterForm",{from: 'सहायक रजिस्ट्रेशन'})
             : activeButton === "मशीन मालिक"
-            ? navigation.navigate("GrahakRegisterForm",{from:'मशीन मालिक रजिस्ट्रेशन', hideField: true})
+            ? navigation.navigate("GrahakRegisterForm",{from:'मशीन मालिक रजिस्ट्रेशन'})
             : null;
         }}
         style={styles.loginBtn}
