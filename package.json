@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.12",
-  
     "@react-native-community/datetimepicker": "^6.5.2",
     "@react-native-picker/picker": "^2.4.8",
     "@react-navigation/bottom-tabs": "^6.5.6",
@@ -24,6 +23,7 @@
     "date-fns": "^2.29.3",
     "expo": "~47.0.12",
     "expo-linking": "^3.3.0",
+    "expo-location": "~15.0.1",
     "expo-status-bar": "~1.4.2",
     "formik": "^2.2.9",
     "install": "^0.13.0",

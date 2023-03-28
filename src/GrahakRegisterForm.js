@@ -17,12 +17,16 @@ import Service from "../service/index";
 import Toast from "react-native-simple-toast";
 import { Picker } from "@react-native-picker/picker";
 import { RadioButton } from "react-native-paper";
+
+import * as Location from 'expo-location';
+
 // import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 
 export default function GrahakRegisterForm({ navigation, route }) {
-  const { hideField } = route.params;
+
+const {user} = route.params
+ console.log('fnkfjk', user)
   const token = useSelector(selectToken);
-  const [userType, setUserType] = useState("Grahak");
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -30,9 +34,11 @@ export default function GrahakRegisterForm({ navigation, route }) {
   const [village, setVillage] = useState("");
   const [mohalla, setMohalla] = useState("");
   const [state, setState] = useState([]);
-  const [selectedState, setSelectedState] = useState('');
+  const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [district, setDistrict] = useState([]);
+  const [location, setLocation] = useState({ latitude: "", longitude: ""});
+
   const [errors, setErrors] = useState({
     name: "",
     gender: "",
@@ -51,8 +57,6 @@ export default function GrahakRegisterForm({ navigation, route }) {
   function close() {
     pickerRef.current.blur();
   }
-
-
 
   const validate = () => {
     let valid = true;
@@ -74,10 +78,10 @@ export default function GrahakRegisterForm({ navigation, route }) {
       valid = false;
     }
 
-    // if (gender === "") {
-    //   errorMessages.gender = "Please select your gender";
-    //   valid = false;
-    // }
+    if (gender === "") {
+      errorMessages.gender = "Please select your gender";
+      valid = false;
+    }
     if (phone.trim() === "") {
       errorMessages.phone = "Please enter your phone number";
       valid = false;
@@ -88,18 +92,16 @@ export default function GrahakRegisterForm({ navigation, route }) {
     if (mohalla.trim() === "") {
       errorMessages.mohalla = "Please enter your mohalla";
       valid = false;
-    } 
+    }
     // else if (!/^[a-zA-Z0-9\s]+$/.test(mohalla.trim())) {
     //   errorMessages.mohalla = "Please enter a valid mohalla (alphanumeric characters and spaces only)";
     //   valid = false;
     // }
-    
+
     if (village.trim() === "") {
       errorMessages.village = "Please enter your village";
       valid = false;
     }
-
-    
 
     setErrors(errorMessages);
     return valid;
@@ -128,8 +130,10 @@ export default function GrahakRegisterForm({ navigation, route }) {
         village,
         mohalla,
         state: selectedState,
-        district:selectedDistrict,
-        user_type: userType,
+        district: selectedDistrict,
+        user_type: user,
+        latitude: location.latitude,
+        longitude: location.longitude,
       };
       console.log("registerparams", params);
 
@@ -142,12 +146,15 @@ export default function GrahakRegisterForm({ navigation, route }) {
       console.log("register", data);
 
       if (data?.success) {
-        const token = data?.data?.token;
+        const token = data?.token;
         dispatch(setToken(token));
         Toast.show("Registration successful", Toast.SHORT);
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
-        console.log('fjfjfjf', data)
-        navigation.replace("Verification");
+        console.log("fjfjfjf", data);
+      
+        navigation.replace("Verification", {
+          user
+        });
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {
@@ -162,43 +169,37 @@ export default function GrahakRegisterForm({ navigation, route }) {
     }
   };
 
-
-
   const stateapi = async () => {
-     
     try {
       const response = await Service.get("/api/states/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+        
         },
       });
-      
-      const data = response.data
-     
-      //console.log('data::', data)
-     setState(data)
+
+      const data = response.data;
+      console.log("data::", data);
+      setState(data);
     } catch (error) {
       console.log("Error:", error);
       // Toast.show("Error Occurred. Please try again later.", Toast.SORT);
     }
   };
 
-
   const districtapi = async () => {
-     
     try {
       const response = await Service.get("/api/districts/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+      
         },
       });
-      
-      const data = response.data
-     
-     // console.log('data::', data)
-      setDistrict(data)
+
+      const data = response.data;
+
+      // console.log('data::', data)
+      setDistrict(data);
     } catch (error) {
       console.log("Error:", error);
       // Toast.show("Error Occurred. Please try again later.", Toast.SORT);
@@ -207,11 +208,21 @@ export default function GrahakRegisterForm({ navigation, route }) {
 
   useEffect(() => {
     stateapi();
-    districtapi()
+    districtapi();
   }, []);
-
-
-
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+  
+      let { coords } = await Location.getCurrentPositionAsync({});
+      setLocation(coords);
+     // console.log("locationlocation",location);
+    })();
+  }, []);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -222,7 +233,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
 
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
-          {route.params.from}
+          {route.params.user}
         </Text>
       </View>
 
@@ -232,6 +243,11 @@ export default function GrahakRegisterForm({ navigation, route }) {
           marginTop: 30,
         }}
       >
+        <View style={{display:'none'}}>
+        <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
+{/* <Text>Longitude: {location.longitude}</Text> */}
+  {console.log('location', location.latitude)}
+</View>
         <View style={[styles.inputView, { position: "relative" }]}>
           <Text
             style={{
@@ -257,35 +273,36 @@ export default function GrahakRegisterForm({ navigation, route }) {
           />
           {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
         </View>
-        {!hideField && (
-       
-        <RadioButton.Group onValueChange={handleGenderSelection} value={gender}>
-          <View style={styles.alignItems}>
-            <View style={[styles.MaleCheckView, { position: "relative" }]}>
-              <Text style={styles.label}>लिंग:</Text>
-              <TouchableOpacity>
-                <RadioButton.Item
-                  label="Male"
-                  value="Male"
-                  uncheckedColor="transparent"
-                />
-              </TouchableOpacity>
+        <RadioButton.Group
+            onValueChange={handleGenderSelection}
+            value={gender}
+          >
+            <View style={styles.alignItems}>
+              <View style={[styles.MaleCheckView, { position: "relative" }]}>
+                <Text style={styles.label}>लिंग:</Text>
+                <TouchableOpacity>
+                  <RadioButton.Item
+                    label="Male"
+                    value="Male"
+                    uncheckedColor="transparent"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={[styles.FemalecheckView, { position: "relative" }]}>
+                <TouchableOpacity>
+                  <RadioButton.Item
+                    label="Female"
+                    value="Female"
+                    uncheckedColor="transparent"
+                  />
+                </TouchableOpacity>
+              </View>
+              {/* </View> */}
             </View>
-            <View style={[styles.FemalecheckView, { position: "relative" }]}>
-              <TouchableOpacity>
-                <RadioButton.Item
-                  label="Female"
-                  value="Female"
-                  uncheckedColor="transparent"
-                />
-              </TouchableOpacity>
-            </View>
-            {/* </View> */}
-          </View>
-          {!!errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
-        </RadioButton.Group>
-
-)}
+            {!!errors.gender && (
+              <Text style={styles.error}>{errors.gender}</Text>
+            )}
+          </RadioButton.Group>
         <View style={[styles.inputView, { position: "relative" }]}>
           <Text style={styles.label}>फ़ोन:</Text>
           <TextInput
@@ -333,78 +350,62 @@ export default function GrahakRegisterForm({ navigation, route }) {
         </View>
 
         <View style={styles.flex}>
-
           <View style={[styles.DoubleView, { position: "relative" }]}>
             <Text style={styles.label}>राज्य</Text>
             <Picker
-        selectedValue={selectedState}
-        onValueChange={(itemValue, itemIndex) => setSelectedState(itemValue)}
-      >
-        {state?.map(state => (
-          <Picker.Item key={state.id} label={state.name} value={state.abbreviation} />
-        ))}
-      </Picker>
-            {/* <Picker
-                  style={{ width: 20, paddingTop: 16 }}
-                  ref={pickerRef}
-                  selectedValue={state}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setState(itemValue)
-                  }
-                >
-                  
-                  {state?.map((item, index) => (
-                
-                    <Picker.Item
-                      label={item.name}
-                      value={item}
-                      key={item.id}
-                    />
-                  ))}
-                </Picker> */}
+              selectedValue={selectedState}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedState(itemValue)
+              }
+            >
+              <Picker.Item label="राज्य" value="" enabled={false} style={{color:'#ccc'}}/>
+              {state?.map((state) => (
+                <Picker.Item
+                  key={state.id}
+                  label={state.name}
+                  value={state.abbreviation}
+                />
+              ))}
+            </Picker>
+           
             {/* <TextInput
               style={styles.TextInput}
               placeholder=""
               placeholderTextColor={"#848484"}
-              onChangeText={(text) => setState(text)}
+              onChangeText={(text) => setSelectedState(text)}
               // defaultValue={email}
-              value={state}
+              value={selectedState}
             /> */}
             {/* {!!errors.state && <Text style={styles.error}>{errors.state}</Text>} */}
           </View>
           <View style={[styles.DoubleView, { position: "relative" }]}>
             <Text style={styles.label}>जिला</Text>
             <Picker
-  selectedValue={selectedDistrict}
-  onValueChange={(itemValue, itemIndex) => setSelectedDistrict(itemValue)}
->
-  {district?.map(district => (
-    <Picker.Item
-      key={district.id}
-      label={`${district.name}, ${district.state.name}`}
-      value={district.id}
-    />
-  ))}
-</Picker>
+              selectedValue={selectedDistrict}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedDistrict(itemValue)
+              }
+            >
+                <Picker.Item label="जिला" value="" enabled={false} style={{color:'#ccc'}}/>
+              {district?.map((district) => (
+                <Picker.Item
+                  key={district.id}
+                  label={`${district.name}, ${district.state.name}`}
+                  value={district.id}
+                />
+              ))}
+            </Picker>
 
-            {/* <TextInput
-              style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              onChangeText={(text) => setDistrict(text)}
-              // defaultValue={email}
-              value={district}
-            /> */}
-            {!!errors.district && (
-              <Text style={styles.error}>{errors.district}</Text>
-            )}
+        
           </View>
         </View>
 
         <TouchableOpacity
           onPress={() => {
+           
             if (validate()) {
               RegisterServices();
+          
               // navigation.navigate("Home")
             }
           }}

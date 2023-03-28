@@ -1,81 +1,36 @@
 import { useFocusEffect } from "@react-navigation/core";
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Service from '../service/index';
-import Toast from 'react-native-simple-toast';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectIsLoggedIn, setToken , selectToken} from '../slices/authSlice';
-import { useIsFocused } from '@react-navigation/native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import Service from "../service/index";
+import Toast from "react-native-simple-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
+import { useIsFocused } from "@react-navigation/native";
 // import SupportPage from "./SupportPage";
 
-export default function Verification({ navigation }) {
-  const [otp , setOtp] = useState('');
-  const [tokenn, setTokenn] = useState()
-  const [loading, setloading] = useState('');
+export default function Verification({ navigation, route }) {
+  const { user } = route?.params ?? {};
+  console.log("djdfjf", user);
+  const [otp, setOtp] = useState("");
+  const [tokenn, setTokenn] = useState();
+  const [loading, setloading] = useState("");
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
-  const isfocused = useIsFocused()
+  const isfocused = useIsFocused();
   const token = useSelector(selectToken);
 
-  // React.useEffect(() => {
-  //   if (isLoggedIn) {
-  //     // alert(isLoggedIn)
-  //     setTimeout(() => {
-  //       navigation.replace('SupportPage')
-  //     }, 0)
-  //   }
-  // }, [isLoggedIn])
-
-  // const redirect = (to) => {
-  //   alert(to)
-  //   navigation.replace(to)
-  // }
-
-  // const login = value => {
-  //   setloading(true);
-  //   let params = {
-
-  //     email,
-  //     password
-
-  //   };
-  //   console.log('paramsverify pin:', params);
-  //   Service.post('login', params, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //   })
-  //     .then(response => {
-  //       setloading(false);
-  //       let data = response.data;
-
-  //       console.log('login', data);
-  //       if (data?.token) {
-  //         dispatch(setToken(data.token))
-
-
-  //         Toast.show('Login successfully.', Toast.SHORT);
-  //         navigation.replace('Dashboard')
-  //       }
-  //       else {
-  //         Toast.show(data?.error, Toast.SHORT);
-
-  //       }
-
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       setloading(false);
-  //       Toast.show('Invalid Credentials', Toast.SHORT);
-
-  //     });
-  // };  
   const Verify = () => {
     // console.log("token", token)
     // setloading(true);
     let params = {
-     otp: otp
+      otp: otp,
     };
     console.log("registerparams", params);
     Service.post("/api/verify/", params, {
@@ -87,14 +42,21 @@ export default function Verification({ navigation }) {
       .then((response) => {
         // setloading(false);
         let data = response?.data;
-        console.log("register", data);
+        console.log("registerresponse", data);
         if (data.verified == true) {
           // let token = data?.data?.token;
           // dispatch(setToken(token));
           Toast.show("Login successfull", Toast.SHORT);
-          navigation.replace("Home");
+          navigation.replace('HomePage');
+          // if(user === 'Sahayak' || user === "MachineMalik"){
+          //   navigation.replace('CurrentUser', {user});
+          //   console.log('user user', user)
+          // }else {
+          //   navigation.replace('HomePage', {user});
+          //   // console.log('user::', user)
+          // }
         } else {
-          Toast.show(data.error , Toast.SHORT);
+          Toast.show(data.error, Toast.SHORT);
         }
       })
       .catch((error) => {
@@ -102,45 +64,56 @@ export default function Verification({ navigation }) {
         // setloading(false);
       });
   };
-
+  useEffect(() => {
+    Verify();
+  }, []);
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/image/Verify.png")} style={{ width: 160, height: 200, alignItems: "center" }} resizeMode="contain" />
-      <Text style={{ fontSize:28 ,}}>वेरिफिकेशन</Text>
+      <Image
+        source={require("../assets/image/Verify.png")}
+        style={{ width: 160, height: 200, alignItems: "center" }}
+        resizeMode="contain"
+      />
+      <Text style={{ fontSize: 28 }}>वेरिफिकेशन</Text>
 
-      <View style={{ alignItems:'center', padding:10  }}>
-    <Text style={{textAlign:"center"}}>हमने आपके फ़ोन पर एक ओटीपी भेजा है</Text>
-
-
+      <View style={{ alignItems: "center", padding: 10 }}>
+        <Text style={{ textAlign: "center" }}>
+          हमने आपके फ़ोन पर एक ओटीपी भेजा है
+        </Text>
       </View>
 
-      <View style={{marginTop:30 , width:"100%" , justifyContent:"center" , flexDirection:"row"}}>
-      <TextInput
-            style={[styles.TextInput,styles.inputView]}
-            placeholder="ओटीपी डालें "
-            placeholderTextColor={"#848484"}
-            secureTextEntry={true}
-            onChangeText={(text) => setOtp(text , "otp")}
-            // defaultValue={email}
-            // value={email}
-          />
+      <View
+        style={{
+          marginTop: 30,
+          width: "100%",
+          justifyContent: "center",
+          flexDirection: "row",
+        }}
+      >
+        <TextInput
+          style={[styles.TextInput, styles.inputView]}
+          placeholder="ओटीपी डालें "
+          placeholderTextColor={"#848484"}
+          secureTextEntry={true}
+          onChangeText={(text) => setOtp(text, "otp")}
+          // defaultValue={email}
+          // value={email}
+        />
       </View>
 
-      <View style={{marginTop:10}}>
-        <Text style={{color:"#0099FF"}}>1:30</Text>
+      <View style={{ marginTop: 10 }}>
+        <Text style={{ color: "#0099FF" }}>1:30</Text>
       </View>
 
       <TouchableOpacity
-         onPress={() => Verify()}
+        onPress={() => {
+          Verify();
+        }}
         // onPress={() => navigation.navigate("Home")}
-        style={styles.loginBtn}>
+        style={styles.loginBtn}
+      >
         <Text style={styles.VerifyText}>वेरीफाई एंड लॉगिन </Text>
       </TouchableOpacity>
-
-
-
-
-
     </View>
   );
 }
@@ -148,9 +121,9 @@ export default function Verification({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   CountryCode: {
     // borderColor: "#0070C0 ",
@@ -166,28 +139,27 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     justifyContent: "center",
-lineHeight:44,
-fontWeight:"600"
+    lineHeight: 44,
+    fontWeight: "600",
   },
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-     width: "80%",
+    width: "80%",
     height: 45,
-    borderWidth: 1
+    borderWidth: 1,
   },
 
   TextInput: {
     height: 50,
     padding: 10,
-    textAlign:"center",
-    color:"#505050",
+    textAlign: "center",
+    color: "#505050",
     //fontFamily: "Poppin-Light"
   },
 
-  loginBtn:
-  {
+  loginBtn: {
     width: "80%",
     // borderRadius: 7,
     height: 50,
@@ -198,7 +170,6 @@ fontWeight:"600"
   },
   VerifyText: {
     color: "#fff",
-    fontWeight:"600",
-  }
-
+    fontWeight: "600",
+  },
 });

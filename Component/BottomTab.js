@@ -32,9 +32,9 @@ export default function BottomTab() {
     >
       <Tab.Screen
         name="HomePage"
-        component={HomePageStack}
+        component={Homepage}
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
               <Image
                 source={require('../assets/image/home.png')

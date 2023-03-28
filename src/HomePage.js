@@ -3,7 +3,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
-export default function Homepage({ navigation }) {
+export default function Homepage({ navigation, route }) {
+  const {user} = route?.params ?? {}
+  console.log('hhhhh', user)
   const [show, setShow] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const [sahayak, setSahayak] = useState("");
@@ -18,7 +20,7 @@ export default function Homepage({ navigation }) {
 
         <View style={{ alignItems: "center" }}>
           <Text style={{ fontSize: 28, fontWeight: "600", color: "#000" }}>
-            कौनसी सेवा चाहिए
+            कौनसी सेवा चाहिए ff
           </Text>
         </View>
 
@@ -122,11 +124,11 @@ export default function Homepage({ navigation }) {
         <TouchableOpacity
           onPress={() => {
             activeButton === "मशीन"
-              ? navigation.navigate("MachineBooking")
+              ? navigation.navigate("MachineBooking",{user})
               : sahayak === "सहायक"
-              ? navigation.navigate("SahayakForm")
+              ? navigation.navigate("SahayakForm",{user})
               : sahayak === "ठेके पर काम"
-              ? navigation.navigate("Thekeparkaam")
+              ? navigation.navigate("Thekeparkaam", {user})
               : null;
           }}
           style={styles.loginBtn}

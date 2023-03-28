@@ -13,6 +13,7 @@ export const authSlice = createSlice({
         setToken: (state, action) => {
             state.token = action.payload;
             state.isLoggedIn = true
+        console.log('dddddd->>>', action);
         },
         setIsLoading: (state, action) => {
             state.loading = action.payload
