@@ -63,13 +63,21 @@ export default function Register({ navigation }) {
 
       <TouchableOpacity
         onPress={() => {
-          activeButton === "ग्राहक"
-            ? navigation.navigate("GrahakRegisterForm",{ from: 'ग्राहक रजिस्ट्रेशन' })
-            : activeButton === "सहायक"
-            ? navigation.navigate("GrahakRegisterForm",{from: 'सहायक रजिस्ट्रेशन'})
-            : activeButton === "मशीन मालिक"
-            ? navigation.navigate("GrahakRegisterForm",{from:'मशीन मालिक रजिस्ट्रेशन'})
-            : null;
+          // activeButton === "ग्राहक"
+          //   ? navigation.navigate("GrahakRegisterForm",{  user:'Grahak' })
+          // : activeButton === "सहायक"
+          //   ? navigation.navigate("GrahakRegisterForm",{ user:'Sahayak'})
+          // : activeButton === "मशीन मालिक"
+          //   ? navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
+          //   : null;
+          if( activeButton === "ग्राहक"){
+            navigation.navigate("GrahakRegisterForm",{  user:'Grahak' })
+          }else if( activeButton === "सहायक"){
+            navigation.navigate("GrahakRegisterForm",{ user:'Sahayak'})
+          }else{
+            navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
+          }
+          console.log('', activeButton)
         }}
         style={styles.loginBtn}
       >

@@ -12,10 +12,12 @@ import service from "../service";
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import moment from "moment";
 
-export default function MyBooking({ navigation }) {
+export default function MyBooking({ navigation, route }) {
+  const { user } = route?.params ?? {};
+  console.log("djdfjf", user);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-
+  const [currentUsers, setCurrentUsers] = useState([]);
   const [machineBooking, setMachineBooking] = useState([]);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
@@ -28,7 +30,7 @@ export default function MyBooking({ navigation }) {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          Authorization: "Bearer " + token?.access,
         },
       });
       const data = response.data;
@@ -42,9 +44,25 @@ export default function MyBooking({ navigation }) {
       console.log("Error:", error);
     }
   };
-  
+  const getalljobs = async () => {
+    try {
+      const response = await service.get("/api/nearjob/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token?.access,
+        },
+      });
+      const data = response.data;
+      console.log("token", token?.access);
+      // console.log("data:::", data);
+      setCurrentUsers(data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
   useEffect(() => {
     booking();
+    getalljobs();
   }, [0]);
 
   return (
@@ -63,7 +81,7 @@ export default function MyBooking({ navigation }) {
               मेरी बुकिंग
             </Text>
           </View>
-
+         
           <View
             style={{
               // borderTopWidth: 0.7,
@@ -72,202 +90,248 @@ export default function MyBooking({ navigation }) {
               top: 40,
             }}
           />
-          {sahayakPending?.map((item, index) => (
-            // {console.log('machine', machinePending)}
-            <View
-              key={item.id}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginTop: 50,
-              }}
-            >
-              <View style={{ marginLeft: 30 }}>
-                <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                  {item.job_type}
-                </Text>
-                <Text style={{ color: "black" }}>
-                  {moment(item.date).format("l")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  width: "30%",
-                  height: 33,
-                  backgroundColor: "#44A347",
-                  marginRight: 20,
-                  marginTop: 10,
-                }}
-              >
-       
-                <TouchableOpacity
-                  onPress={() => {
-                    if (item.job_type === "individuals_sahayak" && item.status === "Pending") {
-                      navigation.navigate("MyBook_SahayakForm", {
-                        id: item.id, item
-                        
-                      });
-                    } else if (item.job_type === "theke_pe_kam" && item.status === "Pending") {
-                      navigation.navigate("Theke_MachineForm", {
-                        item,
-                      });
-                    }
+             <>
+              {sahayakPending?.length > 0 && sahayakPending?.map((item, index) => (
+                // {console.log('machine', machinePending)}
+                <View
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginTop: 50,
                   }}
                 >
-                  <Text
+                  <View style={{ marginLeft: 30 }}>
+                    <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                      {item.job_type}
+                    </Text>
+                    <Text style={{ color: "black" }}>
+                      {moment(item.date).format("l")}
+                    </Text>
+                  </View>
+                  <View
                     style={{
-                      textAlign: "center",
-                      marginTop: 7,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
+                      width: "30%",
+                      height: 33,
+                      backgroundColor: "#44A347",
+                      marginRight: 20,
+                      marginTop: 10,
                     }}
                   >
-                    {item.status}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-          {sahaykBooking?.map((item) => (
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginTop: 50,
-              }}
-            >
-              <View style={{ marginLeft: 30 }}>
-                <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                  {item.job_type}
-                </Text>
-                <Text style={{ color: "black" }}>{item.count_female}</Text>
-              </View>
-              <View
-                style={{
-                  width: "30%",
-                  height: 33,
-                  backgroundColor: "#44A347",
-                  marginRight: 20,
-                  marginTop: 10,
-                }}
-              >
-                <TouchableOpacity
-                
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (
+                          item.job_type === "individuals_sahayak" &&
+                          item.status === "Pending"
+                        ) {
+                          navigation.navigate("MyBook_SahayakForm", {
+                            id: item.id,
+                            item,
+                          });
+                        } else if (
+                          item.job_type === "theke_pe_kam" &&
+                          item.status === "Pending"
+                        ) {
+                          navigation.navigate("Theke_MachineForm", {
+                            item,
+                          });
+                        }
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          marginTop: 7,
+                          color: "#fff",
+                          fontSize: 15,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {item.status}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+              {sahaykBooking?.length > 0 && sahaykBooking?.map((item) => (
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginTop: 50,
+                  }}
                 >
-                  <Text
+                  <View style={{ marginLeft: 30 }}>
+                    <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                      {item.job_type}
+                    </Text>
+                    <Text style={{ color: "black" }}>{item.count_female}</Text>
+                  </View>
+                  <View
                     style={{
-                      textAlign: "center",
-                      marginTop: 7,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
+                      width: "30%",
+                      height: 33,
+                      backgroundColor: "#44A347",
+                      marginRight: 20,
+                      marginTop: 10,
                     }}
                   >
-                    {item.status}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-          {machinePending?.map((item, index) => (
-            // {console.log('machine', machinePending)}
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginTop: 50,
-              }}
-            >
-              <View style={{ marginLeft: 30 }}>
-                <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                  {item.job_type}
-                </Text>
-                <Text style={{ color: "black" }}>
-                  {moment(item.date).format("l")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  width: "30%",
-                  height: 33,
-                  backgroundColor: "#44A347",
-                  marginRight: 20,
-                  marginTop: 10,
-                }}
-              >
-                <TouchableOpacity
-                // onPress={() => navigation.navigate("Theke_MachineForm")}
+                    <TouchableOpacity>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          marginTop: 7,
+                          color: "#fff",
+                          fontSize: 15,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {item.status}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+              {machinePending?.length > 0 && machinePending?.map((item, index) => (
+                // {console.log('machine', machinePending)}
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginTop: 50,
+                  }}
                 >
-                  <Text
+                  <View style={{ marginLeft: 30 }}>
+                    <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                      {item.job_type}
+                    </Text>
+                    <Text style={{ color: "black" }}>
+                      {moment(item.date).format("l")}
+                    </Text>
+                  </View>
+                  <View
                     style={{
-                      textAlign: "center",
-                      marginTop: 7,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
+                      width: "30%",
+                      height: 33,
+                      backgroundColor: "#44A347",
+                      marginRight: 20,
+                      marginTop: 10,
                     }}
                   >
-                    {item.status}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-          {machineBooking?.map((item, index) => (
-            // {console.log('machine', machinePending)}
-            <View
-              key={item.id}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-between",
-                marginTop: 50,
-              }}
-            >
-              <View style={{ marginLeft: 30 }}>
-                <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                  {item.job_type}
-                </Text>
-                <Text style={{ color: "black" }}>
-                  {moment(item.date).format("l")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  width: "30%",
-                  height: 33,
-                  backgroundColor: "#44A347",
-                  marginRight: 20,
-                  marginTop: 10,
-                }}
-              >
-                <TouchableOpacity
-                //onPress={() => navigation.navigate("Theke_MachineForm")}
+                    <TouchableOpacity
+                    // onPress={() => navigation.navigate("Theke_MachineForm")}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          marginTop: 7,
+                          color: "#fff",
+                          fontSize: 15,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {item.status}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+              {machineBooking?.length > 0 && machineBooking?.map((item, index) => (
+                // {console.log('machine', machinePending)}
+                <View
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    marginTop: 50,
+                  }}
                 >
-                  <Text
+                  <View style={{ marginLeft: 30 }}>
+                    <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                      {item.job_type}
+                    </Text>
+                    <Text style={{ color: "black" }}>
+                      {moment(item.date).format("l")}
+                    </Text>
+                  </View>
+                  <View
                     style={{
-                      textAlign: "center",
-                      marginTop: 7,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
+                      width: "30%",
+                      height: 33,
+                      backgroundColor: "#44A347",
+                      marginRight: 20,
+                      marginTop: 10,
                     }}
                   >
-                    पेंडिंग
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-
+                    <TouchableOpacity
+                    //onPress={() => navigation.navigate("Theke_MachineForm")}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          marginTop: 7,
+                          color: "#fff",
+                          fontSize: 15,
+                          fontWeight: "600",
+                        }}
+                      >
+                        पेंडिंग
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </>
+            {currentUsers?.length > 0 &&
+            currentUsers.map((item, index)  => (
+           <View
+           style={{
+             display: "flex",
+             flexDirection: "row",
+             width: "100%",
+             justifyContent: "space-between",
+             marginTop: 50,
+           }}
+         >
+           <View style={{ marginLeft: 30 }}>
+             <Text style={{ fontWeight: "600", fontSize: 18 }}>
+              {item?.job_type}
+             </Text>
+             <Text style={{ color: "black" }}>   {moment(item.date).format("l")}</Text>
+           </View>
+           <View
+             style={{
+               width: "30%",
+               height: 33,
+               backgroundColor: "#44A347",
+               marginRight: 20,
+               marginTop: 10,
+             }}
+           >
+             <TouchableOpacity>
+               <Text
+                 style={{
+                   textAlign: "center",
+                   marginTop: 7,
+                   color: "#fff",
+                   fontSize: 15,
+                   fontWeight: "600",
+                 }}
+               >
+                {item.status}
+               </Text>
+             </TouchableOpacity>
+           </View>
+         </View>
+       ))}
           <View
             style={{
               borderTopWidth: 0.7,

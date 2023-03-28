@@ -8,7 +8,9 @@ import { selectIsLoggedIn, setToken } from '../slices/authSlice';
 import { useIsFocused } from '@react-navigation/native';
 // import SupportPage from "./SupportPage";
 
-export default function Login({ navigation }) {
+export default function Login({ navigation,route }) {
+const {user} = route?.params??{}
+console.log('userr', user)
   const [phone , setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [tokenn, setTokenn] = useState()
@@ -47,7 +49,7 @@ export default function Login({ navigation }) {
         setloading(false);
         let data = response.data;
 
-        // console.log('login', data);
+        console.log('login', data);
         if (data?.token) {
           dispatch(setToken(data.token))
           Toast.show(JSON.stringify(data.otp) , Toast.LONG)

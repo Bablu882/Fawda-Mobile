@@ -19,15 +19,13 @@ import { PersistGate } from "redux-persist/integration/react";
 import persistStore from "redux-persist/es/persistStore";
 import SplashScreen from "./src/SplashScreen";
 import { useFonts } from "expo-font";
-// import { translate } from '@vitalets/google-translate-api';
-// import SupportPage from "./src/SupportPage";
+
 import Verification from "./src/Verification";
 import Register from "./src/Register";
 
 import Homepage from "./src/HomePage";
 // import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
-// import Profile from "./src/Profile";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
 // import HomePageStack from "./navigations/HomePageStack";
 
@@ -41,6 +39,8 @@ import MachineBooking from "./src/MachineBooking";
 import MyBooking from "./src/MyBooking";
 import Theke_MachineForm from "./src/Theke_MachineForm";
 import MyBook_SahayakForm from "./src/MyBook_SahayakForm";
+
+
 
 
 let persistor = persistStore(store);
@@ -73,8 +73,9 @@ export default function App() {
                              <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
                              {/* <Stack.Screen name="SahayakRegisterForm" component={SahayakRegisterForm} />
                              <Stack.Screen name="MachineMalik_Registration" component={MachineMachine_Registration} /> */}
-                             <Stack.Screen name="Home" component={BottomTab} />
+                             <Stack.Screen name="HomePage" component={BottomTab} />
                              <Stack.Screen name="MyBooking" component={MyBooking} />
+                          
                              <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
                              <Stack.Screen name="Homethird" component={BottomTabMachine} />
                              <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
