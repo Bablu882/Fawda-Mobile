@@ -152,9 +152,8 @@ const {user} = route.params
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
         console.log("fjfjfjf", data);
       
-        navigation.replace("Verification", {
-          user
-        });
+        navigation.replace("Verification",  { user_type: user });
+        console.log('djdjkd', user_type)
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {

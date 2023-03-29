@@ -16,13 +16,22 @@ import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 
-function Theke_MachineForm({ navigation, route }) {
+function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const bookingid = route?.params?.item;
   console.log("bookingid", bookingid);
+  const [colors, setColors] = useState(Array(10).fill('white'));
+
+  const handleClick = (index) => {
+    const newColors = [...colors];
+    if (index === 0) newColors[index] = 'red';
+    else if (index === 4) newColors[index] = 'yellow';
+    else if (index === 9) newColors[index] = 'green';
+    setColors(newColors);
+    };
 
   const { id, item } = route.params;
   console.log("fjd", item);
@@ -137,45 +146,7 @@ function Theke_MachineForm({ navigation, route }) {
           </View>
         </View>
 
-        <View style={styles.flex}>
-          <View style={{ width: "50%" }}>
-            <Text></Text>
-          </View>
-          <View style={[styles.flex, { marginTop: 10 }]}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#0099FF",
-                marginRight: 10,
-                padding: 5,
-              }}
-            >
-              <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                वेतन बदलें
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => accptThekha()}
-              style={{
-                backgroundColor: "#44A347",
-                paddingHorizontal: 10,
-                paddingTop: 4,
-              }}
-            >
-              <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                Accept Thekha
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {/* <Text></Text>
-   <View>
-   <TouchableOpacity>
-      <Text style={{ textAlign: "right" }}>1</Text>
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <Text>2</Text>
-    </TouchableOpacity>
-    </View> */}
-        </View>
+        
 
         <View
           style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
@@ -220,41 +191,130 @@ function Theke_MachineForm({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {bookingid?.status}
+                  {/* {bookingid?.status} */}
+                  बुक 
                 </Text>
               
             </TouchableOpacity>
           </View>
         </View>
+
+        <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "15%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            ठेकेदार  
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+
+        <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "10%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            गाँव 
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+
+        <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "25%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            मोबाइल नंबर 
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+
+        <View style={{display:"flex" , flexDirection:"row", marginTop:20}}>
+{Array.from({ length: 10 }, (_, index) => (
+<TouchableOpacity key={index} onPress={() => handleClick(index)}>
+<Text style={{ backgroundColor: colors[index], padding: 10 , borderWidth:0.7, borderColor:"#000"}}>
+{index + 1}
+</Text>
+</TouchableOpacity>
+))}
+</View>
     
       <TouchableOpacity
             style={styles.BhuktanBtn}
-            onPress={() => navigation.navigate("Payment", {bookingid: bookingid.job_type , id : id , item : item})}
+            onPress={() => navigation.navigate("Payment", {bookingid: job_type , id : id , item : item})}
             // onPress = {() => toggleViews()}
             >
             <Text style={[styles.loginText, { color: "#fff" }]}>
               भुगतान करें
             </Text>
           </TouchableOpacity>
-            </View>
 
       <View style={{ marginTop: "auto", padding: 5 }}>
         <TouchableOpacity
           style={{
-            backgroundColor: "#D9D9D9",
-            alignSelf: "center",
+              backgroundColor: "#D9D9D9",
+              alignSelf: "center",
             paddingHorizontal: 50,
             paddingVertical: 10,
             borderRadius: 5,
-          }}
+        }}
         >
           <Text style={{ textAlign: "center", color: "#fff" }}>रद्द करें </Text>
         </TouchableOpacity>
+            </View>
       </View>
     </SafeAreaView>
   );
 }
-export default Theke_MachineForm;
+export default Theke_MachineForm2;
 
 const styles = StyleSheet.create({
   container: {

@@ -3,7 +3,13 @@ import { View , Text , TouchableOpacity , StyleSheet, SafeAreaView , TextInput} 
 import Icon from "react-native-vector-icons/AntDesign";
 
 
-export default function Payment ({navigation}) {
+export default function Payment ({route,navigation}) {
+
+
+
+  const {  item, bookingid } = route.params;
+  console.log("payment page", item, bookingid);
+
     return(
         <>
         <SafeAreaView style={{backgroundColor:'#fff', flex:1 }}>
@@ -47,7 +53,19 @@ export default function Payment ({navigation}) {
                 </View>
  
                 <View style={{justifyContent:'center', alignItems:'center'}}>
-                <TouchableOpacity style={styles.BhuktanBtn} onPress={() => navigation.navigate("Payment")}>
+                <TouchableOpacity style={styles.BhuktanBtn} onPress={() => { 
+                    if (item.job_type === "individuals_sahayak") {
+                        navigation.navigate("Mybooking_Sahayak2", {
+                         
+                          item: item
+                        });
+                      } else if (item.job_type === "theke_pe_kam") {
+                        navigation.navigate("Theke_MachineForm2", {
+                        
+                          item: item
+                        });
+                      
+                    }}}>
                         <Text style={[styles.loginText, {color:"#fff"}]}>अभी भुगतान करें </Text>
                     </TouchableOpacity>
                     </View>

@@ -14,16 +14,28 @@ import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import { Picker } from "@react-native-picker/picker";
 
-export default function MyBook_SahayakForm({ navigation, route }) {
+export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
+  const [numbers, setNumber] = useState(0);
+ 
   const [show , setShow] = useState(true);
+  const [colors, setColors] = useState(Array(10).fill('white'));
+
+  const handleClick = (index) => {
+    const newColors = [...colors];
+    if (index === 0) newColors[index] = 'red';
+    else if (index === 4) newColors[index] = 'yellow';
+    else if (index === 9) newColors[index] = 'green';
+    setColors(newColors);
+    };
 
 
   const { id, item } = route.params;
-  console.log("fjd", item);
+  console.log("mybook", item);
 
   const acceptSahayak = async () => {
     let params = {
@@ -51,13 +63,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 //   acceptSahayak()
 // }, [])
 
-const [showFirstView, setShowFirstView] = useState(true);
-const [showSecondView, setShowSecondView] = useState(false);
+// phone number dropdown
+const number = [1, 2, 3, 4];
+// end
 
-const toggleViews = () => {
-  setShowFirstView(!showFirstView);
-  setShowSecondView(!showSecondView);
-};
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -108,18 +118,11 @@ const toggleViews = () => {
             </Text>
           </View>
 
-          <View style={styles.inputView}>
-            <TextInput
-              style={[styles.TextInput]}
-              placeholder="काम लिखें १५ शब्दों से कम,नंबर न लिखें "
-              placeholderTextColor={"#000"}
-            />
-          </View>
-
+        
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "flex-start",
+              justifyContent: "space-between",
               width: "100%",
             }}
           >
@@ -141,224 +144,20 @@ const toggleViews = () => {
                 {item?.land_type}
               </Text>
             </View>
-            <View></View>
+            <View style={[ styles.TaxView , 
+             styles.flex,
+                styles.justifyContentBetween,]}></View>
           </View>
 
-          <View style={[styles.flex, styles.justifyContentBetween]}>
-            <View
-              style={[
-                styles.TaxView,
-                styles.flex,
-                styles.justifyContentBetween,
-                { marginRight: 5 },
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="एक पुरुष का वेतन"
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.pay_amount_male}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.TaxView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="एक महिला का वेतन"
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginRight: 20, color: "#0099FF" }}>
-                ₹ {item?.pay_amount_female}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.flex}>
-            <View style={{ width: "50%" }}>
-              <Text></Text>
-            </View>
-            <View style={[styles.flex, { marginTop: 10 }]}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#0099FF",
-                  marginRight: 10,
-                  padding: 5,
-                }}
-              >
-                <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                  वेतन बदलें
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#44A347",
-                  paddingHorizontal: 10,
-                  padding: 5,
-                }}
-              >
-                <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                  Accept Thekha
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+         
+         
 
-          <View style={[styles.flex, styles.justifyContentBetween]}>
-            <View
-              style={[
-                styles.TaxView,
-                styles.flex,
-                styles.justifyContentBetween,
-                ,
-                { marginRight: 5 },
-              ]}
-            >
-          
-              <TextInput
-                style={styles.TextInput}
-                placeholder="दिनों की संख्या"
-                placeholderTextColor={"#000"}
-              
-              />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                {item?.num_days}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.BhumiView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="वेतन"
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.total_amount_sahayak}
-              </Text>
-            </View>
-          </View>
+         
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
         
-          {showFirstView && <View
-            style={[
-              styles.flex,
-              styles.justifyContentBetween,
-              { flexWrap: "wrap"}
-            ]}
-          >
-            {[...Array(parseInt(item?.count_female)).keys()].map((index) => (
-              <View
-                style={[
-                  styles.FemalecheckView,
-                  styles.flex,
-                  styles.justifyContentBetween,
-                  { paddingHorizontal: 5 },
-                ]}
-                key={item.id}
-              >
-                <TextInput
-                  style={styles.CheckTextInput}
-                  placeholder="महिला"
-                  placeholderTextColor={"#101010"}
-                  name={`Female${index + 1}`}
-                />
-                <View
-                  style={{
-                    height: 25,
-                    backgroundColor: item?.status == "Pending" ? "#44A347" : item?.status == "Accepted" ? "#0099FF" : "",
-                    marginLeft: 5,
-                  }}
-                >
-                
-                 
-                  <TouchableOpacity onPress={() => acceptSahayak(id)}>
-                   
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          marginTop: 5,
-                          color: "#fff",
-                          fontSize: 10,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {item?.status}
-                      </Text>
-                    
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-
-
-            {[...Array(parseInt(item?.count_male)).keys()].map((index) => (
-              <View
-                style={[
-                  styles.MaleCheckView,
-                  styles.flex,
-                  styles.justifyContentBetween,
-                  { paddingHorizontal: 5 },
-                ]}
-                key={index}
-              >
-                <TextInput
-                  style={styles.CheckTextInput}
-                  placeholder="पुरषो"
-                  placeholderTextColor={"#101010"}
-                  name={`Male${index + 1}`}
-                />
-                <View
-                  style={{
-                    height: 25,
-                    backgroundColor: item?.status == "Pending" ? "#44A347" : item?.status == "Accepted" ? "#0099FF" : "",
-                    marginLeft: 5,
-                  }}
-                >
-                <TouchableOpacity onPress={() => acceptSahayak()}>
-              <Text style={{
-                          textAlign: "center",
-                          marginTop: 5,
-                          color: "#fff",
-                          fontSize: 10,
-                          fontWeight: "600",
-                        }}>{item?.status}</Text>
-            </TouchableOpacity>
-                  {/* <TouchableOpacity style={{backgroundColor:'red'}} >
-                  {thekeperKam && <Text>{thekeperKam.job_type}</Text>}
-                  </TouchableOpacity> */}
-                </View>
-              </View>
-            ))}
-          </View>
-}
-{showSecondView && <View style={{display:"flex", flexDirection:"row", marginTop:10}}>
-  <View style={{borderWidth:1, borderColor:"black", borderRadius:5}}>
-            <Text>female/male</Text>
-            </View>
-            <View style={{borderWidth:1, borderColor:"black", borderRadius:5}}>
-              <Text>male</Text>
-            </View>
-            <View style={{borderWidth:1, borderColor:"black", borderRadius:5}}>
-            <Text>female/male</Text>
-            </View>
-            <View style={{borderWidth:1, borderColor:"black", borderRadius:5}}>
-              <Text>male</Text>
-            </View>
-          </View>
-}
 
           <View
             style={[
@@ -407,32 +206,191 @@ const toggleViews = () => {
                     fontWeight: "600",
                   }}
                 >
-                  चार सहायक स्वीकार करें
+                  बुक 
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
+          <View
+            style={[
+              styles.inputView,
+              {
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              },
+            ]}
+          >
+            <TextInput
+              style={styles.TextInput}
+              placeholder="सहायकों के मोबाइल नंबर "
+              placeholderTextColor={"#000"}
+              // onChangeText={(email) => setEmail(email)}
+              // defaultValue={email}
+              // value={email}
+            />
+            <View
+              style={{
+                height: 30,
+                // backgroundColor: "#44A347",
+                marginRight: 10,
+                marginTop: 8,
+              }}
+            >
+              <TouchableOpacity >
+              <View
+              style={[
+                styles.DoubleView,
+                styles.flex,
+                styles.justifyContentBetween,{marginHorizontal:4}
+              ]}
+            >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    paddingHorizontal: 10,
+                    color: "#0099FF",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  1-4 
+                </Text>
+                
+           
+           {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
+              {numbers ? numbers : ""}
+            </Text> */}
+              <View style={{ flexDirection: "row" }}>
+          
+                <Picker
+                  style={{ width: 20, paddingTop: 16 }}
+                  // ref={pickerRef}
+                  selectedValue={numbers}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setNumber(itemValue)
+                  }
+                >
+                  <Picker.Item label="1-4" value="1-4" enabled={false} />
+                  {number.map((item) => (
+                    <Picker.Item
+                      label={item.toString()}
+                      value={item}
+                      key={item}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "15%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            सहायक 
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+
+        <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "10%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            गाँव 
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+
+        <View style={[styles.inputView, { position: "relative" }]}>
+          <Text
+            style={{
+              position: "absolute",
+              top: -10,
+              left: 30,
+              width: "20%",
+              textAlign: "center",
+              backgroundColor: "#fff",
+            }}
+          >
+            मोबाइल नंबर 
+          </Text>
+          <TextInput
+            style={styles.TextInput}
+            placeholder=""
+            placeholderTextColor={"#848484"}
+            // onChangeText={(text) => setName(text, "name")}
+            // defaultValue={email}
+            // value={name}
+            //   error={input.name}
+            //   onFocus={() => handleError(null, "name")}
+          />
+          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+        </View>
+        
+        <View style={{display:"flex" , flexDirection:"row", marginTop:20}}>
+{Array.from({ length: 10 }, (_, index) => (
+<TouchableOpacity key={index} onPress={() => handleClick(index)}>
+<Text style={{ backgroundColor: colors[index], padding: 10 , borderWidth:0.7, borderColor:"#000"}}>
+{index + 1}
+</Text>
+</TouchableOpacity>
+))}
+</View>
           <TouchableOpacity
             style={styles.BhuktanBtn}
-            onPress={() => navigation.navigate("Payment",{
-              // id : id,
-              item : item,
-              // item : item.job_type
-
-            })}
+            onPress={() => navigation.navigate("Payment")}
             // onPress = {() => toggleViews()}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
-              भुगतान करें
+            काम शुरू करें 
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
             style={styles.loginBtn}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>रद्द करें</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ScrollView>
 
@@ -627,10 +585,10 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "42%",
-    height: 48,
-    marginTop: 10,
-    borderWidth: 1,
+    // width: "42%",
+    // height: 48,
+    marginTop:-10,
+    // borderWidth: 1,
   },
 
   FemalecheckView: {
