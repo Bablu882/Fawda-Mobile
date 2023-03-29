@@ -46,7 +46,7 @@ export default function MyBooking({ navigation, route }) {
   
   useEffect(() => {
     booking();
-  }, [booking, token]);
+  }, [0]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>

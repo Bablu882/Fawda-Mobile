@@ -39,6 +39,8 @@ import MachineBooking from "./src/MachineBooking";
 import MyBooking from "./src/MyBooking";
 import Theke_MachineForm from "./src/Theke_MachineForm";
 import MyBook_SahayakForm from "./src/MyBook_SahayakForm";
+import Theke_k_Kaam from "./src/Theke_k_Kaam";
+import MachineWork from "./src/MachineWork";
 
 
 
@@ -83,9 +85,11 @@ export default function App() {
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
-          {/* <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
+          <Stack.Screen name="MachineWork" component={MachineWork} />
+          {/* <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           
-          <Stack.Screen name="Profile" component={Profile} />
+         
           <Stack.Screen name="Verify" component={Verification} />
                              <Stack.Screen name="SahayakBooking" component={SahayakBooking} />
           <Stack.Screen name="Register" component={Register} />

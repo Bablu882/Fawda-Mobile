@@ -90,8 +90,8 @@ export default function Homepage({ navigation, route }) {
                           {moment(date).format("l")}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.bookingButton}>
-                        <Text style={styles.bookingButtonText}>{status}</Text>
+                      <TouchableOpacity style={styles.bookingButton} onPress={() => navigation.navigate('Theke_k_Kaam')}>
+                        <Text style={styles.bookingButtonText}>विवरण देखे </Text>
                       </TouchableOpacity>
                     </View>
                   ))}
