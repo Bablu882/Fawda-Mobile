@@ -8,9 +8,8 @@ import { selectIsLoggedIn, setToken } from '../slices/authSlice';
 import { useIsFocused } from '@react-navigation/native';
 // import SupportPage from "./SupportPage";
 
-export default function Login({ navigation,route }) {
-const {user} = route?.params??{}
-console.log('userr', user)
+export default function Login({ navigation }) {
+
   const [phone , setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [tokenn, setTokenn] = useState()
@@ -55,7 +54,7 @@ console.log('userr', user)
           Toast.show(JSON.stringify(data.otp) , Toast.LONG)
 
           // Toast.show('Login successfully.', Toast.SHORT);
-          navigation.replace("Verification")
+          navigation.replace("Verification", { user_type: data.user_type })
         }
         else{
           
@@ -95,6 +94,7 @@ console.log('userr', user)
             placeholder="फ़ोन नंबर लिखें"
             required={true}
             keyboardType="numeric"
+            maxLength={10}
             placeholderTextColor={"#000"}
             onChangeText={(phone) => setPhone(phone)}
             // defaultValue={email}

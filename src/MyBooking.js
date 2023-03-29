@@ -17,14 +17,13 @@ export default function MyBooking({ navigation, route }) {
   console.log("djdfjf", user);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const [currentUsers, setCurrentUsers] = useState([]);
+
   const [machineBooking, setMachineBooking] = useState([]);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
   const [sahaykBooking, setSahayakBooking] = useState([]);
 
   //=====api integration of MyBooking======//
-
   const booking = async () => {
     try {
       const response = await service.get("api/my_booking_details/", {
@@ -34,7 +33,6 @@ export default function MyBooking({ navigation, route }) {
         },
       });
       const data = response.data;
-      console.log("token", token?.access);
       setSahayakPending(data?.sahayak_pending_booking_details);
       setSahayakBooking(data?.sahayk_booking_details?.bookings);
       setMachineBooking(data?.machine_malik_booking_details);
@@ -44,26 +42,11 @@ export default function MyBooking({ navigation, route }) {
       console.log("Error:", error);
     }
   };
-  const getalljobs = async () => {
-    try {
-      const response = await service.get("/api/nearjob/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
-        },
-      });
-      const data = response.data;
-      console.log("token", token?.access);
-      // console.log("data:::", data);
-      setCurrentUsers(data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+
+  
   useEffect(() => {
     booking();
-    getalljobs();
-  }, [0]);
+  }, [booking, token]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -290,48 +273,7 @@ export default function MyBooking({ navigation, route }) {
                 </View>
               ))}
             </>
-            {currentUsers?.length > 0 &&
-            currentUsers.map((item, index)  => (
-           <View
-           style={{
-             display: "flex",
-             flexDirection: "row",
-             width: "100%",
-             justifyContent: "space-between",
-             marginTop: 50,
-           }}
-         >
-           <View style={{ marginLeft: 30 }}>
-             <Text style={{ fontWeight: "600", fontSize: 18 }}>
-              {item?.job_type}
-             </Text>
-             <Text style={{ color: "black" }}>   {moment(item.date).format("l")}</Text>
-           </View>
-           <View
-             style={{
-               width: "30%",
-               height: 33,
-               backgroundColor: "#44A347",
-               marginRight: 20,
-               marginTop: 10,
-             }}
-           >
-             <TouchableOpacity>
-               <Text
-                 style={{
-                   textAlign: "center",
-                   marginTop: 7,
-                   color: "#fff",
-                   fontSize: 15,
-                   fontWeight: "600",
-                 }}
-               >
-                {item.status}
-               </Text>
-             </TouchableOpacity>
-           </View>
-         </View>
-       ))}
+     
           <View
             style={{
               borderTopWidth: 0.7,

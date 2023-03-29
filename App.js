@@ -66,23 +66,23 @@ export default function App() {
           }}
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
-                    <Stack.Screen name="Login" component={Login} />
-                             <Stack.Screen name="Verification" component={Verification} /> 
-                             <Stack.Screen name="Register" component={Register} /> 
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Verification" component={Verification} /> 
+          <Stack.Screen name="Register" component={Register} /> 
 
-                             <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
-                             {/* <Stack.Screen name="SahayakRegisterForm" component={SahayakRegisterForm} />
-                             <Stack.Screen name="MachineMalik_Registration" component={MachineMachine_Registration} /> */}
-                             <Stack.Screen name="HomePage" component={BottomTab} />
-                             <Stack.Screen name="MyBooking" component={MyBooking} />
-                          
-                             <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
-                             <Stack.Screen name="Homethird" component={BottomTabMachine} />
-                             <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
-                             <Stack.Screen name="SahayakForm" component={SahayakForm} />
-                             <Stack.Screen name="MachineBooking" component={MachineBooking} />
-                             <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
-                             <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
+          <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
+          {/* <Stack.Screen name="SahayakRegisterForm" component={SahayakRegisterForm} />
+          <Stack.Screen name="MachineMalik_Registration" component={MachineMachine_Registration} /> */}
+          <Stack.Screen name="HomePage" component={BottomTab} />
+          <Stack.Screen name="MyBooking" component={MyBooking} />
+      
+          <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
+          <Stack.Screen name="Homethird" component={BottomTabMachine} />
+          <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
+          <Stack.Screen name="SahayakForm" component={SahayakForm} />
+          <Stack.Screen name="MachineBooking" component={MachineBooking} />
+          <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
+          <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           {/* <Stack.Screen name="Dashboard" component={Dashboard} />
           
           <Stack.Screen name="Profile" component={Profile} />
