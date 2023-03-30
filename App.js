@@ -45,6 +45,8 @@ import MachineWork from "./src/MachineWork";
 
 
 
+
+
 let persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -71,13 +73,9 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Verification" component={Verification} /> 
           <Stack.Screen name="Register" component={Register} /> 
-
           <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
-          {/* <Stack.Screen name="SahayakRegisterForm" component={SahayakRegisterForm} />
-          <Stack.Screen name="MachineMalik_Registration" component={MachineMachine_Registration} /> */}
           <Stack.Screen name="HomePage" component={BottomTab} />
           <Stack.Screen name="MyBooking" component={MyBooking} />
-      
           <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
           <Stack.Screen name="Homethird" component={BottomTabMachine} />
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
@@ -87,15 +85,6 @@ export default function App() {
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           <Stack.Screen name="MachineWork" component={MachineWork} />
-          {/* <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
-          
-         
-          <Stack.Screen name="Verify" component={Verification} />
-                             <Stack.Screen name="SahayakBooking" component={SahayakBooking} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Home" component={BottomTab} />
-         
-          <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> */}
         </Stack.Navigator>
       </PersistGate>
     </Provider>

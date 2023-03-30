@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -13,41 +13,55 @@ import {
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import { selectToken } from "../slices/authSlice";
+import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
+
+const CustomComponent = ({ label, value }) => {
+  return (
+    <View
+      style={[
+        styles.inputView,
+        styles.inputbox,
+        {
+          flexDirection: "row",
+          justifyContent: "space-around",
+          paddingHorizontal: 10,
+        },
+      ]}
+    >
+      <TextInput
+        style={[styles.TextInput, { width: "100%" }]}
+        placeholder={label}
+        placeholderTextColor={"#000"}
+      />
+      <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
+    </View>
+  );
+};
 
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const usertype = useSelector(selectUserType);
+  console.log("usrrjfjf", usertype);
   const [checked, setChecked] = React.useState("first");
-  const [thekeperKam, setThekeperKam] = useState({});
-  const bookingid = route?.params?.item;
-  console.log("bookingid", bookingid);
+  const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
+  const [amount, setAmount] = useState({});
+  const [edit, setEdit] = useState(false);
+  const [editable, setEditable] = useState(false);
 
-  const { id, item } = route.params;
-  console.log("fjd", item);
-
-  const fetchBookings = async () => {
-    try {
-      const response = await service.get("api/my_booking_details/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
-        },
-      });
-      const data = response.data;
-      setThekeperKam(bookingid.data)
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
+  const textInputRef = useRef(null);
+  const handleClick = () => {
+    textInputRef.current.focus();
   };
+  const { id, item } = route.params;
 
+  console.log("fnfjff", item);
   const accptThekha = async () => {
     let params = {
-      job_id: bookingid.id,
+      job_id: item?.id,
     };
-
+    console.log("jjff", params);
     try {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
@@ -56,15 +70,41 @@ function Theke_MachineForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setThekeperKam(data.data);
+      console.log("aaaa", data);
+      setThekeperKam(data?.data);
+      console.log("rrrr", thekeperKam);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const Edit = async () => {
+    let params =
+      // {
+      // job_id:"95",
+      // amount:"2221"
+      // }
+      {
+        job_id: item?.id,
+        amount: amount,
+      };
+    console.log(params, "params");
+
+    try {
+      const response = await service.post("/api/edit_thekepekam/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
-  useEffect(() => {
-    fetchBookings();
-  }, [0]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -74,7 +114,7 @@ function Theke_MachineForm({ navigation, route }) {
       </View>
       <View style={{ alignItems: "center", flex: 1 }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
-          {bookingid?.job_type}
+          {item?.job_type}
         </Text>
         <View
           style={[
@@ -86,7 +126,7 @@ function Theke_MachineForm({ navigation, route }) {
             },
           ]}
         >
-          <Text style={[styles.TextInput]}>{bookingid.description}</Text>
+          <Text style={[styles.TextInput]}>{item.description}</Text>
           <Image
             source={require("../assets/image/edit.png")}
             style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -96,11 +136,9 @@ function Theke_MachineForm({ navigation, route }) {
         <View
           style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
         >
+          <Text style={styles.TextInput}>{moment(item?.date).format("l")}</Text>
           <Text style={styles.TextInput}>
-            {moment(bookingid?.date).format("l")}
-          </Text>
-          <Text style={styles.TextInput}>
-            {moment(bookingid?.time).format("HH:mm")}
+            {moment(item?.time).format("HH:mm")}
           </Text>
         </View>
 
@@ -112,14 +150,15 @@ function Theke_MachineForm({ navigation, route }) {
           >
             <TextInput
               style={styles.TextInput}
-              placeholder={bookingid?.land_area}
+              placeholder={item?.land_area}
               placeholderTextColor={"#000"}
             />
             <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              {bookingid?.land_type}
+              {item?.land_type}
             </Text>
           </View>
-          <View
+
+          {/* <View
             style={[
               styles.BhumiView,
               styles.flex,
@@ -132,114 +171,207 @@ function Theke_MachineForm({ navigation, route }) {
               placeholderTextColor={"#000"}
             />
             <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              ₹ {bookingid?.total_amount_theka}
+              ₹ {item?.total_amount_theka}
             </Text>
-          </View>
-        </View>
-
-        <View style={styles.flex}>
-          <View style={{ width: "50%" }}>
-            <Text></Text>
-          </View>
-          <View style={[styles.flex, { marginTop: 10 }]}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#0099FF",
-                marginRight: 10,
-                padding: 5,
-              }}
-            >
-              <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                वेतन बदलें
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => accptThekha()}
-              style={{
-                backgroundColor: "#44A347",
-                paddingHorizontal: 10,
-                paddingTop: 4,
-              }}
-            >
-              <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                Accept Thekha
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {/* <Text></Text>
-   <View>
-   <TouchableOpacity>
-      <Text style={{ textAlign: "right" }}>1</Text>
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <Text>2</Text>
-    </TouchableOpacity>
-    </View> */}
-        </View>
-
-        <View
-          style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
-        >
-          <TextInput
-            style={styles.TextInput}
-            placeholder="काम की स्थिति"
-            placeholderTextColor={"#000"}
-          />
+          </View> */}
           <View
-            style={{
-              width: "30%",
-              height: 30,
-              backgroundColor: "#44A347",
-              marginRight: 10,
-              marginTop: 8,
-            }}
+            style={[
+              styles.BhumiView,
+              styles.flex,
+              styles.justifyContentBetween,
+            ]}
           >
-            {/* <TouchableOpacity>
-              {thekeperKam && (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {thekeperKam?.status}
-                </Text>
-              )}
-            </TouchableOpacity> */}
-             <TouchableOpacity>
-              
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {bookingid?.status}
-                </Text>
-              
-            </TouchableOpacity>
+            <TextInput
+              editable={edit}
+              ref={textInputRef}
+              onChangeText={(amount) => setAmount(amount)}
+              value={amount}
+              defaultValue={item?.total_amount_theka}
+            />
           </View>
         </View>
-    
-      <TouchableOpacity
-            style={styles.BhuktanBtn}
-            onPress={() => navigation.navigate("Payment", {bookingid: bookingid.job_type , id : id , item : item})}
-            // onPress = {() => toggleViews()}
+        {/* {usertype === "Grahak" && (
+           
+          )} */}
+        {usertype && usertype === "Grahak" && (
+          <>
+            <View
+              style={[
+                styles.flex,
+                { marginTop: 10, justifyContent: "space-between" },
+              ]}
             >
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              भुगतान करें
-            </Text>
-          </TouchableOpacity>
+              <View style={{ width: "40%" }}></View>
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                onPress={() => {handleClick(); setEdit(true); console.log('edit:::::',edit)}}
+                  style={{
+                    backgroundColor: "#0099FF",
+                    marginRight: 10,
+                    padding: 5,
+                  }}
+                >
+                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                    वेतन बदलें
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => Edit()}
+                  style={{
+                    backgroundColor: "#44A347",
+                    paddingHorizontal: 10,
+                    paddingTop: 4,
+                  }}
+                >
+                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                    Accept Thekha
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            >
+              <TextInput
+                style={styles.TextInput}
+                placeholder="काम की स्थिति"
+                placeholderTextColor={"#000"}
+              />
+              <View
+                style={{
+                  width: "30%",
+                  height: 30,
+                  backgroundColor: "#44A347",
+                  marginRight: 10,
+                  marginTop: 8,
+                }}
+              >
+                {console.log("thekeperKam?.status", thekeperKam?.status)}
+                <TouchableOpacity>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      color: "#fff",
+                      fontSize: 15,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Pending
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() =>
+                navigation.navigate("Payment", {
+                  item: item.job_type,
+                  id: id,
+                  item: item,
+                })
+              }
+              // onPress = {() => toggleViews()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                भुगतान करें
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+        <View style={styles.flex}>
+          <View style={{ width: "50%" }}></View>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <>
+            {usertype &&
+              (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                <>
+                  <CustomComponent
+                    label="किसान से वेतन"
+                    value={item?.salary_from_farmer}
+                  />
+                  <CustomComponent
+                    label="फावड़ा की फीस"
+                    value={item?.fawda_fee}
+                  />
+                  <CustomComponent
+                    label="आपका भुगतान"
+                    value={item?.total_amount_theka}
+                  />
+                  <View
+                    style={[
+                      styles.inputView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                    ]}
+                  >
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholder="काम की स्थिति"
+                      placeholderTextColor={"#000"}
+                    />
+                    <View
+                      style={{
+                        width: "30%",
+                        height: 30,
+                        backgroundColor: "#44A347",
+                        marginRight: 10,
+                        marginTop: 8,
+                      }}
+                    >
+                      {console.log("thekeperKam?.status", thekeperKam?.status)}
+                      <TouchableOpacity>
+                        {thekeperKam && (
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              marginTop: 5,
+                              color: "#fff",
+                              fontSize: 15,
+                              fontWeight: "600",
+                            }}
+                          >
+                            {thekeperKam?.status}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </>
+              )}
+          </>
+        </View>
+
+        {usertype &&
+          (usertype === "Sahayak" || usertype === "MachineMalik") && (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => accptThekha()}
+              // onPress = {() => toggleViews()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                काम स्वीकार करें
+              </Text>
+            </TouchableOpacity>
+          )}
+      </View>
 
       <View style={{ marginTop: "auto", padding: 5 }}>
         <TouchableOpacity
+          onPress={() => navigation.goBack()}
           style={{
             backgroundColor: "#D9D9D9",
             alignSelf: "center",
@@ -410,5 +542,10 @@ const styles = StyleSheet.create({
   },
   TextWhite: {
     color: "#fff",
+  },
+  salaryAmount: {
+    marginTop: 13,
+    marginRight: 8,
+    color: "#0099FF",
   },
 });

@@ -1,430 +1,303 @@
 import React from "react";
-import { View, Text ,StyleSheet , SafeAreaView, TouchableOpacity, TextInput, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  ScrollView,
+} from "react-native";
+
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
+import moment from "moment";
 
 
 
-export default function Theke_k_Kaam ({navigation}) {
-    return(
-        <>
-        <SafeAreaView style={{backgroundColor:'#fff', flex:1 }}>
-                <View style={{ padding: 20, marginTop: 25 }}>
-                    <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
-                        <Icon name="arrowleft" size={25} />
-                    </TouchableOpacity>
-                </View>
-            <View style={{ justifyContent:"center", alignItems:"center"}}>
+const acceptThekha = async () => {
+  let params = {
+    job_id: bookingid.id,
+  };
 
-                <View style={{ justifyContent: "center" }}>
-                    <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>सहायक का काम </Text>
-                </View>
+  try {
+    const response = await service.post(
+      "/api/accept_theka/",
+      params,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      }
+    );
+    const data = response?.data;
+    setThekeperKam(data.data);
+    console.log("fjfjf", data);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+};
 
-                
-      </View>
 
-      <ScrollView>
-      <View style={{ justifyContent: "center", alignItems: "center" }} >
-      <View style={[styles.inputView,{position:'relative', height:80}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"30%", textAlign:"center", backgroundColor:'#fff'}}>काम का विवरण</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-                     
 
-                    <View style={[styles.inputView,{position:'relative', height:40}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>गाँव</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", height:38}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={[styles.TextInput]}
-                        placeholder="तारीख़   dd/mm/yyyy"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <TextInput
-                        style={[styles.TextInput]}
-                        placeholder="समय    2:00 pm"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    {/* <Image source={require('../assets/image/calendar.png')} style={{width:20, height:20 , marginTop:10 , right:10}} />  */}
-                    </View>
-                    
-                    <View style={[styles.inputView,{position:'relative', display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>भूमि क्षेत्र </Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>8बीघा</Text>
-                    </View>
 
-                    <View style={{display:"flex", flexDirection:"row",width:"90%" , justifyContent:"space-evenly"}}>
-                    <View style={[styles.TaxView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", width:"45%"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"18%", textAlign:"center", backgroundColor:'#fff'}}>राज्य</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="एक पुरुष का वेतन"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:13 , marginRight:8, color:"#0099FF"}}>₹ 0.00</Text>
-                    </View>
-                    <View style={[styles.BhumiView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", width:"45%"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>जिला </Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="एक महिला का वेतन"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:13 , marginRight:20, color:"#0099FF"}}>₹ 0.00</Text>
-                    </View>
-                    </View>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="दिनों की संख्या"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>2</Text>
-                    </View>
-                    
-                    <View style={{display:"flex", flexDirection:"row",width:"100%" , justifyContent:"center"}}>
-                    <View style={[styles.MaleCheckView, {display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-evenly",}]}>
-                    <TextInput
-                        style={styles.CheckTextInput}
-                        placeholder="पुरषो"
-                        placeholderTextColor={"#101010"}
-                        name="Male"
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={Male}
-                    />
-                     <View
-              style={{
-                width: "35%",
-                height: 25,
-                backgroundColor: "#0099FF",
-                marginLeft: 5,
-                marginTop:15,
-              }}
-            >
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  स्वीकार
-                </Text>
-              </TouchableOpacity>
+
+export default function Theke_k_Kaam({ navigation, route }) {
+  const thekejobs = route?.params?.item;
+  console.log("params:::::", thekejobs, thekejobs.datetime);
+  return (
+    <>
+      <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+        <View style={{ padding: 20, marginTop: 25 }}>
+          <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+            <Icon name="arrowleft" size={25} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ justifyContent: "center" }}>
+          <Text
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+          >
+            ठेके का काम
+          </Text>
+        </View>
+
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+          <View style={styles.container}>
+            <View style={[styles.inputView, { height: 80 }]}>
+              <Text style={styles.label}>काम का विवरण</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholderTextColor="#848484"
+                placeholder={thekejobs?.description}
+              />
             </View>
-                    </View>
-
-                    <View style={[styles.FemalecheckView, {marginTop:10, width:"27%", borderRadius:0, display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-evenly",}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>लिंग:</Text> */}
-                    <TextInput
-                        style={styles.CheckTextInput}
-                        placeholder="पुरषो"
-                        placeholderTextColor={"#101010"}
-                        name="Female"
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={Female} 
-                    />
-                    <View
-              style={{
-                width: "35%",
-                height: 25,
-                backgroundColor: "#44A347",
-                marginLeft: 5,
-                marginTop:15,
-              }}
-            >
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  पेंडिंग
-                </Text>
-              </TouchableOpacity>
+            <View style={[styles.inputView, { height: 40 }]}>
+              <Text style={styles.label}>गाँव</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholderTextColor="#848484"
+                placeholder={thekejobs?.village}
+              />
             </View>
-                    </View>
 
-                    <View style={[styles.FemalecheckView, , {
+            <View
+              style={[
+                styles.inputView,
+              {flexDirection:'row', justifyContent:'space-between', alignItems:'center'}
+              ]}
+            >
+              <Text style={styles.TextInput}>
+                {moment(thekejobs?.date).format("l")}
+              </Text>
+              <Text style={styles.TextInput}>
+                {moment(thekejobs?.time).format("HH:mm")}
+              </Text>
+            </View>
+            <View style={[styles.inputView, styles.inputbox]}>
+              <Text style={styles.label}>भूमि क्षेत्र</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholderTextColor="#848484"
+                placeholder=""
+              />
+              <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
+               {thekejobs?.land_area}{thekejobs?.land_type}
+              </Text>
+            </View>
+
+            <View
+              style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-evenly",
-              }]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>लिंग:</Text> */}
-                    <TextInput
-                        style={styles.CheckTextInput}
-                        placeholder="महिला"
-                        placeholderTextColor={"#101010"}
-                        name="Female"
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={Female} 
-                    />
-                    <View
-              style={{
-                width: "38%",
-                height: 25,
-                backgroundColor: "#0099FF",
-                marginLeft: 5,
-                marginTop:15,
               }}
-            >
-              <TouchableOpacity>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  स्वीकार
-                </Text>
-              </TouchableOpacity>
+            ></View>
+
+            <View style={[styles.inputView, styles.inputbox]}>
+              <TextInput
+                style={styles.TextInput}
+                placeholder="किसान से वेतन"
+                placeholderTextColor={"#000"}
+              />
+              <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
+                2
+              </Text>
             </View>
-                    </View>
-                    </View>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", height:35}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="दिनों की संख्या"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:5 , right:10, color:"#0070C0"}}>2</Text>
-                    </View>
+            <View style={[styles.inputView, styles.inputbox]}>
+              <TextInput
+                style={styles.TextInput}
+                placeholder="फावड़ा की फीस"
+                placeholderTextColor={"#000"}
+              />
+              <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
+             {thekejobs?.fawda_fee}
+              </Text>
+            </View>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", height:35}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="दिनों की संख्या"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:5 , right:10, color:"#0070C0"}}>2</Text>
-                    </View>
+            <View style={[styles.inputView, styles.inputbox]}>
+              <TextInput
+                style={styles.TextInput}
+                placeholder="आपका भुगतान"
+                placeholderTextColor={"#000"}
+              />
+              <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
+             {thekejobs?.total_amount_theka}
+              </Text>
+            </View>
 
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", height:35}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="दिनों की संख्या"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:5 , right:10, color:"#0070C0"}}>2</Text>
-                    </View>
-
-                    <TouchableOpacity
-         onPress={() => navigation.navigate("MeraKaam")}
-        style={styles.loginBtn}>
-        <Text style={[styles.loginText, {color:"#fff"}]}>बुकिंग  करें</Text>
-      </TouchableOpacity>
-                </View>
-                </ScrollView>
-
-                </SafeAreaView>
-        </>
-    )
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MeraKaam")}
+              style={styles.loginBtn}
+            >
+              <Text style={[styles.loginText, { color: "#fff", lineHeight:40 }]}>
+                बुकिंग करें
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
-    OptionButton: {
-        // flex:1,
-      flexDirection:"row",
-      width:'100%',
-      justifyContent:"space-evenly",
-      margin:20,
-    //   padding:20
-    },
+  container: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  OptionButton: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-evenly",
+    margin: 20,
+  },
 
-    sahayak:
-    {
-        width: "40%",
-        // flexDirection:"column",
-        // borderRadius: 7,
-        color:"#505050",
-        height: 50,
-        alignItems: "center",
-      //   justifyContent:"",
-      justifyContent:"center",
-        marginTop: 30,
-        // borderWidth:1,
-        borderRadius:10,
-        // borderColor:"#505050",
-        backgroundColor: "#44A347",
-    },
+  sahayak: {
+    width: "40%",
+    color: "#505050",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 30,
+    borderRadius: 10,
+    backgroundColor: "#44A347",
+  },
 
-    machine: {
-        width: "40%",
-        flexDirection:"row",
-        // borderRadius: 7,
-        color:"#505050",
-        height: 50,
-        alignItems: "center",
-      //   justifyContent:"",
-      justifyContent:"center",
-        marginTop: 30,
-        borderWidth:1,
-        borderRadius:10,
-        borderColor:"#505050"
-        // backgroundColor: "#44A347",
-    },
+  machine: {
+    width: "40%",
+    flexDirection: "row",
+    color: "#505050",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 30,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: "#505050",
+  },
 
-    loginText: {
-        color: "#000",
-        fontSize:16,
-      //   flexDirection:"column",
-      },
+  loginText: {
+    color: "#000",
+    fontSize: 16,
+  },
 
-      MaleCheckView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        borderBottomRightRadius: 0,
-        borderTopRightRadius:0,
-        width: "30%",
-        height: 55,
-        marginTop: 10,
-        borderWidth: 1, 
-    },
+  MaleCheckView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    borderBottomRightRadius: 0,
+    borderTopRightRadius: 0,
+    width: "30%",
+    height: 55,
+    marginTop: 10,
+    borderWidth: 1,
+  },
 
+  loginBtn: {
+    width: "100%",
+    borderRadius: 7,
+    height: 40,
+   
+    alignItems: "center",
+    textAlign: "center",
+    marginTop: 20,
+    backgroundColor: "#0099FF",
+  },
 
-      loginBtn:
-      {
-        width: "80%",
-        borderRadius: 7,
-        height: 40,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
-        backgroundColor: "#0099FF",
-      },
-  
-  
-      VerifyText: {
-          color:"#fff",
-          fontWeight:"600",
-          fontSize:18
-      },
+  VerifyText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 18,
+  },
 
-      inputView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "80%",
-        height: 48,
-        marginTop: 20,
-        borderWidth: 1
-    },
+  inputView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "100%",
+    height: 50,
+    marginTop: 20,
+    borderWidth: 1,
+  },
 
-    TextInput: {
-        // height: 50,
-        padding: 10,
-        lineHeight:50,
-       // fontFamily: "Poppin-Light"
-    },
+  TextInput: {
+    // height: 50,
+    paddingHorizontal: 10,
+   
+    // fontFamily: "Poppin-Light"
+  },
 
-    CheckTextInput: {
-    textAlign:"center",
-    marginTop:10
-    },
+  CheckTextInput: {
+    textAlign: "center",
+    marginTop: 10,
+  },
 
-    TaxView : {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "35%",
-        // height: 100,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  TaxView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "35%",
+    // height: 100,
+    marginTop: 20,
+    borderWidth: 1,
+  },
 
-    BhumiView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 0,
-        // borderTopRightRadius:0,
-        width: "35%",
-        height: 48,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  BhumiView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 0,
+    // borderTopRightRadius:0,
+    width: "35%",
+    height: 48,
+    marginTop: 20,
+    borderWidth: 1,
+  },
 
-    TimeView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "35%",
-        // height: 100,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  TimeView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "35%",
+    // height: 100,
+    marginTop: 20,
+    borderWidth: 1,
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 30,
 
-    
-
-})
+    textAlign: "center",
+    backgroundColor: "#fff",
+  },
+  inputbox: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 38,
+  },
+});

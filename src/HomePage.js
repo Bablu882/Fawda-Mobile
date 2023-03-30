@@ -37,8 +37,7 @@ export default function Homepage({ navigation, route }) {
         },
       });
       const data = response.data;
-      console.log("token", token?.access);
-      // console.log("data:::", data);
+   console.log("data:::", data);
       setCurrentUsers(data);
     } catch (error) {
       console.log("Error:", error);
@@ -82,15 +81,34 @@ export default function Homepage({ navigation, route }) {
               />
               {currentUsers?.length > 0 && (
                 <>
-                  {currentUsers.map(({ job_type, date, status }, index) => (
+                  {currentUsers.map((item, index) => (
                     <View key={index} style={styles.booking}>
                       <View style={styles.bookingLeft}>
-                        <Text style={styles.bookingTitle}>{job_type}</Text>
+                        <Text style={styles.bookingTitle}>{item.job_type}</Text>
                         <Text style={{ color: "black" }}>
-                          {moment(date).format("l")}
+                          {moment(item.date).format("l")}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.bookingButton} onPress={() => navigation.navigate('Theke_k_Kaam')}>
+                      <TouchableOpacity style={styles.bookingButton} onPress={() => {{
+                        if (
+                          item.job_type === "individuals_sahayak" 
+                        ) {
+                          navigation.navigate("MyBook_SahayakForm", {
+                            id: item.id,
+                            item,
+                            usertype
+                          });
+                        } else if (
+                          item.job_type === "theke_pe_kam"
+                        
+                        ) {
+                          navigation.navigate("Theke_MachineForm", {
+                            id: item.id,
+                            item,
+                            usertype
+                          });
+                        }
+                      }}}>
                         <Text style={styles.bookingButtonText}>विवरण देखे </Text>
                       </TouchableOpacity>
                     </View>

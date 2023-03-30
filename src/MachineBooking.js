@@ -29,14 +29,16 @@ import {
 } from "../slices/SahayakBookingSlice";
 export default function MachineBooking({ navigation }) {
   const token = useSelector(selectToken);
-  const [bhumiValue, setBhumiValue] = useState();
-  const [buayiValue, setBuayiValue] = useState();
-  const [katayiValue, setKatayiValue] = useState();
+  const [selectedWorkType, setSelectedWorkType] = useState("");
+  const [workType, setWorkType] = useState([]);
+  const [selectedMachines, setSelectedMachines] = useState("");
+  const [machiness, setMachiness] = useState([]);
+  const [landType, setLandTypes] = useState("");
   const dispatch = useDispatch();
   const [anyeValue, setAnyeValue] = useState();
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
-  const [landTypes, setLandTypes] = useState(null);
+  
   const [landArea, setLandAreas] = useState("");
   const [time, setTimes] = useState("");
   const [selectedDates, setSelectedDates] = useState("");
@@ -44,8 +46,7 @@ export default function MachineBooking({ navigation }) {
   const [totalAmount, setTotalAmounts] = useState("");
   const [mode, setMode] = useState("date");
   const [selectedItem, setSelectedItem] = useState("");
-  const [landPreparation, setLandPreparation] = useState([]);
-  const [haevesting, setHaevesting] = useState([]);
+
   const [other, setOther] = useState("");
   const [sowing, setSowing] = useState([]);
   const pickerRef = useRef();
@@ -58,14 +59,11 @@ export default function MachineBooking({ navigation }) {
     pickerRef.current.blur();
   }
 
-
-
   const onSubmit = (data) => {
     console.log(data, "data");
   };
   const onChange = (event, selectedDate) => {
     setDefaultDate(selectedDate);
-
 
     const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
     // const currentTime = moment(selectedDate).format("H:mm");
@@ -76,27 +74,12 @@ export default function MachineBooking({ navigation }) {
     // console.log(currentTime);
     setDate(currentDate);
     setShowDate(showDate);
-    console.log('fkdfk',showDate)
-    
+    console.log("fkdfk", showDate);
   };
   const onChanges = (event, selectedDate) => {
-   // alert(selectedDate)
+    // alert(selectedDate)
     setDate(selectedDate);
     // console.log("isTimeSelected", selectedDate);
-
-    // const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
-    // // const currentTime = moment(selectedDate).format("H:mm");
-    // const showDate = moment(selectedDate).format("YYYY-MM-DD");
-    // const showTime = moment(selectedDate).format("H:mm");
-
-    // // console.log(currentDate);
-    // // console.log(currentTime);
-    // setDate(currentDate);
-    // setShowDate(showDate);
-    // if (isTimeSelected == true) {
-    //   console.log("ShowTime", showTime);
-    //   setShowTime(showTime);
-    // }
   };
 
   const showMode = (currentMode) => {
@@ -172,20 +155,13 @@ export default function MachineBooking({ navigation }) {
     setTotalAmounts(value);
     dispatch(setTotalAmount(value));
   };
-  const handleharvesting = (value) => {
-    setKatayiValue(value);
-    dispatch(setHavestingArea(value));
-  };
-  const handlesowing = (value) => {
-    setBuayiValue(value);
-    dispatch(setShowingArea(value));
-  };
+
   const handlelandprepration = (value) => {
     setBhumiValue(value);
     dispatch(setlandprepration(value));
   };
 
-  const landtypess = [
+  const landtypes = [
     {
       id: 0,
       name: "Killa",
@@ -196,18 +172,35 @@ export default function MachineBooking({ navigation }) {
     },
   ];
 
-  const machinaryBooking = () => {
+  const machinaryBooking = (val) => {
+    let params = {
+      work_type: val,
+    };
+    console.log("params", params);
     service
-      .get("/api/machines/", {
+      .post("/api/machine_detail/", params, {
         headers: {
           "Content-Type": "application/json",
         },
       })
       .then((res) => {
-        let data = res?.data;
-        setLandPreparation(data?.landpreparation);
-        setHaevesting(data?.haevesting);
-        setSowing(data?.sowing);
+        setMachiness(res?.data);
+        // console.log("kkk====>", machiness.map((item) => item));
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
+  };
+  const workTypes = () => {
+    service
+      .get("api/get_worktype/", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        setWorkType(res.data);
+        console.log("data====>", res.data);
       })
       .catch((error) => {
         console.log("Error:", error);
@@ -215,28 +208,27 @@ export default function MachineBooking({ navigation }) {
   };
   const handleDateChange = (value) => {
     // alert(value);
-    console.log('dddd', value);
+    console.log("dddd", value);
     // setDateState(value);
     // dispatch(setDate(value));
   };
 
   const Booking = async () => {
-    const datetime = moment(showDate).format("YYYY-MM-DD") + " " + moment(time).format("HH:mm:ss") + ".000000";
+    const datetime =
+      moment(showDate).format("YYYY-MM-DD") +
+      " " +
+      moment(time).format("HH:mm:ss") +
+      ".000000";
     let params = {
       datetime: datetime,
-      // datetime: "2022-03-07T01:30:00",
-      // landpreparation: bhumiValue,
-      // harvesting: katayiValue,
-      // sowing: buayiValue,
-      work_type:"Harvesting",
-      machine:"machine22",
+      work_type: selectedWorkType,
+      machine: selectedMachines,
       others: other,
-      land_type: "Killa",
+      land_type: landType,
       land_area: landArea,
       total_amount_machine: totalAmount,
     };
-    //  console.log('bookingparams', JSON.stringify(params))
-    // return;
+
     service
       .post("/api/post_machine/", params, {
         headers: {
@@ -258,7 +250,10 @@ export default function MachineBooking({ navigation }) {
   };
 
   useEffect(() => {
-    machinaryBooking();
+    if (selectedWorkType) {
+      machinaryBooking(selectedWorkType);
+    }
+    workTypes();
   }, []);
 
   return (
@@ -287,30 +282,65 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            <Text style={{ color: bhumiValue ? "#000" : "#ccc", left: 5 }}>
-              {bhumiValue ? bhumiValue : "-भूमि तैयार करना-"}
+            <Text
+              style={{ color: selectedWorkType ? "#000" : "#ccc", left: 5 }}
+            >
+              {selectedWorkType ? selectedWorkType : "-भूमि तैयार करना-"}
             </Text>
             <Picker
-              ref={pickerRef}
               style={{ width: 80 }}
-              selectedValue={bhumiValue}
+              selectedValue={selectedWorkType}
               onValueChange={(itemValue, itemIndex) => {
-                handlelandprepration(itemValue);
+                setSelectedWorkType(itemValue);
                 console.log(itemValue);
+                machinaryBooking(itemValue);
               }}
             >
               <Picker.Item label="" value="" enabled={false} />
-              {landPreparation?.map((item, index) => (
+              {workType.map((item, index) => (
                 <Picker.Item
                   label={item.name}
                   value={item.name}
-                  key={item.id}
+                  key={item.id.toString()}
+                />
+              ))}
+            </Picker>
+          </View>
+          <View
+            style={[
+              styles.dropdownGender,
+              {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Text
+              style={{ color: selectedMachines ? "#000" : "#ccc", left: 5 }}
+            >
+              {selectedMachines ? selectedMachines : "-Select Machine-"}
+            </Text>
+            <Picker
+              style={{ width: 40 }}
+              selectedValue={selectedMachines}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedMachines(itemValue)
+              }
+            >
+              <Picker.Item label="-Select Machine-" value="" />
+
+              {machiness.map((item) => (
+                <Picker.Item
+                  label={item.machine}
+                  value={item.machine}
+                  key={item.id.toString()}
                 />
               ))}
             </Picker>
           </View>
 
-          <View
+          {/* <View
             style={[
               styles.dropdownGender,
               {
@@ -343,9 +373,9 @@ export default function MachineBooking({ navigation }) {
                 />
               ))}
             </Picker>
-          </View>
+          </View>  */}
 
-          <View
+          {/* <View
             style={[
               styles.dropdownGender,
               {
@@ -380,7 +410,7 @@ export default function MachineBooking({ navigation }) {
                 />
               ))}
             </Picker>
-          </View>
+          </View> */}
 
           <View style={styles.dropdownGender}>
             <TextInput
@@ -407,33 +437,27 @@ export default function MachineBooking({ navigation }) {
               onPress={showDatepicker}
               title={showDate ? showDate : "Select Date"}
             >
-              <Text style={{color:showDate?'#000':'#ccc'}}>{showDate ? showDate : "Select Date"}</Text>
-              {console.log('jfjdj',showDate)}
+              <Text style={{ color: showDate ? "#000" : "#ccc" }}>
+                {showDate ? showDate : "Select Date"}
+              </Text>
+              {console.log("jfjdj", showDate)}
             </TouchableOpacity>
 
-           
             <TextInput
               value={selectedDates}
-          
               editable={false}
               onChangeText={(date) => {
-              
-                onChange(selectedDates)
+                onChange(selectedDates);
               }}
-          
             />
-               
+
             <TouchableOpacity onPress={showDatepicker}>
               <Image
                 source={require("../assets/image/calendar.png")}
-                style={{ width: 20, height: 20, right: 10 , marginTop:10}}
+                style={{ width: 20, height: 20, right: 10, marginTop: 10 }}
               />
             </TouchableOpacity>
-  
           </View>
-
-
-        
 
           <View
             style={[
@@ -499,26 +523,25 @@ export default function MachineBooking({ navigation }) {
               ]}
             >
               {/* <Text style={{ paddingLeft: 10 }}>किल्ला/बीघा </Text> */}
-              <Text style={{ color: landTypes ? "#000" : "#ccc", left: 5 }}>
-                {landTypes ? landTypes : "किल्ला/बीघा"}
-              </Text>
+              <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
+              {landType ? landType : "किल्ला/बीघा"}
+            </Text>
 
-              <Picker
-                style={{ width: 20 }}
-                ref={pickerRef}
-                selectedValue={landTypes}
-                onValueChange={(itemValue, itemIndex) =>
-                  setLandTypes(itemValue)
-                }
-              >
-                {landtypess.map((item) => (
-                  <Picker.Item
-                    label={item.name}
-                    value={item.name}
-                    key={item.id}
-                  />
-                ))}
-              </Picker>
+            <Picker
+              style={{ width: 20 }}
+              ref={pickerRef}
+              selectedValue={landType}
+              onValueChange={(itemValue, itemIndex) => setLandTypes(itemValue)}
+            >
+              <Picker.Item label="किल्ला/बीघा" value="" />
+              {landtypes.map((item) => (
+                <Picker.Item
+                  label={item.name}
+                  value={item.name}
+                  key={item.id}
+                />
+              ))}
+            </Picker>
             </View>
           </View>
           {/* <View
@@ -541,7 +564,7 @@ export default function MachineBooking({ navigation }) {
             />
           </View> */}
 
-<View
+          <View
             style={[
               styles.inputView,
               {
@@ -551,22 +574,18 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-             <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
-               वेतन
-            </Text>
-           <View style={{flexDirection:'row', alignItems:'center'}}>
-           <Text style={{color:'#0099FF', paddingTop:4}}>₹ </Text>
-           <TextInput
-              style={[styles.TextInput,{right:10, color:'#0099FF'}]}
-        
-              keyboardType="numeric"
-              placeholderTextColor={"#0099FF"}
-              value={totalAmount}
-              placeholder="0.00"
-              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
-            />
-          
-           </View>
+            <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>वेतन</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ color: "#0099FF", paddingTop: 4 }}>₹ </Text>
+              <TextInput
+                style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
+                keyboardType="numeric"
+                placeholderTextColor={"#0099FF"}
+                value={totalAmount}
+                placeholder="0.00"
+                onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
+              />
+            </View>
           </View>
           <TouchableOpacity onPress={() => Booking()} style={styles.loginBtn}>
             <Text style={[styles.loginText, { color: "#fff" }]}>
