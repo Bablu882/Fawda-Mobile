@@ -341,9 +341,7 @@ function Theke_MachineForm({ navigation, route }) {
                   style={styles.BhuktanBtn}
                   onPress={() =>
                     navigation.navigate("Payment", {
-                     
                       item,
-                  
                     })
                   }
                 >
@@ -352,11 +350,8 @@ function Theke_MachineForm({ navigation, route }) {
                   </Text>
                 </TouchableOpacity>
               )}
-                  {item.status === "Pending" && (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                  
-                >
+              {item.status === "Pending" && (
+                <TouchableOpacity style={styles.BhuktanBtn}>
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     भुगतान करें
                   </Text>
@@ -392,19 +387,53 @@ function Theke_MachineForm({ navigation, route }) {
                 )}
             </>
           </View>
-
-          {usertype &&
-            (usertype === "Sahayak" || usertype === "MachineMalik") && (
+          {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+            item.status === "Accepted" ? (
+              <TouchableOpacity style={styles.BhuktanBtn}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  काम स्वीकृत
+                </Text>
+              </TouchableOpacity>
+            ) : item.status === "Pending" ? (
               <TouchableOpacity
                 style={styles.BhuktanBtn}
                 onPress={() => accptThekha()}
-                // onPress = {() => toggleViews()}
               >
                 <Text style={[styles.loginText, { color: "#fff" }]}>
                   काम स्वीकार करें
                 </Text>
               </TouchableOpacity>
-            )}
+            ) : item.status === "Booked" ? (
+              <TouchableOpacity style={styles.BhuktanBtn}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  काम बुक
+                </Text>
+              </TouchableOpacity>
+            ) : null
+          ) : null}
+
+          {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+            (item.status === "Accepted" ? (
+              <>
+                <View style={[styles.inputView, { height: 40 }]}>
+                  <Text style={styles.label}>ग्राहक का नाम</Text>
+                  <TextInput
+                    style={styles.TextInput}
+                    placeholderTextColor="#848484"
+                    placeholder={item?.grahak_name}
+                  />
+                </View>
+
+                <View style={[styles.inputView, { height: 40 }]}>
+                  <Text style={styles.label}>फ़ोन:</Text>
+                  <TextInput
+                    style={styles.TextInput}
+                    placeholderTextColor="#848484"
+                    placeholder={item?.grahak_phone}
+                  />
+                </View>
+              </>
+            ) : null)}
         </View>
 
         <View style={{ marginTop: "auto", padding: 5 }}>
