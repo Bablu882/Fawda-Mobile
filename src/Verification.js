@@ -14,12 +14,12 @@ import { selectToken, setUserType } from "../slices/authSlice";
 
 export default function Verification({ navigation, route }) {
   const { user_type } = route?.params;
-  console.log('hddjdj', user_type)
+  console.log("hddjdj", user_type);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [otp, setOtp] = useState("");
-  const [Timer , setTimer] = useState(true);
-  const [counter , setCounter] = useState(90);
+  const [Timer, setTimer] = useState(true);
+  const [counter, setCounter] = useState(90);
 
   const verify = async () => {
     try {
@@ -41,7 +41,8 @@ export default function Verification({ navigation, route }) {
         // Show success message
         Toast.show("Login successful", Toast.SHORT);
         // Dispatch user type and navigate to homepage
-        dispatch(setUserType(user_type));''
+        dispatch(setUserType(user_type));
+        ("");
         navigation.replace("HomePage");
       } else {
         // Show error message
@@ -62,17 +63,16 @@ export default function Verification({ navigation, route }) {
   //   return () => clearInterval(timer)
   // }, [])
 
- 
-useEffect(() => {
-  const interval = setInterval(() => {
-    if (counter > 0) {
-      setCounter(prevCount => prevCount - 1);
-    } else {
-      clearInterval(interval);
-    }
-  }, 1000);
-  return () => clearInterval(interval);
-}, [counter]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (counter > 0) {
+        setCounter((prevCount) => prevCount - 1);
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [counter]);
 
   return (
     <View style={styles.verificationContainer}>
@@ -88,22 +88,28 @@ useEffect(() => {
         </Text>
       </View>
 
-      <View style={styles.textInputContainer}>
+      <View>
         <TextInput
-          style={[styles.TextInput, styles.inputView]}
-          placeholder="ओटीपी डालें "
+          style={[
+            // styles.TextInput,
+             styles.inputView,
+             styles.textInputContainer ,
+            //{ width: "100%", marginHorizontal: "auto", textAlign: "center",borderWidth:1, paddingHorizontal:100, paddingVertical:5},
+          ]}
+          placeholder="ओटीपी डालें"
           placeholderTextColor={"#848484"}
           secureTextEntry={true}
           onChangeText={(text) => setOtp(text, "otp")}
-         
         />
       </View>
 
       <View style={styles.otpText}>
-        {
-          Timer && 
-        <Text style={{ color: "#0099FF" }}>{Math.floor(counter / 60)}:{(counter % 60).toString().padStart(2, '0')}</Text>
-        }
+        {Timer && (
+          <Text style={{ color: "#0099FF" }}>
+            {Math.floor(counter / 60)}:
+            {(counter % 60).toString().padStart(2, "0")}
+          </Text>
+        )}
       </View>
 
       <TouchableOpacity
@@ -138,11 +144,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   textInputContainer: {
-    width: "100%",
+   
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+ marginHorizontal: "auto", textAlign: "center",borderWidth:1, paddingHorizontal:100, paddingVertical:5,
     height: 45,
     borderWidth: 1,
     textAlign: "center",

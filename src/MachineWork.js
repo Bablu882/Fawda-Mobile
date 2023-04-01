@@ -57,24 +57,26 @@ export default function MachineWork({ navigation, route }) {
   };
   const onAcceptPress = async () => {
     let params = {
-      job_id: item?.id, amount
-    }
-    service.post("/api/edit_thekepekam/"
-   , params,{
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token?.access}`,
-    },
-    }).then((res) => {
-      let data =  res.data;
-      setEdit(false);
-      console.log('data', data)
-    }).catch((error) => {
-      console.log(error)
-         console.log("Error:", error);
-    })
-    
-  }
+      job_id: item?.id,
+      amount,
+    };
+    service
+      .post("/api/edit_thekepekam/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      })
+      .then((res) => {
+        let data = res.data;
+        setEdit(false);
+        console.log("data", data);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("Error:", error);
+      });
+  };
 
   // const onAcceptPress = async () => {
   //   try {
@@ -175,12 +177,10 @@ export default function MachineWork({ navigation, route }) {
               ]}
             >
               <Text style={styles.TextInput}>
-                
-              { moment.utc(item?.datetime).format("l")}
+                {moment.utc(item?.datetime).format("l")}
               </Text>
               <Text style={styles.TextInput}>
-              { moment.utc(item?.datetime).format('HH:mm:ss')}
-              
+                {moment.utc(item?.datetime).format("LT")}
               </Text>
             </View>
             {usertype &&
@@ -226,11 +226,11 @@ export default function MachineWork({ navigation, route }) {
                     { position: "relative", marginHorizontal: 10 },
                   ]}
                 >
-                  <Text style={styles.label}>भूमि क्षेत्र</Text>
+                  {/* <Text style={styles.label}>भूमि क्षेत्र</Text> */}
                   <TextInput
                     style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder=""
+                    placeholderTextColor="#000"
+                    placeholder="भूमि क्षेत्र"
                   />
                   <Text
                     style={{
@@ -270,36 +270,39 @@ export default function MachineWork({ navigation, route }) {
               </View>
             )}
             <View style={styles.flex}>
-              <View style={{ width: "50%" }}>
+              <View style={{ width: "70%" }}>
                 <Text></Text>
               </View>
               {usertype && usertype === "Grahak" && (
                 <View style={[styles.flex, { marginTop: 10 }]}>
                   <TouchableOpacity
-                  onPress={() => {onEditPress()}}
-                  style={{
-                    backgroundColor: "#0099FF",
-                    marginRight: 10,
-                    padding: 5,
-                  }}
-                >
-                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                    वेतन बदलें
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                onPress={() => {onAcceptPress()}}
-                  style={{
-                    backgroundColor: "#44A347",
-                    paddingHorizontal: 10,
-                    padding: 5,
-                  }}
-                >
-                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                    Accept Thekha
-                  </Text>
-                </TouchableOpacity>
-              
+                    onPress={() => {
+                      onEditPress();
+                    }}
+                    style={{
+                      backgroundColor: "#0099FF",
+                      marginRight: 10,
+                      padding: 5,
+                    }}
+                  >
+                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                      वेतन बदलें
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onAcceptPress();
+                    }}
+                    style={{
+                      backgroundColor: "#44A347",
+                      paddingHorizontal: 10,
+                      padding: 5,
+                    }}
+                  >
+                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                      कन्फर्म
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
@@ -372,30 +375,41 @@ export default function MachineWork({ navigation, route }) {
               </>
             </View>
             {usertype && usertype === "Grahak" && (
-            <View
-              style={[
-                styles.inputView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="काम की स्थिति"
-                placeholderTextColor={"#000"}
-              />
               <View
-                style={{
-                  width: "30%",
-                  height: 30,
-                  backgroundColor: "#44A347",
-                  marginRight: 10,
-                  marginTop: 8,
-                }}
+                style={[
+                  styles.inputView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                ]}
               >
-                {console.log("thekeperKam?.status", thekeperKam?.status)}
-                <TouchableOpacity>
-                  {thekeperKam && (
+                <TextInput
+                  style={styles.TextInput}
+                  placeholder="काम की स्थिति"
+                  placeholderTextColor={"#000"}
+                />
+                <View
+                  style={{
+                    width: "30%",
+                    height: 30,
+                    backgroundColor: "#44A347",
+                    marginRight: 10,
+                    marginTop: 8,
+                  }}
+                >
+                  {console.log("thekeperKam?.status", thekeperKam?.status)}
+                  <TouchableOpacity>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        marginTop: 5,
+                        color: "#fff",
+                        fontSize: 15,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {item?.status}
+                    </Text>
+                    {/* {thekeperKam && (
                     <Text
                       style={{
                         textAlign: "center",
@@ -407,10 +421,10 @@ export default function MachineWork({ navigation, route }) {
                     >
                       {thekeperKam?.status}
                     </Text>
-                  )}
-                </TouchableOpacity>
+                  )} */}
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
             )}
             {usertype &&
             (usertype === "Sahayak" || usertype === "MachineMalik") ? (
@@ -425,22 +439,45 @@ export default function MachineWork({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Payment", {
-                    id: id,
-                    item: item,
-                    // item : item.job_type
-                  });
-                }}
-                style={styles.BhuktanBtn}
+              <>
+                {item.status === "Accepted" && (
+                  <TouchableOpacity
+                    style={styles.BhuktanBtn}
+                    onPress={() =>
+                      navigation.navigate("Payment", {
+                        item,
+                      })
+                    }
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      भुगतान करें
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "Pending" && (
+                  <TouchableOpacity style={styles.BhuktanBtn}>
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      भुगतान करें
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
+              // <TouchableOpacity
+              //   onPress={() => {
+              //     navigation.navigate("Payment", {
+              //       id: id,
+              //       item: item,
+              //       // item : item.job_type
+              //     });
+              //   }}
+              //   style={styles.BhuktanBtn}
 
-                // onPress = {() => toggleViews()}
-              >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  भुगतान करें
-                </Text>
-              </TouchableOpacity>
+              //   // onPress = {() => toggleViews()}
+              // >
+              //   <Text style={[styles.loginText, { color: "#fff" }]}>
+              //     भुगतान करें
+              //   </Text>
+              // </TouchableOpacity>
             )}
 
             {/* <TouchableOpacity

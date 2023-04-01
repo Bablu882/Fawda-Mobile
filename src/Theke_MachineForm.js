@@ -56,7 +56,7 @@ function Theke_MachineForm({ navigation, route }) {
   };
   const { id, item } = route.params;
 
-  console.log("fnfjff", item);
+  console.log("fnfjff", item, item.status);
   const accptThekha = async () => {
     let params = {
       job_id: item?.id,
@@ -73,6 +73,7 @@ function Theke_MachineForm({ navigation, route }) {
       console.log("aaaa", data);
       setThekeperKam(data?.data);
       console.log("rrrr", thekeperKam);
+      navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
     }
@@ -124,7 +125,7 @@ function Theke_MachineForm({ navigation, route }) {
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {item?.job_type === "theke_pe_kam" ?'ठेके पर काम':''}
+            {item?.job_type === "theke_pe_kam" ? "ठेके पर काम" : ""}
           </Text>
           <View
             style={[
@@ -165,7 +166,7 @@ function Theke_MachineForm({ navigation, route }) {
               {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("HH:mm")}
+              {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
           {usertype &&
@@ -215,7 +216,7 @@ function Theke_MachineForm({ navigation, route }) {
                 >
                   <TextInput
                     style={styles.TextInput}
-                    placeholderTextColor="#848484"
+                    placeholderTextColor="#000"
                     placeholder="भूमि क्षेत्र "
                   />
                   <Text style={{ right: 10, color: "#0070C0" }}>
@@ -233,15 +234,15 @@ function Theke_MachineForm({ navigation, route }) {
                 >
                   <TextInput
                     style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder="वेतन "
+                    placeholderTextColor="#000"
+                    placeholder="वेतन"
                   />
                   <TextInput
                     editable={edit}
                     ref={textInputRef}
                     onChangeText={(amount) => setAmount(amount)}
                     value={amount}
-                    style={{paddingRight:10}}
+                    style={{ paddingRight: 10 }}
                     defaultValue={item?.total_amount_theka}
                   />
                 </View>
@@ -305,9 +306,21 @@ function Theke_MachineForm({ navigation, route }) {
                     marginTop: 8,
                   }}
                 >
-                  {console.log("thekeperKam?.status", thekeperKam?.status)}
+                  {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
+
                   <TouchableOpacity>
-                    {thekeperKam && (
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        marginTop: 5,
+                        color: "#fff",
+                        fontSize: 15,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {item?.status}
+                    </Text>
+                    {/* {thekeperKam && (
                       <Text
                         style={{
                           textAlign: "center",
@@ -319,26 +332,36 @@ function Theke_MachineForm({ navigation, route }) {
                       >
                         {thekeperKam?.status}
                       </Text>
-                    )}
+                    )} */}
                   </TouchableOpacity>
                 </View>
               </View>
-
-              <TouchableOpacity
-                style={styles.BhuktanBtn}
-                onPress={() =>
-                  navigation.navigate("Payment", {
-                    item: item.job_type,
-                    id: id,
-                    item: item,
-                  })
-                }
-                // onPress = {() => toggleViews()}
-              >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  भुगतान करें
-                </Text>
-              </TouchableOpacity>
+              {item.status === "Accepted" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() =>
+                    navigation.navigate("Payment", {
+                     
+                      item,
+                  
+                    })
+                  }
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
+                  {item.status === "Pending" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
             </>
           )}
 
@@ -353,20 +376,19 @@ function Theke_MachineForm({ navigation, route }) {
               {usertype &&
                 (usertype === "Sahayak" || usertype === "MachineMalik") && (
                   <>
-                  <CustomComponent
-                    label="किसान से वेतन"
-                    value={item?.total_amount_theka}
-                  />
-                  <CustomComponent
-                    label="फावड़ा की फीस"
-                    value={item?.fawda_fee}
-                  />
-                  <CustomComponent
-                    label="आपका भुगतान"
-                    value={item?.payment_your}
-                  />
-                </>
-                 
+                    <CustomComponent
+                      label="किसान से वेतन"
+                      value={item?.total_amount_theka}
+                    />
+                    <CustomComponent
+                      label="फावड़ा की फीस"
+                      value={item?.fawda_fee}
+                    />
+                    <CustomComponent
+                      label="आपका भुगतान"
+                      value={item?.payment_your}
+                    />
+                  </>
                 )}
             </>
           </View>

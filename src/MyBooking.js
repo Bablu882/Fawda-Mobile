@@ -120,7 +120,7 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type}
+                          {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम': ""}
                           </Text>
                           <Text style={{ color: "black" }}>
                           
@@ -184,7 +184,7 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type}
+                          {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम': ""}
                           </Text>
                           <Text style={{ color: "black" }}>
                          { moment.utc(item?.datetime).format('L')}
@@ -199,7 +199,27 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                          <TouchableOpacity>
+                               <TouchableOpacity
+                            onPress={() => {
+                              if (
+                                item.job_type === "individuals_sahayak" &&
+                                item.status === "Accepted" 
+                               
+                              ) {
+                                navigation.navigate("MyBook_SahayakForm", {
+                                  id: item.id,
+                                  item,
+                                });
+                              } else if (
+                                item.job_type === "theke_pe_kam" &&
+                                item.status === "Accepted" 
+                              ) {
+                                navigation.navigate("Theke_MachineForm", {
+                                  item,
+                                });
+                              }
+                            }}
+                          >
                             <Text
                               style={{
                                 textAlign: "center",
@@ -212,6 +232,19 @@ export default function MyBooking({ navigation, route }) {
                               {item.status}
                             </Text>
                           </TouchableOpacity>
+                          {/* <TouchableOpacity>
+                            <Text
+                              style={{
+                                textAlign: "center",
+                                marginTop: 7,
+                                color: "#fff",
+                                fontSize: 15,
+                                fontWeight: "600",
+                              }}
+                            >
+                              {item.status}
+                            </Text>
+                          </TouchableOpacity> */}
                         </View>
                       </View>
                     ))}
@@ -229,7 +262,7 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type}
+                            { item.job_type ==="machine_malik" ?' मशीनरी' : ''}
                           </Text>
                           <Text style={{ color: "black" }}>
                           {/* {moment(item?.datetime).format('L')}
@@ -335,7 +368,7 @@ export default function MyBooking({ navigation, route }) {
                     >
                       <View style={{ marginLeft: 30 }}>
                         <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                          {item.job_type}
+                        { item.job_type ==="machine_malik" ?' मशीनरी' : ''}
                         </Text>
                         <Text style={{ color: "black" }}>
                         { moment.utc(item?.datetime).format('L')}
@@ -421,7 +454,7 @@ export default function MyBooking({ navigation, route }) {
                         >
                           <View style={{ marginLeft: 30 }}>
                             <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                              {item.job_type}
+                                 {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम':  item.job_type ==="machine_malik" ?' मशीनरी' : null}
                             </Text>
                             <Text style={{ color: "black" }}>
                             { moment.utc(item?.datetime).format('L')}
