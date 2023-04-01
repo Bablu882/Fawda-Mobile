@@ -37,7 +37,7 @@ export default function Homepage({ navigation, route }) {
         },
       });
       const data = response.data;
-   console.log("data:::", data);
+      console.log("data:::", data);
       setCurrentUsers(data);
     } catch (error) {
       console.log("Error:", error);
@@ -84,32 +84,44 @@ export default function Homepage({ navigation, route }) {
                   {currentUsers.map((item, index) => (
                     <View key={index} style={styles.booking}>
                       <View style={styles.bookingLeft}>
-                        <Text style={styles.bookingTitle}>{item.job_type}</Text>
+                        {item.job_type ==="individuals_sahayak" || item.job_type === "theke_pe_kam" ? 
+                        <>
+                        <Text style={styles.bookingTitle}>{item.job_type }</Text>
+                        </>: <Text style={styles.bookingTitle}>{item?.work_type}</Text>
+                      }
+                        {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
+                        
                         <Text style={{ color: "black" }}>
                           {moment(item.date).format("l")}
                         </Text>
                       </View>
-                      <TouchableOpacity style={styles.bookingButton} onPress={() => {{
-                        if (
-                          item.job_type === "individuals_sahayak" 
-                        ) {
-                          navigation.navigate("MyBook_SahayakForm", {
-                            id: item.id,
-                            item,
-                            usertype
-                          });
-                        } else if (
-                          item.job_type === "theke_pe_kam"
-                        
-                        ) {
-                          navigation.navigate("Theke_MachineForm", {
-                            id: item.id,
-                            item,
-                            usertype
-                          });
-                        }
-                      }}}>
-                        <Text style={styles.bookingButtonText}>विवरण देखे </Text>
+                      <TouchableOpacity
+                        style={styles.bookingButton}
+                        onPress={() => {
+                          if (item.job_type === "individuals_sahayak") {
+                            navigation.navigate("MyBook_SahayakForm", {
+                              id: item.id,
+                              item,
+                              usertype,
+                            });
+                          } else if (item.job_type === "theke_pe_kam") {
+                            navigation.navigate("Theke_MachineForm", {
+                              id: item.id,
+                              item,
+                              usertype,
+                            });
+                          } else {
+                            navigation.navigate("MachineWork", {
+                              id: item.id,
+                              item,
+                              usertype,
+                            });
+                          }
+                        }}
+                      >
+                        <Text style={styles.bookingButtonText}>
+                          विवरण देखे
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -139,7 +151,7 @@ export default function Homepage({ navigation, route }) {
                 <Text
                   style={{ fontSize: 28, fontWeight: "600", color: "#000" }}
                 >
-                  कौनसी सेवा चाहिए 
+                  कौनसी सेवा चाहिए
                 </Text>
               </View>
 

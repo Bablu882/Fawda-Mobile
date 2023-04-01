@@ -8,8 +8,7 @@ import {
   TextInput,
   //   RadioButton
 } from "react-native";
-import Header from "./Header";
-// import Back from "react-native-vector-icons/AntDesign"
+
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
@@ -18,14 +17,11 @@ import Toast from "react-native-simple-toast";
 import { Picker } from "@react-native-picker/picker";
 import { RadioButton } from "react-native-paper";
 
-import * as Location from 'expo-location';
-
-// import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import * as Location from "expo-location";
 
 export default function GrahakRegisterForm({ navigation, route }) {
-
-const {user} = route.params
- console.log('fnkfjk', user)
+  const { user } = route.params;
+  console.log("fnkfjk", user);
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
@@ -37,7 +33,7 @@ const {user} = route.params
   const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [district, setDistrict] = useState([]);
-  const [location, setLocation] = useState({ latitude: "", longitude: ""});
+  const [location, setLocation] = useState({ latitude: "", longitude: "" });
 
   const [errors, setErrors] = useState({
     name: "",
@@ -151,9 +147,9 @@ const {user} = route.params
         Toast.show("Registration successful", Toast.SHORT);
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
         console.log("fjfjfjf", data);
-      
-        navigation.replace("Verification",  { user_type: user });
-        console.log('djdjkd', user_type)
+
+        navigation.replace("Verification", { user_type: user });
+        console.log("djdjkd", user_type);
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {
@@ -173,7 +169,6 @@ const {user} = route.params
       const response = await Service.get("/api/states/", {
         headers: {
           "Content-Type": "application/json",
-        
         },
       });
 
@@ -191,7 +186,6 @@ const {user} = route.params
       const response = await Service.get("/api/districts/", {
         headers: {
           "Content-Type": "application/json",
-      
         },
       });
 
@@ -212,14 +206,14 @@ const {user} = route.params
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
         return;
       }
-  
+
       let { coords } = await Location.getCurrentPositionAsync({});
       setLocation(coords);
-     // console.log("locationlocation",location);
+      // console.log("locationlocation",location);
     })();
   }, []);
   return (
@@ -242,11 +236,11 @@ const {user} = route.params
           marginTop: 30,
         }}
       >
-        <View style={{display:'none'}}>
-        <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
-{/* <Text>Longitude: {location.longitude}</Text> */}
-  {console.log('location', location.latitude)}
-</View>
+        <View style={{ display: "none" }}>
+          <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
+          {/* <Text>Longitude: {location.longitude}</Text> */}
+          {console.log("location", location.latitude)}
+        </View>
         <View style={[styles.inputView, { position: "relative" }]}>
           <Text
             style={{
@@ -272,36 +266,31 @@ const {user} = route.params
           />
           {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
         </View>
-        <RadioButton.Group
-            onValueChange={handleGenderSelection}
-            value={gender}
-          >
-            <View style={styles.alignItems}>
-              <View style={[styles.MaleCheckView, { position: "relative" }]}>
-                <Text style={styles.label}>लिंग:</Text>
-                <TouchableOpacity>
-                  <RadioButton.Item
-                    label="Male"
-                    value="Male"
-                    uncheckedColor="transparent"
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={[styles.FemalecheckView, { position: "relative" }]}>
-                <TouchableOpacity>
-                  <RadioButton.Item
-                    label="Female"
-                    value="Female"
-                    uncheckedColor="transparent"
-                  />
-                </TouchableOpacity>
-              </View>
-              {/* </View> */}
+        <RadioButton.Group onValueChange={handleGenderSelection} value={gender}>
+          <View style={styles.alignItems}>
+            <View style={[styles.MaleCheckView, { position: "relative" }]}>
+              <Text style={styles.label}>लिंग:</Text>
+              <TouchableOpacity>
+                <RadioButton.Item
+                  label="Male"
+                  value="Male"
+                  uncheckedColor="transparent"
+                />
+              </TouchableOpacity>
             </View>
-            {!!errors.gender && (
-              <Text style={styles.error}>{errors.gender}</Text>
-            )}
-          </RadioButton.Group>
+            <View style={[styles.FemalecheckView, { position: "relative" }]}>
+              <TouchableOpacity>
+                <RadioButton.Item
+                  label="Female"
+                  value="Female"
+                  uncheckedColor="transparent"
+                />
+              </TouchableOpacity>
+            </View>
+            {/* </View> */}
+          </View>
+          {!!errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
+        </RadioButton.Group>
         <View style={[styles.inputView, { position: "relative" }]}>
           <Text style={styles.label}>फ़ोन:</Text>
           <TextInput
@@ -357,25 +346,20 @@ const {user} = route.params
                 setSelectedState(itemValue)
               }
             >
-              <Picker.Item label="राज्य" value="" enabled={false} style={{color:'#ccc'}}/>
+              <Picker.Item
+                label="राज्य"
+                value=""
+                enabled={false}
+                style={{ color: "#ccc" }}
+              />
               {state?.map((state) => (
                 <Picker.Item
                   key={state.id}
                   label={state.name}
-                  value={state.abbreviation}
+                  value={state.name}
                 />
               ))}
             </Picker>
-           
-            {/* <TextInput
-              style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              onChangeText={(text) => setSelectedState(text)}
-              // defaultValue={email}
-              value={selectedState}
-            /> */}
-            {/* {!!errors.state && <Text style={styles.error}>{errors.state}</Text>} */}
           </View>
           <View style={[styles.DoubleView, { position: "relative" }]}>
             <Text style={styles.label}>जिला</Text>
@@ -385,26 +369,28 @@ const {user} = route.params
                 setSelectedDistrict(itemValue)
               }
             >
-                <Picker.Item label="जिला" value="" enabled={false} style={{color:'#ccc'}}/>
+              <Picker.Item
+                label="जिला"
+                value=""
+                enabled={false}
+                style={{ color: "#ccc" }}
+              />
               {district?.map((district) => (
                 <Picker.Item
                   key={district.id}
-                  label={`${district.name}, ${district.state.name}`}
-                  value={district.id}
+                  label={`${district.name}`}
+                  value={district.name}
                 />
               ))}
             </Picker>
-
-        
           </View>
         </View>
 
         <TouchableOpacity
           onPress={() => {
-           
             if (validate()) {
               RegisterServices();
-          
+
               // navigation.navigate("Home")
             }
           }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Homepage from "../src/HomePage";
 import SahayakBooking from "../src/SahayakBooking";
@@ -11,9 +11,13 @@ import SahayakBookStack from "../navigations/SahayakBookStack";
 import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
 import MyNaukariStack from "../navigations/MyNaukariStack";
+import { selectUserType } from "../slices/authSlice";
+import { useSelector } from "react-redux";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
+  const usertype = useSelector(selectUserType);
+  console.log("usrrjfjf", usertype);
 
   return (
     <Tab.Navigator
@@ -27,7 +31,6 @@ export default function BottomTab() {
           paddingTop: 15,
           paddingBottom: 15,
         },
-        
       })}
     >
       <Tab.Screen
@@ -36,12 +39,13 @@ export default function BottomTab() {
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
-              <Image
-                source={require('../assets/image/home.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
+                            <Image
+                source={
+                  focused
+                    ? require("../assets/image/home.png")
+                    : require("../assets/image/homeicon.png")
                 }
+              
                 style={{
                   width: 20,
                   height: 20,
@@ -59,7 +63,7 @@ export default function BottomTab() {
               <Text
                 style={{
                   fontSize: 12,
-                  color: focused ? 'red':'blue',
+                  color: '#000',
                 }}
               >
                 होम
@@ -68,46 +72,92 @@ export default function BottomTab() {
           ),
         }}
       />
+      {usertype === "Grahak" ? (
+        <>
+          <Tab.Screen
+            name="MyBookingStack"
+            component={MyBookingStack}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <View style={{ alignItems: "center" }}>
+                  <Image
+                    source={
+                      //require("../assets/image/open-book.png")
+                      focused
+                        ? require("../assets/image/open-book.png")
+                         : require("../assets/image/booking.png")
+                    }
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginBottom: 6,
+                      resizeMode: "contain",
+                      // tintColor: darkMode
+                      //   ? focused
+                      //     ? "#fff"
+                      //     : "#888888"
+                      //   : focused
+                      //   ? "#000"
+                      //   : "#888888",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: '#000',
+                    }}
+                  >
+                    बुकिंग्स
+                  </Text>
+                </View>
+              ),
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Tab.Screen
+            name="MyNaukariStack"
+            component={MyBookingStack}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => (
+                <View style={{ alignItems: "center" }}>
+                  <Image
+                    source={
+                      // require("../assets/image/open-book.png")
+                      focused
+                        ? require("../assets/image/jobs-active.png")
+                         : require("../assets/image/myjobs.png")
+                    }
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginBottom: 6,
+                      resizeMode: "contain",
+                      // tintColor: darkMode
+                      //   ? focused
+                      //     ? "#fff"
+                      //     : "#888888"
+                      //   : focused
+                      //   ? "#000"
+                      //   : "#888888",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: '#000',
+                    }}
+                  >
+                    नौकरियां
+                  </Text>
+                </View>
+              ),
+            }}
+          />
+        </>
+      )}
 
-      <Tab.Screen
-        name="MyBookingStack"
-        component={MyBookingStack}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View style={{ alignItems: "center"}}>
-              <Image
-                source={require('../assets/image/open-book.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
-                }
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginBottom: 6,
-                  resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: focused ? 'red':'blue',
-                }}
-              >
-                बुकिंग्स
-              </Text>
-            </View>
-          ),
-        }}
-      />
-     
       {/* <Tab.Screen
         name="MyNaukariStack"
         component={MyNaukariStack}
@@ -146,17 +196,18 @@ export default function BottomTab() {
           ),
         }}
       /> */}
-    <Tab.Screen
+      <Tab.Screen
         name="Refer"
         component={Refer}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
               <Image
-                source={require('../assets/image/refer.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
+                source={
+                  // require("../assets/image/refer.png")
+                  focused
+                    ? require("../assets/image/refer.png")
+                     : require("../assets/image/refer-active.png")
                 }
                 style={{
                   width: 20,
@@ -178,7 +229,7 @@ export default function BottomTab() {
                   color: "#000",
                 }}
               >
-                रेफर 
+                रेफर
               </Text>
             </View>
           ),
@@ -191,11 +242,12 @@ export default function BottomTab() {
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
-             <Image
-                source={require('../assets/image/call.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
+              <Image
+                source={
+                 // require("../assets/image/call.png")
+                  focused
+                    ? require("../assets/image/call.png")
+                     : require("../assets/image/contact.png")
                 }
                 style={{
                   width: 20,
@@ -217,21 +269,12 @@ export default function BottomTab() {
                   color: "#000",
                 }}
               >
-                संपर्क करें 
+                संपर्क करें
               </Text>
             </View>
           ),
         }}
       />
-
-
-
-
-
-
-
-
-
     </Tab.Navigator>
-  )
+  );
 }

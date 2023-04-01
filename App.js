@@ -41,6 +41,7 @@ import Theke_MachineForm from "./src/Theke_MachineForm";
 import MyBook_SahayakForm from "./src/MyBook_SahayakForm";
 import Theke_k_Kaam from "./src/Theke_k_Kaam";
 import MachineWork from "./src/MachineWork";
+import Payment from "./src/Payment";
 
 
 
@@ -76,6 +77,8 @@ export default function App() {
           <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
           <Stack.Screen name="HomePage" component={BottomTab} />
           <Stack.Screen name="MyBooking" component={MyBooking} />
+          <Stack.Screen name="Payment" component={Payment} />
+          
           <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
           <Stack.Screen name="Homethird" component={BottomTabMachine} />
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 

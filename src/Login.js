@@ -29,7 +29,7 @@ export default function Login({ navigation }) {
   //   navigation.replace(to)
   // }
   
-  const login = value => {
+  const login = async () => {
     setloading(true);
     let params = {
       
