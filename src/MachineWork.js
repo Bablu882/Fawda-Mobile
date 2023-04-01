@@ -113,6 +113,7 @@ export default function MachineWork({ navigation, route }) {
       console.log("aaaa", data);
       setThekeperKam(data?.data);
       console.log("rrrr", thekeperKam);
+      navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
     }
@@ -425,77 +426,79 @@ export default function MachineWork({ navigation, route }) {
                   </TouchableOpacity>
                 </View>
               </View>
+              //    <View>
+              //    <>
+              //      {item.status === "Accepted" && (
+              //        <TouchableOpacity
+              //          style={styles.BhuktanBtn}
+              //          onPress={() =>
+              //            navigation.navigate("Payment", {
+              //              item,
+              //            })
+              //          }
+              //        >
+              //          <Text style={[styles.loginText, { color: "#fff" }]}>
+              //            भुगतान करें
+              //          </Text>
+              //        </TouchableOpacity>
+              //      )}
+              //      {item.status === "Pending" && (
+              //        <TouchableOpacity style={styles.BhuktanBtn}>
+              //          <Text style={[styles.loginText, { color: "#fff" }]}>
+              //            भुगतान करें
+              //          </Text>
+              //        </TouchableOpacity>
+              //      )}
+              //    </>
+              //  </View>
             )}
-            {usertype &&
-            (usertype === "Sahayak" || usertype === "MachineMalik") ? (
-              <TouchableOpacity
-                onPress={() => accptThekha()}
-                style={styles.BhuktanBtn}
+            {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+              item.status === "Accepted" ? (
+                <TouchableOpacity style={styles.BhuktanBtn}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम स्वीकृत
+                  </Text>
+                </TouchableOpacity>
+              ) : item.status === "Pending" ? (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() => accptThekha()}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम स्वीकार करें
+                  </Text>
+                </TouchableOpacity>
+              ) : item.status === "Booked" ? (
+                <TouchableOpacity style={styles.BhuktanBtn}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम बुक
+                  </Text>
+                </TouchableOpacity>
+              ) : null
+            ) : null}
 
-                // onPress = {() => toggleViews()}
-              >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  काम स्वीकार करें
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <>
-                {item.status === "Accepted" && (
-                  <TouchableOpacity
-                    style={styles.BhuktanBtn}
-                    onPress={() =>
-                      navigation.navigate("Payment", {
-                        item,
-                      })
-                    }
-                  >
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      भुगतान करें
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {item.status === "Pending" && (
-                  <TouchableOpacity style={styles.BhuktanBtn}>
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      भुगतान करें
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </>
-              // <TouchableOpacity
-              //   onPress={() => {
-              //     navigation.navigate("Payment", {
-              //       id: id,
-              //       item: item,
-              //       // item : item.job_type
-              //     });
-              //   }}
-              //   style={styles.BhuktanBtn}
+            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+              (item.status === "Accepted" ? (
+                <>
+                  <View style={[styles.inputView, { height: 40 }]}>
+                    <Text style={styles.label}>ग्राहक का नाम</Text>
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholderTextColor="#848484"
+                      placeholder={item?.grahak_name}
+                    />
+                  </View>
 
-              //   // onPress = {() => toggleViews()}
-              // >
-              //   <Text style={[styles.loginText, { color: "#fff" }]}>
-              //     भुगतान करें
-              //   </Text>
-              // </TouchableOpacity>
-            )}
-
-            {/* <TouchableOpacity
-          style={styles.BhuktanBtn}
-          onPress={
-        
-            navigation.navigate("Payment", {
-              id : id,
-              item: item,
-              // item : item.job_type
-            })
-          }
-          // onPress = {() => toggleViews()}
-        >
-          <Text style={[styles.loginText, { color: "#fff" }]}>
-            भुगतान करें
-          </Text>
-        </TouchableOpacity> */}
+                  <View style={[styles.inputView, { height: 40 }]}>
+                    <Text style={styles.label}>फ़ोन:</Text>
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholderTextColor="#848484"
+                      placeholder={item?.grahak_phone}
+                    />
+                  </View>
+                </>
+              ) : null)}
           </View>
         </View>
         <View style={{ marginTop: "auto", padding: 5 }}>

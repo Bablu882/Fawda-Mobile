@@ -77,7 +77,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       });
       const data = response?.data;
       console.log("datadatadatadatadata|||||||||", data);
-    //  navigation.replace("MyBooking", { item, usertype });
+      navigation.replace("MyBooking", { item, usertype });
     } catch (error) {
       console.log("Error:", error);
     }
@@ -697,6 +697,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
           {/* end */}
           {usertype && usertype === "Grahak" && (
+            <>
             <View
               style={[
                 styles.inputView,
@@ -740,6 +741,30 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             </View>
+            <View>
+                  {item.status === "Accepted" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() =>
+                    navigation.navigate("Payment", {
+                      item,
+                    })
+                  }
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {item.status === "Pending" && (
+                <TouchableOpacity style={styles.BhuktanBtn}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            </>
           )}
           <View
             style={{
@@ -770,7 +795,54 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 )}
             </>
           </View>
-          {usertype &&
+          {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+              item.status === "Accepted" ? (
+                <TouchableOpacity style={styles.BhuktanBtn}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम स्वीकृत
+                  </Text>
+                </TouchableOpacity>
+              ) : item.status === "Pending" ? (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() =>  acceptSahayak(id)}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम स्वीकार करें
+                  </Text>
+                </TouchableOpacity>
+              ) : item.status === "Booked" ? (
+                <TouchableOpacity style={styles.BhuktanBtn}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    काम बुक
+                  </Text>
+                </TouchableOpacity>
+              ) : null
+            ) : null}
+
+            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+              (item.status === "Accepted" ? (
+                <>
+                  <View style={[styles.inputView, { height: 40 }]}>
+                    <Text style={styles.label}>ग्राहक का नाम</Text>
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholderTextColor="#848484"
+                      placeholder={item?.grahak_name}
+                    />
+                  </View>
+
+                  <View style={[styles.inputView, { height: 40 }]}>
+                    <Text style={styles.label}>फ़ोन:</Text>
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholderTextColor="#848484"
+                      placeholder={item?.grahak_phone}
+                    />
+                  </View>
+                </>
+              ) : null)}
+          {/* {usertype &&
           (usertype === "Sahayak" || usertype === "MachineMalik") ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
@@ -828,7 +900,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             //     भुगतान करें
             //   </Text>
             // </TouchableOpacity>
-          )}
+          )} */}
 
          
 
