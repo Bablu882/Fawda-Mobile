@@ -170,7 +170,12 @@ const handleTotalAmount = (value) => {
 };
 const handleBooking = async () => {
   try {
-    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' + moment(time).format('HH:mm:ss');
+  //   const datetime =
+  //   moment(showDate).format("YYYY-MM-DD") +
+  //   " " +
+  //   moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
+  //  ;
+    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' +  moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
     const params = {
       datetime: datetime,
       description: description,
@@ -277,15 +282,15 @@ console.log('params::::::', params)
             selectedValue={time}
             style={{width:40}}
             onValueChange={(itemValue, itemIndex) =>
-              handleTimeChange(itemValue)
-            }
+              setTimes(timeConverted(itemValue))
+              }
           >
             <Picker.Item enabled={false} label="-समय-" value="" />
             {timings.map((item, index) => {
               return (
                 <Picker.Item
                   key={index}
-                  onPress={() => setTime(item)}
+                
                   style={{
                     color: checkIfTimeEnabled(item) ? "black" : "gray",
                     fontSize: 14, 

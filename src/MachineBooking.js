@@ -38,7 +38,7 @@ export default function MachineBooking({ navigation }) {
   const [anyeValue, setAnyeValue] = useState();
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
-  
+
   const [landArea, setLandAreas] = useState("");
   const [time, setTimes] = useState("");
   const [selectedDates, setSelectedDates] = useState("");
@@ -214,11 +214,12 @@ export default function MachineBooking({ navigation }) {
   };
 
   const Booking = async () => {
+    
     const datetime =
       moment(showDate).format("YYYY-MM-DD") +
       " " +
-      moment(time).format("HH:mm:ss") +
-      ".000000";
+      moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
+     ;
     let params = {
       datetime: datetime,
       work_type: selectedWorkType,
@@ -228,7 +229,7 @@ export default function MachineBooking({ navigation }) {
       land_area: landArea,
       total_amount_machine: totalAmount,
     };
-
+ 
     service
       .post("/api/post_machine/", params, {
         headers: {
@@ -285,7 +286,7 @@ export default function MachineBooking({ navigation }) {
             <Text
               style={{ color: selectedWorkType ? "#000" : "#ccc", left: 5 }}
             >
-              {selectedWorkType ? selectedWorkType : "-भूमि तैयार करना-"}
+              {selectedWorkType ? selectedWorkType : "-भूमि तैयार करना/काटना/बुआई-"}
             </Text>
             <Picker
               style={{ width: 80 }}
@@ -477,8 +478,8 @@ export default function MachineBooking({ navigation }) {
               selectedValue={time}
               style={{ width: 50 }}
               onValueChange={(itemValue, itemIndex) =>
-                handleTimeChange(itemValue)
-              }
+                setTimes(timeConverted(itemValue))
+                }
             >
               {/* <Picker.Item enabled={false} label="-समय-" value="" /> */}
               {timings.map((item, index) => {
@@ -524,24 +525,26 @@ export default function MachineBooking({ navigation }) {
             >
               {/* <Text style={{ paddingLeft: 10 }}>किल्ला/बीघा </Text> */}
               <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-              {landType ? landType : "किल्ला/बीघा"}
-            </Text>
+                {landType ? landType : "किल्ला/बीघा"}
+              </Text>
 
-            <Picker
-              style={{ width: 20 }}
-              ref={pickerRef}
-              selectedValue={landType}
-              onValueChange={(itemValue, itemIndex) => setLandTypes(itemValue)}
-            >
-              <Picker.Item label="किल्ला/बीघा" value="" />
-              {landtypes.map((item) => (
-                <Picker.Item
-                  label={item.name}
-                  value={item.name}
-                  key={item.id}
-                />
-              ))}
-            </Picker>
+              <Picker
+                style={{ width: 20 }}
+                ref={pickerRef}
+                selectedValue={landType}
+                onValueChange={(itemValue, itemIndex) =>
+                  setLandTypes(itemValue)
+                }
+              >
+                <Picker.Item label="किल्ला/बीघा" value="" />
+                {landtypes.map((item) => (
+                  <Picker.Item
+                    label={item.name}
+                    value={item.name}
+                    key={item.id}
+                  />
+                ))}
+              </Picker>
             </View>
           </View>
           {/* <View

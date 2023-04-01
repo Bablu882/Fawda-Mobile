@@ -1,294 +1,708 @@
-import React from "react";
-import { View, Text ,StyleSheet , SafeAreaView, TouchableOpacity, TextInput, Image } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  ScrollView,
+} from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
+import service from "../service";
+import { selectToken, selectUserType } from "../slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+const CustomComponent = ({ label, value }) => {
+  return (
+    <View
+      style={[
+        styles.inputView,
+        styles.inputbox,
+        {
+          flexDirection: "row",
+          justifyContent: "space-around",
+          alignItems: "center",
+        },
+      ]}
+    >
+      <TextInput
+        style={[styles.TextInput, { width: "100%" }]}
+        placeholder={label}
+        placeholderTextColor={"#000"}
+      />
+      <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
+    </View>
+  );
+};
 
+export default function MachineWork({ navigation, route }) {
+  const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
+  const [editable, setEditable] = useState(false);
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const usertype = useSelector(selectUserType);
+  console.log("usrrjfjf", usertype);
+  const { id, item } = route.params;
+  console.log("fjd", item);
+  const [amount, setAmount] = useState(item?.total_amount_machine);
+  const [edit, setEdit] = useState(false);
+  const textInputRef = useRef(null);
 
+  const onEditPress = () => {
+    setEdit(true);
+    textInputRef?.current?.focus();
+  };
+  const onAcceptPress = async () => {
+    let params = {
+      job_id: item?.id, amount
+    }
+    service.post("/api/edit_thekepekam/"
+   , params,{
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token?.access}`,
+    },
+    }).then((res) => {
+      let data =  res.data;
+      setEdit(false);
+      console.log('data', data)
+    }).catch((error) => {
+      console.log(error)
+         console.log("Error:", error);
+    })
+    
+  }
 
-export default function MachineWork ({navigation}) {
-    return(
-        <>
-        <SafeAreaView style={{backgroundColor:'#fff', flex:1 }}>
-                <View style={{ padding: 20, marginTop: 25 }}>
-                    <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
-                        <Icon name="arrowleft" size={25} />
-                    </TouchableOpacity>
-                </View>
-            <View style={{ justifyContent:"center", alignItems:"center"}}>
+  // const onAcceptPress = async () => {
+  //   try {
+  //     const response = await service.post(
+  //       "/api/edit_thekepekam/",
+  //       { job_id: item?.id, amount },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token?.access}`,
+  //         },
+  //       }
+  //     );
+  //     console.log(response?.data);
+  //     setEdit(false);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
 
-                <View style={{ justifyContent: "center" }}>
-                    <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>मशीन का काम  </Text>
-                </View>
+  const accptThekha = async () => {
+    let params = {
+      job_id: item?.id,
+    };
+    console.log("jjff", params);
+    try {
+      const response = await service.post("/api/accept_machine/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      console.log("aaaa", data);
+      setThekeperKam(data?.data);
+      console.log("rrrr", thekeperKam);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
-                
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+
+        justifyContent: "center",
+        backgroundColor: "#fff",
+      }}
+    >
+      <View style={{ padding: 20, marginTop: 25 }}>
+        <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+          <Icon name="arrowleft" size={25} />
+        </TouchableOpacity>
       </View>
 
-      <View style={{ justifyContent: "center", alignItems: "center" }} >
-      <View style={[styles.inputView,{position:'relative'}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"30%", textAlign:"center", backgroundColor:'#fff'}}>मशीन का प्रकार</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-                     
-
-                    <View style={[styles.inputView,{position:'relative'}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>गाँव</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between", height:38}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={[styles.TextInput]}
-                        placeholder="तारीख़   dd/mm/yyyy"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <TextInput
-                        style={[styles.TextInput]}
-                        placeholder="समय    2:00 pm"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    {/* <Image source={require('../assets/image/calendar.png')} style={{width:20, height:20 , marginTop:10 , right:10}} />  */}
-                    </View>
-                    
-                    <View style={[styles.inputView,{position:'relative', display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"20%", textAlign:"center", backgroundColor:'#fff'}}>भूमि क्षेत्र </Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>8बीघा</Text>
-                    </View>
-
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="किसान से वेतन"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>₹ 0.00</Text>
-                    </View>
-
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="फावड़ा की फीस"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>₹ 0.00</Text>
-                    </View>
-
-                    <View style={[styles.inputView, {display:'flex' , flexDirection:"row", justifyContent:"space-between"}]}>
-                    {/* <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text> */}
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder="आपका भुगतान"
-                        placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    <Text style={{marginTop:14 , right:10, color:"#0070C0"}}>₹ 0.00</Text>
-                    </View>
-                   
-
-                    <TouchableOpacity
-         onPress={() => navigation.navigate("MereKaam")}
-        style={styles.loginBtn}>
-        <Text style={[styles.loginText, {color:"#fff"}]}>काम स्वीकार करें </Text>
-      </TouchableOpacity>
-
-
-      <View style={[styles.inputView,{position:'relative', height:25}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"30%", textAlign:"center", backgroundColor:'#fff'}}>ग्राहक का नाम</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
-
-                    <View style={[styles.inputView,{position:'relative', height:25}]}>
-                    <Text style={{position:'absolute', top:-10, left:30, width:"10%", textAlign:"center", backgroundColor:'#fff'}}>फ़ोन:</Text>
-                    <TextInput
-                        style={styles.TextInput}
-                        placeholder=""
-                        placeholderTextColor={"#848484"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                    />
-                    </View>
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+          >
+            मशीन का काम
+          </Text>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 20,
+              marginHorizontal: 10,
+            }}
+          >
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            >
+              <Text style={styles.label}>मशीन का प्रकार </Text>
+              <Text style={[styles.TextInput]}>{item?.work_type}</Text>
+            </View>
+            {usertype &&
+              (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                <View style={[styles.inputView, { height: 40 }]}>
+                  <Text style={styles.label}>गाँव</Text>
+                  <TextInput
+                    style={styles.TextInput}
+                    placeholderTextColor="#848484"
+                    placeholder={item?.village}
+                  />
                 </View>
+              )}
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            >
+              <Text style={styles.TextInput}>
+                
+              { moment.utc(item?.datetime).format("l")}
+              </Text>
+              <Text style={styles.TextInput}>
+              { moment.utc(item?.datetime).format('HH:mm:ss')}
+              
+              </Text>
+            </View>
+            {usertype &&
+              (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                <View
+                  style={[
+                    styles.inputView,
+                    styles.inputbox,
+                    { position: "relative" },
+                  ]}
+                >
+                  <Text style={styles.label}>भूमि क्षेत्र</Text>
+                  <TextInput
+                    style={styles.TextInput}
+                    placeholderTextColor="#848484"
+                    placeholder=""
+                  />
+                  <Text
+                    style={{
+                      top: 10,
+                      right: 5,
+                      position: "absolute",
+                      color: "#0070C0",
+                    }}
+                  >
+                    {item?.land_area}
+                    {item?.land_type}
+                  </Text>
+                </View>
+              )}
+            {usertype && usertype === "Grahak" && (
+              <View
+                style={[
+                  styles.flex,
+                  styles.justifyContentBetween,
+                  { marginHorizontal: 10 },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.TaxView,
+                    styles.inputbox,
+                    { position: "relative", marginHorizontal: 10 },
+                  ]}
+                >
+                  <Text style={styles.label}>भूमि क्षेत्र</Text>
+                  <TextInput
+                    style={styles.TextInput}
+                    placeholderTextColor="#848484"
+                    placeholder=""
+                  />
+                  <Text
+                    style={{
+                      top: 10,
+                      right: 5,
+                      position: "absolute",
+                      color: "#0070C0",
+                    }}
+                  >
+                    {item?.land_area}
+                    {item?.land_type}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.TaxView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                    { marginHorizontal: 10 },
+                  ]}
+                >
+                  {edit ? (
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholder="वेतन"
+                      ref={textInputRef}
+                      onChangeText={(amount) => setAmount(amount)}
+                      value={amount}
+                      placeholderTextColor={"#000"}
+                    />
+                  ) : (
+                    <Text style={styles.Text}>
+                      {item?.total_amount_machine}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            )}
+            <View style={styles.flex}>
+              <View style={{ width: "50%" }}>
+                <Text></Text>
+              </View>
+              {usertype && usertype === "Grahak" && (
+                <View style={[styles.flex, { marginTop: 10 }]}>
+                  <TouchableOpacity
+                  onPress={() => {onEditPress()}}
+                  style={{
+                    backgroundColor: "#0099FF",
+                    marginRight: 10,
+                    padding: 5,
+                  }}
+                >
+                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                    वेतन बदलें
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => {onAcceptPress()}}
+                  style={{
+                    backgroundColor: "#44A347",
+                    paddingHorizontal: 10,
+                    padding: 5,
+                  }}
+                >
+                  <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                    Accept Thekha
+                  </Text>
+                </TouchableOpacity>
+              
+                </View>
+              )}
+            </View>
 
+            {/* <View
+            style={[
+              styles.inputView,
+              styles.flex,
+              styles.justifyContentBetween,
+            ]}
+          >
+            <TextInput
+              style={styles.TextInput}
+              placeholder="काम की स्थिति"
+              placeholderTextColor={"#000"}
+            />
+            <View
+              style={{
+                width: "30%",
+                height: 30,
+                backgroundColor: "#44A347",
+                marginRight: 10,
+                marginTop: 8,
+              }}
+            >
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  Pending
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View> */}
 
-                </SafeAreaView>
-        </>
-    )
+            {/* end */}
+
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <>
+                {usertype &&
+                  (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                    <>
+                      <CustomComponent
+                        label="किसान से वेतन"
+                        value={item?.total_amount_machine}
+                      />
+                      <CustomComponent
+                        label="फावड़ा की फीस"
+                        value={item?.fawda_fee}
+                      />
+                      <CustomComponent
+                        label="आपका भुगतान"
+                        value={item?.payment_your}
+                      />
+                    </>
+                  )}
+              </>
+            </View>
+            {usertype && usertype === "Grahak" && (
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            >
+              <TextInput
+                style={styles.TextInput}
+                placeholder="काम की स्थिति"
+                placeholderTextColor={"#000"}
+              />
+              <View
+                style={{
+                  width: "30%",
+                  height: 30,
+                  backgroundColor: "#44A347",
+                  marginRight: 10,
+                  marginTop: 8,
+                }}
+              >
+                {console.log("thekeperKam?.status", thekeperKam?.status)}
+                <TouchableOpacity>
+                  {thekeperKam && (
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        marginTop: 5,
+                        color: "#fff",
+                        fontSize: 15,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {thekeperKam?.status}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+            )}
+            {usertype &&
+            (usertype === "Sahayak" || usertype === "MachineMalik") ? (
+              <TouchableOpacity
+                onPress={() => accptThekha()}
+                style={styles.BhuktanBtn}
+
+                // onPress = {() => toggleViews()}
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  काम स्वीकार करें
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Payment", {
+                    id: id,
+                    item: item,
+                    // item : item.job_type
+                  });
+                }}
+                style={styles.BhuktanBtn}
+
+                // onPress = {() => toggleViews()}
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  भुगतान करें
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* <TouchableOpacity
+          style={styles.BhuktanBtn}
+          onPress={
+        
+            navigation.navigate("Payment", {
+              id : id,
+              item: item,
+              // item : item.job_type
+            })
+          }
+          // onPress = {() => toggleViews()}
+        >
+          <Text style={[styles.loginText, { color: "#fff" }]}>
+            भुगतान करें
+          </Text>
+        </TouchableOpacity> */}
+          </View>
+        </View>
+        <View style={{ marginTop: "auto", padding: 5 }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              backgroundColor: "#D9D9D9",
+              alignSelf: "center",
+              paddingHorizontal: 50,
+              paddingVertical: 10,
+              borderRadius: 5,
+            }}
+          >
+            <Text style={{ textAlign: "center", color: "#fff" }}>
+              रद्द करें{" "}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* <BottomTab/> */}
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    OptionButton: {
-        // flex:1,
-      flexDirection:"row",
-      width:'100%',
-      justifyContent:"space-evenly",
-      margin:20,
+  OptionButton: {
+    // flex:1,
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-evenly",
+    //   margin:20,
     //   padding:20
-    },
+  },
 
-    sahayak:
-    {
-        width: "40%",
-        // flexDirection:"column",
-        // borderRadius: 7,
-        color:"#505050",
-        height: 50,
-        alignItems: "center",
-      //   justifyContent:"",
-      justifyContent:"center",
-        marginTop: 30,
-        // borderWidth:1,
-        borderRadius:10,
-        // borderColor:"#505050",
-        backgroundColor: "#44A347",
-    },
+  sahayak: {
+    width: "40%",
+    // flexDirection:"column",
+    // borderRadius: 7,
+    color: "#505050",
+    height: 50,
+    alignItems: "center",
+    //   justifyContent:"",
+    justifyContent: "center",
+    marginTop: 30,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: "#505050",
+    // backgroundColor: "#44A347",
+  },
 
-    machine: {
-        width: "40%",
-        flexDirection:"row",
-        // borderRadius: 7,
-        color:"#505050",
-        height: 50,
-        alignItems: "center",
-      //   justifyContent:"",
-      justifyContent:"center",
-        marginTop: 30,
-        borderWidth:1,
-        borderRadius:10,
-        borderColor:"#505050"
-        // backgroundColor: "#44A347",
-    },
+  machine: {
+    width: "40%",
+    flexDirection: "row",
+    // borderRadius: 7,
+    color: "#505050",
+    height: 50,
+    alignItems: "center",
+    //   justifyContent:"",
+    justifyContent: "center",
+    marginTop: 30,
+    // borderWidth:1,
+    borderRadius: 10,
+    // borderColor:"#505050"
+    backgroundColor: "#44A347",
+  },
 
-    loginText: {
-        color: "#000",
-        fontSize:16,
-      //   flexDirection:"column",
-      },
+  MaleCheckView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    borderBottomRightRadius: 0,
+    borderTopRightRadius: 0,
+    width: "30%",
+    height: 55,
+    marginTop: 10,
+    borderWidth: 1,
+  },
 
-      loginBtn:
-      {
-        width: "80%",
-        borderRadius: 7,
-        height: 40,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
-        backgroundColor: "#0099FF",
-      },
-  
-  
-      VerifyText: {
-          color:"#fff",
-          fontWeight:"600",
-          fontSize:18
-      },
+  // FemalecheckView:{
+  //     borderColor: "#0070C0",
+  //     borderRadius: 7,
+  //     borderBottomLeftRadius: 0,
+  //     borderTopLeftRadius:0,
+  //     width: "30%",
+  //     height: 48,
+  //     // marginTop: 30,
+  //     borderWidth: 1,
+  // },
 
-      inputView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "80%",
-        height: 48,
-        marginTop: 20,
-        borderWidth: 1
-    },
+  loginText: {
+    color: "#000",
+    fontSize: 16,
+    //   flexDirection:"column",
+  },
 
-    TextInput: {
-        // height: 50,
-        padding: 10,
-        lineHeight:50,
-        // fontFamily: "Poppin-Light"
-    },
+  loginBtn: {
+    width: "30%",
+    borderRadius: 7,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 50,
+    backgroundColor: "#DCDCDC",
+  },
 
-    CheckTextInput: {
-    textAlign:"center",
-    marginTop:10
-    },
+  BhuktanBtn: {
+    width: "100%",
+    borderRadius: 7,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    backgroundColor: "#0099FF",
+  },
 
-    TaxView : {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "35%",
-        // height: 100,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  VerifyText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 18,
+  },
 
-    BhumiView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 0,
-        // borderTopRightRadius:0,
-        width: "35%",
-        height: 48,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  inputView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "100%",
+    height: 48,
+    marginTop: 10,
+    borderWidth: 1,
+  },
 
-    TimeView: {
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        // borderBottomRightRadius: 7,
-        width: "35%",
-        // height: 100,
-        marginTop: 20,
-        borderWidth: 1, 
-    },
+  TextInput: {
+    // height: 50,
+    padding: 10,
 
-    FemalecheckView:{
-        borderColor: "#0070C0",
-        borderRadius: 7,
-        borderBottomLeftRadius: 0,
-        borderTopLeftRadius:0,
-        width: "40%",
-        height: 48,
-        marginTop: 30,
-        borderWidth: 1, 
-    },
-})
+    // fontFamily: "Poppin-Light"
+  },
+
+  CheckTextInput: {
+    textAlign: "center",
+    marginTop: 0,
+  },
+
+  TaxView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "50%",
+    height: 48,
+    marginTop: 10,
+
+    borderWidth: 1,
+  },
+
+  BhumiView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 0,
+    // borderTopRightRadius:0,
+    width: "52%",
+    height: 48,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+
+  DateView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "39%",
+    height: 48,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+
+  TimeView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 0,
+    // borderTopRightRadius:0,
+    width: "39%",
+    height: 48,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+
+  JobStatusView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "43%",
+    height: 48,
+    marginTop: 20,
+    borderWidth: 1,
+  },
+
+  AmountView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 0,
+    // borderTopRightRadius:0,
+    width: "43%",
+    height: 48,
+    marginTop: 20,
+    borderWidth: 1,
+  },
+
+  DoubleView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "42%",
+    height: 48,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+
+  FemalecheckView: {
+    borderColor: "#0070C0",
+    borderRadius: 7,
+    borderBottomLeftRadius: 0,
+    borderTopLeftRadius: 0,
+    // width: "27%",
+    height: 55,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+  flex: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  justifyContentBetween: {
+    justifyContent: "space-between",
+  },
+  TextWhite: {
+    color: "#fff",
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 30,
+    marginHorizontal: 5,
+
+    textAlign: "center",
+    backgroundColor: "#fff",
+  },
+});

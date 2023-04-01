@@ -111,10 +111,10 @@ const number = [1, 2, 3, 4];
             ]}
           >
             <Text style={styles.TextInput}>
-              {moment(item?.date).format("l")}
+              {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment(item?.time).format("HH:mm")}
+              {moment.utc(item?.datetime).format("HH:mm")}
             </Text>
           </View>
 

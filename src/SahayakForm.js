@@ -159,7 +159,8 @@ export default function SahayakForm({ navigation }) {
   };
 
   const sahayakBooking = async () => {
-    const datetime = moment(showDate).format("YYYY-MM-DD") + " " + moment(time).format("HH:mm:ss") + ".000000";
+    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' +  moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
+    console.log('date', datetime)
     const params = {
       datetime: datetime,
       // datetime: "2023-03-16 17:05:42.000000",
@@ -175,7 +176,7 @@ export default function SahayakForm({ navigation }) {
 
     
     console.log('params::', params)
-   
+
     try {
       const response = await service.post("/api/post_individuals/", params, {
         headers: {
@@ -274,15 +275,15 @@ export default function SahayakForm({ navigation }) {
               selectedValue={time}
               style={{width:40}}
               onValueChange={(itemValue, itemIndex) =>
-                handleTimeChange(itemValue)
-              }
+                setTimes(timeConverted(itemValue))
+                }
             >
               <Picker.Item enabled={false} label="-समय-" value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
                     key={index}
-                    onPress={() => setTime(item)}
+                 
                     style={{
                       color: checkIfTimeEnabled(item) ? "black" : "gray",
                       fontSize: 14,
