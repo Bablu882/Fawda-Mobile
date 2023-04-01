@@ -67,7 +67,7 @@ export default function Homepage({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  मेरी बुकिंग
+                 { usertype ==="Sahayak"? 'ठेकेदार/सहायक के  काम ': usertype ==="MachineMalik" ? 'मशीन के काम ' : null}
                 </Text>
               </View>
 
@@ -86,7 +86,7 @@ export default function Homepage({ navigation, route }) {
                       <View style={styles.bookingLeft}>
                         {item.job_type ==="individuals_sahayak" || item.job_type === "theke_pe_kam" ? 
                         <>
-                        <Text style={styles.bookingTitle}>{item.job_type }</Text>
+                        <Text style={styles.bookingTitle}>{<Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="theke_pe_kam" ? 'ठेकेदार': ""}</Text> }</Text>
                         </>: <Text style={styles.bookingTitle}>{item?.work_type}</Text>
                       }
                         {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}

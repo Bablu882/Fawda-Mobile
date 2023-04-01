@@ -34,7 +34,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     };
 
 
-  const { id, item } = route.params;
+  const {  item } = route.params;
   console.log("mybook", item);
 
   const acceptSahayak = async () => {

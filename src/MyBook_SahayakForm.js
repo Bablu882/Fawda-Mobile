@@ -280,7 +280,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             { moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("HH:mm")}
+              {moment.utc(item?.datetime).format("LT")}
+             { console.log('fffffffffffffff', moment.utc(item?.datetime).format("LT"))}
             </Text>
           </View>
           {/* {usertype && usertype === "Grahak" && (
@@ -354,7 +355,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             </View>
           </View>
           <View style={styles.flex}>
-            <View style={{ width: "50%" }}>
+            <View style={{ width: "70%" }}>
               <Text></Text>
             </View>
             {usertype && usertype === "Grahak" && (
@@ -378,7 +379,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   }}
                 >
                   <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                    Accept Thekha
+                  कन्फर्म 
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -456,7 +457,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           <View>
             {usertype && usertype === "Grahak" && (
               <View>
-                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <View style={[styles.justifyContentBetween,{ flexDirection: "row", flexWrap: "wrap",  }]}>
                   <>
                     {[...Array(parseInt(item?.count_male)).keys()].map(
                       (index) => (
@@ -784,22 +785,49 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("Payment", {
-                  id: id,
-                  item: item,
-                  // item : item.job_type
-                });
-              }}
-              style={styles.BhuktanBtn}
+            <>
+              {item.status === "Accepted" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() =>
+                    navigation.navigate("Payment", {
+                     
+                      item,
+                  
+                    })
+                  }
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
+                  {item.status === "Pending" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}</>
+            // <TouchableOpacity
+            //   onPress={() => {
+            //     navigation.navigate("Payment", {
+            //       id: id,
+            //       item: item,
+            //       // item : item.job_type
+            //     });
+            //   }}
+            //   style={styles.BhuktanBtn}
 
-              // onPress = {() => toggleViews()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                भुगतान करें
-              </Text>
-            </TouchableOpacity>
+            //   // onPress = {() => toggleViews()}
+            // >
+            //   <Text style={[styles.loginText, { color: "#fff" }]}>
+            //     भुगतान करें
+            //   </Text>
+            // </TouchableOpacity>
           )}
 
          
@@ -1012,7 +1040,7 @@ const styles = StyleSheet.create({
 
     borderBottomLeftRadius: 0,
     borderTopLeftRadius: 0,
-    width: "33.33%",
+    // width: "33.33%",
     height: 55,
 
     borderWidth: 1,

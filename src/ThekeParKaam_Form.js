@@ -45,7 +45,6 @@ export default function ThekeParKaam_Form({ navigation }) {
   const [katayiValue, setKatayiValue] = useState();
   const [mode, setMode] = useState("date");
 
-
   var isTimeSelected = false;
   const pickerRef = useRef();
   function open() {
@@ -55,9 +54,6 @@ export default function ThekeParKaam_Form({ navigation }) {
   function close() {
     pickerRef.current.blur();
   }
-
-
-
 
   ////-----Time Selection Validation -----////
   const timings = [
@@ -94,7 +90,6 @@ export default function ThekeParKaam_Form({ navigation }) {
 
   ///---time selection validation
 
-
   ////---Date picker ----///
   const onChange = (event, selectedDate) => {
     setDefaultDate(selectedDate);
@@ -102,7 +97,6 @@ export default function ThekeParKaam_Form({ navigation }) {
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     setDate(currentDate);
     setShowDate(showDate);
-   
   };
 
   const showMode = (currentMode) => {
@@ -131,7 +125,6 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
   //---End of Date picker ---///
 
-
   ///--Land Type Dropdown ---///
   const landtypes = [
     {
@@ -143,64 +136,63 @@ export default function ThekeParKaam_Form({ navigation }) {
       name: "Bigha",
     },
   ];
-  
-///---End of land type dropdown ---///
 
+  ///---End of land type dropdown ---///
 
+  const handleDescriptionChange = (value) => {
+    setDescriptions(value);
+    dispatch(setDescription(value));
+  };
 
+  const handleLandTypeChange = (value) => {
+    setLandTypes(value);
+    dispatch(setLandType(value));
+  };
 
-const handleDescriptionChange = (value) => {
-  setDescriptions(value);
-  dispatch(setDescription(value));
-};
+  const handleLandAreaChange = (value) => {
+    setLandAreas(value);
+    dispatch(setLandArea(value));
+  };
 
-const handleLandTypeChange = (value) => {
-  setLandTypes(value);
-  dispatch(setLandType(value));
-};
+  const handleTotalAmount = (value) => {
+    setTotalAmounts(value);
+    dispatch(setTotalAmount(value));
+  };
+  const handleBooking = async () => {
+    try {
+      //   const datetime =
+      //   moment(showDate).format("YYYY-MM-DD") +
+      //   " " +
+      //   moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
+      //  ;
+      const datetime =
+        moment(showDate).format("YYYY-MM-DD") +
+        "T" +
+        moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+      const params = {
+        datetime: datetime,
+        description: description,
+        land_type: landType,
+        land_area: landArea,
+        total_amount_theka: totalAmount,
+      };
+      console.log("params::::::", params);
+      const response = await Service.post("/api/post_thekepekam/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token?.access,
+        },
+      });
 
-const handleLandAreaChange = (value) => {
-  setLandAreas(value);
-  dispatch(setLandArea(value));
-};
+      const data = response?.data;
+      console.log("form", data);
+      Toast.show("Job Posted Successfully!", Toast.SORT);
 
-const handleTotalAmount = (value) => {
-  setTotalAmounts(value);
-  dispatch(setTotalAmount(value));
-};
-const handleBooking = async () => {
-  try {
-  //   const datetime =
-  //   moment(showDate).format("YYYY-MM-DD") +
-  //   " " +
-  //   moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-  //  ;
-    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' +  moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-    const params = {
-      datetime: datetime,
-      description: description,
-      land_type: landType,
-      land_area: landArea,
-      total_amount_theka: totalAmount,
-    };
-console.log('params::::::', params)
-    const response = await Service.post("/api/post_thekepekam/", params, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token?.access,
-      },
-    });
-
-    const data = response?.data;
-    console.log("form", data);
-    Toast.show("Job Posted Successfully!", Toast.SORT);
-      
-    navigation.replace("MyBooking");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
+      navigation.replace("MyBooking");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -280,20 +272,19 @@ console.log('params::::::', params)
           <Picker
             ref={pickerRef}
             selectedValue={time}
-            style={{width:40}}
+            style={{ width: 40 }}
             onValueChange={(itemValue, itemIndex) =>
               setTimes(timeConverted(itemValue))
-              }
+            }
           >
             <Picker.Item enabled={false} label="-समय-" value="" />
             {timings.map((item, index) => {
               return (
                 <Picker.Item
                   key={index}
-                
                   style={{
                     color: checkIfTimeEnabled(item) ? "black" : "gray",
-                    fontSize: 14, 
+                    fontSize: 14,
                   }}
                   label={timeConverted(item)}
                   value={item}
@@ -366,15 +357,19 @@ console.log('params::::::', params)
         <View
           style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
         >
-          <TextInput
-            style={styles.TextInput}
-            placeholder="वेतन"
-            placeholderTextColor={"#cccc"}
-            keyboardType="numeric"
-            onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
-            value={totalAmount}
-          />
-          <Text style={{ right: 10, color: "#0070C0" }}>₹ 0.00</Text>
+          <Text style={{ left: 5, color: "#ccc" }}>वेतन</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ color: "#0070C0" }}>₹ </Text>
+            <TextInput
+              style={[styles.TextInput, { color: "#0070C0" }]}
+              placeholder="0.00"
+              //  style={{color:'#0070C0'}}
+              placeholderTextColor={"#0070C0"}
+              keyboardType="numeric"
+              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
+              value={totalAmount}
+            />
+          </View>
         </View>
 
         <TouchableOpacity
