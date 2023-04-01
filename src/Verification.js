@@ -18,6 +18,8 @@ export default function Verification({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [otp, setOtp] = useState("");
+  const [Timer , setTimer] = useState(true);
+  const [counter , setCounter] = useState(90);
 
   const verify = async () => {
     try {
@@ -39,7 +41,7 @@ export default function Verification({ navigation, route }) {
         // Show success message
         Toast.show("Login successful", Toast.SHORT);
         // Dispatch user type and navigate to homepage
-        dispatch(setUserType(user_type));
+        dispatch(setUserType(user_type));''
         navigation.replace("HomePage");
       } else {
         // Show error message
@@ -51,6 +53,26 @@ export default function Verification({ navigation, route }) {
       Toast.show("Error verifying OTP", Toast.SHORT);
     }
   };
+
+  // useEffect(() => {
+  //   const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+  //   console.log(timer , 'timer');
+  //   // setCounter(59)
+  //   // setTimer(true)
+  //   return () => clearInterval(timer)
+  // }, [])
+
+ 
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (counter > 0) {
+      setCounter(prevCount => prevCount - 1);
+    } else {
+      clearInterval(interval);
+    }
+  }, 1000);
+  return () => clearInterval(interval);
+}, [counter]);
 
   return (
     <View style={styles.verificationContainer}>
@@ -78,7 +100,10 @@ export default function Verification({ navigation, route }) {
       </View>
 
       <View style={styles.otpText}>
-        <Text style={{ color: "#0099FF" }}>1:30</Text>
+        {
+          Timer && 
+        <Text style={{ color: "#0099FF" }}>{Math.floor(counter / 60)}:{(counter % 60).toString().padStart(2, '0')}</Text>
+        }
       </View>
 
       <TouchableOpacity
