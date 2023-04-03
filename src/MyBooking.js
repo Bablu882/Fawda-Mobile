@@ -368,7 +368,7 @@ export default function MyBooking({ navigation, route }) {
                     >
                       <View style={{ marginLeft: 30 }}>
                         <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                        { item.job_type ==="machine_malik" ?' मशीनरी' : ''}
+                        { item.job_type ==="machine_malik" ?' मशीनरी' : 'मशीनरी'}
                         </Text>
                         <Text style={{ color: "black" }}>
                         { moment.utc(item?.datetime).format('L')}
@@ -395,7 +395,7 @@ export default function MyBooking({ navigation, route }) {
                               fontWeight: "600",
                             }}
                           >
-                            पेंडिंग
+                          {item.status}
                           </Text>
                         </TouchableOpacity>
                       </View>

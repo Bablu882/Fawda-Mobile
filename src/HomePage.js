@@ -92,7 +92,8 @@ export default function Homepage({ navigation, route }) {
                         {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
                         
                         <Text style={{ color: "black" }}>
-                          {moment(item.date).format("l")}
+                      
+                          {moment.utc(item.datetime).format("l")}
                         </Text>
                       </View>
                       <TouchableOpacity

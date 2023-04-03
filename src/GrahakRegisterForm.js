@@ -181,27 +181,27 @@ export default function GrahakRegisterForm({ navigation, route }) {
     }
   };
 
-  const districtapi = async () => {
+  const districtapi = async (val) => {
+    const params = {
+      state: val,
+    };
+
     try {
-      const response = await Service.get("/api/districts/", {
+      const response = await Service.post("/api/districts/", params, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      const data = response.data;
-
-      // console.log('data::', data)
+      const { data } = response;
+      console.log("data:", data);
       setDistrict(data);
     } catch (error) {
       console.log("Error:", error);
-      // Toast.show("Error Occurred. Please try again later.", Toast.SORT);
     }
   };
-
   useEffect(() => {
     stateapi();
-    districtapi();
+    districtapi(selectedState);
   }, []);
   useEffect(() => {
     (async () => {
@@ -342,9 +342,11 @@ export default function GrahakRegisterForm({ navigation, route }) {
             <Text style={styles.label}>राज्य</Text>
             <Picker
               selectedValue={selectedState}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedState(itemValue)
-              }
+              onValueChange={(itemValue, itemIndex) => {
+                setSelectedState(itemValue);
+                console.log("jnjdjdjdjd", itemValue);
+                districtapi(itemValue);
+              }}
             >
               <Picker.Item
                 label="राज्य"
@@ -369,20 +371,34 @@ export default function GrahakRegisterForm({ navigation, route }) {
                 setSelectedDistrict(itemValue)
               }
             >
+              {district?.map((district, index) => (
+                <Picker.Item
+                  key={index}
+                  label={district.district}
+                  value={district.district}
+                />
+              ))}
+            </Picker>
+            {/* <Picker
+              selectedValue={selectedDistrict}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedDistrict(itemValue)
+              }
+            >
               <Picker.Item
                 label="जिला"
                 value=""
                 enabled={false}
                 style={{ color: "#ccc" }}
               />
-              {district?.map((district) => (
+              {district?.map((item) => (
                 <Picker.Item
-                  key={district.id}
-                  label={`${district.name}`}
-                  value={district.name}
+              
+                  label={item.district}
+                  value={item.district}
                 />
               ))}
-            </Picker>
+            </Picker> */}
           </View>
         </View>
 
