@@ -17,7 +17,7 @@ import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 
-function Theke_MachineForm2({ navigation, route }) {
+function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
@@ -455,7 +455,7 @@ function Theke_MachineForm2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn}  onPress={() => Completed()}>
+            <TouchableOpacity style={styles.BhuktanBtn}>
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
@@ -495,7 +495,7 @@ function Theke_MachineForm2({ navigation, route }) {
     </SafeAreaView>
   );
 }
-export default Theke_MachineForm2;
+export default MachineWork2;
 
 const styles = StyleSheet.create({
   container: {

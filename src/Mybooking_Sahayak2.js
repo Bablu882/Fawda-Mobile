@@ -21,15 +21,19 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
+  const { item, data, payment_status } = route?.params;
+  console.log("fjkfkfkff", data, payment_status);
+  // const bookingid = route?.params?.item;
+  // console.log("bookingid", bookingid);
+  const [colors, setColors] = useState(Array(10).fill("white"));
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [show, setShow] = useState(true);
-  const [colors, setColors] = useState(Array(10).fill("white"));
+  const [status, setStatus] = useState("");
 
   const RatingApi = async () => {
     let params = {
-      booking_job: item?.booking_id,
+      booking_job: data,
       rating: ratings,
       comment: comments,
     };
@@ -62,8 +66,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     RatingApi();
   };
 
-  const { item, data, payment_status} = route?.params;
-  console.log("mybook", item, data, payment_status);
 
   const acceptSahayak = async () => {
     let params = {
@@ -93,6 +95,50 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   // phone number dropdown
   const number = [1, 2, 3, 4];
   // end
+
+  const onGoing = async () => {
+    let params = {
+      booking_id: data,
+    };
+    console.log("fhsfhdfhdfh", params);
+    try {
+      const response = await service.post("/api/booking_ongoing/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      setStatus(data);
+      console.log(status, "check status");
+      // setThekeperKam(data.data);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const Completed = async () => {
+    let params = {
+      booking_id: data,
+    };
+    console.log("fhsfhdfhdfh", params);
+    try {
+      const response = await service.post("/api/booking_completed/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      setStatus(data);
+      console.log(status, "check status");
+      // setThekeperKam(data.data);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -175,10 +221,14 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 styles.flex,
                 styles.justifyContentBetween,
               ]}
-            ></View>
+            >
+              <Text style={{ marginRight: 8, color: "#0099FF" }}>
+                {/* {item.} */}
+              </Text>
+            </View>
           </View>
-
-          <View style={[styles.flex, styles.justifyContentBetween]}></View>
+            
+          {/* <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
@@ -188,7 +238,25 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               styles.justifyContentBetween,
               { flexWrap: "wrap" },
             ]}
-          ></View>
+          ></View> */}
+
+          <View style={{display:"flex", flexDirection:"row" , alignItems:"center", marginTop:15, width:"100%"}} >
+            <View style={{borderWidth:1 , borderColor: "#0070C0", borderTopLeftRadius:5, borderBottomLeftRadius:5, width:"25%", height:45, justifyContent:"center", }}>
+            <Text style={{textAlign:"center"}}>पुरुष</Text>
+            </View>
+
+            <View style={{borderWidth:1 , borderColor: "#0070C0",width:"25%", height:45,  justifyContent:"center",}}>
+              <Text style={{textAlign:"center"}}>पुरुष</Text>
+            </View>
+
+            <View style={{borderWidth:1 ,borderColor: "#0070C0", width:"25%", height:45, justifyContent:"center",}}>
+              <Text style={{textAlign:"center"}}>महिला</Text>
+            </View>
+
+            <View style={{borderWidth:1 ,borderColor: "#0070C0", borderTopRightRadius:5, borderBottomRightRadius:5, width:"25%", height:45, justifyContent:"center",}}>
+              <Text style={{textAlign:"center"}}>महिला </Text>
+            </View>
+          </View>
 
           {/* end */}
 
@@ -216,25 +284,60 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 backgroundColor: "#44A347",
                 marginRight: 10,
                 marginTop: 8,
+                width:"30%"
               }}
             >
               <TouchableOpacity>
+              {status.status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
                     marginTop: 5,
-                    paddingHorizontal: 10,
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: "600",
                   }}
                 >
-                  बुक
+                  जारी है
+                  {console.log("")}
                 </Text>
+              ) : status.status === "Completed" ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  समाप्त{" "}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {/* {bookingid?.status} */}
+                  बुक
+                  {console.log("")}
+                </Text>
+              )}
               </TouchableOpacity>
             </View>
           </View>
+           
 
+           {status.status === "Completed" ?
+           
+           ""
+           : 
+           <>
           <View
             style={[
               styles.inputView,
@@ -387,12 +490,23 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             />
             {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
           </View>
+          </>
+          
+           }
 
+{  status.status === "Completed" ?
+        <>
+            <Text>रेटिंग दें  </Text>
           <View
             style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
           >
             {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+              <TouchableOpacity
+                key={index}
+                onPress={() => {
+                  handleClick(index);
+                }}
+              >
                 <Text
                   style={{
                     backgroundColor: colors[index],
@@ -406,24 +520,49 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </TouchableOpacity>
             ))}
           </View>
-
-          <View style={{height:100 , borderWidth:1, width:"75%", marginTop:20}}>
-            <TextInput 
-            placeholder="comment"
-            onChangeText={setComment}
-            value={comments}
+           
+           
+            <Text>
+            कोई सुझाव
+            </Text>
+           
+          <View
+            style={{ height: 100, borderWidth: 1, borderRadius:10, width: "90%", marginTop: 20 , borderColor:"#0099FF"}}
+          >
+            <TextInput
+              
+              onChangeText={setComment}
+              value={comments}
             />
           </View>
+          </>
+          :
+          ""
+}
 
-          <TouchableOpacity
-            style={styles.BhuktanBtn}
-            onPress={() => navigation.navigate("Payment")}
-            // onPress = {() => toggleViews()}
-          >
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              काम शुरू करें
-            </Text>
-          </TouchableOpacity>
+          {status.status === "Ongoing" ? (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => Completed()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                काम पूरा हुआ
+              </Text>
+            </TouchableOpacity>
+          ) : status.status === "Completed" ? (
+            <TouchableOpacity style={styles.BhuktanBtn}>
+              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => onGoing()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                काम शुरू करें
+              </Text>
+            </TouchableOpacity>
+          )}
 
           {/* <TouchableOpacity
             onPress={() => navigation.navigate("Profile")}

@@ -26,7 +26,7 @@ export default function Payment({ route, navigation }) {
   const paymentStatus = async () => {
     try {
       const params = {
-        booking_id: item?.booking_id,
+        booking_id: JSON.stringify(item?.booking_id),
         amount: amount,
         upi_id: upiId,
         beneficiary_name: name,
@@ -43,7 +43,7 @@ console.log('oadkfdjkdd', params)
       console.log("Data: ",  data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
-         data : data.payment_status,
+         data : data.booking_id,
          payment_status: data.payment_status
          
         });
@@ -52,6 +52,12 @@ console.log('oadkfdjkdd', params)
           data : data.booking_id,
           payment_status: data.payment_status
         });
+      }
+      else if (item.job_type === "MachineMalik") {
+        navigation.navigate("MachineWork2"), {
+          data : data.booking_id,
+          payment_status: data.payment_status
+        }
       }
       Toast.show('Payment Updated Successfully!!!', Toast.SHORT);
   
@@ -199,10 +205,7 @@ console.log('oadkfdjkdd', params)
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity
             style={styles.BhuktanBtn}
-            onPress={() =>{ paymentStatus();
-           
-              
-            }}
+            onPress={ paymentStatus}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
               अभी भुगतान करें{" "}
