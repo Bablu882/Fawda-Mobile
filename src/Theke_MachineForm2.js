@@ -15,24 +15,60 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
+import { Picker } from "@react-native-picker/picker";
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
-  const { item, status} = route?.params;
-  console.log('fjkfkfkff')
+  const { item, data, payment_status} = route?.params;
+  console.log('fjkfkfkff', data, payment_status)
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
+  const [bookingjob , setBookingJob] = useState("");
+  const [ratings , setRating] = useState(0);
+  const [comments , setComment] = useState("");
+
+//  const [colors, setColors] = useState(Array(10).fill("white"));
+  const [numbers, setNumber] = useState(0);
+
+  const number = [1, 2, 3, 4];
+
+  const RatingApi = async() => {
+    let params = {
+      booking_job : item?.booking_id,
+      rating : ratings,
+      comment : comments,
+    }
+
+    try {
+      const response = await service.post("/api/rating/create/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      // setThekeperKam(data.data);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+  // const {  item , status} = route.params;
+  // console.log("fjds", status , item);
 
   const handleClick = (index) => {
+    setRating(index+1);
     const newColors = [...colors];
-    if (index === 0) newColors[index] = "red";
-    else if (index === 4) newColors[index] = "yellow";
-    else if (index === 9) newColors[index] = "green";
+    if (index < 4) newColors[index] = "red";
+    else if (index >= 4 && index < 9) newColors[index] = "yellow";
+    else if (index >= 9) newColors[index] = "green";
     setColors(newColors);
+    RatingApi()
   };
 
 
@@ -82,6 +118,7 @@ function Theke_MachineForm2({ navigation, route }) {
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
+
       <ScrollView horizontal={false}>
         <View style={{ alignItems: "center", flex: 1 }}>
           <Text
@@ -99,7 +136,7 @@ function Theke_MachineForm2({ navigation, route }) {
               },
             ]}
           >
-            <Text style={[styles.TextInput]}>{item.description}</Text>
+            <Text style={[styles.TextInput]}>{item?.description}</Text>
             <Image
               source={require("../assets/image/edit.png")}
               style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -293,7 +330,7 @@ function Theke_MachineForm2({ navigation, route }) {
             style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
           >
             {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+              <TouchableOpacity key={index} onPress={() => {handleClick(index)}}>
                 <Text
                   style={{
                     backgroundColor: colors[index],
@@ -308,6 +345,14 @@ function Theke_MachineForm2({ navigation, route }) {
             ))}
           </View>
 
+          <View style={{height:100 , borderWidth:1, width:"75%", marginTop:20}}>
+            <TextInput 
+            placeholder="comment"
+            onChangeText={setComment}
+            value={comments}
+            />
+          </View>
+
           <TouchableOpacity
             style={styles.BhuktanBtn}
             onPress={() =>
@@ -320,7 +365,7 @@ function Theke_MachineForm2({ navigation, route }) {
             // onPress = {() => toggleViews()}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
-              भुगतान करें
+            काम शुरू करें 
             </Text>
           </TouchableOpacity>
 
@@ -432,7 +477,7 @@ const styles = StyleSheet.create({
     // borderBottomRightRadius: 7,
     width: "80%",
     height: 48,
-    marginTop: 20,
+    marginTop: 15,
     borderWidth: 1,
   },
 

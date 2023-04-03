@@ -47,8 +47,8 @@ const acceptThekha = async () => {
 
 
 export default function Theke_k_Kaam({ navigation, route }) {
-  const thekejobs = route?.params?.item;
-  console.log("params:::::", thekejobs, thekejobs.datetime);
+  const {thekejobs} = route?.params?.item;
+  console.log("params:::::", thekejobs, thekejobs.datetime,);
   return (
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>

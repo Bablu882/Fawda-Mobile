@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -53,6 +53,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [acceptedCount, setAcceptedCount] = useState(null);
   const [maleCount, setMaleCount] = useState(null);
   const usertype = useSelector(selectUserType);
+  const [amountfemale, setAmountFemale] = useState(item?.pay_amount_female);
+  const [amountmale, setAmountMale] = useState(item?.pay_amount_male);
+  const [edit, setEdit] = useState(false);
+  const textInputRef = useRef(null);
   console.log("usrrjfjf", usertype);
 
   const { id, item } = route.params;
@@ -176,6 +180,46 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     });
     return count;
   };
+
+  const onEditPress = () => {
+    setEdit(true);
+    textInputRef?.current?.focus();
+  };
+  const onAcceptPress = async () => {
+    let params =
+      {
+        job_id: JSON.stringify(item?.id),
+        pay_amount_male: amount,
+        pay_amount_female: amount,
+      };
+    console.log(params, "params");
+
+    try {
+      const response = await service.post("/api/edit_individuals/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      Toast.show(data.success, Toast.SHORT);
+      // setThekeperKam(data.data);
+      // setAmount(data.data)
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+    
+  }
+
+   function updateAmount (value) {
+    console.log("updateAmountupdateAmount",value);
+    setAmountMale(value);
+    setAmountFemale(value);
+    console.log("setamount",amountfemale , amountmale);
+
+   }
 
   function handleFemaleAccepted() {
     const totalfemale = countAccepted();
@@ -333,9 +377,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 placeholder="एक पुरुष का वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.pay_amount_male}
-              </Text>
+              <TextInput
+                    editable={edit}
+                    ref={textInputRef}
+                    onChangeText={updateAmount}
+                    value={amountmale}
+                    style={{paddingRight:10}}
+                    // defaultValue={item?.total_amount_theka}
+                  />
             </View>
             <View
               style={[
@@ -349,9 +398,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 placeholder="एक महिला का वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginRight: 20, color: "#0099FF" }}>
-                ₹ {item?.pay_amount_female}
-              </Text>
+              <TextInput
+                    editable={edit}
+                    ref={textInputRef}
+                    onChangeText={updateAmount}
+                    value={amountfemale}
+                    style={{paddingRight:10}}
+                    // defaultValue={item?.total_amount_theka}
+                  />
             </View>
           </View>
           <View style={styles.flex}>
@@ -361,6 +415,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             {usertype && usertype === "Grahak" && (
               <View style={[styles.flex, { marginTop: 10 }]}>
                 <TouchableOpacity
+                onPress={() => {onEditPress()}}  
                   style={{
                     backgroundColor: "#0099FF",
                     marginRight: 10,
@@ -372,6 +427,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                onPress={() => {onAcceptPress()}}
                   style={{
                     backgroundColor: "#44A347",
                     paddingHorizontal: 10,

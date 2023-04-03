@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
+import Toast from "react-native-simple-toast";
 
 const CustomComponent = ({ label, value }) => {
   return (
@@ -46,17 +47,56 @@ function Theke_MachineForm({ navigation, route }) {
   console.log("usrrjfjf", usertype);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
-  const [amount, setAmount] = useState({});
+  const [amount, setAmount] = useState(item?.total_amount_theka);
   const [edit, setEdit] = useState(false);
   const [editable, setEditable] = useState(false);
 
   const textInputRef = useRef(null);
+  const { id, item } = route.params;
+  
+  console.log("fnfjff", item);
+
   const handleClick = () => {
     textInputRef.current.focus();
   };
-  const { id, item } = route.params;
 
-  console.log("fnfjff", item, item.status);
+  function updateAmount (value) {
+    console.log("updateAmountupdateAmount",value);
+    setAmount(value);
+    console.log("setamount",amount);
+
+   }
+
+   const Edit = async () => {
+    let params =
+      // {
+      // job_id:"95",
+      // amount:"2221"
+      // }
+      {
+        job_id: JSON.stringify(item?.id),
+        amount: amount,
+      };
+    console.log(params, "params");
+
+    try {
+      const response = await service.post("/api/edit_thekepekam/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      Toast.show(data.success, Toast.SHORT);
+      // setThekeperKam(data.data);
+      // setAmount(data.data)
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+ 
   const accptThekha = async () => {
     let params = {
       job_id: item?.id,
@@ -73,39 +113,15 @@ function Theke_MachineForm({ navigation, route }) {
       console.log("aaaa", data);
       setThekeperKam(data?.data);
       console.log("rrrr", thekeperKam);
-      navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
-  const Edit = async () => {
-    let params =
-      // {
-      // job_id:"95",
-      // amount:"2221"
-      // }
-      {
-        job_id: item?.id,
-        amount: amount,
-      };
-    console.log(params, "params");
 
-    try {
-      const response = await service.post("/api/edit_thekepekam/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
-        },
-      });
-      console.log(token?.access, "token");
-      const data = response?.data;
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+
+
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -125,7 +141,7 @@ function Theke_MachineForm({ navigation, route }) {
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {item?.job_type === "theke_pe_kam" ? "ठेके पर काम" : ""}
+            {item?.job_type === "theke_pe_kam" ?'ठेके पर काम':''}
           </Text>
           <View
             style={[
@@ -166,7 +182,7 @@ function Theke_MachineForm({ navigation, route }) {
               {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("LT")}
+              {moment.utc(item?.datetime).format("HH:mm")}
             </Text>
           </View>
           {usertype &&
@@ -216,7 +232,7 @@ function Theke_MachineForm({ navigation, route }) {
                 >
                   <TextInput
                     style={styles.TextInput}
-                    placeholderTextColor="#000"
+                    placeholderTextColor="#848484"
                     placeholder="भूमि क्षेत्र "
                   />
                   <Text style={{ right: 10, color: "#0070C0" }}>
@@ -234,17 +250,18 @@ function Theke_MachineForm({ navigation, route }) {
                 >
                   <TextInput
                     style={styles.TextInput}
-                    placeholderTextColor="#000"
-                    placeholder="वेतन"
+                    placeholderTextColor="#848484"
+                    placeholder="वेतन "
                   />
-                  <TextInput
+                   <TextInput
                     editable={edit}
                     ref={textInputRef}
-                    onChangeText={(amount) => setAmount(amount)}
+                    onChangeText={updateAmount}
                     value={amount}
-                    style={{ paddingRight: 10 }}
-                    defaultValue={item?.total_amount_theka}
+                    style={{paddingRight:10}}
+                    // defaultValue={item?.total_amount_theka}
                   />
+                 
                 </View>
               </View>
               <View
@@ -306,21 +323,9 @@ function Theke_MachineForm({ navigation, route }) {
                     marginTop: 8,
                   }}
                 >
-                  {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
-
+                  {console.log("thekeperKam?.status", thekeperKam?.status)}
                   <TouchableOpacity>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        marginTop: 5,
-                        color: "#fff",
-                        fontSize: 15,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {item?.status}
-                    </Text>
-                    {/* {thekeperKam && (
+                    {thekeperKam && (
                       <Text
                         style={{
                           textAlign: "center",
@@ -332,31 +337,26 @@ function Theke_MachineForm({ navigation, route }) {
                       >
                         {thekeperKam?.status}
                       </Text>
-                    )} */}
+                    )}
                   </TouchableOpacity>
                 </View>
               </View>
-              {item.status === "Accepted" && (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                  onPress={() =>
-                    navigation.navigate("Payment", {
-                      item,
-                    })
-                  }
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    भुगतान करें
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {item.status === "Pending" && (
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    भुगतान करें
-                  </Text>
-                </TouchableOpacity>
-              )}
+
+              <TouchableOpacity
+                style={styles.BhuktanBtn}
+                onPress={() =>
+                  navigation.navigate("Payment", {
+                    item: item.job_type,
+                    id: id,
+                    item: item,
+                  })
+                }
+                // onPress = {() => toggleViews()}
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  भुगतान करें
+                </Text>
+              </TouchableOpacity>
             </>
           )}
 
@@ -371,69 +371,36 @@ function Theke_MachineForm({ navigation, route }) {
               {usertype &&
                 (usertype === "Sahayak" || usertype === "MachineMalik") && (
                   <>
-                    <CustomComponent
-                      label="किसान से वेतन"
-                      value={item?.total_amount_theka}
-                    />
-                    <CustomComponent
-                      label="फावड़ा की फीस"
-                      value={item?.fawda_fee}
-                    />
-                    <CustomComponent
-                      label="आपका भुगतान"
-                      value={item?.payment_your}
-                    />
-                  </>
+                  <CustomComponent
+                    label="किसान से वेतन"
+                    value={item?.total_amount_theka}
+                  />
+                  <CustomComponent
+                    label="फावड़ा की फीस"
+                    value={item?.fawda_fee}
+                  />
+                  <CustomComponent
+                    label="आपका भुगतान"
+                    value={item?.payment_your}
+                  />
+                </>
+                 
                 )}
             </>
           </View>
-          {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-            item.status === "Accepted" ? (
-              <TouchableOpacity style={styles.BhuktanBtn}>
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  काम स्वीकृत
-                </Text>
-              </TouchableOpacity>
-            ) : item.status === "Pending" ? (
+
+          {usertype &&
+            (usertype === "Sahayak" || usertype === "MachineMalik") && (
               <TouchableOpacity
                 style={styles.BhuktanBtn}
                 onPress={() => accptThekha()}
+                // onPress = {() => toggleViews()}
               >
                 <Text style={[styles.loginText, { color: "#fff" }]}>
                   काम स्वीकार करें
                 </Text>
               </TouchableOpacity>
-            ) : item.status === "Booked" ? (
-              <TouchableOpacity style={styles.BhuktanBtn}>
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  काम बुक
-                </Text>
-              </TouchableOpacity>
-            ) : null
-          ) : null}
-
-          {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-            (item.status === "Accepted" ? (
-              <>
-                <View style={[styles.inputView, { height: 40 }]}>
-                  <Text style={styles.label}>ग्राहक का नाम</Text>
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder={item?.grahak_name}
-                  />
-                </View>
-
-                <View style={[styles.inputView, { height: 40 }]}>
-                  <Text style={styles.label}>फ़ोन:</Text>
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder={item?.grahak_phone}
-                  />
-                </View>
-              </>
-            ) : null)}
+            )}
         </View>
 
         <View style={{ marginTop: "auto", padding: 5 }}>
