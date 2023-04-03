@@ -40,7 +40,19 @@ console.log('oadkfdjkdd', params)
       });
 
       const data = response.data;
-      console.log("Data: ", data);
+      console.log("Data: ",  data);
+      if (item.job_type === "individuals_sahayak") {
+        navigation.navigate("Mybooking_Sahayak2", {
+         data : data.payment_status,
+         payment_status: data.payment_status
+         
+        });
+      } else if (item.job_type === "theke_pe_kam") {
+        navigation.navigate("Theke_MachineForm2", {
+          data : data.booking_id,
+          payment_status: data.payment_status
+        });
+      }
       Toast.show('Payment Updated Successfully!!!', Toast.SHORT);
   
     } catch (error) {
@@ -187,19 +199,10 @@ console.log('oadkfdjkdd', params)
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity
             style={styles.BhuktanBtn}
-            onPress={() => paymentStatus()}
-            // onPress={() => {
-            //   if (item.job_type === "individuals_sahayak") {
-            //     navigation.navigate("Mybooking_Sahayak2", {
-            //       item,
-            //       status: ["booked", "pending", "continue"],
-            //     });
-            //   } else if (item.job_type === "theke_pe_kam") {
-            //     navigation.navigate("Theke_MachineForm2", {
-            //       item: item,
-            //     });
-            //   }
-            // }}
+            onPress={() =>{ paymentStatus();
+           
+              
+            }}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
               अभी भुगतान करें{" "}

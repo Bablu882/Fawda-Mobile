@@ -21,21 +21,49 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
- 
-  const [show , setShow] = useState(true);
-  const [colors, setColors] = useState(Array(10).fill('white'));
+  const [bookingjob, setBookingJob] = useState("");
+  const [ratings, setRating] = useState(0);
+  const [comments, setComment] = useState("");
+  const [show, setShow] = useState(true);
+  const [colors, setColors] = useState(Array(10).fill("white"));
 
-  const handleClick = (index) => {
-    const newColors = [...colors];
-    if (index === 0) newColors[index] = 'red';
-    else if (index === 4) newColors[index] = 'yellow';
-    else if (index === 9) newColors[index] = 'green';
-    setColors(newColors);
+  const RatingApi = async () => {
+    let params = {
+      booking_job: item?.booking_id,
+      rating: ratings,
+      comment: comments,
     };
 
+    try {
+      const response = await service.post("/api/rating/create/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      // setThekeperKam(data.data);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
-  const {  item } = route.params;
-  console.log("mybook", item);
+  // const {  item , status} = route.params;
+  // console.log("fjds", status , item);
+
+  const handleClick = (index) => {
+    setRating(index + 1);
+    const newColors = [...colors];
+    if (index < 4) newColors[index] = "red";
+    else if (index >= 4 && index < 9) newColors[index] = "yellow";
+    else if (index >= 9) newColors[index] = "green";
+    setColors(newColors);
+    RatingApi();
+  };
+
+  const { item, data, payment_status} = route?.params;
+  console.log("mybook", item, data, payment_status);
 
   const acceptSahayak = async () => {
     let params = {
@@ -43,7 +71,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       count_female: item.count_female,
       job_id: id,
     };
-    console.log("paramsacceptSahayak",params);
+    console.log("paramsacceptSahayak", params);
 
     try {
       const response = await service.post("/api/accept_individuals/", params, {
@@ -54,19 +82,17 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
       const data = response?.data;
       console.log("datadata", data);
-   
     } catch (error) {
       console.log("Error:", error);
     }
   };
-// useEffect(() => {
-//   acceptSahayak()
-// }, [])
+  // useEffect(() => {
+  //   acceptSahayak()
+  // }, [])
 
-// phone number dropdown
-const number = [1, 2, 3, 4];
-// end
-
+  // phone number dropdown
+  const number = [1, 2, 3, 4];
+  // end
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -118,7 +144,6 @@ const number = [1, 2, 3, 4];
             </Text>
           </View>
 
-        
           <View
             style={{
               flexDirection: "row",
@@ -144,20 +169,18 @@ const number = [1, 2, 3, 4];
                 {item?.land_type}
               </Text>
             </View>
-            <View style={[ styles.TaxView , 
-             styles.flex,
-                styles.justifyContentBetween,]}></View>
+            <View
+              style={[
+                styles.TaxView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            ></View>
           </View>
 
-         
-         
-
-         
-
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
-        
 
           <View
             style={[
@@ -206,7 +229,7 @@ const number = [1, 2, 3, 4];
                     fontWeight: "600",
                   }}
                 >
-                  बुक 
+                  बुक
                 </Text>
               </TouchableOpacity>
             </View>
@@ -238,150 +261,167 @@ const number = [1, 2, 3, 4];
                 marginTop: 8,
               }}
             >
-              <TouchableOpacity >
-              <View
-              style={[
-                styles.DoubleView,
-                styles.flex,
-                styles.justifyContentBetween,{marginHorizontal:4}
-              ]}
-            >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    paddingHorizontal: 10,
-                    color: "#0099FF",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
+              <TouchableOpacity>
+                <View
+                  style={[
+                    styles.DoubleView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                    { marginHorizontal: 4 },
+                  ]}
                 >
-                  1-4 
-                </Text>
-                
-           
-           {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      paddingHorizontal: 10,
+                      color: "#0099FF",
+                      fontSize: 15,
+                      fontWeight: "600",
+                    }}
+                  >
+                    1-4
+                  </Text>
+
+                  {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
               {numbers ? numbers : ""}
             </Text> */}
-              <View style={{ flexDirection: "row" }}>
-          
-                <Picker
-                  style={{ width: 20, paddingTop: 16 }}
-                  // ref={pickerRef}
-                  selectedValue={numbers}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setNumber(itemValue)
-                  }
-                >
-                  <Picker.Item label="1-4" value="1-4" enabled={false} />
-                  {number.map((item) => (
-                    <Picker.Item
-                      label={item.toString()}
-                      value={item}
-                      key={item}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <Picker
+                      style={{ width: 20, paddingTop: 16 }}
+                      // ref={pickerRef}
+                      selectedValue={numbers}
+                      onValueChange={(itemValue, itemIndex) =>
+                        setNumber(itemValue)
+                      }
+                    >
+                      <Picker.Item label="1-4" value="1-4" enabled={false} />
+                      {number.map((item) => (
+                        <Picker.Item
+                          label={item.toString()}
+                          value={item}
+                          key={item}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={[styles.inputView, { position: "relative" }]}>
-          <Text
-            style={{
-              position: "absolute",
-              top: -10,
-              left: 30,
-              width: "15%",
-              textAlign: "center",
-              backgroundColor: "#fff",
-            }}
-          >
-            सहायक 
-          </Text>
-          <TextInput
-            style={styles.TextInput}
-            placeholder=""
-            placeholderTextColor={"#848484"}
-            // onChangeText={(text) => setName(text, "name")}
-            // defaultValue={email}
-            // value={name}
-            //   error={input.name}
-            //   onFocus={() => handleError(null, "name")}
-          />
-          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-        </View>
+            <Text
+              style={{
+                position: "absolute",
+                top: -10,
+                left: 30,
+                width: "15%",
+                textAlign: "center",
+                backgroundColor: "#fff",
+              }}
+            >
+              सहायक
+            </Text>
+            <TextInput
+              style={styles.TextInput}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+              // onChangeText={(text) => setName(text, "name")}
+              // defaultValue={email}
+              // value={name}
+              //   error={input.name}
+              //   onFocus={() => handleError(null, "name")}
+            />
+            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+          </View>
 
-        <View style={[styles.inputView, { position: "relative" }]}>
-          <Text
-            style={{
-              position: "absolute",
-              top: -10,
-              left: 30,
-              width: "10%",
-              textAlign: "center",
-              backgroundColor: "#fff",
-            }}
-          >
-            गाँव 
-          </Text>
-          <TextInput
-            style={styles.TextInput}
-            placeholder=""
-            placeholderTextColor={"#848484"}
-            // onChangeText={(text) => setName(text, "name")}
-            // defaultValue={email}
-            // value={name}
-            //   error={input.name}
-            //   onFocus={() => handleError(null, "name")}
-          />
-          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-        </View>
+          <View style={[styles.inputView, { position: "relative" }]}>
+            <Text
+              style={{
+                position: "absolute",
+                top: -10,
+                left: 30,
+                width: "10%",
+                textAlign: "center",
+                backgroundColor: "#fff",
+              }}
+            >
+              गाँव
+            </Text>
+            <TextInput
+              style={styles.TextInput}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+              // onChangeText={(text) => setName(text, "name")}
+              // defaultValue={email}
+              // value={name}
+              //   error={input.name}
+              //   onFocus={() => handleError(null, "name")}
+            />
+            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+          </View>
 
-        <View style={[styles.inputView, { position: "relative" }]}>
-          <Text
-            style={{
-              position: "absolute",
-              top: -10,
-              left: 30,
-              width: "20%",
-              textAlign: "center",
-              backgroundColor: "#fff",
-            }}
+          <View style={[styles.inputView, { position: "relative" }]}>
+            <Text
+              style={{
+                position: "absolute",
+                top: -10,
+                left: 30,
+                width: "20%",
+                textAlign: "center",
+                backgroundColor: "#fff",
+              }}
+            >
+              मोबाइल नंबर
+            </Text>
+            <TextInput
+              style={styles.TextInput}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+              // onChangeText={(text) => setName(text, "name")}
+              // defaultValue={email}
+              // value={name}
+              //   error={input.name}
+              //   onFocus={() => handleError(null, "name")}
+            />
+            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+          </View>
+
+          <View
+            style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
           >
-            मोबाइल नंबर 
-          </Text>
-          <TextInput
-            style={styles.TextInput}
-            placeholder=""
-            placeholderTextColor={"#848484"}
-            // onChangeText={(text) => setName(text, "name")}
-            // defaultValue={email}
-            // value={name}
-            //   error={input.name}
-            //   onFocus={() => handleError(null, "name")}
-          />
-          {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-        </View>
-        
-        <View style={{display:"flex" , flexDirection:"row", marginTop:20}}>
-{Array.from({ length: 10 }, (_, index) => (
-<TouchableOpacity key={index} onPress={() => handleClick(index)}>
-<Text style={{ backgroundColor: colors[index], padding: 10 , borderWidth:0.7, borderColor:"#000"}}>
-{index + 1}
-</Text>
-</TouchableOpacity>
-))}
-</View>
+            {Array.from({ length: 10 }, (_, index) => (
+              <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+                <Text
+                  style={{
+                    backgroundColor: colors[index],
+                    padding: 10,
+                    borderWidth: 0.7,
+                    borderColor: "#000",
+                  }}
+                >
+                  {index + 1}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={{height:100 , borderWidth:1, width:"75%", marginTop:20}}>
+            <TextInput 
+            placeholder="comment"
+            onChangeText={setComment}
+            value={comments}
+            />
+          </View>
+
           <TouchableOpacity
             style={styles.BhuktanBtn}
             onPress={() => navigation.navigate("Payment")}
             // onPress = {() => toggleViews()}
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
-            काम शुरू करें 
+              काम शुरू करें
             </Text>
           </TouchableOpacity>
 
@@ -587,7 +627,7 @@ const styles = StyleSheet.create({
     // borderBottomRightRadius: 7,
     // width: "42%",
     // height: 48,
-    marginTop:-10,
+    marginTop: -10,
     // borderWidth: 1,
   },
 
