@@ -16,6 +16,7 @@ import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
@@ -23,7 +24,8 @@ function MachineWork2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", data, payment_status);
+  console.log("fjkfkfkff",item,  data, payment_status);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -64,12 +66,25 @@ function MachineWork2({ navigation, route }) {
 
   const handleClick = (index) => {
     setRating(index + 1);
-    const newColors = [...colors];
-    if (index < 4) newColors[index] = "red";
-    else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    else if (index >= 9) newColors[index] = "green";
-    setColors(newColors);
-    
+    setSelectedButtonIndex(index);
+    // const newColors = [...colors];
+    // if (index < 4) newColors[index] = "red";
+    // else if (index >= 4 && index < 9) newColors[index] = "yellow";
+    // else if (index >= 9) newColors[index] = "green";
+    // setColors(newColors);
+   
+  };
+
+  const renderButton = (index) => {
+    const backgroundColor = index <= selectedButtonIndex ? 'red' : 'transparent';
+    const iconName = index <= selectedButtonIndex ? 'star' :'star-o'
+    return (
+      <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+        <View style={[styles.button]}>
+      <FontAwesome name={iconName} size={30} color="#e6b400" /> 
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   const fetchBookings = async () => {
@@ -176,15 +191,12 @@ function MachineWork2({ navigation, route }) {
               styles.flex,
               styles.justifyContentBetween,
               {
-                height: 90,
+                height: 45,
               },
             ]}
           >
-            <Text style={[styles.TextInput]}>{item?.description}</Text>
-            <Image
-              source={require("../assets/image/edit.png")}
-              style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-            />
+            <Text style={[styles.TextInput]}>{item?.machine_malik_name}</Text>
+            
           </View>
 
           <View
@@ -329,23 +341,17 @@ function MachineWork2({ navigation, route }) {
                     position: "absolute",
                     top: -10,
                     left: 30,
-                    width: "15%",
+                    width: "25%",
                     textAlign: "center",
                     backgroundColor: "#fff",
                   }}
                 >
-                  ठेकेदार
+                  मशीन मालिक 
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                />
+                  
+                >{item?.machine_malik_name}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -362,16 +368,9 @@ function MachineWork2({ navigation, route }) {
                 >
                   गाँव
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                />
+                  >{item?.machine_malik_village}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -388,16 +387,9 @@ function MachineWork2({ navigation, route }) {
                 >
                   मोबाइल नंबर
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                />
+                  >{item?.machine_malik_mobile_no}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
               </>
@@ -411,25 +403,8 @@ function MachineWork2({ navigation, route }) {
           <View
             style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
           >
-            {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  handleClick(index);
-                }}
-              >
-                <Text
-                  style={{
-                    backgroundColor: colors[index],
-                    padding: 10,
-                    borderWidth: 0.7,
-                    borderColor: "#000",
-                  }}
-                >
-                  {index + 1}
-                </Text>
-              </TouchableOpacity>
-            ))}
+              {[...Array(5).keys()].map(renderButton)}
+              
           </View>
 
           <View

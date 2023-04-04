@@ -15,14 +15,16 @@ import { selectToken } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
-  const { item, data, payment_status } = route?.params??{};
-  console.log("fjkfkfkff",item, data, payment_status);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
+  const { item, data, payment_status } = route?.params ?? {};
+  console.log("fjkfkfkff", item, data, payment_status);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -58,14 +60,26 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   const handleClick = (index) => {
     setRating(index + 1);
-    const newColors = [...colors];
-    if (index < 4) newColors[index] = "red";
-    else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    else if (index >= 9) newColors[index] = "green";
-    setColors(newColors);
-   
+    setSelectedButtonIndex(index);
+    // const newColors = [...colors];
+    // if (index < 4) newColors[index] = "red";
+    // else if (index >= 4 && index < 9) newColors[index] = "yellow";
+    // else if (index >= 9) newColors[index] = "green";
+    // setColors(newColors);
   };
 
+  const renderButton = (index) => {
+    const backgroundColor =
+      index <= selectedButtonIndex ? "red" : "transparent";
+    const iconName = index <= selectedButtonIndex ? "star" : "star-o";
+    return (
+      <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+        <View style={[styles.button]}>
+          <FontAwesome name={iconName} size={30} color="#e6b400" />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const acceptSahayak = async () => {
     let params = {
@@ -227,7 +241,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </Text>
             </View>
           </View>
-            
+
           {/* <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>
@@ -240,21 +254,65 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             ]}
           ></View> */}
 
-          <View style={{display:"flex", flexDirection:"row" , alignItems:"center", marginTop:15, width:"100%"}} >
-            <View style={{borderWidth:1 , borderColor: "#0070C0", borderTopLeftRadius:5, borderBottomLeftRadius:5, width:"25%", height:45, justifyContent:"center", }}>
-            <Text style={{textAlign:"center"}}>पुरुष</Text>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 15,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#0070C0",
+                borderTopLeftRadius: 5,
+                borderBottomLeftRadius: 5,
+                width: "25%",
+                height: 45,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ textAlign: "center" }}>पुरुष</Text>
             </View>
 
-            <View style={{borderWidth:1 , borderColor: "#0070C0",width:"25%", height:45,  justifyContent:"center",}}>
-              <Text style={{textAlign:"center"}}>पुरुष</Text>
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#0070C0",
+                width: "25%",
+                height: 45,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ textAlign: "center" }}>पुरुष</Text>
             </View>
 
-            <View style={{borderWidth:1 ,borderColor: "#0070C0", width:"25%", height:45, justifyContent:"center",}}>
-              <Text style={{textAlign:"center"}}>महिला</Text>
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#0070C0",
+                width: "25%",
+                height: 45,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ textAlign: "center" }}>महिला</Text>
             </View>
 
-            <View style={{borderWidth:1 ,borderColor: "#0070C0", borderTopRightRadius:5, borderBottomRightRadius:5, width:"25%", height:45, justifyContent:"center",}}>
-              <Text style={{textAlign:"center"}}>महिला </Text>
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#0070C0",
+                borderTopRightRadius: 5,
+                borderBottomRightRadius: 5,
+                width: "25%",
+                height: 45,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ textAlign: "center" }}>महिला </Text>
             </View>
           </View>
 
@@ -284,208 +342,207 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 backgroundColor: "#44A347",
                 marginRight: 10,
                 marginTop: 8,
-                width:"30%"
+                width: "30%",
               }}
             >
               <TouchableOpacity>
-              {status.status === "Ongoing" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  जारी है
-                  {console.log("")}
-                </Text>
-              ) : status.status === "Completed" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  समाप्त{" "}
-                </Text>
-              ) : (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {/* {bookingid?.status} */}
-                  बुक
-                  {console.log("")}
-                </Text>
-              )}
-              </TouchableOpacity>
-            </View>
-          </View>
-           
-
-           {status.status === "Completed" ?
-           
-           ""
-           : 
-           <>
-          <View
-            style={[
-              styles.inputView,
-              {
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
-            <TextInput
-              style={styles.TextInput}
-              placeholder="सहायकों के मोबाइल नंबर "
-              placeholderTextColor={"#000"}
-              // onChangeText={(email) => setEmail(email)}
-              // defaultValue={email}
-              // value={email}
-            />
-            <View
-              style={{
-                height: 30,
-                // backgroundColor: "#44A347",
-                marginRight: 10,
-                marginTop: 8,
-              }}
-            >
-              <TouchableOpacity>
-                <View
-                  style={[
-                    styles.DoubleView,
-                    styles.flex,
-                    styles.justifyContentBetween,
-                    { marginHorizontal: 4 },
-                  ]}
-                >
+                {status.status === "Ongoing" ? (
                   <Text
                     style={{
                       textAlign: "center",
                       marginTop: 5,
-                      paddingHorizontal: 10,
-                      color: "#0099FF",
+                      color: "#fff",
                       fontSize: 15,
                       fontWeight: "600",
                     }}
                   >
-                    1-4
+                    जारी है
+                    {console.log("")}
                   </Text>
-
-                  {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
-              {numbers ? numbers : ""}
-            </Text> */}
-                  <View style={{ flexDirection: "row" }}>
-                    <Picker
-                      style={{ width: 20, paddingTop: 16 }}
-                      // ref={pickerRef}
-                      selectedValue={numbers}
-                      onValueChange={(itemValue, itemIndex) =>
-                        setNumber(itemValue)
-                      }
-                    >
-                      <Picker.Item label="1-4" value="1-4" enabled={false} />
-                      {number.map((item) => (
-                        <Picker.Item
-                          label={item.toString()}
-                          value={item}
-                          key={item}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
+                ) : status.status === "Completed" ? (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      color: "#fff",
+                      fontSize: 15,
+                      fontWeight: "600",
+                    }}
+                  >
+                    समाप्त{" "}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      color: "#fff",
+                      fontSize: 15,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {/* {bookingid?.status} */}
+                    बुक
+                    {console.log("")}
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={[styles.inputView, { position: "relative" }]}>
-            <Text
-              style={{
-                position: "absolute",
-                top: -10,
-                left: 30,
-                width: "15%",
-                textAlign: "center",
-                backgroundColor: "#fff",
-              }}
-            >
-              सहायक
-            </Text>
-            <Text
-              style={styles.TextInput}
-              >{item?.sahayak_name}</Text>
-            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-          </View>
+          {status.status === "Completed" ? (
+            ""
+          ) : (
+            <>
+              <View
+                style={[
+                  styles.inputView,
+                  {
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  },
+                ]}
+              >
+                <TextInput
+                  style={styles.TextInput}
+                  placeholder="सहायकों के मोबाइल नंबर "
+                  placeholderTextColor={"#000"}
+                  // onChangeText={(email) => setEmail(email)}
+                  // defaultValue={email}
+                  // value={email}
+                />
+                <View
+                  style={{
+                    height: 30,
+                    // backgroundColor: "#44A347",
+                    marginRight: 10,
+                    marginTop: 8,
+                  }}
+                >
+                  <TouchableOpacity>
+                    <View
+                      style={[
+                        styles.DoubleView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        { marginHorizontal: 4 },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          marginTop: 5,
+                          paddingHorizontal: 10,
+                          color: "#0099FF",
+                          fontSize: 15,
+                          fontWeight: "600",
+                        }}
+                      >
+                        1-4
+                      </Text>
 
-          <View style={[styles.inputView, { position: "relative" }]}>
-            <Text
-              style={{
-                position: "absolute",
-                top: -10,
-                left: 30,
-                width: "10%",
-                textAlign: "center",
-                backgroundColor: "#fff",
-              }}
-            >
-              गाँव
-            </Text>
-            <Text
-              style={styles.TextInput}
-              
-            >{item?.sahayak_village}</Text>
-            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-          </View>
+                      {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
+              {numbers ? numbers : ""}
+            </Text> */}
+                      <View style={{ flexDirection: "row" }}>
+                        <Picker
+                          style={{ width: 20, paddingTop: 16 }}
+                          // ref={pickerRef}
+                          selectedValue={numbers}
+                          onValueChange={(itemValue, itemIndex) =>
+                            setNumber(itemValue)
+                          }
+                        >
+                          <Picker.Item
+                            label="1-4"
+                            value="1-4"
+                            enabled={false}
+                          />
+                          {number.map((item) => (
+                            <Picker.Item
+                              label={item.toString()}
+                              value={item}
+                              key={item}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-          <View style={[styles.inputView, { position: "relative" }]}>
-            <Text
-              style={{
-                position: "absolute",
-                top: -10,
-                left: 30,
-                width: "20%",
-                textAlign: "center",
-                backgroundColor: "#fff",
-              }}
-            >
-              मोबाइल नंबर
-            </Text>
-            <Text
-              style={styles.TextInput}
-              
-              // onChangeText={(text) => setName(text, "name")}
-              // defaultValue={email}
-              // value={name}
-              //   error={input.name}
-              //   onFocus={() => handleError(null, "name")}
-            >{item?.sahayak_mobile_no}</Text>
-            {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-          </View>
-          </>
-          
-           }
+              <View style={[styles.inputView, { position: "relative" }]}>
+                <Text
+                  style={{
+                    position: "absolute",
+                    top: -10,
+                    left: 30,
+                    width: "15%",
+                    textAlign: "center",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  सहायक
+                </Text>
+                <Text style={styles.TextInput}>{item?.sahayak_name}</Text>
+                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+              </View>
 
-{  status.status === "Completed" ?
-        <>
-            <Text>रेटिंग दें  </Text>
-          <View
-            style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-          >
+              <View style={[styles.inputView, { position: "relative" }]}>
+                <Text
+                  style={{
+                    position: "absolute",
+                    top: -10,
+                    left: 30,
+                    width: "10%",
+                    textAlign: "center",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  गाँव
+                </Text>
+                <Text style={styles.TextInput}>{item?.sahayak_village}</Text>
+                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+              </View>
+
+              <View style={[styles.inputView, { position: "relative" }]}>
+                <Text
+                  style={{
+                    position: "absolute",
+                    top: -10,
+                    left: 30,
+                    width: "20%",
+                    textAlign: "center",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  मोबाइल नंबर
+                </Text>
+                <Text
+                  style={styles.TextInput}
+
+                  // onChangeText={(text) => setName(text, "name")}
+                  // defaultValue={email}
+                  // value={name}
+                  //   error={input.name}
+                  //   onFocus={() => handleError(null, "name")}
+                >
+                  {item?.sahayak_mobile_no}
+                </Text>
+                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+              </View>
+            </>
+          )}
+
+          {status.status === "Completed" ? (
+            <>
+              <Text>रेटिंग दें </Text>
+              <View
+                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
+              >
+                {/* {Array.from((item, index) => <Text style={{color:'#333333'}}>{index}</Text>)}
             {Array.from({ length: 10 }, (_, index) => (
               <TouchableOpacity
                 key={index}
@@ -497,34 +554,37 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                   style={{
                     backgroundColor: colors[index],
                     padding: 10,
-                    borderWidth: 0.7,
-                    borderColor: "#000",
+                    
                   }}
                 >
+                  
                   {index + 1}
+                 
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
-           
-           
-            <Text>
-            कोई सुझाव
-            </Text>
-           
-          <View
-            style={{ height: 100, borderWidth: 1, borderRadius:10, width: "90%", marginTop: 20 , borderColor:"#0099FF"}}
-          >
-            <TextInput
-              
-              onChangeText={setComment}
-              value={comments}
-            />
-          </View>
-          </>
-          :
-          ""
-}
+            ))} */}
+
+                {[...Array(5).keys()].map(renderButton)}
+              </View>
+
+              <Text>कोई सुझाव</Text>
+
+              <View
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: "90%",
+                  marginTop: 20,
+                  borderColor: "#0099FF",
+                }}
+              >
+                <TextInput onChangeText={setComment} value={comments} />
+              </View>
+            </>
+          ) : (
+            ""
+          )}
 
           {status.status === "Ongoing" ? (
             <TouchableOpacity
@@ -536,7 +596,10 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn} onPress={() =>  RatingApi()}>
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => RatingApi()}
+            >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
@@ -615,6 +678,14 @@ const styles = StyleSheet.create({
     height: 55,
     marginTop: 10,
     borderWidth: 1,
+  },
+
+  button: {
+    width: 30,
+    height: 50,
+    margin: 2,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // FemalecheckView:{
