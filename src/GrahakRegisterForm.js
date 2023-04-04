@@ -201,7 +201,9 @@ export default function GrahakRegisterForm({ navigation, route }) {
   };
   useEffect(() => {
     stateapi();
-    districtapi(selectedState);
+    if (selectedState) {
+      districtapi(selectedState);
+    }
   }, []);
   useEffect(() => {
     (async () => {

@@ -203,7 +203,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   }, [countAccepted]);
 
 
-  const TotalCount = acceptedCount + maleCount;
+  const TotalCount = parseInt(item.count_female) + parseInt(item.count_male);
   console.log("fjfjfhjfhjffffjf", TotalCount);
   // useEffect(() => {
 
@@ -474,7 +474,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           <TextInput
                             style={styles.CheckTextInput}
                             placeholder="पुरषो"
-                            placeholderTextColor={"#0099FF"}
+                            placeholderTextColor={"#000"}
                             name={`Male${index + 1}`}
                           />
                           <View
@@ -509,7 +509,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                             styles.FemalecheckView,
                             styles.flex,
                             styles.justifyContentBetween,
-                            { paddingHorizontal: 5 },
+                            { paddingHorizontal: 5, },
                           ]}
                           key={index}
                         >
@@ -523,7 +523,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                             style={{
                               height: 25,
                               paddingHorizontal: 5,
-                              backgroundColor: "#0099FF",
+                              backgroundColor: "#44A347",
                               marginLeft: 5,
                             }}
                           >
@@ -727,6 +727,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 }}
               >
                 <TouchableOpacity>
+                {item.status == "Accepted" ? 
                   <Text
                     style={{
                       textAlign: "center",
@@ -737,12 +738,26 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       fontWeight: "600",
                     }}
                   >
-                    {TotalCount} सहायक स्वीकार करें
+                  {TotalCount} 
+                    सहायक स्वीकार करें
                   </Text>
+                  :   <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    paddingHorizontal: 10,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+               0
+                  सहायक स्वीकार करें
+                </Text>}
                 </TouchableOpacity>
               </View>
             </View>
-            <View>
+            <View style={{width:'100%'}}>
                   {item.status === "Accepted" && (
                 <TouchableOpacity
                   style={styles.BhuktanBtn}
@@ -758,7 +773,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </TouchableOpacity>
               )}
               {item.status === "Pending" && (
-                <TouchableOpacity style={styles.BhuktanBtn}>
+                <TouchableOpacity style={styles.BhuktanBtn} >
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     भुगतान करें
                   </Text>
@@ -1110,7 +1125,7 @@ const styles = StyleSheet.create({
 
   FemalecheckView: {
     borderColor: "#0070C0",
-
+    width: "30%",
     borderBottomLeftRadius: 0,
     borderTopLeftRadius: 0,
     // width: "33.33%",

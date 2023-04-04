@@ -88,7 +88,10 @@ export default function Login({ navigation }) {
 
       <View style={{ flexDirection: "row", alignItems:'center' , marginTop:30 }}>
       {/* <Text >(+91)</Text> */}
-      <Image source={require("../assets/image/Flag.png")} style={[styles.codeText,styles.CountryCode]} />
+      <View style={[styles.CountryCode,{flexDirection:'row', alignItems:'center', justifyContent:'center'}]}>
+      <Image source={require("../assets/image/Flag.png")} style={[styles.codeText,{width:30, height:22}]} />
+      </View>
+    
       <TextInput
             style={[styles.TextInput,styles.inputView]}
             placeholder="फ़ोन नंबर लिखें"

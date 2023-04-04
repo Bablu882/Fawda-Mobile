@@ -169,7 +169,7 @@ useEffect(() => {
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {item?.job_type === "theke_pe_kam" ? "ठेके पर काम" : ""}
+            {item?.job_type === "theke_pe_kam" ? "ठेके पर काम" : "ठेके पर काम"}
           </Text>
           <View
             style={[
@@ -453,12 +453,7 @@ useEffect(() => {
               {item.status === "Booked" && (
                 <TouchableOpacity
                   style={styles.BhuktanBtn}
-                  onPress={() => {
-                    navigation.navigate("Theke_MachineForm2", {
-                      item,
-                      id: item.id,
-                    });
-                  }}
+                 
                 >
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     काम बुक
@@ -508,8 +503,9 @@ useEffect(() => {
             </>
           ) : null}
         </View>
-
+       
         <>
+        {item.status === "Completed" && (
           <View
             style={{ display: "flex", flexDirection: "row", marginTop: 20, justifyContent:'center' }}
           >
@@ -534,6 +530,8 @@ useEffect(() => {
             ))}
           </View>
 
+        )}
+          
           {/* <View
             style={{ height: 100, borderWidth: 1, width: "75%", marginTop: 20 }}
           >
