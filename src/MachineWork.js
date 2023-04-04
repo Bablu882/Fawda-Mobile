@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
 import service from "../service";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -43,9 +44,10 @@ export default function MachineWork({ navigation, route }) {
   const [editable, setEditable] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
-  const { id, item } = route.params??{};
+  const { id, item } = route.params ?? {};
   console.log("fjd", item);
   const [amount, setAmount] = useState(item?.total_amount_machine);
   const [edit, setEdit] = useState(false);
@@ -118,6 +120,61 @@ export default function MachineWork({ navigation, route }) {
       console.log("Error:", error);
     }
   };
+
+  const RatingApi = async () => {
+    let params = {
+      booking_job: item?.booking_id,
+    };
+console.log('dfjddjdjd', params)
+    try {
+      const response = await service.post("/api/get-reating/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      console.log('fjkfkff', data)
+      const ratings = data?.rating;
+      const ratingColor = "orange";
+
+      const ratingList = Array(10)
+        .fill(0)
+        .map((_, num) => {
+          let color = num < ratings ? ratingColor : "white";
+          return (
+            <View
+              key={num}
+              style={{
+                backgroundColor: color,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                width: 30,
+                height: 30,
+                borderRightWidth: 0.1,
+                borderEndWidth: 0.4,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {num + 1 <= ratings && (
+                <FontAwesome name="star" size={18} color="white" />
+              )}
+              {num + 1 > ratings && (
+                <FontAwesome name="star-o" size={18} color={ratingColor} />
+              )}
+            </View>
+          );
+        });
+
+      setRatingList(ratingList);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    RatingApi();
+  }, []);
 
   return (
     <SafeAreaView
@@ -453,31 +510,84 @@ export default function MachineWork({ navigation, route }) {
               //  </View>
             )}
             {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-              item.status === "Accepted" ? (
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम स्वीकृत
-                  </Text>
-                </TouchableOpacity>
-              ) : item.status === "Pending" ? (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                  onPress={() => accptThekha()}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम स्वीकार करें
-                  </Text>
-                </TouchableOpacity>
-              ) : item.status === "Booked" ? (
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम बुक
-                  </Text>
-                </TouchableOpacity>
-              ) : null
+              <>
+                {item.status === "Accepted" && (
+                  <TouchableOpacity style={styles.BhuktanBtn}>
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम स्वीकृत
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "Pending" && (
+                  <TouchableOpacity
+                    style={styles.BhuktanBtn}
+                    onPress={() => accptThekha()}
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम स्वीकार करें
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "Booked" && (
+                  <TouchableOpacity style={styles.BhuktanBtn}>
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम बुक
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "Ongoing" && (
+                  <TouchableOpacity style={styles.BhuktanBtn}>
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      जारी है
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
             ) : null}
+           {usertype === "Sahayak" ||
+            (usertype === "MachineMalik" && item.status === "Completed" && (
+              <>
+              <TouchableOpacity style={styles.BhuktanBtn}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                समाप्त 
+                </Text>
+              </TouchableOpacity>
+               <View
+               style={{
+                 flexDirection: "row",
+                 alignItems: "center",
+               }}
+             >
+               {ratingList}
+             </View>
+             </>
+            ))}
 
-            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+          {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+          (item.status === "Accepted" ||
+            item.status === "Booked" ||
+            item.status === "Ongoing") ? (
+            <>
+              <View style={[styles.inputView, { height: 40 }]}>
+                <Text style={styles.label}>ग्राहक का नाम</Text>
+                <TextInput
+                  style={styles.TextInput}
+                  placeholderTextColor="#848484"
+                  placeholder={item?.grahak_name}
+                />
+              </View>
+
+              <View style={[styles.inputView, { height: 40 }]}>
+                <Text style={styles.label}>फ़ोन:</Text>
+                <TextInput
+                  style={styles.TextInput}
+                  placeholderTextColor="#848484"
+                  placeholder={item?.grahak_phone}
+                />
+              </View>
+            </>
+          ) : null}
+            {/* {(usertype === "Sahayak" || usertype === "MachineMalik") &&
               (item.status === "Accepted" ? (
                 <>
                   <View style={[styles.inputView, { height: 40 }]}>
@@ -498,31 +608,29 @@ export default function MachineWork({ navigation, route }) {
                     />
                   </View>
                 </>
-              ) : null)}
+              ) : null)} */}
           </View>
         </View>
-
-        {item.status === "Accepted" && (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                  onPress={() =>
-                    navigation.navigate("Payment", {
-                      item,
-                    })
-                  }
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    भुगतान करें
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {item.status === "Pending" && (
-                <TouchableOpacity style={[styles.BhuktanBtn , {opacity:0.5}]} disabled={true}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    भुगतान करें
-                  </Text>
-                </TouchableOpacity>
-              )}
+        {usertype === "Grahak" && item.status === "Accepted" && (
+          <TouchableOpacity
+            style={styles.BhuktanBtn}
+            onPress={() => navigation.navigate("Payment", { item })}
+          >
+            <Text style={[styles.loginText, { color: "#fff" }]}>
+              भुगतान करें
+            </Text>
+          </TouchableOpacity>
+        )}
+        {usertype === "Grahak" && item.status === "Pending" && (
+          <TouchableOpacity
+            style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+            disabled
+          >
+            <Text style={[styles.loginText, { color: "#fff" }]}>
+              भुगतान करें
+            </Text>
+          </TouchableOpacity>
+        )}
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}

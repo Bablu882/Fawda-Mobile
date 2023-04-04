@@ -34,11 +34,11 @@ export default function Login({ navigation }) {
   //   alert(to)
   //   navigation.replace(to)
   // }
-  useEffect(() => {
-    if(isLoggedIn) {
-    navigation.replace('HomePage')
-    }
-    },[isLoggedIn])
+  // useEffect(() => {
+  //   if(isLoggedIn) {
+  //   navigation.replace('HomePage')
+  //   }
+  //   },[isLoggedIn])
 
 
   const login = async () => {
@@ -64,15 +64,17 @@ export default function Login({ navigation }) {
           Toast.show(JSON.stringify(data.otp), Toast.LONG);
 
           // Toast.show('Login successfully.', Toast.SHORT);
-          navigation.replace("Verification", { user_type: data.user_type });
+          navigation.replace("Verification", { user_type: data.user_type});
         } else {
           Toast.show("User is not Registered", Toast.SHORT);
-          navigation.replace("Register");
+          navigation.replace("Register" , {phone  });
+          console.log('kdkdkdkd',phone )
         }
       })
       .catch((error) => {
         console.log(error);
         setloading(false);
+
         Toast.show("Invalid Credentials", Toast.SHORT);
       });
   };

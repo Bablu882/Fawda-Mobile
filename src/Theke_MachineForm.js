@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
@@ -157,37 +157,37 @@ function Theke_MachineForm({ navigation, route }) {
       });
       const data = response?.data;
       const ratings = data?.rating;
-      const ratingColor = 'orange';
+      const ratingColor = "orange";
 
       const ratingList = Array(10)
-      .fill(0)
-      .map((_, num) => {
-        let color = num < ratings ? ratingColor : "white";
-        return (
-          <View
-            key={num}
-            style={{
-              backgroundColor: color,
-              borderWidth: 1,
-              borderColor: "#ccc",
-              width: 30,
-              height: 30,
-              borderRightWidth: 0.1,
-              borderEndWidth: 0.4,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {num + 1 <= ratings && (
-              <FontAwesome name="star" size={18} color="white" />
-            )}
-            {num + 1 > ratings && (
-              <FontAwesome name="star-o" size={18} color={ratingColor} />
-            )}
-          </View>
-        );
-      });
-    
+        .fill(0)
+        .map((_, num) => {
+          let color = num < ratings ? ratingColor : "white";
+          return (
+            <View
+              key={num}
+              style={{
+                backgroundColor: color,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                width: 30,
+                height: 30,
+                borderRightWidth: 0.1,
+                borderEndWidth: 0.4,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {num + 1 <= ratings && (
+                <FontAwesome name="star" size={18} color="white" />
+              )}
+              {num + 1 > ratings && (
+                <FontAwesome name="star-o" size={18} color={ratingColor} />
+              )}
+            </View>
+          );
+        });
+
       setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
@@ -197,7 +197,7 @@ function Theke_MachineForm({ navigation, route }) {
   //   let params = {
   //     booking_job: item?.booking_id,
   //   };
-  
+
   //   try {
   //     const response = await service.post("/api/get-reating/", params, {
   //       headers: {
@@ -564,7 +564,7 @@ function Theke_MachineForm({ navigation, route }) {
             (usertype === "MachineMalik" && item.status === "Completed" && (
               <TouchableOpacity style={styles.BhuktanBtn}>
                 <Text style={[styles.loginText, { color: "#fff" }]}>
-                  जारी हैff
+                समाप्त 
                 </Text>
               </TouchableOpacity>
             ))}
@@ -606,9 +606,11 @@ function Theke_MachineForm({ navigation, route }) {
                 alignItems: "center",
               }}
             >
-              <TouchableOpacity style={[styles.BhuktanBtn,{width:'95%', marginBottom:10}]}>
+              <TouchableOpacity
+                style={[styles.BhuktanBtn, { width: "95%", marginBottom: 10 }]}
+              >
                 <Text style={[styles.loginText, { color: "#fff" }]}>
-                समाप्त 
+                  समाप्त
                 </Text>
               </TouchableOpacity>
               <View
