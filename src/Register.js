@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 
-export default function Register({ navigation }) {
+export default function Register({ navigation, route }) {
   const isfocused = useIsFocused();
   const [activeButton, setActiveButton] = useState("ग्राहक");
-
+    const {phone} = route?.params??{};
+  
+    console.log('fjfjfjhf', phone)
   return (
     <View style={styles.container}>
       <View style={{ alignItems: "center", marginBottom: 30 }}>
@@ -71,11 +73,11 @@ export default function Register({ navigation }) {
           //   ? navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
           //   : null;
           if( activeButton === "ग्राहक"){
-            navigation.navigate("GrahakRegisterForm",{  user:'Grahak' })
+            navigation.navigate("GrahakRegisterForm",{  user:'Grahak', phone })
           }else if( activeButton === "सहायक"){
-            navigation.navigate("GrahakRegisterForm",{ user:'Sahayak'})
+            navigation.navigate("GrahakRegisterForm",{ user:'Sahayak',phone})
           }else{
-            navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
+            navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik', phone})
           }
           console.log('', activeButton)
         }}

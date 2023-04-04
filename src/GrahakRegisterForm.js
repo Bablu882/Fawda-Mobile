@@ -20,13 +20,13 @@ import { RadioButton } from "react-native-paper";
 import * as Location from "expo-location";
 
 export default function GrahakRegisterForm({ navigation, route }) {
-  const { user } = route.params;
-  console.log("fnkfjk", user);
+  const { user,phone  } = route.params;
+  console.log("fnkfjk", user, phone);
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phoneno, setphoneno] = useState("");
   const [village, setVillage] = useState("");
   const [mohalla, setMohalla] = useState("");
   const [state, setState] = useState([]);
@@ -38,7 +38,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
   const [errors, setErrors] = useState({
     name: "",
     gender: "",
-    phone: "",
+    phoneno: "",
     mohalla: "",
     village: "",
     state: "",
@@ -59,7 +59,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
     let errorMessages = {
       name: "",
       gender: "",
-      phone: "",
+      phoneno: "",
       mohalla: "",
       village: "",
       state: "",
@@ -78,11 +78,11 @@ export default function GrahakRegisterForm({ navigation, route }) {
       errorMessages.gender = "Please select your gender";
       valid = false;
     }
-    if (phone.trim() === "") {
-      errorMessages.phone = "Please enter your phone number";
+    if (phoneno.trim() === "") {
+      errorMessages.phoneno = "Please enter your phoneno number";
       valid = false;
-    } else if (phone.trim().length < 10) {
-      errorMessages.phone = "Please enter a valid phone number";
+    } else if (phoneno.trim().length < 10) {
+      errorMessages.phoneno = "Please enter a valid phoneno number";
       valid = false;
     }
     if (mohalla.trim() === "") {
@@ -122,12 +122,12 @@ export default function GrahakRegisterForm({ navigation, route }) {
       const params = {
         name,
         gender,
-        phone,
+        phone:phone,
         village,
         mohalla,
         state: selectedState,
         district: selectedDistrict,
-        user_type: user,
+        phoneno: user,
         latitude: location.latitude,
         longitude: location.longitude,
       };
@@ -301,7 +301,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
             maxLength={10}
             placeholder=""
             placeholderTextColor={"#848484"}
-            onChangeText={(phone) => setPhone(phone, "phone")}
+            onChangeText={(phone) => setphoneno(phone, "phone")}
             // defaultValue={email}
             value={phone}
           />

@@ -23,7 +23,7 @@ function Theke_MachineForm2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", data, payment_status);
+  console.log("fjkfkfkff",item, data, payment_status);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -69,7 +69,7 @@ function Theke_MachineForm2({ navigation, route }) {
     else if (index >= 4 && index < 9) newColors[index] = "yellow";
     else if (index >= 9) newColors[index] = "green";
     setColors(newColors);
-    RatingApi();
+    
   };
 
   const fetchBookings = async () => {
@@ -336,16 +336,15 @@ function Theke_MachineForm2({ navigation, route }) {
                 >
                   ठेकेदार
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
+                  
                   // onChangeText={(text) => setName(text, "name")}
                   // defaultValue={email}
                   // value={name}
                   //   error={input.name}
                   //   onFocus={() => handleError(null, "name")}
-                />
+                >{item?.thekedar_name}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -362,16 +361,9 @@ function Theke_MachineForm2({ navigation, route }) {
                 >
                   गाँव
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                />
+                  >{item?.thekedar_village}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -388,16 +380,15 @@ function Theke_MachineForm2({ navigation, route }) {
                 >
                   मोबाइल नंबर
                 </Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
+                  
                   // onChangeText={(text) => setName(text, "name")}
                   // defaultValue={email}
                   // value={name}
                   //   error={input.name}
                   //   onFocus={() => handleError(null, "name")}
-                />
+                > {item?.thekedar_mobile_no}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
               </>
@@ -455,7 +446,7 @@ function Theke_MachineForm2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn}  onPress={() => Completed()}>
+            <TouchableOpacity style={styles.BhuktanBtn}  onPress={() =>RatingApi()}>
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
@@ -589,7 +580,7 @@ const styles = StyleSheet.create({
 
   TextInput: {
     padding: 10,
-
+    color:"#000",
     fontFamily: "Poppin-Light",
   },
 

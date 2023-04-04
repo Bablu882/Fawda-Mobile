@@ -43,6 +43,7 @@ import Theke_k_Kaam from "./src/Theke_k_Kaam";
 import MachineWork from "./src/MachineWork";
 import Payment from "./src/Payment";
 import Theke_MachineForm2 from "./src/Theke_MachineForm2";
+import MachineWork2 from "./src/MachineWork2";
 
 
 
@@ -89,6 +90,8 @@ export default function App() {
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           <Stack.Screen name="MachineWork" component={MachineWork} />
+          <Stack.Screen name="MachineWork2" component={MachineWork2} />
+         
         </Stack.Navigator>
       </PersistGate>
     </Provider>
