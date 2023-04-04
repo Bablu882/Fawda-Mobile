@@ -120,11 +120,14 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                          {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम': ""}
+                            {item.job_type === "individuals_sahayak"
+                              ? "सहायक  "
+                              : item.job_type === "theke_pe_kam"
+                              ? "ठेके पर काम"
+                              : ""}
                           </Text>
                           <Text style={{ color: "black" }}>
-                          
-                          { moment.utc(item?.datetime).format('L')}
+                            {moment.utc(item?.datetime).format("L")}
                           </Text>
                         </View>
                         <View
@@ -184,10 +187,14 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                          {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम': ""}
+                            {item.job_type === "individuals_sahayak"
+                              ? "सहायक  "
+                              : item.job_type === "theke_pe_kam"
+                              ? "ठेके पर काम"
+                              : ""}
                           </Text>
                           <Text style={{ color: "black" }}>
-                         { moment.utc(item?.datetime).format('L')}
+                            {moment.utc(item?.datetime).format("L")}
                           </Text>
                         </View>
                         <View
@@ -199,12 +206,11 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                               <TouchableOpacity
+                          <TouchableOpacity
                             onPress={() => {
                               if (
                                 item.job_type === "individuals_sahayak" &&
-                                item.status === "Accepted" 
-                               
+                                item.status === "Accepted"
                               ) {
                                 navigation.navigate("MyBook_SahayakForm", {
                                   id: item.id,
@@ -212,7 +218,7 @@ export default function MyBooking({ navigation, route }) {
                                 });
                               } else if (
                                 item.job_type === "theke_pe_kam" &&
-                                item.status === "Accepted" 
+                                item.status === "Accepted"
                               ) {
                                 navigation.navigate("Theke_MachineForm", {
                                   item,
@@ -262,12 +268,12 @@ export default function MyBooking({ navigation, route }) {
                       >
                         <View style={{ marginLeft: 30 }}>
                           <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            { item.job_type ==="machine_malik" ?' मशीनरी' : ''}
+                            {item.job_type === "machine_malik" ? " मशीनरी" : ""}
                           </Text>
                           <Text style={{ color: "black" }}>
-                          {/* {moment(item?.datetime).format('L')}
+                            {/* {moment(item?.datetime).format('L')}
                            { console.log('djdjddj', item?.datetime)} */}
-                           { moment.utc(item?.datetime).format('L')}
+                            {moment.utc(item?.datetime).format("L")}
                           </Text>
                         </View>
                         <View
@@ -368,10 +374,12 @@ export default function MyBooking({ navigation, route }) {
                     >
                       <View style={{ marginLeft: 30 }}>
                         <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                        { item.job_type ==="machine_malik" ?' मशीनरी' : 'मशीनरी'}
+                          {item.job_type === "machine_malik"
+                            ? " मशीनरी"
+                            : "मशीनरी"}
                         </Text>
                         <Text style={{ color: "black" }}>
-                        { moment.utc(item?.datetime).format('L')}
+                          {moment.utc(item?.datetime).format("L")}
                         </Text>
                       </View>
                       <View
@@ -384,7 +392,12 @@ export default function MyBooking({ navigation, route }) {
                         }}
                       >
                         <TouchableOpacity
-                        //onPress={() => navigation.navigate("Theke_MachineForm")}
+                          onPress={() => {
+                            navigation.navigate("MachineWork", {
+                              item,
+                              id: item?.id,
+                            });
+                          }}
                         >
                           <Text
                             style={{
@@ -395,7 +408,7 @@ export default function MyBooking({ navigation, route }) {
                               fontWeight: "600",
                             }}
                           >
-                          {item.status}
+                            {item.status}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -454,10 +467,16 @@ export default function MyBooking({ navigation, route }) {
                         >
                           <View style={{ marginLeft: 30 }}>
                             <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                                 {item.job_type ==="individuals_sahayak" ? 'सहायक  ': item.job_type ==="theke_pe_kam" ? 'ठेके पर काम':  item.job_type ==="machine_malik" ?' मशीनरी' : null}
+                              {item.job_type === "individuals_sahayak"
+                                ? "सहायक  "
+                                : item.job_type === "theke_pe_kam"
+                                ? "ठेके पर काम"
+                                : item.job_type === "machine_malik"
+                                ? " मशीनरी"
+                                : null}
                             </Text>
                             <Text style={{ color: "black" }}>
-                            { moment.utc(item?.datetime).format('L')}
+                              {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
                           <View

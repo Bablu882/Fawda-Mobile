@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectToken, setUserType } from "../slices/authSlice";
 
 export default function Verification({ navigation, route }) {
-  const { user_type } = route?.params;
-  console.log("hddjdj", user_type);
+  const { user_type } = route?.params??{};
+  // console.log("hddjdj", user_type);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [otp, setOtp] = useState("");
