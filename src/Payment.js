@@ -54,13 +54,12 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item
         });
-      } else if (item.job_type === "MachineMalik") {
-        navigation.navigate("MachineWork2"),
-          {
+      } else if (item.job_type === "machine_malik") {
+        navigation.navigate("MachineWork2", {
             data: data.booking_id,
             payment_status: data.payment_status,
             item
-          };
+          });
       }
       Toast.show("Payment Updated Successfully!!!", Toast.SHORT);
     } catch (error) {
