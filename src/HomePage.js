@@ -53,8 +53,7 @@ export default function Homepage({ navigation, route }) {
       style={{
         backgroundColor: "#fff",
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+       
       }}
     >
       <View style={{ padding: 20, marginTop: 25 }}></View>
@@ -63,12 +62,12 @@ export default function Homepage({ navigation, route }) {
           <>
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
-                flex: 1,
+                // justifyContent: "center",
+                // alignItems: "center",
+                // flex: 1,
               }}
             >
-              <View style={{ justifyContent: "center" }}>
+              <View style={{ justifyContent: "center", flex:1 }}>
                 <Text
                   style={{
                     textAlign: "center",
@@ -114,7 +113,7 @@ export default function Homepage({ navigation, route }) {
                           </>
                         ) : (
                           <Text style={styles.bookingTitle}>
-                            {item?.work_type}
+                            {item?.work_type === "Harvesting" ? "काटना": item?.work_type === "Sowing" ? "बुवाई": 'भूमि की तैयारी'}
                           </Text>
                         )}
                         {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
