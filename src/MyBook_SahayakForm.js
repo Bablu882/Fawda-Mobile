@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -43,6 +43,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
+
+  const { id, item } = route.params;
+  console.log("fjd", item);
   const [show, setShow] = useState(true);
   const [checkboxStatus, setCheckboxStatus] = useState({});
   const [maleStatuses, setMaleStatuses] = useState({});
@@ -53,14 +56,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [acceptedCount, setAcceptedCount] = useState(null);
   const [maleCount, setMaleCount] = useState(null);
   const usertype = useSelector(selectUserType);
-  const [amountfemale, setAmountFemale] = useState(item?.pay_amount_female);
-  const [amountmale, setAmountMale] = useState(item?.pay_amount_male);
-  const [edit, setEdit] = useState(false);
-  const textInputRef = useRef(null);
   console.log("usrrjfjf", usertype);
 
-  const { id, item } = route.params;
-  console.log("fjd", item);
 
   const acceptSahayak = async () => {
     let params =
@@ -181,46 +178,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     return count;
   };
 
-  const onEditPress = () => {
-    setEdit(true);
-    textInputRef?.current?.focus();
-  };
-  const onAcceptPress = async () => {
-    let params =
-      {
-        job_id: JSON.stringify(item?.id),
-        pay_amount_male: amount,
-        pay_amount_female: amount,
-      };
-    console.log(params, "params");
-
-    try {
-      const response = await service.post("/api/edit_individuals/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
-        },
-      });
-      console.log(token?.access, "token");
-      const data = response?.data;
-      Toast.show(data.success, Toast.SHORT);
-      // setThekeperKam(data.data);
-      // setAmount(data.data)
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-    
-  }
-
-   function updateAmount (value) {
-    console.log("updateAmountupdateAmount",value);
-    setAmountMale(value);
-    setAmountFemale(value);
-    console.log("setamount",amountfemale , amountmale);
-
-   }
-
   function handleFemaleAccepted() {
     const totalfemale = countAccepted();
     setTotalFemaleAccepted(totalfemale);
@@ -246,7 +203,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   }, [countAccepted]);
 
 
-  const TotalCount = acceptedCount + maleCount;
+  const TotalCount = parseInt(item.count_female) + parseInt(item.count_male);
   console.log("fjfjfhjfhjffffjf", TotalCount);
   // useEffect(() => {
 
@@ -377,14 +334,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 placeholder="एक पुरुष का वेतन"
                 placeholderTextColor={"#000"}
               />
-              <TextInput
-                    editable={edit}
-                    ref={textInputRef}
-                    onChangeText={updateAmount}
-                    value={amountmale}
-                    style={{paddingRight:10}}
-                    // defaultValue={item?.total_amount_theka}
-                  />
+              <Text style={{ marginRight: 8, color: "#0099FF" }}>
+                ₹ {item?.pay_amount_male}
+              </Text>
             </View>
             <View
               style={[
@@ -398,14 +350,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 placeholder="एक महिला का वेतन"
                 placeholderTextColor={"#000"}
               />
-              <TextInput
-                    editable={edit}
-                    ref={textInputRef}
-                    onChangeText={updateAmount}
-                    value={amountfemale}
-                    style={{paddingRight:10}}
-                    // defaultValue={item?.total_amount_theka}
-                  />
+              <Text style={{ marginRight: 20, color: "#0099FF" }}>
+                ₹ {item?.pay_amount_female}
+              </Text>
             </View>
           </View>
           <View style={styles.flex}>
@@ -415,7 +362,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             {usertype && usertype === "Grahak" && (
               <View style={[styles.flex, { marginTop: 10 }]}>
                 <TouchableOpacity
-                onPress={() => {onEditPress()}}  
                   style={{
                     backgroundColor: "#0099FF",
                     marginRight: 10,
@@ -427,7 +373,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                onPress={() => {onAcceptPress()}}
                   style={{
                     backgroundColor: "#44A347",
                     paddingHorizontal: 10,
@@ -529,7 +474,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           <TextInput
                             style={styles.CheckTextInput}
                             placeholder="पुरषो"
-                            placeholderTextColor={"#0099FF"}
+                            placeholderTextColor={"#000"}
                             name={`Male${index + 1}`}
                           />
                           <View
@@ -564,7 +509,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                             styles.FemalecheckView,
                             styles.flex,
                             styles.justifyContentBetween,
-                            { paddingHorizontal: 5 },
+                            { paddingHorizontal: 5, },
                           ]}
                           key={index}
                         >
@@ -578,7 +523,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                             style={{
                               height: 25,
                               paddingHorizontal: 5,
-                              backgroundColor: "#0099FF",
+                              backgroundColor: "#44A347",
                               marginLeft: 5,
                             }}
                           >
@@ -782,6 +727,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 }}
               >
                 <TouchableOpacity>
+                {item.status == "Accepted" ? 
                   <Text
                     style={{
                       textAlign: "center",
@@ -792,12 +738,26 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       fontWeight: "600",
                     }}
                   >
-                    {TotalCount} सहायक स्वीकार करें
+                  {TotalCount} 
+                    सहायक स्वीकार करें
                   </Text>
+                  :   <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    paddingHorizontal: 10,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+               0
+                  सहायक स्वीकार करें
+                </Text>}
                 </TouchableOpacity>
               </View>
             </View>
-            <View>
+            <View style={{width:'100%'}}>
                   {item.status === "Accepted" && (
                 <TouchableOpacity
                   style={styles.BhuktanBtn}
@@ -813,7 +773,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </TouchableOpacity>
               )}
               {item.status === "Pending" && (
-                <TouchableOpacity style={styles.BhuktanBtn}>
+                <TouchableOpacity style={styles.BhuktanBtn} >
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     भुगतान करें
                   </Text>
@@ -1165,7 +1125,7 @@ const styles = StyleSheet.create({
 
   FemalecheckView: {
     borderColor: "#0070C0",
-
+    width: "30%",
     borderBottomLeftRadius: 0,
     borderTopLeftRadius: 0,
     // width: "33.33%",

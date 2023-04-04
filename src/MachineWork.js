@@ -45,7 +45,7 @@ export default function MachineWork({ navigation, route }) {
   const token = useSelector(selectToken);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
-  const { id, item } = route.params;
+  const { id, item } = route.params??{};
   console.log("fjd", item);
   const [amount, setAmount] = useState(item?.total_amount_machine);
   const [edit, setEdit] = useState(false);
@@ -56,31 +56,27 @@ export default function MachineWork({ navigation, route }) {
     textInputRef?.current?.focus();
   };
   const onAcceptPress = async () => {
-    let params =
-      {
-        job_id: JSON.stringify(item?.id),
-        amount: amount,
-      };
-    console.log(params, "params");
-
-    try {
-      const response = await service.post("/api/edit_machine/", params, {
+    let params = {
+      job_id: item?.id,
+      amount,
+    };
+    service
+      .post("/api/edit_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token?.access}`,
         },
+      })
+      .then((res) => {
+        let data = res.data;
+        setEdit(false);
+        console.log("data", data);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("Error:", error);
       });
-      console.log(token?.access, "token");
-      const data = response?.data;
-      Toast.show(data.success, Toast.SHORT);
-      // setThekeperKam(data.data);
-      // setAmount(data.data)
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-    
-  }
+  };
 
   // const onAcceptPress = async () => {
   //   try {
@@ -107,7 +103,7 @@ export default function MachineWork({ navigation, route }) {
     };
     console.log("jjff", params);
     try {
-      const response = await service.post("/api/accept_theka/", params, {
+      const response = await service.post("/api/accept_machine/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token?.access}`,
@@ -117,19 +113,11 @@ export default function MachineWork({ navigation, route }) {
       console.log("aaaa", data);
       setThekeperKam(data?.data);
       console.log("rrrr", thekeperKam);
+      navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
     }
   };
-
-
-
-   function updateAmount (value) {
-    console.log("updateAmountupdateAmount",value);
-    setAmount(value);
-    console.log("setamount",amount);
-
-   }
 
   return (
     <SafeAreaView
@@ -265,19 +253,20 @@ export default function MachineWork({ navigation, route }) {
                     { marginHorizontal: 10 },
                   ]}
                 >
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder="वेतन "
-                  />
-                  <TextInput
-                    editable={edit}
-                    ref={textInputRef}
-                    onChangeText={updateAmount}
-                    value={amount}
-                    style={{paddingRight:10}}
-                    // defaultValue={item?.total_amount_theka}
-                  />
+                  {edit ? (
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholder="वेतन"
+                      ref={textInputRef}
+                      onChangeText={(amount) => setAmount(amount)}
+                      value={amount}
+                      placeholderTextColor={"#000"}
+                    />
+                  ) : (
+                    <Text style={styles.Text}>
+                      {item?.total_amount_machine}
+                    </Text>
+                  )}
                 </View>
               </View>
             )}
@@ -512,6 +501,22 @@ export default function MachineWork({ navigation, route }) {
               ) : null)}
           </View>
         </View>
+
+        <View style={styles.BhuktanBtn}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Payment", {
+                item: item?.job_type,
+                id: id,
+                item: item,
+              })
+            }
+          >
+            <Text style={{ textAlign: "center", color: "#fff" }}>
+              भुगतान करें
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -524,7 +529,7 @@ export default function MachineWork({ navigation, route }) {
             }}
           >
             <Text style={{ textAlign: "center", color: "#fff" }}>
-              रद्द करें{" "}
+              रद्द करें
             </Text>
           </TouchableOpacity>
         </View>
