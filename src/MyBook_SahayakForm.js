@@ -574,7 +574,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.FemalecheckView,
                               styles.flex,
                               styles.justifyContentBetween,
-                              { paddingHorizontal: 5 },
+                              { paddingHorizontal: 5, width:'auto' },
                             ]}
                             key={index}
                           >
@@ -629,7 +629,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.FemalecheckView,
                               styles.flex,
                               styles.justifyContentBetween,
-                              { paddingHorizontal: 5 },
+                              { paddingHorizontal: 5, width:'auto' },
                             ]}
                             key={index}
                           >
@@ -763,7 +763,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </TouchableOpacity>
                 )}
                 {item.status === "Pending" && (
-                  <TouchableOpacity style={styles.BhuktanBtn}>
+            <TouchableOpacity style={[styles.BhuktanBtn, { opacity:0.5}]} disabled={true}>
                     <Text style={[styles.loginText, { color: "#fff" }]}>
                       भुगतान करें
                     </Text>

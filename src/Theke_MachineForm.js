@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
@@ -43,15 +44,14 @@ function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { id, item } = route?.params ?? {};
-
-  const [ratings, setRating] = useState(item.rating);
-  console.log('rating', item?.rating)
+  const [ratingList, setRatingList] = useState([]);
+  console.log("rating", item?.rating);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
- 
+
   const [amount, setAmount] = useState({});
   const [edit, setEdit] = useState(false);
   const [editable, setEditable] = useState(false);
@@ -94,8 +94,6 @@ function Theke_MachineForm({ navigation, route }) {
     RatingApi();
   };
 
-
-
   const Edit = async () => {
     let params =
       // {
@@ -124,14 +122,32 @@ function Theke_MachineForm({ navigation, route }) {
     }
   };
 
+  //   const RatingApi = async () => {
+  //     let params = {
+  //       booking_job: item?.booking_id,
 
+  //     };
+
+  // console.log('paramsparams', params)
+  //     try {
+  //       const response = await service.post("/api/get-reating/", params, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token?.access}`,
+  //         },
+  //       });
+  //       const data = response?.data;
+  //       // setThekeperKam(data.data);
+  //       console.log("fjfjf", data);
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   };
   const RatingApi = async () => {
     let params = {
       booking_job: item?.booking_id,
-      
     };
 
-console.log('paramsparams', params)
     try {
       const response = await service.post("/api/get-reating/", params, {
         headers: {
@@ -140,16 +156,93 @@ console.log('paramsparams', params)
         },
       });
       const data = response?.data;
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
+      const ratings = data?.rating;
+      const ratingColor = 'orange';
+
+      const ratingList = Array(10)
+      .fill(0)
+      .map((_, num) => {
+        let color = num < ratings ? ratingColor : "white";
+        return (
+          <View
+            key={num}
+            style={{
+              backgroundColor: color,
+              borderWidth: 1,
+              borderColor: "#ccc",
+              width: 30,
+              height: 30,
+              borderRightWidth: 0.1,
+              borderEndWidth: 0.4,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {num + 1 <= ratings && (
+              <FontAwesome name="star" size={18} color="white" />
+            )}
+            {num + 1 > ratings && (
+              <FontAwesome name="star-o" size={18} color={ratingColor} />
+            )}
+          </View>
+        );
+      });
+    
+      setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
     }
   };
-
-useEffect(() => {
-  RatingApi()
-})
+  // const RatingApi = async () => {
+  //   let params = {
+  //     booking_job: item?.booking_id,
+  //   };
+  
+  //   try {
+  //     const response = await service.post("/api/get-reating/", params, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token?.access}`,
+  //       },
+  //     });
+  //     const data = response?.data;
+  //     const ratings = data?.rating;
+  //     const ratingColor = "orange";
+  //     const ratingList = Array(10)
+  //     .fill(0)
+  //     .map((_, num) => {
+  //       let color = num < ratings ? ratingColor : "white";
+  //       return (
+  //         <View
+  //           key={num}
+  //           style={{
+  //             backgroundColor: "white",
+  //             borderWidth: 1,
+  //             borderColor: "#ccc",
+  //             width: 30,
+  //             height: 30,
+  //             borderRightWidth: 0.1,
+  //             borderEndWidth: 0.4,
+  //             justifyContent: "center",
+  //             alignItems: "center",
+  //           }}
+  //         >
+  //           {num < ratings ? (
+  //             <FontAwesome name="star" size={18} color={ratingColor} />
+  //           ) : (
+  //             <FontAwesome name="star-o" size={18} color={color} />
+  //           )}
+  //         </View>
+  //       );
+  //     });
+  //     setRatingList(ratingList);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
+  useEffect(() => {
+    RatingApi();
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -451,10 +544,7 @@ useEffect(() => {
                 </TouchableOpacity>
               )}
               {item.status === "Booked" && (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                 
-                >
+                <TouchableOpacity style={styles.BhuktanBtn}>
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     काम बुक
                   </Text>
@@ -468,15 +558,16 @@ useEffect(() => {
                 </TouchableOpacity>
               )}
             </>
-          ) : (
-            item.status === "Completed" && (
+          ) : null}
+
+          {usertype === "Sahayak" ||
+            (usertype === "MachineMalik" && item.status === "Completed" && (
               <TouchableOpacity style={styles.BhuktanBtn}>
                 <Text style={[styles.loginText, { color: "#fff" }]}>
-                  जारी है
+                  जारी हैff
                 </Text>
               </TouchableOpacity>
-            )
-          )}
+            ))}
 
           {(usertype === "Sahayak" || usertype === "MachineMalik") &&
           (item.status === "Accepted" ||
@@ -503,35 +594,34 @@ useEffect(() => {
             </>
           ) : null}
         </View>
-       
+
         <>
-        {item.status === "Completed" && (
-          <View
-            style={{ display: "flex", flexDirection: "row", marginTop: 20, justifyContent:'center' }}
-          >
-            {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  handleClicks(index);
-                }}
-              >
-                <Text
-                  style={{
-                    backgroundColor: colors[index],
-                    padding: 10,
-                    borderWidth: 0.7,
-                    borderColor: "#000",
-                  }}
-                >
-                  {index + 1}
+          {item.status === "Completed" && (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity style={[styles.BhuktanBtn,{width:'95%', marginBottom:10}]}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                समाप्त 
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                {ratingList}
+              </View>
+            </View>
+          )}
 
-        )}
-          
           {/* <View
             style={{ height: 100, borderWidth: 1, width: "75%", marginTop: 20 }}
           >
@@ -541,8 +631,7 @@ useEffect(() => {
               value={data?.comment}
             />
           </View>  */}
-          </>
-
+        </>
 
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
