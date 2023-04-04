@@ -16,6 +16,7 @@ import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ function Theke_MachineForm2({ navigation, route }) {
   console.log("fjkfkfkff",item, data, payment_status);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
@@ -64,13 +66,28 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const handleClick = (index) => {
     setRating(index + 1);
-    const newColors = [...colors];
-    if (index < 4) newColors[index] = "red";
-    else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    else if (index >= 9) newColors[index] = "green";
-    setColors(newColors);
-    
+    setSelectedButtonIndex(index);
+    // const newColors = [...colors];
+    // if (index < 4) newColors[index] = "red";
+    // else if (index >= 4 && index < 9) newColors[index] = "yellow";
+    // else if (index >= 9) newColors[index] = "green";
+    // setColors(newColors);
+   
   };
+
+  const renderButton = (index) => {
+    const backgroundColor = index <= selectedButtonIndex ? 'red' : 'transparent';
+    const iconName = index <= selectedButtonIndex ? 'star' :'star-o'
+    return (
+      <TouchableOpacity key={index} onPress={() => handleClick(index)}>
+        <View style={[styles.button]}>
+      <FontAwesome name={iconName} size={30} color="#e6b400" /> 
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const ratingColor = 'orange';
 
   const fetchBookings = async () => {
     try {
@@ -402,25 +419,7 @@ function Theke_MachineForm2({ navigation, route }) {
           <View
             style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
           >
-            {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  handleClick(index);
-                }}
-              >
-                <Text
-                  style={{
-                    backgroundColor: colors[index],
-                    padding: 10,
-                    borderWidth: 0.7,
-                    borderColor: "#000",
-                  }}
-                >
-                  {index + 1}
-                </Text>
-              </TouchableOpacity>
-            ))}
+              {[...Array(5).keys()].map(renderButton)}
           </View>
 
           <View

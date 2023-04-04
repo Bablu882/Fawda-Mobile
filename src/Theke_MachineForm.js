@@ -84,15 +84,15 @@ function Theke_MachineForm({ navigation, route }) {
     }
   };
 
-  const handleClicks = (index) => {
-    setRating(index + 1);
-    const newColors = [...colors];
-    if (index < 4) newColors[index] = "red";
-    else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    else if (index >= 9) newColors[index] = "green";
-    setColors(newColors);
-    RatingApi();
-  };
+  // const handleClicks = (index) => {
+  //   setRating(index + 1);
+  //   const newColors = [...colors];
+  //   if (index < 4) newColors[index] = "red";
+  //   else if (index >= 4 && index < 9) newColors[index] = "yellow";
+  //   else if (index >= 9) newColors[index] = "green";
+  //   setColors(newColors);
+  //   RatingApi();
+  // };
 
   const Edit = async () => {
     let params =
@@ -122,26 +122,7 @@ function Theke_MachineForm({ navigation, route }) {
     }
   };
 
-  //   const RatingApi = async () => {
-  //     let params = {
-  //       booking_job: item?.booking_id,
-
-  //     };
-
-  // console.log('paramsparams', params)
-  //     try {
-  //       const response = await service.post("/api/get-reating/", params, {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token?.access}`,
-  //         },
-  //       });
-  //       const data = response?.data;
-  //       // setThekeperKam(data.data);
-  //       console.log("fjfjf", data);
-  //     } catch (error) {
-  //       console.log("Error:", error);
-  //     }
+ 
   //   };
   const RatingApi = async () => {
     let params = {
@@ -157,7 +138,7 @@ function Theke_MachineForm({ navigation, route }) {
       });
       const data = response?.data;
       const ratings = data?.rating;
-      const ratingColor = "orange";
+      const ratingColor = "#e6b400";
 
       const ratingList = Array(10)
         .fill(0)
@@ -165,26 +146,25 @@ function Theke_MachineForm({ navigation, route }) {
           let color = num < ratings ? ratingColor : "white";
           return (
             <View
-              key={num}
-              style={{
-                backgroundColor: color,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                width: 30,
-                height: 30,
-                borderRightWidth: 0.1,
-                borderEndWidth: 0.4,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {num + 1 <= ratings && (
-                <FontAwesome name="star" size={18} color="white" />
-              )}
-              {num + 1 > ratings && (
-                <FontAwesome name="star-o" size={18} color={ratingColor} />
-              )}
-            </View>
+            key={num}
+            style={{
+              // borderColor: color,
+              // borderWidth: 1,
+              width: 30,
+              height: 30,
+              // borderRightWidth: 0.1,
+              // borderEndWidth: 0.4,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {num + 1 <= ratings && (
+              <FontAwesome name="star" size={24} color="#e6b400" />
+            )}
+            {num + 1 > ratings && (
+              <FontAwesome name="star-o" size={24} color={ratingColor} />
+            )}
+          </View>
           );
         });
 

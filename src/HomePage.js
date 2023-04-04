@@ -49,15 +49,25 @@ export default function Homepage({ navigation, route }) {
   }, [0]);
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1, alignItems:'center', justifyContent:'center' }}>
-      <View style={{ padding: 20, marginTop: 25 }}>
-    
-      </View>
+    <SafeAreaView
+      style={{
+        backgroundColor: "#fff",
+        flex: 1,
+       
+      }}
+    >
+      <View style={{ padding: 20, marginTop: 25 }}></View>
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         {usertype === "Sahayak" || usertype === "MachineMalik" ? (
           <>
-            <View style={{ justifyContent: "center", alignItems: "center", flex:1 }}>
-              <View style={{ justifyContent: "center" }}>
+            <View
+              style={{
+                // justifyContent: "center",
+                // alignItems: "center",
+                // flex: 1,
+              }}
+            >
+              <View style={{ justifyContent: "center", flex:1 }}>
                 <Text
                   style={{
                     textAlign: "center",
@@ -65,7 +75,11 @@ export default function Homepage({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                 { usertype ==="Sahayak"? 'ठेकेदार/सहायक के  काम ': usertype ==="MachineMalik" ? 'मशीन के काम ' : null}
+                  {usertype === "Sahayak"
+                    ? "ठेकेदार/सहायक के  काम "
+                    : usertype === "MachineMalik"
+                    ? "मशीन के काम "
+                    : null}
                 </Text>
               </View>
 
@@ -82,15 +96,29 @@ export default function Homepage({ navigation, route }) {
                   {currentUsers.map((item, index) => (
                     <View key={index} style={styles.booking}>
                       <View style={styles.bookingLeft}>
-                        {item.job_type ==="individuals_sahayak" || item.job_type === "theke_pe_kam" ? 
-                        <>
-                        <Text style={styles.bookingTitle}>{<Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="theke_pe_kam" ? 'ठेकेदार': ""}</Text> }</Text>
-                        </>: <Text style={styles.bookingTitle}>{item?.work_type}</Text>
-                      }
+                        {item.job_type === "individuals_sahayak" ||
+                        item.job_type === "theke_pe_kam" ? (
+                          <>
+                            <Text style={styles.bookingTitle}>
+                              {
+                                <Text style={styles.bookingTitle}>
+                                  {item.job_type === "individuals_sahayak"
+                                    ? "सहायक के  काम "
+                                    : item.job_type === "theke_pe_kam"
+                                    ? "ठेकेदार"
+                                    : ""}
+                                </Text>
+                              }
+                            </Text>
+                          </>
+                        ) : (
+                          <Text style={styles.bookingTitle}>
+                            {item?.work_type === "Harvesting" ? "काटना": item?.work_type === "Sowing" ? "बुवाई": 'भूमि की तैयारी'}
+                          </Text>
+                        )}
                         {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
-                        
+                       
                         <Text style={{ color: "black" }}>
-                      
                           {moment.utc(item.datetime).format("l")}
                         </Text>
                       </View>
@@ -118,9 +146,7 @@ export default function Homepage({ navigation, route }) {
                           }
                         }}
                       >
-                        <Text style={styles.bookingButtonText}>
-                          विवरण देखे
-                        </Text>
+                        <Text style={styles.bookingButtonText}>विवरण देखे</Text>
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -140,7 +166,14 @@ export default function Homepage({ navigation, route }) {
           </>
         ) : (
           <>
-            <View style={{flex:1, justifyContent:'center', alignItems:'center', marginVertical:50}}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: 50,
+              }}
+            >
               <Image
                 source={require("../assets/image/Fawda-logo.png")}
                 style={{ width: 200, height: 200, alignItems: "center" }}
@@ -276,7 +309,7 @@ export default function Homepage({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-     backgroundColor: "#fff",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -344,6 +377,7 @@ const styles = StyleSheet.create({
   bookingTitle: {
     fontWeight: "600",
     fontSize: 18,
+    // color:"#000"
   },
   CountryCode: {
     // borderColor: "#0070C0 ",

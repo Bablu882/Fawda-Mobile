@@ -26,15 +26,16 @@ const CustomComponent = ({ label, value }) => {
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
+          flex:1
         },
       ]}
     >
       <TextInput
-        style={[styles.TextInput, { width: "100%" }]}
+        style={[styles.TextInput, { width: "100%", left:10 }]}
         placeholder={label}
         placeholderTextColor={"#000"}
       />
-      <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
+      <Text style={{ marginTop: 5, right: 20, color: "#0070C0" }}>{value}</Text>
     </View>
   );
 };
@@ -136,34 +137,33 @@ console.log('dfjddjdjd', params)
       const data = response?.data;
       console.log('fjkfkff', data)
       const ratings = data?.rating;
-      const ratingColor = "orange";
+      const ratingColor = "#e6b400";
 
-      const ratingList = Array(10)
+      const ratingList = Array(5)
         .fill(0)
         .map((_, num) => {
-          let color = num < ratings ? ratingColor : "white";
+          // let color = num < ratings ? ratingColor : "#e6b400";
           return (
             <View
-              key={num}
-              style={{
-                backgroundColor: color,
-                borderWidth: 1,
-                borderColor: "#ccc",
-                width: 30,
-                height: 30,
-                borderRightWidth: 0.1,
-                borderEndWidth: 0.4,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {num + 1 <= ratings && (
-                <FontAwesome name="star" size={18} color="white" />
-              )}
-              {num + 1 > ratings && (
-                <FontAwesome name="star-o" size={18} color={ratingColor} />
-              )}
-            </View>
+            key={num}
+            style={{
+              // borderColor: color,
+              // borderWidth: 1,
+              width: 30,
+              height: 30,
+              // borderRightWidth: 0.1,
+              // borderEndWidth: 0.4,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {num + 1 <= ratings && (
+              <FontAwesome name="star" size={24} color="#e6b400" />
+            )}
+            {num + 1 > ratings && (
+              <FontAwesome name="star-o" size={24} color={ratingColor} />
+            )}
+          </View>
           );
         });
 
