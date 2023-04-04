@@ -21,8 +21,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
-  const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", data, payment_status);
+  const { item, data, payment_status } = route?.params??{};
+  console.log("fjkfkfkff",item, data, payment_status);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -63,7 +63,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     else if (index >= 4 && index < 9) newColors[index] = "yellow";
     else if (index >= 9) newColors[index] = "green";
     setColors(newColors);
-    RatingApi();
+   
   };
 
 
@@ -426,16 +426,9 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             >
               सहायक
             </Text>
-            <TextInput
+            <Text
               style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              // onChangeText={(text) => setName(text, "name")}
-              // defaultValue={email}
-              // value={name}
-              //   error={input.name}
-              //   onFocus={() => handleError(null, "name")}
-            />
+              >{item?.sahayak_name}</Text>
             {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
           </View>
 
@@ -452,16 +445,10 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             >
               गाँव
             </Text>
-            <TextInput
+            <Text
               style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              // onChangeText={(text) => setName(text, "name")}
-              // defaultValue={email}
-              // value={name}
-              //   error={input.name}
-              //   onFocus={() => handleError(null, "name")}
-            />
+              
+            >{item?.sahayak_village}</Text>
             {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
           </View>
 
@@ -478,16 +465,15 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             >
               मोबाइल नंबर
             </Text>
-            <TextInput
+            <Text
               style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
+              
               // onChangeText={(text) => setName(text, "name")}
               // defaultValue={email}
               // value={name}
               //   error={input.name}
               //   onFocus={() => handleError(null, "name")}
-            />
+            >{item?.sahayak_mobile_no}</Text>
             {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
           </View>
           </>
@@ -550,7 +536,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn}>
+            <TouchableOpacity style={styles.BhuktanBtn} onPress={() =>  RatingApi()}>
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
