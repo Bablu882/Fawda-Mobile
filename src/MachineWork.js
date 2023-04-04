@@ -502,21 +502,27 @@ export default function MachineWork({ navigation, route }) {
           </View>
         </View>
 
-        <View style={styles.BhuktanBtn}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("Payment", {
-                item: item?.job_type,
-                id: id,
-                item: item,
-              })
-            }
-          >
-            <Text style={{ textAlign: "center", color: "#fff" }}>
-              भुगतान करें
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {item.status === "Accepted" && (
+                <TouchableOpacity
+                  style={styles.BhuktanBtn}
+                  onPress={() =>
+                    navigation.navigate("Payment", {
+                      item,
+                    })
+                  }
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {item.status === "Pending" && (
+                <TouchableOpacity style={[styles.BhuktanBtn , {opacity:0.5}]} disabled={true}>
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    भुगतान करें
+                  </Text>
+                </TouchableOpacity>
+              )}
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}

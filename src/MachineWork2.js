@@ -69,7 +69,7 @@ function MachineWork2({ navigation, route }) {
     else if (index >= 4 && index < 9) newColors[index] = "yellow";
     else if (index >= 9) newColors[index] = "green";
     setColors(newColors);
-    RatingApi();
+    
   };
 
   const fetchBookings = async () => {
@@ -455,7 +455,7 @@ function MachineWork2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn}>
+            <TouchableOpacity style={styles.BhuktanBtn} onPress={() => RatingApi()}>
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
