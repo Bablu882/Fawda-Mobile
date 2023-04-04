@@ -34,6 +34,12 @@ export default function Login({ navigation }) {
   //   alert(to)
   //   navigation.replace(to)
   // }
+  useEffect(() => {
+    if(isLoggedIn) {
+    navigation.replace('HomePage')
+    }
+    },[isLoggedIn])
+
 
   const login = async () => {
     setloading(true);

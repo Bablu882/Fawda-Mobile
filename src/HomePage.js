@@ -49,16 +49,14 @@ export default function Homepage({ navigation, route }) {
   }, [0]);
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1, alignItems:'center', justifyContent:'center' }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+    
       </View>
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         {usertype === "Sahayak" || usertype === "MachineMalik" ? (
           <>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View style={{ justifyContent: "center", alignItems: "center", flex:1 }}>
               <View style={{ justifyContent: "center" }}>
                 <Text
                   style={{
@@ -142,7 +140,7 @@ export default function Homepage({ navigation, route }) {
           </>
         ) : (
           <>
-            <View style={styles.container}>
+            <View style={{flex:1, justifyContent:'center', alignItems:'center', marginVertical:50}}>
               <Image
                 source={require("../assets/image/Fawda-logo.png")}
                 style={{ width: 200, height: 200, alignItems: "center" }}
@@ -278,7 +276,7 @@ export default function Homepage({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#fff",
+     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
