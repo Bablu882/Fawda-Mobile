@@ -54,7 +54,7 @@ export default function Login({ navigation }) {
           Toast.show("User is not Registered", Toast.SHORT);
           navigation.replace("Register" , {phone  });
           console.log('kdkdkdkd',phone )
-        }
+        }       
       })
       .catch((error) => {
         console.log(error);
