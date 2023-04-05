@@ -17,28 +17,21 @@ import { useIsFocused } from "@react-navigation/native";
 
 export default function Login({ navigation }) {
   const [phone, setPhone] = useState("");
+ 
   const [phoneError, setPhoneError] = useState("");
   const [tokenn, setTokenn] = useState();
   const [loading, setloading] = useState("");
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
   const isfocused = useIsFocused();
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.replace("HomePage");
+    }
+  }, [isLoggedIn]);
 
-  // useEffect(() => {
-  //   if(isLoggedIn) {
-  //       navigation.replace('Verification')
-  //   }
-  // },[isLoggedIn])
 
-  // const redirect = (to) => {
-  //   alert(to)
-  //   navigation.replace(to)
-  // }
-  // useEffect(() => {
-  //   if(isLoggedIn) {
-  //   navigation.replace('HomePage')
-  //   }
-  //   },[isLoggedIn])
+
 
 
   const login = async () => {
@@ -60,10 +53,8 @@ export default function Login({ navigation }) {
 
         console.log("login", data);
         if (data?.token) {
-          dispatch(setToken(data.token));
+          dispatch(setToken(data?.token));
           Toast.show(JSON.stringify(data.otp), Toast.LONG);
-
-          // Toast.show('Login successfully.', Toast.SHORT);
           navigation.replace("Verification", { user_type: data.user_type});
         } else {
           Toast.show("User is not Registered", Toast.SHORT);
