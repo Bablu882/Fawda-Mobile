@@ -17,22 +17,16 @@ import { useIsFocused } from "@react-navigation/native";
 
 export default function Login({ navigation }) {
   const [phone, setPhone] = useState("");
- 
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const [phoneError, setPhoneError] = useState("");
   const [tokenn, setTokenn] = useState();
   const [loading, setloading] = useState("");
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  
   const dispatch = useDispatch();
   const isfocused = useIsFocused();
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigation.replace("HomePage");
-    }
-  }, [isLoggedIn]);
-
-
-
-
+  
+  
+  
 
   const login = async () => {
     setloading(true);
@@ -69,6 +63,11 @@ export default function Login({ navigation }) {
         Toast.show("Invalid Credentials", Toast.SHORT);
       });
   };
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.navigate("HomePage", );
+    }
+  }, []);
 
   // handleSubmit = () => {
   //   if (!phone) {

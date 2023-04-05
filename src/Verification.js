@@ -11,6 +11,8 @@ import Service from "../service/index";
 import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { selectToken, setUserType } from "../slices/authSlice";
+import { selectIsLoggedIn, setToken } from "../slices/authSlice";
+
 
 export default function Verification({ navigation, route }) {
   const { user_type } = route?.params??{};
@@ -20,6 +22,8 @@ export default function Verification({ navigation, route }) {
   const [otp, setOtp] = useState("");
   const [Timer, setTimer] = useState(true);
   const [counter, setCounter] = useState(90);
+
+  
 
   const verify = async () => {
     try {
@@ -73,6 +77,9 @@ export default function Verification({ navigation, route }) {
     }, 1000);
     return () => clearInterval(interval);
   }, [counter]);
+
+
+
 
   return (
     <View style={styles.verificationContainer}>

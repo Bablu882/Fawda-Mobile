@@ -14,21 +14,6 @@ export default function SplashScreen ({navigation}) {
           navigation.replace("Login");
         }, 3000);
       }, []);
-    // const isLoggedIn = useSelector(selectIsLoggedIn);
-    // const { text } = await translate('Привет мир');
-
-
-    // React.useEffect(() => {
-    //     if(isLoggedIn) {
-    //       // alert(isLoggedIn)
-    //       setTimeout(() => {
-    //         navigation.replace('Home')
-    //       }, 0)
-    //     }
-    //   },[isLoggedIn])
-     
-
-
     
     return(
         <>

@@ -41,9 +41,9 @@ export default function BottomTab() {
           tabPress: (e) => {
             e.preventDefault();
             if (isLoggedIn == true) {
-              navigation.replace("HomePage");
+              navigation.replace("HomePage", usertype);
             } else {
-              navigation.navigate("Login");
+              navigation.navigate("Login", usertype);
             }
           },
         })}
