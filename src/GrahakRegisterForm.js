@@ -20,8 +20,8 @@ import { RadioButton } from "react-native-paper";
 import * as Location from "expo-location";
 
 export default function GrahakRegisterForm({ navigation, route }) {
-  const { user,phone  } = route.params;
-  console.log("fnkfjk", user, phone);
+  const { user  } = route.params;
+  console.log("fnkfjk", user);
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
@@ -122,12 +122,12 @@ export default function GrahakRegisterForm({ navigation, route }) {
       const params = {
         name,
         gender,
-        phone:phone,
+        phone:phoneno,
         village,
         mohalla,
         state: selectedState,
         district: selectedDistrict,
-        phoneno: user,
+        user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
       };
@@ -301,11 +301,11 @@ export default function GrahakRegisterForm({ navigation, route }) {
             maxLength={10}
             placeholder=""
             placeholderTextColor={"#848484"}
-            onChangeText={(phone) => setphoneno(phone, "phone")}
+            onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
             // defaultValue={email}
-            value={phone}
+            value={phoneno}
           />
-          {!!errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
+          {!!errors.phoneno && <Text style={styles.error}>{errors.phoneno}</Text>}
         </View>
 
         <View style={styles.flex}>
@@ -395,7 +395,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
               />
               {district?.map((item) => (
                 <Picker.Item
-              
+
                   label={item.district}
                   value={item.district}
                 />
@@ -514,3 +514,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
