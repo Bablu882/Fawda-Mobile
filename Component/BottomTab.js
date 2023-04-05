@@ -11,11 +11,12 @@ import SahayakBookStack from "../navigations/SahayakBookStack";
 import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
 import MyNaukariStack from "../navigations/MyNaukariStack";
-import { selectUserType } from "../slices/authSlice";
+import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
 
@@ -36,6 +37,16 @@ export default function BottomTab() {
       <Tab.Screen
         name="HomePage"
         component={Homepage}
+        listeners={({ navigation, route }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            if (isLoggedIn == true) {
+              navigation.replace("HomePage");
+            } else {
+              navigation.navigate("Login");
+            }
+          },
+        })}
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
