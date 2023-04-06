@@ -16,6 +16,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
+import Toast from "react-native-simple-toast";
+
 
 const CustomComponent = ({ label, value }) => {
   return (
@@ -45,7 +47,7 @@ function Theke_MachineForm({ navigation, route }) {
   const token = useSelector(selectToken);
   const { id, item } = route?.params ?? {};
   const [ratingList, setRatingList] = useState([]);
-  console.log("rating", item?.rating);
+  console.log("rating", item, item?.rating);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -55,6 +57,7 @@ function Theke_MachineForm({ navigation, route }) {
   const [amount, setAmount] = useState({});
   const [edit, setEdit] = useState(false);
   const [editable, setEditable] = useState(false);
+  const [status , setStatus] = useState("");
 
   const textInputRef = useRef(null);
   const handleClick = () => {
@@ -173,56 +176,50 @@ function Theke_MachineForm({ navigation, route }) {
       console.log("Error:", error);
     }
   };
-  // const RatingApi = async () => {
-  //   let params = {
-  //     booking_job: item?.booking_id,
-  //   };
 
-  //   try {
-  //     const response = await service.post("/api/get-reating/", params, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token?.access}`,
-  //       },
-  //     });
-  //     const data = response?.data;
-  //     const ratings = data?.rating;
-  //     const ratingColor = "orange";
-  //     const ratingList = Array(10)
-  //     .fill(0)
-  //     .map((_, num) => {
-  //       let color = num < ratings ? ratingColor : "white";
-  //       return (
-  //         <View
-  //           key={num}
-  //           style={{
-  //             backgroundColor: "white",
-  //             borderWidth: 1,
-  //             borderColor: "#ccc",
-  //             width: 30,
-  //             height: 30,
-  //             borderRightWidth: 0.1,
-  //             borderEndWidth: 0.4,
-  //             justifyContent: "center",
-  //             alignItems: "center",
-  //           }}
-  //         >
-  //           {num < ratings ? (
-  //             <FontAwesome name="star" size={18} color={ratingColor} />
-  //           ) : (
-  //             <FontAwesome name="star-o" size={18} color={color} />
-  //           )}
-  //         </View>
-  //       );
-  //     });
-  //     setRatingList(ratingList);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
+ 
   useEffect(() => {
     RatingApi();
   }, []);
+
+  const cancel = async() => {
+    
+      let params = {};
+      if (item.status === "Accepted") {
+        params = {
+          job_id :item?.id ,
+        // job_number : item?.job_number,
+        booking_id: item?.booking_id,
+        status: status
+      }
+    } else if (item.status === "Pending") {
+      params = {
+        job_id :item?.id ,
+        job_number : item?.job_number,
+        // booking_id: item?.booking_id,
+        status: status
+      }
+    } 
+     
+      
+      try {
+        const response = await service.post("/api/cancel/", params, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token?.access}`,
+          },
+        });
+        console.log(token?.access, "token");
+        const data = response?.data;
+        // setStatus(data.status);
+        Toast.show(JSON.stringify(data.status), Toast.LONG);
+        console.log("fjfjf", data);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    };
+    
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -617,7 +614,7 @@ function Theke_MachineForm({ navigation, route }) {
 
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => cancel()}
             style={{
               backgroundColor: "#D9D9D9",
               alignSelf: "center",

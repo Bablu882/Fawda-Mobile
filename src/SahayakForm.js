@@ -36,8 +36,8 @@ export default function SahayakForm({ navigation }) {
   const [maleCounts, setMaleCounts] = useState(0);
   const [defaultDate, setDefaultDate] = useState(new Date());
   const [femaleCounts, setFemaleCounts] = useState(0);
-  const [landTypes, setLandTypes] = useState('');
-  const [selectedDates, setSelectedDates] = useState('');
+  const [landTypes, setLandTypes] = useState("");
+  const [selectedDates, setSelectedDates] = useState("");
   const [landArea, setLandAreas] = useState("");
   const [showDate, setShowDate] = useState("");
   const [malepayamount, setMalepayamount] = useState(0);
@@ -45,12 +45,93 @@ export default function SahayakForm({ navigation }) {
   const [description, setDescriptions] = useState("");
   const [days, setDays] = useState(0);
   const [time, setTimes] = useState("");
-  const [total, setTotal] = useState(0)
+  const [total, setTotal] = useState(0);
 
   var isTimeSelected = false;
 
+  // validate fields start
+  const [errors, setErrors] = useState({
+    showDate: "",
+    time: "",
+    description: "",
+    landType: "",
+    landArea: "",
+    maleCounts: "",
+    femaleCounts: "",
+    malepayamount: "",
+    femalepayamount: "",
+    days: "",
+  });
+
+  const validate = () => {
+    let valid = true;
+    let errorMessages = {
+      showDate: "",
+      time: "",
+      description: "",
+      landTypes: "",
+      landArea: "",
+      maleCounts: "",
+      femaleCounts: "",
+      malepayamount: "",
+      femalepayamount: "",
+      days: "",
+    };
+
+    if (showDate === "") {
+      errorMessages.showDate = "Please enter valid date";
+      valid = false;
+    }
+
+    if (time === "") {
+      errorMessages.time = "Please select valid time";
+      valid = false;
+    }
+    if (description === "") {
+      errorMessages.description = "Please enter your description";
+      valid = false;
+    }
+    if (landTypes.trim() === "") {
+      errorMessages.landTypes = "Please enter your land type";
+      valid = false;
+    }
+
+    if (landArea.trim() === "") {
+      errorMessages.landArea = "Please select your land area";
+      valid = false;
+    }
+
+    // if (maleCounts.trim() === "") {
+    //   errorMessages.maleCounts = "Please enter your amount";
+    //   valid = false;
+    // }
+
+    // if (femaleCounts.trim() === "") {
+    //   errorMessages.femaleCounts = "Please enter number";
+    //   valid = false;
+    // }
+
+    // if (malepayamount.trim() === "") {
+    //   errorMessages.malepayamount = "Please enter your amount";
+    //   valid = false;
+    // }
+
+    // if (femalepayamount.trim() === "") {
+    //   errorMessages.femalepayamount = "Please enter your amount";
+    //   valid = false;
+    // }
+
+    // if (days.trim() === "") {
+    //   errorMessages.days = "Please enter your days";
+    //   valid = false;
+    // }
 
 
+
+    setErrors(errorMessages);
+    return valid;
+  };
+  // end validation
 
   const pickerRef = useRef();
   function open() {
@@ -84,7 +165,6 @@ export default function SahayakForm({ navigation }) {
 
     let enabledTime = time + 3;
 
-
     if (timeSelect > time + 3) {
       return true;
     } else {
@@ -97,7 +177,6 @@ export default function SahayakForm({ navigation }) {
       item = item - 12;
       return (item = item + " PM");
     } else {
-    
       return item + " AM";
     }
   };
@@ -128,7 +207,7 @@ export default function SahayakForm({ navigation }) {
 
     setDate(currentDate);
     setShowDate(showDate);
-    console.log('fkdfk',showDate)
+    console.log("fkdfk", showDate);
     if (isTimeSelected == true) {
       console.log("ShowTime", showTime);
       setShowTime(showTime);
@@ -147,10 +226,10 @@ export default function SahayakForm({ navigation }) {
   };
 
   const dateValidate = () => {
-    let currentDate = new Date(); 
+    let currentDate = new Date();
     currentDate.setMonth(currentDate.getMonth() + 1);
 
-    return currentDate; 
+    return currentDate;
   };
 
   const showDatepicker = () => {
@@ -159,8 +238,11 @@ export default function SahayakForm({ navigation }) {
   };
 
   const sahayakBooking = async () => {
-    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' +  moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-    console.log('date', datetime)
+    const datetime =
+      moment(showDate).format("YYYY-MM-DD") +
+      "T" +
+      moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+    console.log("date", datetime);
     const params = {
       datetime: datetime,
       // datetime: "2023-03-16 17:05:42.000000",
@@ -174,8 +256,7 @@ export default function SahayakForm({ navigation }) {
       num_days: days,
     };
 
-    
-    console.log('params::', params)
+    console.log("params::", params);
 
     try {
       const response = await service.post("/api/post_individuals/", params, {
@@ -184,10 +265,10 @@ export default function SahayakForm({ navigation }) {
           Authorization: "Bearer " + token?.access,
         },
       });
-      
+
       const { data } = response;
       Toast.show("Job Posted Successfully!", Toast.SORT);
-      console.log('data::', data)
+      console.log("data::", data);
       navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
@@ -195,13 +276,14 @@ export default function SahayakForm({ navigation }) {
     }
   };
   useEffect(() => {
-   const Total = (((maleCounts * malepayamount) + (femaleCounts * femalepayamount)) * days )
-   return setTotal(Total)
-  
-  }, [maleCounts, femaleCounts, malepayamount, femalepayamount, days])
+    const Total =
+      (maleCounts * malepayamount + femaleCounts * femalepayamount) * days;
+    return setTotal(Total);
+  }, [maleCounts, femaleCounts, malepayamount, femalepayamount, days]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+     <View style={{marginHorizontal:5}}>
       <View style={{ padding: 20, marginTop: 25 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
@@ -236,7 +318,7 @@ export default function SahayakForm({ navigation }) {
             style={[
               styles.inputView,
               styles.flex,
-              styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
             <TouchableOpacity
@@ -245,12 +327,13 @@ export default function SahayakForm({ navigation }) {
               onPress={showDatepicker}
               title={showDate ? showDate : "तारीख़   dd/mm/yyyy"}
             >
-              <Text style={{color:showDate?'#000':'#ccc'}}>{showDate ? showDate : "तारीख़   dd/mm/yyyy"}</Text>
+              <Text style={{ color: showDate ? "#000" : "#ccc" }}>
+                {showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+              </Text>
             </TouchableOpacity>
 
             <TextInput
               value={selectedDates}
-      
               editable={false}
               onChangeText={(date) => {
                 handleDateChange(date);
@@ -264,26 +347,33 @@ export default function SahayakForm({ navigation }) {
               />
             </TouchableOpacity>
           </View>
+          {!!errors.showDate && (
+          <Text style={styles.error}>{errors.showDate}</Text>
+        )}
 
-       
-          <View style={[styles.dropdownGender, styles.justifyContentBetween, styles.flex]}>
-          <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-            {time ? time : "-समय-"}
-          </Text>
+          <View
+            style={[
+              styles.dropdownGender,
+              styles.justifyContentBetween,
+              styles.flex,
+            ]}
+          >
+            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
+              {time ? time : "-समय-"}
+            </Text>
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{width:40}}
+              style={{ width: 40 }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
-                }
+              }
             >
               <Picker.Item enabled={false} label="-समय-" value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
                     key={index}
-                 
                     style={{
                       color: checkIfTimeEnabled(item) ? "black" : "gray",
                       fontSize: 14,
@@ -309,7 +399,7 @@ export default function SahayakForm({ navigation }) {
             style={[
               styles.inputView,
               styles.flex,
-              styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
             <TextInput
@@ -347,13 +437,12 @@ export default function SahayakForm({ navigation }) {
               style={[
                 styles.TaxView,
                 styles.flex,
-             styles.justifyContentBetween
+                styles.justifyContentBetween,
               ]}
             >
-
               <Text style={{ color: landTypes ? "#000" : "#ccc", left: 5 }}>
-              {landTypes ? landTypes : "किल्ला/बीघा"}
-            </Text>
+                {landTypes ? landTypes : "किल्ला/बीघा"}
+              </Text>
               <Picker
                 style={{ width: 20 }}
                 ref={pickerRef}
@@ -372,7 +461,6 @@ export default function SahayakForm({ navigation }) {
                 ))}
               </Picker>
             </View>
-   
           </View>
 
           <View
@@ -387,15 +475,14 @@ export default function SahayakForm({ navigation }) {
               style={[
                 styles.DoubleView,
                 styles.flex,
-                styles.justifyContentBetween,{marginHorizontal:4}
+                styles.justifyContentBetween,
+                { marginHorizontal: 4 },
               ]}
             >
-           
-           <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
-              {maleCounts ? maleCounts : "पुरुषों"}
-            </Text>
+              <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
+                {maleCounts ? maleCounts : "पुरुषों"}
+              </Text>
               <View style={{ flexDirection: "row" }}>
-          
                 <Picker
                   style={{ width: 20, paddingTop: 16 }}
                   ref={pickerRef}
@@ -418,17 +505,18 @@ export default function SahayakForm({ navigation }) {
 
             <View
               style={[
-                styles.DoubleView,styles.flex,styles.justifyContentBetween,
+                styles.DoubleView,
+                styles.flex,
+                styles.justifyContentBetween,
                 {
-
                   marginHorizontal: 10,
                 },
               ]}
             >
-               <Text style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}>
-              {femaleCounts ? femaleCounts : "महिलाओं"}
-            </Text>
-          
+              <Text style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}>
+                {femaleCounts ? femaleCounts : "महिलाओं"}
+              </Text>
+
               <View style={{ flexDirection: "row" }}>
                 <Picker
                   style={{ width: 20, paddingTop: 16 }}
@@ -438,7 +526,7 @@ export default function SahayakForm({ navigation }) {
                     setFemaleCounts(itemValue)
                   }
                 >
-                  <Picker.Item label="1-5" value="1-5" enabled={false}/>
+                  <Picker.Item label="1-5" value="1-5" enabled={false} />
                   {femaleCount.map((item) => (
                     <Picker.Item
                       label={item.toString()}
@@ -463,7 +551,7 @@ export default function SahayakForm({ navigation }) {
               style={[
                 styles.DoubleView,
                 styles.flex,
-                styles.justifyContentBetween
+                styles.justifyContentBetween,
               ]}
             >
               <TextInput
@@ -471,21 +559,18 @@ export default function SahayakForm({ navigation }) {
                 keyboardType="numeric"
                 placeholder="एक पुरुष का वेतन "
                 placeholderTextColor={"#ccc"}
-              
                 value={malepayamount}
                 onChangeText={(malepayamount) =>
                   setMalepayamount(malepayamount)
                 }
               />
-              <Text style={{ color: "#0099FF", right: 10 }}>
-                ₹
-              </Text>
+              <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
             </View>
             <View
               style={[
                 styles.DoubleView,
                 styles.flex,
-                styles.justifyContentBetween
+                styles.justifyContentBetween,
               ]}
             >
               <TextInput
@@ -494,14 +579,11 @@ export default function SahayakForm({ navigation }) {
                 keyboardType="numeric"
                 placeholderTextColor={"#ccc"}
                 value={femalepayamount}
-        
                 onChangeText={(femalepayamount) =>
                   setFemalepayamount(femalepayamount)
                 }
               />
-              <Text style={{ color: "#0099FF", right: 10 }}>
-                ₹
-              </Text>
+              <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
             </View>
           </View>
 
@@ -509,10 +591,12 @@ export default function SahayakForm({ navigation }) {
             style={[
               styles.inputView,
               styles.flex,
-             styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
-            <Text style={{ paddingLeft: 10, color:'#ccc' }}>दिनों की संख्या</Text>
+            <Text style={{ paddingLeft: 10, color: "#ccc" }}>
+              दिनों की संख्या
+            </Text>
             <View style={{ flexDirection: "row" }}>
               <Text style={{ color: "#0099FF", marginTop: 14, right: 10 }}>
                 {days}
@@ -524,7 +608,7 @@ export default function SahayakForm({ navigation }) {
                 selectedValue={days}
                 onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
               >
-                <Picker.Item label="1-5" value="1-5" enabled={false}/>
+                <Picker.Item label="1-5" value="1-5" enabled={false} />
                 {daysCount.map((item) => (
                   <Picker.Item
                     label={item.toString()}
@@ -539,8 +623,8 @@ export default function SahayakForm({ navigation }) {
           <View
             style={[
               styles.inputView,
-             styles.flex,
-             styles.justifyContentBetween
+              styles.flex,
+              styles.justifyContentBetween,
             ]}
           >
             <TextInput
@@ -548,15 +632,15 @@ export default function SahayakForm({ navigation }) {
               placeholder="वेतन "
               keyboardType="numeric"
               placeholderTextColor={"#ccc"}
-            
             />
-            <Text style={{ color: "#0099FF", right: 10 }}>
-              ₹ {total}
-            </Text>
+            <Text style={{ color: "#0099FF", right: 10 }}>₹ {total}</Text>
           </View>
 
           <TouchableOpacity
-          onPress={() => {sahayakBooking()}}
+            onPress={() => {
+              if(validate()){
+              sahayakBooking();
+            }}}
             // onPress={() => sahayakBooking()}
             style={styles.loginBtn}
           >
@@ -566,7 +650,7 @@ export default function SahayakForm({ navigation }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
+      </View>
       {/* <BottomTab/> */}
     </SafeAreaView>
   );
@@ -601,6 +685,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 10,
     backgroundColor: "#44A347",
+  },
+
+  error: {
+    color: "red",
+    textAlign: "left",
   },
 
   loginText: {
@@ -696,4 +785,3 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
-
