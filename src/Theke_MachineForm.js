@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
   KeyboardAvoidingView,
+  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -50,6 +51,7 @@ function Theke_MachineForm({ navigation, route }) {
   console.log("rating", item, item?.rating);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
+  const [isLoading, setIsLoading] = useState(false);
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
@@ -66,6 +68,7 @@ function Theke_MachineForm({ navigation, route }) {
 
   console.log("fnfjff", item, item.booking_id);
   const accptThekha = async () => {
+    setIsLoading(true); 
     let params = {
       job_id: item?.id,
     };
@@ -84,6 +87,8 @@ function Theke_MachineForm({ navigation, route }) {
       navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
     }
   };
 
@@ -98,6 +103,7 @@ function Theke_MachineForm({ navigation, route }) {
   // };
 
   const Edit = async () => {
+    setIsLoading(true);
     let params =
       // {
       // job_id:"95",
@@ -122,18 +128,21 @@ function Theke_MachineForm({ navigation, route }) {
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
  
   //   };
   const RatingApi = async () => {
+    setIsLoading(true);
     let params = {
       booking_job: item?.booking_id,
     };
 
     try {
-      const response = await service.post("/api/get-reating/", params, {
+      const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token?.access}`,
@@ -143,7 +152,7 @@ function Theke_MachineForm({ navigation, route }) {
       const ratings = data?.rating;
       const ratingColor = "#e6b400";
 
-      const ratingList = Array(10)
+      const ratingList = Array(5)
         .fill(0)
         .map((_, num) => {
           let color = num < ratings ? ratingColor : "white";
@@ -174,6 +183,8 @@ function Theke_MachineForm({ navigation, route }) {
       setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -201,7 +212,6 @@ function Theke_MachineForm({ navigation, route }) {
       }
     } 
      
-      
       try {
         const response = await service.post("/api/cancel/", params, {
           headers: {
@@ -227,7 +237,13 @@ function Theke_MachineForm({ navigation, route }) {
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
+      <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
+      </View>
+
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+      {!isLoading && (
+     <View>
         <View
           style={{
             //alignItems: "center",
@@ -628,7 +644,10 @@ function Theke_MachineForm({ navigation, route }) {
             </Text>
           </TouchableOpacity>
         </View>
+        </View>
+           )}
       </ScrollView>
+   
     </SafeAreaView>
   );
 }
