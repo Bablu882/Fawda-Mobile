@@ -13,72 +13,80 @@ import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
 import { useIsFocused } from "@react-navigation/native";
-// import SupportPage from "./SupportPage";
 
 export default function Login({ navigation }) {
   const [phone, setPhone] = useState("");
-  const isLoggedIn = useSelector(selectIsLoggedIn);
-  const [phoneError, setPhoneError] = useState("");
-  const [tokenn, setTokenn] = useState();
-  const [loading, setloading] = useState("");
-  
+  const [isPhoneEmpty, setIsPhoneEmpty] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessages, setErrorMessages] = useState({});
   const dispatch = useDispatch();
   const isfocused = useIsFocused();
-  
-  
-  
-
   const login = async () => {
-    setloading(true);
-    let params = {
+    setLoading(true);
+    const loginData = {
       phone: phone,
+      device_id: "74747474747",
     };
 
-    console.log("paramsverify pin:", params);
-    Service.post("/api/login/", params, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        setloading(false);
-        let data = response.data;
+    console.log("login data:", loginData);
 
-        console.log("login", data);
-        if (data?.token) {
-          dispatch(setToken(data?.token));
-          Toast.show(JSON.stringify(data.otp), Toast.LONG);
-          navigation.replace("Verification", { user_type: data.user_type});
-        } else {
-          Toast.show("User is not Registered", Toast.SHORT);
-          navigation.replace("Register" , {phone  });
-          console.log('kdkdkdkd',phone )
-        }       
-      })
-      .catch((error) => {
-        console.log(error);
-        setloading(false);
-
-        Toast.show("Invalid Credentials", Toast.SHORT);
+    try {
+      const response = await Service.post("/api/login/", loginData, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       });
-  };
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigation.navigate("HomePage", );
+      const loginResponse = response.data;
+      console.log("login response:", loginResponse);
+      if (loginResponse?.token) {
+        dispatch(setToken(loginResponse?.token));
+        Toast.show(JSON.stringify(loginResponse.otp), Toast.LONG);
+        navigation.replace("Verification", {
+          user_type: loginResponse.user_type,
+        });
+      } else {
+        Toast.show("User is not Registered", Toast.SHORT);
+        navigation.replace("Register", { phone });
+        console.log("phone:", phone);
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.show("Invalid Credentials", Toast.SHORT);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // handleSubmit = () => {
-  //   if (!phone) {
-  //     // setPhoneError('Please enter your name');
-  //     Toast.show('enter no.', Toast.SHORT);
-  //     return;
+  const handlePress = () => {
+    let errors = {};
+    let isValid = true;
+
+    if (phone.trim() === "") {
+      errors.phone = "फ़ोन नंबर आवश्यक है";
+      setIsPhoneEmpty(true);
+      isValid = false;
+    } else if (phone.length < 10) {
+      errors.phone = "कृपया एक वैध फ़ोन नंबर लिखें";
+      setIsPhoneEmpty(false);
+      isValid = false;
+    } else {
+      setIsPhoneEmpty(false);
+    }
+
+    setErrorMessages(errors);
+    return isValid;
+  };
+
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigation.navigate("HomePage", );
   //   }
-  // }
+  // }, []);
 
   return (
     <View style={styles.container}>
+      {/* <Text>{deviceId}</Text> */}
       <View
         style={{
           justifyContent: "center",
@@ -116,25 +124,33 @@ export default function Login({ navigation }) {
               style={[styles.codeText, { width: 30, height: 22 }]}
             />
           </View>
-
           <TextInput
-            style={[styles.TextInput, styles.inputView]}
+            style={[styles.input, styles.inputView, { paddingHorizontal: 5 }]}
             placeholder="फ़ोन नंबर लिखें"
-            required={true}
             keyboardType="numeric"
             maxLength={10}
-            placeholderTextColor={"#000"}
-            onChangeText={(phone) => setPhone(phone)}
-            // defaultValue={email}
+            placeholderTextColor="#000"
+            onChangeText={(value) => {
+              setPhone(value);
+              setIsPhoneEmpty(false);
+            }}
+            onBlur={() => setIsPhoneEmpty(phone === "")}
             value={phone}
           />
-          <Text>{phoneError}</Text>
         </View>
-
+        <View>
+          {isPhoneEmpty ? (
+            <Text style={styles.error}>फ़ोन नंबर आवश्यक है</Text>
+          ) : phone.length > 0 && phone.length < 10 ? (
+            <Text style={styles.error}>नंबर 10 से कम नहीं होना चाहिए।</Text>
+          ) : null}
+        </View>
         <TouchableOpacity
-          //  onPress={() => login()}
           onPress={() => {
-            login();
+            if (handlePress()) {
+              login();
+
+            }
           }}
           style={styles.loginBtn}
         >
@@ -181,6 +197,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  error: {
+    color: "red",
+    textAlign: "left",
+  },
   CountryCode: {
     borderColor: "#0070C0",
     // backgroundColor: "#0070C0",
@@ -222,7 +242,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30,
+    marginTop:10,
     backgroundColor: "#0099FF",
   },
   loginText: {

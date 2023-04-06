@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,7 @@ export default function MyBooking({ navigation, route }) {
   console.log("usrrjfjf", usertype);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
@@ -42,6 +43,7 @@ export default function MyBooking({ navigation, route }) {
       setSahayakBooking(data?.sahayk_booking_details?.bookings);
       setMachineBooking(data?.machine_malik_booking_details);
       setMachinePending(data?.machine_malik_pending_booking_details);
+      setIsLoading(false);
       console.log("data:::", data);
     } catch (error) {
       console.log("Error:", error);
@@ -50,6 +52,7 @@ export default function MyBooking({ navigation, route }) {
 
   const Myjobs = async () => {
     try {
+      setIsLoading(true); // set isLoading to true when the function starts
       const response = await service.get("/api/myjobs/", {
         headers: {
           "Content-Type": "application/json",
@@ -61,14 +64,14 @@ export default function MyBooking({ navigation, route }) {
       console.log("data:====::", data);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // set isLoading to false when the function completes
     }
   };
 
   useEffect(() => {
-    booking();
-    Myjobs();
+    booking(), Myjobs();
   }, []);
-
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -76,169 +79,177 @@ export default function MyBooking({ navigation, route }) {
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
-      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-        {/* {usertype && usertype === "Grahak" && (
+      {isLoading && <ActivityIndicator size="small" color="#black" />}
+      {!isLoading && (
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+          {/* {usertype && usertype === "Grahak" && (
         
         )} */}
-        <View>
-          {usertype && usertype === "Grahak" && (
-            <>
-              <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <View style={{ justifyContent: "center" }}>
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      fontSize: 30,
-                      fontWeight: "600",
-                    }}
-                  >
-                    मेरी बुकिंग
-                  </Text>
-                </View>
-
+          <View>
+            {usertype && usertype === "Grahak" && (
+              <>
                 <View
-                  style={{
-                    // borderTopWidth: 0.7,
-                    // borderTopColor: "#0099FF",
-                    width: "100%",
-                    top: 40,
-                  }}
-                />
-                <>
-                  {sahayakPending?.length > 0 &&
-                    sahayakPending?.map((item, index) => (
-                      // {console.log('machine', machinePending)}
-                      <View
-                        key={item.id}
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          justifyContent: "space-between",
-                          marginTop: 50,
-                        }}
-                      >
-                        <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type === "individuals_sahayak"
-                              ? "सहायक  "
-                              : item.job_type === "theke_pe_kam"
-                              ? "ठेके पर काम"
-                              : ""}
-                          </Text>
-                          <Text style={{ color: "black" }}>
-                            {moment.utc(item?.datetime).format("L")}
-                          </Text>
-                        </View>
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <View style={{ justifyContent: "center" }}>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 30,
+                        fontWeight: "600",
+                      }}
+                    >
+                      मेरी बुकिंग
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      // borderTopWidth: 0.7,
+                      // borderTopColor: "#0099FF",
+                      width: "100%",
+                      top: 40,
+                    }}
+                  />
+                  <>
+                    {sahayakPending?.length > 0 &&
+                      sahayakPending?.map((item, index) => (
+                        // {console.log('machine', machinePending)}
                         <View
+                          key={item.id}
                           style={{
-                            width: "30%",
-                            height: 33,
-                            backgroundColor: "#44A347",
-                            marginRight: 20,
-                            marginTop: 10,
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 50,
                           }}
                         >
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (
-                                item.job_type === "individuals_sahayak" &&
-                                item.status === "Pending"
-                              ) {
-                                navigation.navigate("MyBook_SahayakForm", {
-                                  id: item.id,
-                                  item,
-                                });
-                              } else if (
-                                item.job_type === "theke_pe_kam" &&
-                                item.status === "Pending"
-                              ) {
-                                navigation.navigate("Theke_MachineForm", {
-                                  item,
-                                });
-                              }
+                          <View style={{ marginLeft: 30 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              {item.job_type === "individuals_sahayak"
+                                ? "सहायक  "
+                                : item.job_type === "theke_pe_kam"
+                                ? "ठेके पर काम"
+                                : ""}
+                            </Text>
+                            <Text style={{ color: "black" }}>
+                              {moment.utc(item?.datetime).format("L")}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              height: 33,
+                              backgroundColor: "#44A347",
+                              marginRight: 20,
+                              marginTop: 10,
                             }}
                           >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (
+                                  item.job_type === "individuals_sahayak" &&
+                                  item.status === "Pending"
+                                ) {
+                                  navigation.navigate("MyBook_SahayakForm", {
+                                    id: item.id,
+                                    item,
+                                  });
+                                } else if (
+                                  item.job_type === "theke_pe_kam" &&
+                                  item.status === "Pending"
+                                ) {
+                                  navigation.navigate("Theke_MachineForm", {
+                                    item,
+                                  });
+                                }
                               }}
                             >
-                              {item.status}
-                            </Text>
-                          </TouchableOpacity>
+                              {item.status === "Pending" && (
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  पेंडिंग
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                      </View>
-                    ))}
-                  {sahaykBooking?.length > 0 &&
-                    sahaykBooking?.map((item) => (
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          justifyContent: "space-between",
-                          marginTop: 50,
-                        }}
-                      >
-                        <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type === "individuals_sahayak"
-                              ? "सहायक  "
-                              : item.job_type === "theke_pe_kam"
-                              ? "ठेके पर काम"
-                              : ""}
-                          </Text>
-                          <Text style={{ color: "black" }}>
-                            {moment.utc(item?.datetime).format("L")}
-                          </Text>
-                        </View>
+                      ))}
+                    {sahaykBooking?.length > 0 &&
+                      sahaykBooking?.map((item) => (
                         <View
                           style={{
-                            width: "30%",
-                            height: 33,
-                            backgroundColor: "#44A347",
-                            marginRight: 20,
-                            marginTop: 10,
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 50,
                           }}
                         >
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (
-                                item.job_type === "individuals_sahayak" &&
-                                item.status === "Accepted"
-                              ) {
-                                navigation.navigate("MyBook_SahayakForm", {
-                                  id: item.id,
-                                  item,
-                                });
-                              } else if (
-                                item.job_type === "theke_pe_kam" &&
-                                item.status === "Accepted"
-                              ) {
-                                navigation.navigate("Theke_MachineForm", {
-                                  item,
-                                });
-                              }
+                          <View style={{ marginLeft: 30 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              {item.job_type === "individuals_sahayak"
+                                ? "सहायक  "
+                                : item.job_type === "theke_pe_kam"
+                                ? "ठेके पर काम"
+                                : ""}
+                            </Text>
+                            <Text style={{ color: "black" }}>
+                              {moment.utc(item?.datetime).format("L")}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              height: 33,
+                              backgroundColor: "#44A347",
+                              marginRight: 20,
+                              marginTop: 10,
                             }}
                           >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (
+                                  item.job_type === "individuals_sahayak" &&
+                                  item.status === "Accepted"
+                                ) {
+                                  navigation.navigate("MyBook_SahayakForm", {
+                                    id: item.id,
+                                    item,
+                                  });
+                                } else if (
+                                  item.job_type === "theke_pe_kam" &&
+                                  item.status === "Accepted"
+                                ) {
+                                  navigation.navigate("Theke_MachineForm", {
+                                    item,
+                                  });
+                                }
                               }}
                             >
-                              {item.status}
-                            </Text>
-                          </TouchableOpacity>
-                          {/* <TouchableOpacity>
+                               {item.status === "Accepted" && (
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                             स्वीकृत
+                              </Text>
+                            )}
+                            </TouchableOpacity>
+                            {/* <TouchableOpacity>
                             <Text
                               style={{
                                 textAlign: "center",
@@ -251,71 +262,75 @@ export default function MyBooking({ navigation, route }) {
                               {item.status}
                             </Text>
                           </TouchableOpacity> */}
+                          </View>
                         </View>
-                      </View>
-                    ))}
-                  {machinePending?.length > 0 &&
-                    machinePending?.map((item, index) => (
-                      // {console.log('machine', machinePending)}
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          justifyContent: "space-between",
-                          marginTop: 50,
-                        }}
-                      >
-                        <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                            {item.job_type === "machine_malik" ? " मशीनरी" : ""}
-                          </Text>
-                          <Text style={{ color: "black" }}>
-                            {/* {moment(item?.datetime).format('L')}
-                           { console.log('djdjddj', item?.datetime)} */}
-                            {moment.utc(item?.datetime).format("L")}
-                          </Text>
-                        </View>
+                      ))}
+                    {machinePending?.length > 0 &&
+                      machinePending?.map((item, index) => (
+                        // {console.log('machine', machinePending)}
                         <View
                           style={{
-                            width: "30%",
-                            height: 33,
-                            backgroundColor: "#44A347",
-                            marginRight: 20,
-                            marginTop: 10,
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 50,
                           }}
                         >
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (
-                                item.job_type === "machine_malik" &&
-                                item.status === "Pending"
-                              ) {
-                                navigation.navigate("MachineWork", {
-                                  item,
-                                  id: item?.id,
-                                });
-                              } else {
-                                console.log(
-                                  "Cannot navigate to MachineWork screen"
-                                );
-                              }
+                          <View style={{ marginLeft: 30 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              {item.job_type === "machine_malik"
+                                ? " मशीनरी"
+                                : ""}
+                            </Text>
+                            <Text style={{ color: "black" }}>
+                              {/* {moment(item?.datetime).format('L')}
+                           { console.log('djdjddj', item?.datetime)} */}
+                              {moment.utc(item?.datetime).format("L")}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              height: 33,
+                              backgroundColor: "#44A347",
+                              marginRight: 20,
+                              marginTop: 10,
                             }}
                           >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (
+                                  item.job_type === "machine_malik" &&
+                                  item.status === "Pending"
+                                ) {
+                                  navigation.navigate("MachineWork", {
+                                    item,
+                                    id: item?.id,
+                                  });
+                                } else {
+                                  console.log(
+                                    "Cannot navigate to MachineWork screen"
+                                  );
+                                }
                               }}
                             >
-                              {item.status}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                        {/* <View
+                              {item.status === "Pending" && (
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  पेंडिंग
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                          {/* <View
                       style={{
                         width: "30%",
                         height: 33,
@@ -358,159 +373,48 @@ export default function MyBooking({ navigation, route }) {
                         </Text>
                       </TouchableOpacity>
                     </View> */}
-                      </View>
-                    ))}
-                  {machineBooking?.map((item, index) => (
-                    // {console.log('machine', machinePending)}
-                    <View
-                      key={item.id}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        justifyContent: "space-between",
-                        marginTop: 50,
-                      }}
-                    >
-                      <View style={{ marginLeft: 30 }}>
-                        <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                          {item.job_type === "machine_malik"
-                            ? " मशीनरी"
-                            : "मशीनरी"}
-                        </Text>
-                        <Text style={{ color: "black" }}>
-                          {moment.utc(item?.datetime).format("L")}
-                        </Text>
-                      </View>
+                        </View>
+                      ))}
+                    {machineBooking?.map((item, index) => (
+                      // {console.log('machine', machinePending)}
                       <View
+                        key={item.id}
                         style={{
-                          width: "30%",
-                          height: 33,
-                          backgroundColor: "#44A347",
-                          marginRight: 20,
-                          marginTop: 10,
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          marginTop: 50,
                         }}
                       >
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate("MachineWork", {
-                              item,
-                              id: item?.id,
-                            });
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "center",
-                              marginTop: 7,
-                              color: "#fff",
-                              fontSize: 15,
-                              fontWeight: "600",
-                            }}
-                          >
-                            {item.status}
+                        <View style={{ marginLeft: 30 }}>
+                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                            {item.job_type === "machine_malik"
+                              ? " मशीनरी"
+                              : "मशीनरी"}
                           </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  ))}
-                </>
-
-                <View
-                  style={{
-                    borderTopWidth: 0.7,
-                    borderTopColor: "#0099FF",
-                    width: "100%",
-                    marginTop: 15,
-                  }}
-                />
-              </View>
-            </>
-          )}
-          {usertype &&
-            (usertype === "Sahayak" || usertype === "MachineMalik") && (
-              <>
-                <View
-                  style={{ justifyContent: "center", alignItems: "center" }}
-                >
-                  <View style={{ justifyContent: "center" }}>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        fontSize: 30,
-                        fontWeight: "600",
-                      }}
-                    >
-                      मेरे काम
-                    </Text>
-                  </View>
-
-                  <View
-                    style={{
-                      // borderTopWidth: 0.7,
-                      // borderTopColor: "#0099FF",
-                      width: "100%",
-                      top: 40,
-                    }}
-                  />
-                  <>
-                    {myjob.length > 0 &&
-                      myjob?.map((item) => (
+                          <Text style={{ color: "black" }}>
+                            {moment.utc(item?.datetime).format("L")}
+                          </Text>
+                        </View>
                         <View
                           style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                            marginTop: 50,
+                            width: "30%",
+                            height: 33,
+                            backgroundColor: "#44A347",
+                            marginRight: 20,
+                            marginTop: 10,
                           }}
                         >
-                          <View style={{ marginLeft: 30 }}>
-                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                              {item.job_type === "individuals_sahayak"
-                                ? "सहायक  "
-                                : item.job_type === "theke_pe_kam"
-                                ? "ठेके पर काम"
-                                : item.job_type === "machine_malik"
-                                ? " मशीनरी"
-                                : null}
-                            </Text>
-                            <Text style={{ color: "black" }}>
-                              {moment.utc(item?.datetime).format("L")}
-                            </Text>
-                          </View>
-                          <View
-                            style={{
-                              width: "30%",
-                              height: 33,
-                              backgroundColor: "#44A347",
-                              marginRight: 20,
-                              marginTop: 10,
+                          <TouchableOpacity
+                            onPress={() => {
+                              navigation.navigate("MachineWork", {
+                                item,
+                                id: item?.id,
+                              });
                             }}
                           >
-                            <TouchableOpacity
-                              onPress={() => {
-                                if (item.job_type === "individuals_sahayak") {
-                                  navigation.navigate("MyBook_SahayakForm", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                } else if (item.job_type === "theke_pe_kam") {
-                                  navigation.navigate("Theke_MachineForm", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                } else {
-                                  navigation.navigate("MachineWork", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                }
-                              }}
-                            >
+                            {item.status === "Accepted" && (
                               <Text
                                 style={{
                                   textAlign: "center",
@@ -520,12 +424,13 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                 }}
                               >
-                                विवरण देखे
+                             स्वीकृत
                               </Text>
-                            </TouchableOpacity>
-                          </View>
+                            )}
+                          </TouchableOpacity>
                         </View>
-                      ))}
+                      </View>
+                    ))}
                   </>
 
                   <View
@@ -539,8 +444,121 @@ export default function MyBooking({ navigation, route }) {
                 </View>
               </>
             )}
-        </View>
-      </ScrollView>
+            {usertype &&
+              (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                <>
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <View style={{ justifyContent: "center" }}>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          fontSize: 30,
+                          fontWeight: "600",
+                        }}
+                      >
+                        मेरे काम
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{
+                        // borderTopWidth: 0.7,
+                        // borderTopColor: "#0099FF",
+                        width: "100%",
+                        top: 40,
+                      }}
+                    />
+                    <>
+                      {myjob.length > 0 &&
+                        myjob?.map((item) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : item.job_type === "machine_malik"
+                                  ? " मशीनरी"
+                                  : null}
+                              </Text>
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#44A347",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <TouchableOpacity
+                                onPress={() => {
+                                  if (item.job_type === "individuals_sahayak") {
+                                    navigation.navigate("MyBook_SahayakForm", {
+                                      id: item.id,
+                                      item,
+                                      usertype,
+                                    });
+                                  } else if (item.job_type === "theke_pe_kam") {
+                                    navigation.navigate("Theke_MachineForm", {
+                                      id: item.id,
+                                      item,
+                                      usertype,
+                                    });
+                                  } else {
+                                    navigation.navigate("MachineWork", {
+                                      id: item.id,
+                                      item,
+                                      usertype,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  विवरण देखे
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))}
+                    </>
+
+                    <View
+                      style={{
+                        borderTopWidth: 0.7,
+                        borderTopColor: "#0099FF",
+                        width: "100%",
+                        marginTop: 15,
+                      }}
+                    />
+                  </View>
+                </>
+              )}
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

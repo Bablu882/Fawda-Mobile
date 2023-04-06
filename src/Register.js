@@ -73,11 +73,11 @@ export default function Register({ navigation, route }) {
           //   ? navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
           //   : null;
           if( activeButton === "ग्राहक"){
-            navigation.navigate("GrahakRegisterForm",{  user:'Grahak', phone })
+            navigation.navigate("UserRegistration",{  user:'Grahak', phone })
           }else if( activeButton === "सहायक"){
-            navigation.navigate("GrahakRegisterForm",{ user:'Sahayak',phone})
+            navigation.navigate("UserRegistration",{ user:'Sahayak',phone})
           }else{
-            navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik', phone})
+            navigation.navigate("UserRegistration",{ user:'MachineMalik', phone})
           }
           console.log('', activeButton)
         }}
