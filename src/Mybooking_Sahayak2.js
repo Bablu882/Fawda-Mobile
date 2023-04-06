@@ -154,6 +154,33 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     }
   };
 
+  const cancel = async() => {
+    
+    let params = {};
+    // if (payment_status === "success") {
+      params = {
+        job_id :item?.id ,
+      job_number : item?.job_number,
+      booking_id: item?.booking_id,
+      // status: status
+    // }
+  } 
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      setStatus(data.status);
+      // Toast.show(JSON.stringify(data.status), Toast.LONG);s
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -346,7 +373,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               }}
             >
               <TouchableOpacity>
-                {status.status === "Ongoing" ? (
+                {status === "Ongoing" ? (
                   <Text
                     style={{
                       textAlign: "center",
@@ -613,12 +640,27 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {/* <TouchableOpacity
-            onPress={() => navigation.navigate("Profile")}
-            style={styles.loginBtn}
-          >
-            <Text style={[styles.loginText, { color: "#fff" }]}>रद्द करें</Text>
-          </TouchableOpacity> */}
+{status.status === "Ongoing" ||
+            ("Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें{" "}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+          
         </View>
       </ScrollView>
 

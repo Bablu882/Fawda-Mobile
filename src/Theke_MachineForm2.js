@@ -16,9 +16,8 @@ import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-simple-toast";
-
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ function Theke_MachineForm2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff",item, data, payment_status);
+  console.log("fjkfkfkff", item, data, payment_status);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -57,6 +56,7 @@ function Theke_MachineForm2({ navigation, route }) {
       });
       const data = response?.data;
       // setThekeperKam(data.data);
+      navigation.replace("MyBooking");
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -74,22 +74,22 @@ function Theke_MachineForm2({ navigation, route }) {
     // else if (index >= 4 && index < 9) newColors[index] = "yellow";
     // else if (index >= 9) newColors[index] = "green";
     // setColors(newColors);
-   
   };
 
   const renderButton = (index) => {
-    const backgroundColor = index <= selectedButtonIndex ? 'red' : 'transparent';
-    const iconName = index <= selectedButtonIndex ? 'star' :'star-o'
+    const backgroundColor =
+      index <= selectedButtonIndex ? "red" : "transparent";
+    const iconName = index <= selectedButtonIndex ? "star" : "star-o";
     return (
       <TouchableOpacity key={index} onPress={() => handleClick(index)}>
         <View style={[styles.button]}>
-      <FontAwesome name={iconName} size={30} color="#e6b400" /> 
+          <FontAwesome name={iconName} size={30} color="#e6b400" />
         </View>
       </TouchableOpacity>
     );
   };
 
-  const ratingColor = 'orange';
+  const ratingColor = "orange";
 
   const fetchBookings = async () => {
     try {
@@ -174,17 +174,16 @@ function Theke_MachineForm2({ navigation, route }) {
     }
   };
 
-  const cancel = async() => {
-    
+  const cancel = async () => {
     let params = {};
     // if (payment_status === "success") {
-      params = {
-        job_id :item?.id ,
-      job_number : item?.job_number,
+    params = {
+      job_id: item?.id,
+      job_number: item?.job_number,
       booking_id: item?.booking_id,
-      status: status
-    // }
-  } 
+      status: status,
+      // }
+    };
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -200,8 +199,7 @@ function Theke_MachineForm2({ navigation, route }) {
     } catch (error) {
       console.log("Error:", error);
     }
-  }
-  
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -216,7 +214,11 @@ function Theke_MachineForm2({ navigation, route }) {
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {item?.job_type}
+            {item.job_type === "individuals_sahayak"
+              ? "सहायक के काम "
+              : item.job_type === "theke_pe_kam"
+              ? "ठेकेदार"
+              : ""}
           </Text>
           <View
             style={[
@@ -243,10 +245,10 @@ function Theke_MachineForm2({ navigation, route }) {
             ]}
           >
             <Text style={styles.TextInput}>
-              {moment(item?.date).format("l")}
+              {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment(item?.time).format("HH:mm")}
+              {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
 
@@ -323,7 +325,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {status === "Ongoing" ? (
+              {status.status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -336,7 +338,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   जारी है
                   {console.log("")}
                 </Text>
-              ) : status === "Completed" ? (
+              ) : status.status === "Completed" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -366,10 +368,9 @@ function Theke_MachineForm2({ navigation, route }) {
             </View>
           </View>
 
-            
-            {status.status ===  "Completed" ?
+          {status.status === "Completed" ? (
             ""
-            :
+          ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
                 <Text
@@ -386,13 +387,15 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
                 <Text
                   style={styles.TextInput}
-                  
+
                   // onChangeText={(text) => setName(text, "name")}
                   // defaultValue={email}
                   // value={name}
                   //   error={input.name}
                   //   onFocus={() => handleError(null, "name")}
-                >{item?.thekedar_name}</Text>
+                >
+                  {item?.thekedar_name}
+                </Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -409,9 +412,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 >
                   गाँव
                 </Text>
-                <Text
-                  style={styles.TextInput}
-                  >{item?.thekedar_village}</Text>
+                <Text style={styles.TextInput}>{item?.thekedar_village}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -430,42 +431,47 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
                 <Text
                   style={styles.TextInput}
-                  
+
                   // onChangeText={(text) => setName(text, "name")}
                   // defaultValue={email}
                   // value={name}
                   //   error={input.name}
                   //   onFocus={() => handleError(null, "name")}
-                > {item?.thekedar_mobile_no}</Text>
+                >
+                  {" "}
+                  {item?.thekedar_mobile_no}
+                </Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
-              </>
-              
-              
-}
-            
-   
-        {  status.status === "Completed" ?
-        <>
-          <View
-            style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-          >
-              {[...Array(5).keys()].map(renderButton)}
-          </View>
+            </>
+          )}
 
-          <View
-            style={{ height: 100, borderWidth: 1, width: "75%", marginTop: 20 }}
-          >
-            <TextInput
-              placeholder="comment"
-              onChangeText={setComment}
-              value={comments}
-            />
-          </View> 
-          </>
-          :
-          ""
-}
+          {status.status === "Completed" ? (
+            <>
+              <View
+                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
+              >
+                {[...Array(5).keys()].map(renderButton)}
+              </View>
+
+              <View
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  width: "75%",
+                  marginTop: 20,
+                }}
+              >
+                <TextInput
+                  placeholder="comment"
+                  onChangeText={setComment}
+                  value={comments}
+                />
+              </View>
+            </>
+          ) : (
+            ""
+          )}
           {status.status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
@@ -476,7 +482,10 @@ function Theke_MachineForm2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn}  onPress={() =>RatingApi()}>
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => RatingApi()}
+            >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
@@ -489,25 +498,26 @@ function Theke_MachineForm2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           )}
-         
 
-         {status.status === "Ongoing" || "Completed" &&
-          <View style={{ marginTop: "auto", padding: 5 }}>
-            <TouchableOpacity onPress={() => cancel()}
-              style={{
-                backgroundColor: "#D9D9D9",
-                alignSelf: "center",
-                paddingHorizontal: 50,
-                paddingVertical: 10,
-                borderRadius: 5,
-              }}
-            >
-              <Text style={{ textAlign: "center", color: "#fff" }}>
-                रद्द करें{" "}
-              </Text>
-            </TouchableOpacity>
-          </View>
-         }
+          {status.status === "Ongoing" ||
+            ("Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें{" "}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -607,7 +617,7 @@ const styles = StyleSheet.create({
 
   TextInput: {
     padding: 10,
-    color:"#000",
+    color: "#000",
     fontFamily: "Poppin-Light",
   },
 
