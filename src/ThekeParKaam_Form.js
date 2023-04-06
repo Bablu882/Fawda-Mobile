@@ -387,6 +387,9 @@ export default function ThekeParKaam_Form({ navigation }) {
               onChangeText={(landArea) => handleLandAreaChange(landArea)}
               value={landArea}
             />
+               {/* {!!errors.landType && (
+              <Text style={styles.error}>{errors.landType}</Text>
+            )} */}
           </View>
          
 
@@ -461,16 +464,12 @@ export default function ThekeParKaam_Form({ navigation }) {
 
 const styles = StyleSheet.create({
   OptionButton: {
-    // flex:1,
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-evenly",
-    margin: 20,
-    //   padding:20
+ flexDirection:'row',
+ 
   },
 
   sahayak: {
-    width: "40%",
+    width: "45%",
     color: "#505050",
     height: 50,
     alignItems: "center",
@@ -478,6 +477,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     // borderWidth:1,
     borderRadius: 10,
+    marginHorizontal:10,
     // borderColor:"#505050",
     backgroundColor: "#44A347",
   },
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
   },
 
   machine: {
-    width: "40%",
+    width: "45%",
     flexDirection: "row",
     // borderRadius: 7,
     color: "#505050",
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     // borderBottomRightRadius: 0,
     // borderTopRightRadius:0,
-    width: "35%",
+    width: "50%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,

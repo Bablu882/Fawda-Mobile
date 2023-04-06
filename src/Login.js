@@ -23,6 +23,11 @@ export default function Login({ navigation }) {
   const isfocused = useIsFocused();
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigation.navigate("HomePage", );
+  //   }
+  // }, []);
   
   const login = async () => {
     setLoading(true);
@@ -81,11 +86,6 @@ export default function Login({ navigation }) {
     return isValid;
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigation.navigate("HomePage", );
-    }
-  }, []);
 
   return (
     <View style={styles.container}>

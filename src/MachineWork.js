@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
@@ -45,6 +46,7 @@ export default function MachineWork({ navigation, route }) {
   const [editable, setEditable] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const [isLoading, setIsLoading] = useState(false);
   const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
@@ -61,30 +63,36 @@ export default function MachineWork({ navigation, route }) {
     textInputRef?.current?.focus();
   };
   const onAcceptPress = async () => {
-    let params = {
-      job_id: item?.id,
-      amount,
-    };
-    service
-      .post("/api/edit_thekepekam/", params, {
+    try {
+      setIsLoading(true);
+      let params = {
+        job_id: item?.id,
+        amount,
+      };
+      const response = await service.post("/api/edit_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token?.access}`,
         },
-      })
-      .then((res) => {
-        let data = res.data;
-        setEdit(false);
-        console.log("data", data);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log("Error:", error);
       });
+      let data = response.data;
+      setEdit(false);
+      console.log("data", data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      try {
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
+  
 
 
   const accptThekha = async () => {
+    setIsLoading(true);
     let params = {
       job_id: item?.id,
     };
@@ -103,10 +111,13 @@ export default function MachineWork({ navigation, route }) {
       navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
     }
   };
 
   const RatingApi = async () => {
+    setIsLoading(true);
     let params = {
       booking_job: item?.booking_id,
     };
@@ -155,6 +166,8 @@ console.log('dfjddjdjd', params)
       setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
     }
   };
   useEffect(() => {
@@ -170,13 +183,18 @@ console.log('dfjddjdjd', params)
         backgroundColor: "#fff",
       }}
     >
+         <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
+      </View>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
 
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+      {!isLoading && (
+        <View>
         <View style={{ flex: 1 }}>
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
@@ -632,6 +650,8 @@ console.log('dfjddjdjd', params)
             </Text>
           </TouchableOpacity>
         </View>
+        </View>
+      )}
       </ScrollView>
 
       {/* <BottomTab/> */}

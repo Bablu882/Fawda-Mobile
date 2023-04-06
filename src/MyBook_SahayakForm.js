@@ -9,9 +9,11 @@ import {
   Image,
   ScrollView,
   Button,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -43,7 +45,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
-
+  const [ratingList, setRatingList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { id, item } = route.params;
   console.log("fjd", item);
   const [show, setShow] = useState(true);
@@ -59,6 +62,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   console.log("usrrjfjf", usertype);
 
   const acceptSahayak = async () => {
+    setIsLoading(true);
     let params = {
       count_male: totalMaleAccepted,
       count_female: totalFemaleAccepted,
@@ -78,6 +82,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       navigation.replace("MyBooking", { item, usertype });
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
     }
   };
 
@@ -85,7 +91,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     setShowFirstView(!showFirstView);
     setShowSecondView(!showSecondView);
   };
- 
+
   const handleCheckboxChange = (index) => {
     const updatedStatus = { ...checkboxStatus };
     if (updatedStatus[index] === "Accepted") {
@@ -159,9 +165,67 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   // useEffect(() => {
 
   // },[])
+  const RatingApi = async () => {
+    setIsLoading(true); 
+    let params = {
+      booking_job: item?.booking_id,
+    };
 
+    try {
+      const response = await service.post("/api/get-rating/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      const data = response?.data;
+      const ratings = data?.rating;
+      const ratingColor = "#e6b400";
+
+      const ratingList = Array(5)
+        .fill(0)
+        .map((_, num) => {
+          let color = num < ratings ? ratingColor : "white";
+          return (
+            <View
+              key={num}
+              style={{
+                // borderColor: color,
+                // borderWidth: 1,
+                width: 30,
+                height: 30,
+                // borderRightWidth: 0.1,
+                // borderEndWidth: 0.4,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {num + 1 <= ratings && (
+                <FontAwesome name="star" size={24} color="#e6b400" />
+              )}
+              {num + 1 > ratings && (
+                <FontAwesome name="star-o" size={24} color={ratingColor} />
+              )}
+            </View>
+          );
+        });
+
+      setRatingList(ratingList);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
+    }
+  };
+
+  useEffect(() => {
+    RatingApi();
+  }, []);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+       <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
+      </View>
       <View style={{ padding: 20, marginTop: 25 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
@@ -173,6 +237,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
         </Text>
       </View>
       <ScrollView>
+      {!isLoading && (
         <View
           style={{
             justifyContent: "center",
@@ -531,7 +596,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.FemalecheckView,
                               styles.flex,
                               styles.justifyContentBetween,
-                              { paddingHorizontal: 5, width:'auto' },
+                              { paddingHorizontal: 5, width: "auto" },
                             ]}
                             key={index}
                           >
@@ -586,7 +651,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.FemalecheckView,
                               styles.flex,
                               styles.justifyContentBetween,
-                              { paddingHorizontal: 5, width:'auto' },
+                              { paddingHorizontal: 5, width: "auto" },
                             ]}
                             key={index}
                           >
@@ -700,7 +765,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                         ? `${TotalCount} सहायक स्वीकार करें`
                         : "0 सहायक स्वीकार करें"}
                     </Text>
-                   
                   </TouchableOpacity>
                 </View>
               </View>
@@ -720,7 +784,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </TouchableOpacity>
                 )}
                 {item.status === "Pending" && (
-            <TouchableOpacity style={[styles.BhuktanBtn, { opacity:0.5}]} disabled={true}>
+                  <TouchableOpacity
+                    style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                    disabled={true}
+                  >
                     <Text style={[styles.loginText, { color: "#fff" }]}>
                       भुगतान करें
                     </Text>
@@ -781,7 +848,32 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               </TouchableOpacity>
             ) : null
           ) : null}
-
+          {item.status === "Completed" && (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: 20,
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <TouchableOpacity style={styles.BhuktanBtn}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  समाप्त
+                </Text>
+              </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                {ratingList}
+              </View>
+            </View>
+          )}
           {(usertype === "Sahayak" || usertype === "MachineMalik") &&
             (item.status === "Accepted" ? (
               <>
@@ -804,12 +896,12 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </View>
               </>
             ) : null)}
-        
 
           <TouchableOpacity style={styles.loginBtn}>
             <Text style={[styles.loginText, { color: "#fff" }]}>रद्द करें</Text>
           </TouchableOpacity>
         </View>
+      )}
       </ScrollView>
 
       {/* <BottomTab/> */}

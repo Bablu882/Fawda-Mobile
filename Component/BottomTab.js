@@ -9,6 +9,7 @@ import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
 import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
+import ContactUs from "../src/ContactUs";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
@@ -244,8 +245,8 @@ export default function BottomTab() {
       />
 
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="ContactUs"
+        component={ContactUs}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
