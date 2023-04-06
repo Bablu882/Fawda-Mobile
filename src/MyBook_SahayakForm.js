@@ -85,50 +85,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     setShowFirstView(!showFirstView);
     setShowSecondView(!showSecondView);
   };
-  // const changeCheckboxStatus = (index) => {
-  //   const updatedStatus = { ...checkboxStatus };
-  //   if (updatedStatus[index] === "Accepted") {
-  //     updatedStatus[index] = "Pending";
-  //   } else {
-  //     updatedStatus[index] = "Accepted";
-  //   }
-  //   setCheckboxStatus(updatedStatus);
-  //   // console.log("checkboxStatuscheckboxStatus::", checkboxStatus);
-  // };
-  // const countAccepted = () => {
-  //   let count = 0;
-  //   Object.values(checkboxStatus).forEach((value) => {
-  //     if (value === "Accepted") {
-  //       count++;
-  //     }
-  //   });
-  //   console.log("hfhfhfh", count);
-  //   return count;
-  // };
-  // // console.log("Total accepted items:", totalAccepted);
-
-  // const acceptMale = (index) => {
-  //   const updatedMaleStatuses = { ...maleStatuses };
-  //   if (updatedMaleStatuses[index] === "Accepted") {
-  //     updatedMaleStatuses[index] = "Pending";
-  //   } else {
-  //     updatedMaleStatuses[index] = "Accepted";
-  //   }
-  //   setMaleStatuses(updatedMaleStatuses);
-  //   console.log("total male accepted", maleStatuses);
-  // };
-  // const malecount = () => {
-  //   let count = 0;
-  //   Object.values(maleStatuses).forEach((value) => {
-  //     if (value === "Accepted") {
-  //       count++;
-  //       console.log("malecount", count);
-
-  //     }
-  //   });
-
-  //   return count;
-  // };
+ 
   const handleCheckboxChange = (index) => {
     const updatedStatus = { ...checkboxStatus };
     if (updatedStatus[index] === "Accepted") {

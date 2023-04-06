@@ -17,6 +17,8 @@ import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Toast from "react-native-simple-toast";
+
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
@@ -172,6 +174,35 @@ function Theke_MachineForm2({ navigation, route }) {
     }
   };
 
+  const cancel = async() => {
+    
+    let params = {};
+    // if (payment_status === "success") {
+      params = {
+        job_id :item?.id ,
+      job_number : item?.job_number,
+      booking_id: item?.booking_id,
+      status: status
+    // }
+  } 
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      setStatus(data.status);
+      // Toast.show(JSON.stringify(data.status), Toast.LONG);s
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -292,7 +323,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {status.status === "Ongoing" ? (
+              {status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -305,7 +336,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   जारी है
                   {console.log("")}
                 </Text>
-              ) : status.status === "Completed" ? (
+              ) : status === "Completed" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -460,12 +491,9 @@ function Theke_MachineForm2({ navigation, route }) {
           )}
          
 
-         {status.status === "Ongoing" || "Completed" ? 
-    
-         "" 
-         :
+         {status.status === "Ongoing" || "Completed" &&
           <View style={{ marginTop: "auto", padding: 5 }}>
-            <TouchableOpacity
+            <TouchableOpacity onPress={() => cancel()}
               style={{
                 backgroundColor: "#D9D9D9",
                 alignSelf: "center",
