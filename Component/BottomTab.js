@@ -5,12 +5,8 @@ import Homepage from "../src/HomePage";
 import SahayakBooking from "../src/SahayakBooking";
 
 import Profile from "../src/Profile";
-import HomePageStack from "../navigations/HomePageStack";
-// import SahayakBooking from "../src/SahayakBooking";
-import SahayakBookStack from "../navigations/SahayakBookStack";
 import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
-import MyNaukariStack from "../navigations/MyNaukariStack";
 import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 const Tab = createBottomTabNavigator();

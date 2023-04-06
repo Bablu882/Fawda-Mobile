@@ -194,15 +194,69 @@ export default function ThekeParKaam_Form({ navigation }) {
     }
   };
 
+  // validate fields start
+  const [errors, setErrors] = useState({
+    showDate: "",
+    time: "",
+    description: "",
+    landType: "",
+    landArea: "",
+    totalAmount: "",
+  });
+
+  const validate = () => {
+    let valid = true;
+    let errorMessages = {
+      showDate: "",
+      time: "",
+      description: "",
+      landType: "",
+      landArea: "",
+      totalAmount: "",
+    };
+
+    if (showDate === "") {
+      errorMessages.showDate = "Please enter valid date";
+      valid = false;
+    }
+
+    if (time === "") {
+      errorMessages.time = "Please select valid time";
+      valid = false;
+    }
+    if (description === "") {
+      errorMessages.description = "Please enter your description";
+      valid = false;
+    }
+    if (landType.trim() === "") {
+      errorMessages.landType = "Please enter your land type";
+      valid = false;
+    }
+
+    if (landArea.trim() === "") {
+      errorMessages.landArea = "Please select your land area";
+      valid = false;
+    }
+
+    if (totalAmount.trim() === "") {
+      errorMessages.totalAmount = "Please enter your amount";
+      valid = false;
+    }
+
+    setErrors(errorMessages);
+    return valid;
+  };
+  // end validation
   return (
-    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1, }}>
+      <View style={{marginHorizontal:20}}>
       <View style={{ padding: 20, marginTop: 25 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <View style={{ justifyContent: "center" }}>
+      <View >
+        <View >
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
@@ -229,7 +283,7 @@ export default function ThekeParKaam_Form({ navigation }) {
         </View>
       </View>
 
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <View>
         <View
           style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
         >
@@ -258,6 +312,9 @@ export default function ThekeParKaam_Form({ navigation }) {
             />
           </TouchableOpacity>
         </View>
+        {!!errors.showDate && (
+          <Text style={styles.error}>{errors.showDate}</Text>
+        )}
 
         <View
           style={[
@@ -293,7 +350,10 @@ export default function ThekeParKaam_Form({ navigation }) {
               );
             })}
           </Picker>
+        
         </View>
+        {!!errors.time && <Text style={styles.error}>{errors.time}</Text>}
+
         <View
           style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
         >
@@ -305,13 +365,16 @@ export default function ThekeParKaam_Form({ navigation }) {
             value={description}
           />
         </View>
+        {!!errors.description && (
+          <Text style={styles.error}>{errors.description}</Text>
+        )}
 
         <View
           style={{
-            display: "flex",
+          
             flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-evenly",
+           
+            justifyContent:'space-between',
           }}
         >
           <View style={styles.TaxView}>
@@ -325,6 +388,8 @@ export default function ThekeParKaam_Form({ navigation }) {
               value={landArea}
             />
           </View>
+         
+
           <View
             style={[
               styles.BhumiView,
@@ -351,6 +416,9 @@ export default function ThekeParKaam_Form({ navigation }) {
                 />
               ))}
             </Picker>
+            {/* {!!errors.landType && (
+              <Text style={styles.error}>{errors.landType}</Text>
+            )} */}
           </View>
         </View>
 
@@ -371,13 +439,21 @@ export default function ThekeParKaam_Form({ navigation }) {
             />
           </View>
         </View>
+        {/* {!!errors.totalAmount && (
+          <Text style={styles.error}>{errors.totalAmount}</Text>
+        )} */}
 
         <TouchableOpacity
-          onPress={() => handleBooking()}
+          onPress={() => {
+            if (validate()) {
+              handleBooking();
+            }
+          }}
           style={styles.loginBtn}
         >
           <Text style={[styles.loginText, { color: "#fff" }]}>बुकिंग करें</Text>
         </TouchableOpacity>
+      </View>
       </View>
     </SafeAreaView>
   );
@@ -410,7 +486,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+    // width: "80%",
     height: 48,
     marginTop: 15,
     borderWidth: 1,
@@ -437,9 +513,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     //   flexDirection:"column",
   },
+  error: {
+    color: "red",
+    textAlign: "left",
+  },
 
   loginBtn: {
-    width: "80%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
@@ -458,7 +538,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+    // width: "80%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -480,7 +560,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "35%",
+    width: "45%",
     // height: 100,
     marginTop: 20,
     borderWidth: 1,
