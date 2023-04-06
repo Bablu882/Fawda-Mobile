@@ -21,7 +21,7 @@ export default function Login({ navigation }) {
   const [errorMessages, setErrorMessages] = useState({});
   const dispatch = useDispatch();
   const isfocused = useIsFocused();
-
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
   
   const login = async () => {
@@ -81,11 +81,11 @@ export default function Login({ navigation }) {
     return isValid;
   };
 
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigation.navigate("HomePage", );
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.navigate("HomePage", );
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
