@@ -54,6 +54,8 @@ export default function MachineWork({ navigation, route }) {
   const [edit, setEdit] = useState(false);
   const textInputRef = useRef(null);
 
+
+  
   const onEditPress = () => {
     setEdit(true);
     textInputRef?.current?.focus();
@@ -81,24 +83,6 @@ export default function MachineWork({ navigation, route }) {
       });
   };
 
-  // const onAcceptPress = async () => {
-  //   try {
-  //     const response = await service.post(
-  //       "/api/edit_thekepekam/",
-  //       { job_id: item?.id, amount },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token?.access}`,
-  //         },
-  //       }
-  //     );
-  //     console.log(response?.data);
-  //     setEdit(false);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
 
   const accptThekha = async () => {
     let params = {

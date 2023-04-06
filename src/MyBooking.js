@@ -202,6 +202,7 @@ export default function MyBooking({ navigation, route }) {
                                 ? "ठेके पर काम"
                                 : ""}
                             </Text>
+                            
                             <Text style={{ color: "black" }}>
                               {moment.utc(item?.datetime).format("L")}
                             </Text>

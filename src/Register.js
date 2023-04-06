@@ -65,13 +65,7 @@ export default function Register({ navigation, route }) {
 
       <TouchableOpacity
         onPress={() => {
-          // activeButton === "ग्राहक"
-          //   ? navigation.navigate("GrahakRegisterForm",{  user:'Grahak' })
-          // : activeButton === "सहायक"
-          //   ? navigation.navigate("GrahakRegisterForm",{ user:'Sahayak'})
-          // : activeButton === "मशीन मालिक"
-          //   ? navigation.navigate("GrahakRegisterForm",{ user:'MachineMalik'})
-          //   : null;
+        
           if( activeButton === "ग्राहक"){
             navigation.navigate("UserRegistration",{  user:'Grahak', phone })
           }else if( activeButton === "सहायक"){

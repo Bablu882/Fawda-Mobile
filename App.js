@@ -79,13 +79,15 @@ export default function App() {
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
           <Stack.Screen name="SahayakForm" component={SahayakForm} />
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
-          
+
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           <Stack.Screen name="MachineWork" component={MachineWork} />
+          
           <Stack.Screen name="MachineWork2" component={MachineWork2} />
           <Stack.Screen name="ContactUs" component={ContactUs} />
+
          
         </Stack.Navigator>
       </PersistGate>

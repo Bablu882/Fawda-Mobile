@@ -19,6 +19,8 @@ import { RadioButton } from "react-native-paper";
 
 import * as Location from "expo-location";
 
+
+
 export default function UserRegistration({ navigation, route }) {
   const { user  } = route.params;
   console.log("fnkfjk", user);

@@ -18,7 +18,7 @@ import Service from "../service/index";
 import * as Linking from 'expo-linking';
 
 import Toast from "react-native-simple-toast";
-import { Picker } from "@react-native-picker/picker";
+
 // import * as Location from "expo-location";
 
 export default function ContactUs({ navigation, route }) {

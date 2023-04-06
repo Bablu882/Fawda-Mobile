@@ -163,6 +163,7 @@ export default function Homepage({ navigation, route }) {
                             विवरण देखे
                           </Text>
                         </TouchableOpacity>
+                        
                       </View>
                     ))}
                     <View style={styles.line} />
