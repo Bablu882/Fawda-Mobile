@@ -45,8 +45,6 @@ import UserRegistration from "./src/UserRegistration";
 
 
 
-
-
 let persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -81,6 +79,7 @@ export default function App() {
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
           <Stack.Screen name="SahayakForm" component={SahayakForm} />
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
+          
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
