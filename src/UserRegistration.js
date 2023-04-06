@@ -19,7 +19,9 @@ import { RadioButton } from "react-native-paper";
 
 import * as Location from "expo-location";
 
-export default function GrahakRegisterForm({ navigation, route }) {
+
+
+export default function UserRegistration({ navigation, route }) {
   const { user  } = route.params;
   console.log("fnkfjk", user);
   const token = useSelector(selectToken);
@@ -79,10 +81,10 @@ export default function GrahakRegisterForm({ navigation, route }) {
       valid = false;
     }
     if (phoneno.trim() === "") {
-      errorMessages.phoneno = "Please enter your phoneno number";
+      errorMessages.phoneno = "Please enter your phone number";
       valid = false;
     } else if (phoneno.trim().length < 10) {
-      errorMessages.phoneno = "Please enter a valid phoneno number";
+      errorMessages.phoneno = "Please enter a valid phone number";
       valid = false;
     }
     if (mohalla.trim() === "") {
@@ -93,7 +95,15 @@ export default function GrahakRegisterForm({ navigation, route }) {
     //   errorMessages.mohalla = "Please enter a valid mohalla (alphanumeric characters and spaces only)";
     //   valid = false;
     // }
-
+    if (selectedState.trim() === "") {
+      errorMessages.state = "Please select your state";
+      valid = false;
+    }
+  
+    if (selectedDistrict.trim() === "") {
+      errorMessages.district = "Please select your district";
+      valid = false;
+    }
     if (village.trim() === "") {
       errorMessages.village = "Please enter your village";
       valid = false;
@@ -130,6 +140,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
         user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
+        device_id: '74747474747'
       };
       console.log("registerparams", params);
 
@@ -364,6 +375,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
                 />
               ))}
             </Picker>
+            {!!errors.state && <Text style={styles.error}>{errors.state}</Text>}
           </View>
           <View style={[styles.DoubleView, { position: "relative" }]}>
             <Text style={styles.label}>जिला</Text>
@@ -381,6 +393,7 @@ export default function GrahakRegisterForm({ navigation, route }) {
                 />
               ))}
             </Picker>
+            {!!errors.district && <Text style={styles.error}>{errors.district}</Text>}
             {/* <Picker
               selectedValue={selectedDistrict}
               onValueChange={(itemValue, itemIndex) =>

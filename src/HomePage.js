@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -19,6 +20,7 @@ import moment from "moment";
 export default function Homepage({ navigation, route }) {
   const [currentUsers, setCurrentUsers] = useState([]);
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const [sahayak, setSahayak] = useState("");
   const isfocused = useIsFocused();
@@ -29,6 +31,7 @@ export default function Homepage({ navigation, route }) {
   const token = useSelector(selectToken);
 
   const getalljobs = async () => {
+    setIsLoading(true); // Show loader while fetching data
     try {
       const response = await service.get("/api/nearjob/", {
         headers: {
@@ -37,10 +40,11 @@ export default function Homepage({ navigation, route }) {
         },
       });
       const data = response.data;
-      console.log("data:::", data);
       setCurrentUsers(data);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // Hide loader after fetching data
     }
   };
 
@@ -53,255 +57,274 @@ export default function Homepage({ navigation, route }) {
       style={{
         backgroundColor: "#fff",
         flex: 1,
-       
       }}
     >
       <View style={{ padding: 20, marginTop: 25 }}></View>
-      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-        {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-          <>
-            <View
-              style={{
-                // justifyContent: "center",
-                // alignItems: "center",
-                // flex: 1,
-              }}
-            >
-              <View style={{ justifyContent: "center", flex:1 }}>
-                <Text
+      <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
+      </View>
+      {!isLoading && (
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+          {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+            <>
+              <View
+                style={
+                  {
+                    // justifyContent: "center",
+                    // alignItems: "center",
+                    // flex: 1,
+                  }
+                }
+              >
+                <View style={{ justifyContent: "center", flex: 1 }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 30,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {usertype === "Sahayak"
+                      ? "ठेकेदार/सहायक के  काम "
+                      : usertype === "MachineMalik"
+                      ? "मशीन के काम "
+                      : null}
+                  </Text>
+                </View>
+
+                <View
                   style={{
-                    textAlign: "center",
-                    fontSize: 30,
-                    fontWeight: "600",
+                    // borderTopWidth: 0.7,
+                    // borderTopColor: "#0099FF",
+                    width: "100%",
+                    top: 40,
                   }}
-                >
-                  {usertype === "Sahayak"
-                    ? "ठेकेदार/सहायक के  काम "
-                    : usertype === "MachineMalik"
-                    ? "मशीन के काम "
-                    : null}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  // borderTopWidth: 0.7,
-                  // borderTopColor: "#0099FF",
-                  width: "100%",
-                  top: 40,
-                }}
-              />
-              {currentUsers?.length > 0 && (
-                <>
-                  {currentUsers.map((item, index) => (
-                    <View key={index} style={styles.booking}>
-                      <View style={styles.bookingLeft}>
-                        {item.job_type === "individuals_sahayak" ||
-                        item.job_type === "theke_pe_kam" ? (
-                          <>
+                />
+                {currentUsers?.length > 0 && (
+                  <>
+                    {currentUsers.map((item, index) => (
+                      <View key={index} style={styles.booking}>
+                        <View style={styles.bookingLeft}>
+                          {item.job_type === "individuals_sahayak" ||
+                          item.job_type === "theke_pe_kam" ? (
+                            <>
+                              <Text style={styles.bookingTitle}>
+                                {
+                                  <Text style={styles.bookingTitle}>
+                                    {item.job_type === "individuals_sahayak"
+                                      ? "सहायक के  काम "
+                                      : item.job_type === "theke_pe_kam"
+                                      ? "ठेकेदार"
+                                      : ""}
+                                  </Text>
+                                }
+                              </Text>
+                            </>
+                          ) : (
                             <Text style={styles.bookingTitle}>
-                              {
-                                <Text style={styles.bookingTitle}>
-                                  {item.job_type === "individuals_sahayak"
-                                    ? "सहायक के  काम "
-                                    : item.job_type === "theke_pe_kam"
-                                    ? "ठेकेदार"
-                                    : ""}
-                                </Text>
-                              }
+                              {item?.work_type === "Harvesting"
+                                ? "काटना"
+                                : item?.work_type === "Sowing"
+                                ? "बुवाई"
+                                : "भूमि की तैयारी"}
                             </Text>
-                          </>
-                        ) : (
-                          <Text style={styles.bookingTitle}>
-                            {item?.work_type === "Harvesting" ? "काटना": item?.work_type === "Sowing" ? "बुवाई": 'भूमि की तैयारी'}
-                          </Text>
-                        )}
-                        {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
-                       
-                        <Text style={{ color: "black" }}>
-                          {moment.utc(item.datetime).format("l")}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        style={styles.bookingButton}
-                        onPress={() => {
-                          if (item.job_type === "individuals_sahayak") {
-                            navigation.navigate("MyBook_SahayakForm", {
-                              id: item.id,
-                              item,
-                              usertype,
-                            });
-                          } else if (item.job_type === "theke_pe_kam") {
-                            navigation.navigate("Theke_MachineForm", {
-                              id: item.id,
-                              item,
-                              usertype,
-                            });
-                          } else {
-                            navigation.navigate("MachineWork", {
-                              id: item.id,
-                              item,
-                              usertype,
-                            });
-                          }
-                        }}
-                      >
-                        <Text style={styles.bookingButtonText}>विवरण देखे</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                  <View style={styles.line} />
-                </>
-              )}
+                          )}
+                          {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
 
+                          <Text style={{ color: "black" }}>
+                            {moment.utc(item.datetime).format("l")}
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          style={styles.bookingButton}
+                          onPress={() => {
+                            if (item.job_type === "individuals_sahayak") {
+                              navigation.navigate("MyBook_SahayakForm", {
+                                id: item.id,
+                                item,
+                                usertype,
+                              });
+                            } else if (item.job_type === "theke_pe_kam") {
+                              navigation.navigate("Theke_MachineForm", {
+                                id: item.id,
+                                item,
+                                usertype,
+                              });
+                            } else {
+                              navigation.navigate("MachineWork", {
+                                id: item.id,
+                                item,
+                                usertype,
+                              });
+                            }
+                          }}
+                        >
+                          <Text style={styles.bookingButtonText}>
+                            विवरण देखे
+                          </Text>
+                        </TouchableOpacity>
+                        
+                      </View>
+                    ))}
+                    <View style={styles.line} />
+                  </>
+                )}
+
+                <View
+                  style={{
+                    borderTopWidth: 0.7,
+                    borderTopColor: "#0099FF",
+                    width: "100%",
+                    marginTop: 15,
+                  }}
+                />
+              </View>
+            </>
+          ) : (
+            <>
               <View
                 style={{
-                  borderTopWidth: 0.7,
-                  borderTopColor: "#0099FF",
-                  width: "100%",
-                  marginTop: 15,
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginVertical: 50,
                 }}
-              />
-            </View>
-          </>
-        ) : (
-          <>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                marginVertical: 50,
-              }}
-            >
-              <Image
-                source={require("../assets/image/Fawda-logo.png")}
-                style={{ width: 200, height: 200, alignItems: "center" }}
-              />
+              >
+                <Image
+                  source={require("../assets/image/Fawda-logo.png")}
+                  style={{ width: 200, height: 200, alignItems: "center" }}
+                />
 
-              <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{ fontSize: 28, fontWeight: "600", color: "#000" }}
-                >
-                  कौनसी सेवा चाहिए
-                </Text>
-              </View>
+                <View style={{ alignItems: "center" }}>
+                  <Text
+                    style={{ fontSize: 28, fontWeight: "600", color: "#000" }}
+                  >
+                    कौनसी सेवा चाहिए
+                  </Text>
+                </View>
 
-              <View style={styles.OptionButton1}>
-                <TouchableOpacity
-                  style={[
-                    styles.machine,
-                    activeButton === "सहायक"
-                      ? { backgroundColor: "#44A347", borderColor: "#44A347" }
-                      : null,
-                  ]}
-                  onPress={() => {
-                    setShow(true), setActiveButton("सहायक");
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.loginText,
-                      activeButton === "सहायक" ? { color: "#fff" } : null,
-                    ]}
-                  >
-                    सहायक
-                  </Text>
-                  <Text
-                    style={[
-                      styles.loginText,
-                      activeButton === "सहायक" ? { color: "#fff" } : null,
-                    ]}
-                  >
-                    (मजदूर )
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.machine,
-                    activeButton === "मशीन"
-                      ? { backgroundColor: "#44A347", borderColor: "#44A347" }
-                      : null,
-                  ]}
-                  onPress={() => {
-                    setShow(false), setActiveButton("मशीन");
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.loginText,
-                      activeButton === "मशीन" ? { color: "#fff" } : null,
-                    ]}
-                  >
-                    मशीन
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {show && (
-                <View style={styles.OptionButton}>
+                <View style={styles.OptionButton1}>
                   <TouchableOpacity
                     style={[
-                      styles.theke,
-                      sahayak === "ठेके पर काम"
+                      styles.machine,
+                      activeButton === "सहायक"
                         ? { backgroundColor: "#44A347", borderColor: "#44A347" }
                         : null,
                     ]}
                     onPress={() => {
-                      setSahayak("ठेके पर काम");
+                      setShow(true), setActiveButton("सहायक");
                     }}
                   >
                     <Text
                       style={[
                         styles.loginText,
-                        sahayak === "ठेके पर काम" ? { color: "#fff" } : null,
-                      ]}
-                    >
-                      ठेके पर काम
-                    </Text>
-                    {/* <Text style={styles.loginText}>(मजदूर )</Text> */}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.theke,
-                      sahayak === "सहायक"
-                        ? { backgroundColor: "#44A347", borderColor: "#44A347" }
-                        : null,
-                    ]}
-                    onPress={() => {
-                      setSahayak("सहायक");
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.loginText,
-                        sahayak === "सहायक" ? { color: "#fff" } : null,
+                        activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
                     >
                       सहायक
                     </Text>
+                    <Text
+                      style={[
+                        styles.loginText,
+                        activeButton === "सहायक" ? { color: "#fff" } : null,
+                      ]}
+                    >
+                      (मजदूर )
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.machine,
+                      activeButton === "मशीन"
+                        ? { backgroundColor: "#44A347", borderColor: "#44A347" }
+                        : null,
+                    ]}
+                    onPress={() => {
+                      setShow(false), setActiveButton("मशीन");
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.loginText,
+                        activeButton === "मशीन" ? { color: "#fff" } : null,
+                      ]}
+                    >
+                      मशीन
+                    </Text>
                   </TouchableOpacity>
                 </View>
-              )}
-              <TouchableOpacity
-                onPress={() => {
-                  activeButton === "मशीन"
-                    ? navigation.navigate("MachineBooking")
-                    : sahayak === "सहायक"
-                    ? navigation.navigate("SahayakForm")
-                    : sahayak === "ठेके पर काम"
-                    ? navigation.navigate("Thekeparkaam")
-                    : null;
-                }}
-                style={styles.loginBtn}
-              >
-                <Text style={styles.VerifyText}>आगे बढ़ें</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-      </ScrollView>
+                {show && (
+                  <View style={styles.OptionButton}>
+                    <TouchableOpacity
+                      style={[
+                        styles.theke,
+                        sahayak === "ठेके पर काम"
+                          ? {
+                              backgroundColor: "#44A347",
+                              borderColor: "#44A347",
+                            }
+                          : null,
+                      ]}
+                      onPress={() => {
+                        setSahayak("ठेके पर काम");
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.loginText,
+                          sahayak === "ठेके पर काम" ? { color: "#fff" } : null,
+                        ]}
+                      >
+                        ठेके पर काम
+                      </Text>
+                      {/* <Text style={styles.loginText}>(मजदूर )</Text> */}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.theke,
+                        sahayak === "सहायक"
+                          ? {
+                              backgroundColor: "#44A347",
+                              borderColor: "#44A347",
+                            }
+                          : null,
+                      ]}
+                      onPress={() => {
+                        setSahayak("सहायक");
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.loginText,
+                          sahayak === "सहायक" ? { color: "#fff" } : null,
+                        ]}
+                      >
+                        सहायक
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                <TouchableOpacity
+                  onPress={() => {
+                    activeButton === "मशीन"
+                      ? navigation.navigate("MachineBooking")
+                      : sahayak === "सहायक"
+                      ? navigation.navigate("SahayakForm")
+                      : sahayak === "ठेके पर काम"
+                      ? navigation.navigate("Thekeparkaam")
+                      : null;
+                  }}
+                  style={styles.loginBtn}
+                >
+                  <Text style={styles.VerifyText}>आगे बढ़ें</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

@@ -19,21 +19,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import persistStore from "redux-persist/es/persistStore";
 import SplashScreen from "./src/SplashScreen";
 import { useFonts } from "expo-font";
-
 import Verification from "./src/Verification";
 import Register from "./src/Register";
-
 import Homepage from "./src/HomePage";
 // import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
-// import HomePageStack from "./navigations/HomePageStack";
-
-//import SahayakRegisterForm from "./src/SahayakRegisterForm";
-// import BottomTabSahayak from "./Component/BottomTabSahayak";
-//import MachineMachine_Registration from "./src/MachineMalik_Registration";
-// import BottomTabMachine from "./Component/BottomTabMachine";
-import GrahakRegisterForm from "./src/GrahakRegisterForm";
 import SahayakForm from "./src/SahayakForm";
 import MachineBooking from "./src/MachineBooking";
 import MyBooking from "./src/MyBooking";
@@ -44,8 +35,8 @@ import MachineWork from "./src/MachineWork";
 import Payment from "./src/Payment";
 import Theke_MachineForm2 from "./src/Theke_MachineForm2";
 import MachineWork2 from "./src/MachineWork2";
-
-
+import ContactUs from "./src/ContactUs";
+import UserRegistration from "./src/UserRegistration";
 
 
 
@@ -76,7 +67,7 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Verification" component={Verification} /> 
           <Stack.Screen name="Register" component={Register} /> 
-          <Stack.Screen name="GrahakRegisterForm" component={GrahakRegisterForm} />
+          <Stack.Screen name="UserRegistration" component={UserRegistration} />
           <Stack.Screen name="HomePage" component={BottomTab} />
           <Stack.Screen name="MyBooking" component={MyBooking} />
           <Stack.Screen name="Payment" component={Payment} />
@@ -86,11 +77,15 @@ export default function App() {
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
           <Stack.Screen name="SahayakForm" component={SahayakForm} />
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
+
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           <Stack.Screen name="MachineWork" component={MachineWork} />
+          
           <Stack.Screen name="MachineWork2" component={MachineWork2} />
+          <Stack.Screen name="ContactUs" component={ContactUs} />
+
          
         </Stack.Navigator>
       </PersistGate>

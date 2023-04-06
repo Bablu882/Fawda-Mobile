@@ -54,6 +54,8 @@ export default function MachineWork({ navigation, route }) {
   const [edit, setEdit] = useState(false);
   const textInputRef = useRef(null);
 
+
+  
   const onEditPress = () => {
     setEdit(true);
     textInputRef?.current?.focus();
@@ -81,24 +83,6 @@ export default function MachineWork({ navigation, route }) {
       });
   };
 
-  // const onAcceptPress = async () => {
-  //   try {
-  //     const response = await service.post(
-  //       "/api/edit_thekepekam/",
-  //       { job_id: item?.id, amount },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token?.access}`,
-  //         },
-  //       }
-  //     );
-  //     console.log(response?.data);
-  //     setEdit(false);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
 
   const accptThekha = async () => {
     let params = {
@@ -127,8 +111,9 @@ export default function MachineWork({ navigation, route }) {
       booking_job: item?.booking_id,
     };
 console.log('dfjddjdjd', params)
+
     try {
-      const response = await service.post("/api/get-reating/", params, {
+      const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token?.access}`,
@@ -623,7 +608,7 @@ console.log('dfjddjdjd', params)
         )}
         {usertype === "Grahak" && item.status === "Pending" && (
           <TouchableOpacity
-            style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+            style={[styles.BhuktanBtn, { opacity: 0.5, }]}
             disabled
           >
             <Text style={[styles.loginText, { color: "#fff" }]}>
@@ -735,12 +720,13 @@ const styles = StyleSheet.create({
   },
 
   BhuktanBtn: {
-    width: "100%",
+   width:"95%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
+    marginHorizontal:10,
     backgroundColor: "#0099FF",
   },
 
