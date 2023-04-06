@@ -27,12 +27,7 @@ import Homepage from "./src/HomePage";
 // import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
-// import HomePageStack from "./navigations/HomePageStack";
 
-//import SahayakRegisterForm from "./src/SahayakRegisterForm";
-import BottomTabSahayak from "./Component/BottomTabSahayak";
-//import MachineMachine_Registration from "./src/MachineMalik_Registration";
-import BottomTabMachine from "./Component/BottomTabMachine";
 
 import SahayakForm from "./src/SahayakForm";
 import MachineBooking from "./src/MachineBooking";
@@ -83,8 +78,6 @@ export default function App() {
           <Stack.Screen name="MyBooking" component={MyBooking} />
           <Stack.Screen name="Payment" component={Payment} />
           <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} />
-          <Stack.Screen name="HomeTwo" component={BottomTabSahayak} />
-          <Stack.Screen name="Homethird" component={BottomTabMachine} />
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
           <Stack.Screen name="SahayakForm" component={SahayakForm} />
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
