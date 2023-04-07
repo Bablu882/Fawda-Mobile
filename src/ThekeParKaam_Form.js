@@ -8,12 +8,17 @@ import {
   TextInput,
   Image,
   Button,
+  ScrollView,
+  KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
 import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { selectToken } from "../slices/authSlice";
+const { height } = Dimensions.get("window");
 import {
   setDate,
   setTime,
@@ -44,7 +49,16 @@ export default function ThekeParKaam_Form({ navigation }) {
   const [selectedDates, setSelectedDates] = useState("");
   const [katayiValue, setKatayiValue] = useState();
   const [mode, setMode] = useState("date");
+  const [errors, setErrors] = useState({
+    showDate: "",
+    time: "",
+    description: "",
+    landType: "",
+    landArea: "",
+    totalAmount: "",
+  });
 
+  
   var isTimeSelected = false;
   const pickerRef = useRef();
   function open() {
@@ -195,14 +209,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
 
   // validate fields start
-  const [errors, setErrors] = useState({
-    showDate: "",
-    time: "",
-    description: "",
-    landType: "",
-    landArea: "",
-    totalAmount: "",
-  });
+ 
 
   const validate = () => {
     let valid = true;
@@ -224,10 +231,14 @@ export default function ThekeParKaam_Form({ navigation }) {
       errorMessages.time = "Please select valid time";
       valid = false;
     }
-    if (description === "") {
+    if (description.trim() === "") {
       errorMessages.description = "Please enter your description";
       valid = false;
+    } else if (!/^[a-zA-Z]+$/.test(description.trim())) {
+      errorMessages.description = "Please enter a valid description (letters only)";
+      valid = false;
     }
+
     if (landType.trim() === "") {
       errorMessages.landType = "Please enter your land type";
       valid = false;
@@ -246,217 +257,273 @@ export default function ThekeParKaam_Form({ navigation }) {
     setErrors(errorMessages);
     return valid;
   };
+
+
+  
   // end validation
   return (
-    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1, }}>
-      <View style={{marginHorizontal:20}}>
-      <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
-      </View>
-      <View >
-        <View >
-          <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-          >
-            सहायक बुकिंग
-          </Text>
-        </View>
-
-        <View style={styles.OptionButton}>
-          <TouchableOpacity
-            style={styles.sahayak}
-            onPress={() => navigation.navigate("Thekeparkaam")}
-          >
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              ठेके पर काम
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.machine}
-            onPress={() => navigation.navigate("SahayakForm")}
-          >
-            <Text style={styles.loginText}>सहायक</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={{ marginHorizontal: 20 }}>
+        <View style={{ padding: 20, marginTop: 25 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
-      </View>
-
-      <View>
-        <View
-          style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
+        <KeyboardAwareScrollView
+          enableAutomaticScroll={true}
+          showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity
-            style={{ paddingVertical: 10, paddingHorizontal: 5 }}
-            onPress={showDatepicker}
-            title={showDate ? showDate : "Select Date"}
+          <KeyboardAvoidingView
+            behavior="padding"
+            style={{ height: height * 0.9 }}
           >
-            <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-              {showDate ? showDate : "Select Date"}
-            </Text>
-          </TouchableOpacity>
+            <>
+              <View>
+                <View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 30,
+                      fontWeight: "600",
+                    }}
+                  >
+                    सहायक बुकिंग
+                  </Text>
+                </View>
 
-          <TextInput
-            value={selectedDates}
-            editable={false}
-            onChangeText={(date) => {
-              handleDateChange(date);
-              // setDate(date);
-            }}
-          />
-          <TouchableOpacity onPress={showDatepicker}>
-            <Image
-              source={require("../assets/image/calendar.png")}
-              style={{ width: 20, height: 20, right: 10 }}
-            />
-          </TouchableOpacity>
-        </View>
-        {!!errors.showDate && (
-          <Text style={styles.error}>{errors.showDate}</Text>
-        )}
+                <View style={styles.OptionButton}>
+                  <TouchableOpacity
+                    style={styles.sahayak}
+                    onPress={() => navigation.navigate("Thekeparkaam")}
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      ठेके पर काम
+                    </Text>
+                  </TouchableOpacity>
 
-        <View
-          style={[
-            styles.dropdownGender,
-            styles.justifyContentBetween,
-            styles.flex,
-          ]}
-        >
-          <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-            {time ? time : "-समय-"}
-          </Text>
-          <Picker
-            ref={pickerRef}
-            selectedValue={time}
-            style={{ width: 40 }}
-            onValueChange={(itemValue, itemIndex) =>
-              setTimes(timeConverted(itemValue))
-            }
-          >
-            <Picker.Item enabled={false} label="-समय-" value="" />
-            {timings.map((item, index) => {
-              return (
-                <Picker.Item
-                  key={index}
+                  <TouchableOpacity
+                    style={styles.machine}
+                    onPress={() => navigation.navigate("SahayakForm")}
+                  >
+                    <Text style={styles.loginText}>सहायक</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View>
+                <View
+                  style={[
+                    styles.inputView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={{ paddingVertical: 10, paddingHorizontal: 5 }}
+                    onPress={showDatepicker}
+                    title={showDate ? showDate : "Select Date"}
+                  >
+                    <Text style={{ color: showDate ? "#000" : "#ccc" }}>
+                      {showDate ? showDate : "Select Date"}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TextInput
+                    value={selectedDates}
+                    editable={false}
+                    onChangeText={(date) => {
+                      handleDateChange(date);
+                      // setDate(date);
+                    }}
+                  />
+                  <TouchableOpacity onPress={showDatepicker}>
+                    <Image
+                      source={require("../assets/image/calendar.png")}
+                      style={{ width: 20, height: 20, right: 10 }}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {!!errors.showDate && (
+                  <Text style={styles.error}>{errors.showDate}</Text>
+                )}
+
+                <View
+                  style={[
+                    styles.dropdownGender,
+                    styles.justifyContentBetween,
+                    styles.flex,
+                  ]}
+                >
+                  <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
+                    {time ? time : "-समय-"}
+                  </Text>
+                  <Picker
+                    ref={pickerRef}
+                    selectedValue={time}
+                    style={{ width: 40 }}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setTimes(timeConverted(itemValue))
+                    }
+                  >
+                    <Picker.Item enabled={false} label="-समय-" value="" />
+                    {timings.map((item, index) => {
+                      return (
+                        <Picker.Item
+                          key={index}
+                          style={{
+                            color: checkIfTimeEnabled(item) ? "black" : "gray",
+                            fontSize: 14,
+                          }}
+                          label={timeConverted(item)}
+                          value={item}
+                          enabled={checkIfTimeEnabled(item)}
+                        />
+                      );
+                    })}
+                  </Picker>
+                </View>
+                {!!errors.time && (
+                  <Text style={styles.error}>{errors.time}</Text>
+                )}
+
+                <View
+                  style={[
+                    styles.inputView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                  ]}
+                >
+                  <TextInput
+                    style={[styles.TextInput]}
+                    placeholder="काम लिखें १५ शब्दों से कम,नंबर न लिखें "
+                    placeholderTextColor={"#ccc"}
+                    onChangeText={(description) =>
+                      handleDescriptionChange(description)
+                    }
+                    value={description}
+                  />
+                </View>
+                {!!errors.description && (
+                  <Text style={styles.error}>{errors.description}</Text>
+                )}
+
+                <View
                   style={{
-                    color: checkIfTimeEnabled(item) ? "black" : "gray",
-                    fontSize: 14,
+                    flexDirection: "row",
+
+                    justifyContent: "space-between",
                   }}
-                  label={timeConverted(item)}
-                  value={item}
-                  enabled={checkIfTimeEnabled(item)}
-                />
-              );
-            })}
-          </Picker>
-        
-        </View>
-        {!!errors.time && <Text style={styles.error}>{errors.time}</Text>}
+                >
+                  <View style={{ maxWidth:'50%',width:'100%'}}>
+                    <View
+                      style={[
+                        styles.inputView,{width:'100%'}
+                        ,
+                        { marginRight: 10 },
+                        // styles.flex,
+                        // styles.justifyContentBetween,
+                      ]}
+                    >
+                      <TextInput
+                        style={[styles.TextInput]}
+                        maxLength={2}
+                        placeholder="भूमि क्षेत्र"
+                        keyboardType="numeric"
+                        onChangeText={(landArea) =>
+                          handleLandAreaChange(landArea)
+                        }
+                        value={landArea}
+                      />
+                    </View>
+                    {!!errors.landType && (
+                      <Text style={styles.error}>{errors.landType}</Text>
+                    )}
+                  </View>
 
-        <View
-          style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
-        >
-          <TextInput
-            style={[styles.TextInput]}
-            placeholder="काम लिखें १५ शब्दों से कम,नंबर न लिखें "
-            placeholderTextColor={"#ccc"}
-            onChangeText={(description) => handleDescriptionChange(description)}
-            value={description}
-          />
-        </View>
-        {!!errors.description && (
-          <Text style={styles.error}>{errors.description}</Text>
-        )}
+                  <View style={{maxWidth:'50%', width:'100%'}}>
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        { marginLeft: 10 },
 
-        <View
-          style={{
-          
-            flexDirection: "row",
-           
-            justifyContent:'space-between',
-          }}
-        >
-          <View style={styles.TaxView}>
-            <TextInput
-              style={[styles.TextInput, { width: "90%" }]}
-              maxLength={2}
-              placeholder="भूमि क्षेत्र"
-              placeholderTextColor={"#ccc"}
-              keyboardType="numeric"
-              onChangeText={(landArea) => handleLandAreaChange(landArea)}
-              value={landArea}
-            />
-               {/* {!!errors.landType && (
-              <Text style={styles.error}>{errors.landType}</Text>
-            )} */}
-          </View>
-         
+                        // styles.flex,
+                        // styles.justifyContentBetween,
+                      ]}
+                    >
+                      <Text
+                        style={{ color: landType ? "#000" : "#ccc", left: 5 }}
+                      >
+                        {landType ? landType : "किल्ला/बीघा"}
+                      </Text>
+                      <Picker
+                        style={{ width: 20 }}
+                        ref={pickerRef}
+                        selectedValue={landType}
+                        onValueChange={(itemValue, itemIndex) =>
+                          setLandTypes(itemValue)
+                        }
+                      >
+                        <Picker.Item label="किल्ला/बीघा" value="" />
+                        {landtypes.map((item) => (
+                          <Picker.Item
+                            label={item.name}
+                            value={item.name}
+                            key={item.id}
+                          />
+                        ))}
+                      </Picker>
+                    </View>
+                    {!!errors.landType && (
+                      <Text style={styles.error}>{errors.landType}</Text>
+                    )}
+                  </View>
+                </View>
 
-          <View
-            style={[
-              styles.BhumiView,
-              styles.flex,
-              styles.justifyContentBetween,
-            ]}
-          >
-            <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-              {landType ? landType : "किल्ला/बीघा"}
-            </Text>
+                <View
+                  style={[
+                    styles.inputView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                  ]}
+                >
+                  <Text style={{ left: 5, color: "#ccc" }}>वेतन</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={{ color: "#0070C0" }}>₹ </Text>
+                    <TextInput
+                      style={[styles.TextInput, { color: "#0070C0" }]}
+                      placeholder="0.00"
+                      //  style={{color:'#0070C0'}}
+                      placeholderTextColor={"#0070C0"}
+                      keyboardType="numeric"
+                      onChangeText={(totalAmount) =>
+                        handleTotalAmount(totalAmount)
+                      }
+                      value={totalAmount}
+                    />
+                  </View>
+                </View>
+                {!!errors.totalAmount && (
+                  <Text style={styles.error}>{errors.totalAmount}</Text>
+                )}
 
-            <Picker
-              style={{ width: 20 }}
-              ref={pickerRef}
-              selectedValue={landType}
-              onValueChange={(itemValue, itemIndex) => setLandTypes(itemValue)}
-            >
-              <Picker.Item label="किल्ला/बीघा" value="" />
-              {landtypes.map((item) => (
-                <Picker.Item
-                  label={item.name}
-                  value={item.name}
-                  key={item.id}
-                />
-              ))}
-            </Picker>
-            {/* {!!errors.landType && (
-              <Text style={styles.error}>{errors.landType}</Text>
-            )} */}
-          </View>
-        </View>
-
-        <View
-          style={[styles.inputView, styles.flex, styles.justifyContentBetween]}
-        >
-          <Text style={{ left: 5, color: "#ccc" }}>वेतन</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ color: "#0070C0" }}>₹ </Text>
-            <TextInput
-              style={[styles.TextInput, { color: "#0070C0" }]}
-              placeholder="0.00"
-              //  style={{color:'#0070C0'}}
-              placeholderTextColor={"#0070C0"}
-              keyboardType="numeric"
-              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
-              value={totalAmount}
-            />
-          </View>
-        </View>
-        {/* {!!errors.totalAmount && (
-          <Text style={styles.error}>{errors.totalAmount}</Text>
-        )} */}
-
-        <TouchableOpacity
-          onPress={() => {
-            if (validate()) {
-              handleBooking();
-            }
-          }}
-          style={styles.loginBtn}
-        >
-          <Text style={[styles.loginText, { color: "#fff" }]}>बुकिंग करें</Text>
-        </TouchableOpacity>
-      </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (validate()) {
+                      handleBooking();
+                    }
+                  }}
+                  style={styles.loginBtn}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    बुकिंग करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
       </View>
     </SafeAreaView>
   );
@@ -464,8 +531,7 @@ export default function ThekeParKaam_Form({ navigation }) {
 
 const styles = StyleSheet.create({
   OptionButton: {
- flexDirection:'row',
- 
+    flexDirection: "row",
   },
 
   sahayak: {
@@ -477,7 +543,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     // borderWidth:1,
     borderRadius: 10,
-    marginHorizontal:10,
+    marginHorizontal: 10,
     // borderColor:"#505050",
     backgroundColor: "#44A347",
   },
@@ -515,7 +581,8 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
-    textAlign: "left",
+    fontSize: 13,
+   
   },
 
   loginBtn: {
@@ -603,5 +670,11 @@ const styles = StyleSheet.create({
   },
   justifyContentBetween: {
     justifyContent: "space-between",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
 });

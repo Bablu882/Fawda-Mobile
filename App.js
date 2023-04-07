@@ -37,6 +37,7 @@ import Theke_MachineForm2 from "./src/Theke_MachineForm2";
 import MachineWork2 from "./src/MachineWork2";
 import ContactUs from "./src/ContactUs";
 import UserRegistration from "./src/UserRegistration";
+import MyBookingStack from "./navigations/MyBookingStack";
 
 
 
@@ -69,20 +70,16 @@ export default function App() {
           <Stack.Screen name="Register" component={Register} /> 
           <Stack.Screen name="UserRegistration" component={UserRegistration} />
           <Stack.Screen name="HomePage" component={BottomTab} />
-          <Stack.Screen name="MyBooking" component={MyBooking} />
+          <Stack.Screen name="MyBooking" component={MyBookingStack} />
           <Stack.Screen name="Payment" component={Payment} />
           <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} />
-          {/* <Stack.Screen name="HomeTwo" component={BottomTabSahayak} /> */}
-          {/* <Stack.Screen name="Homethird" component={BottomTabMachine} /> */}
           <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
           <Stack.Screen name="SahayakForm" component={SahayakForm} />
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
-
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
           <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
           <Stack.Screen name="MachineWork" component={MachineWork} />
-          
           <Stack.Screen name="MachineWork2" component={MachineWork2} />
           <Stack.Screen name="ContactUs" component={ContactUs} />
 

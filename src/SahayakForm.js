@@ -36,8 +36,8 @@ export default function SahayakForm({ navigation }) {
   const [maleCounts, setMaleCounts] = useState(0);
   const [defaultDate, setDefaultDate] = useState(new Date());
   const [femaleCounts, setFemaleCounts] = useState(0);
-  const [landTypes, setLandTypes] = useState('');
-  const [selectedDates, setSelectedDates] = useState('');
+  const [landType, setlandType] = useState("");
+  const [selectedDates, setSelectedDates] = useState("");
   const [landArea, setLandAreas] = useState("");
   const [showDate, setShowDate] = useState("");
   const [malepayamount, setMalepayamount] = useState(0);
@@ -45,12 +45,16 @@ export default function SahayakForm({ navigation }) {
   const [description, setDescriptions] = useState("");
   const [days, setDays] = useState(0);
   const [time, setTimes] = useState("");
-  const [total, setTotal] = useState(0)
-
+  const [total, setTotal] = useState(0);
+  const [errors, setErrors] = useState({
+    showDate: "",
+    time: "",
+    description: "",
+    landType: "",
+    landArea: "",
+    totalAmount: "",
+  });
   var isTimeSelected = false;
-
-
-
 
   const pickerRef = useRef();
   function open() {
@@ -62,7 +66,7 @@ export default function SahayakForm({ navigation }) {
   const daysCount = [1, 2, 3, 4, 5];
   const maleCount = [1, 2, 3, 4, 5];
   const femaleCount = [1, 2, 3, 4, 5];
-  const landtypess = [
+  const landTypes = [
     {
       id: 0,
       name: "Killa",
@@ -84,7 +88,6 @@ export default function SahayakForm({ navigation }) {
 
     let enabledTime = time + 3;
 
-
     if (timeSelect > time + 3) {
       return true;
     } else {
@@ -97,7 +100,6 @@ export default function SahayakForm({ navigation }) {
       item = item - 12;
       return (item = item + " PM");
     } else {
-    
       return item + " AM";
     }
   };
@@ -128,7 +130,7 @@ export default function SahayakForm({ navigation }) {
 
     setDate(currentDate);
     setShowDate(showDate);
-    console.log('fkdfk',showDate)
+    console.log("fkdfk", showDate);
     if (isTimeSelected == true) {
       console.log("ShowTime", showTime);
       setShowTime(showTime);
@@ -147,10 +149,10 @@ export default function SahayakForm({ navigation }) {
   };
 
   const dateValidate = () => {
-    let currentDate = new Date(); 
+    let currentDate = new Date();
     currentDate.setMonth(currentDate.getMonth() + 1);
 
-    return currentDate; 
+    return currentDate;
   };
 
   const showDatepicker = () => {
@@ -158,15 +160,94 @@ export default function SahayakForm({ navigation }) {
     showMode("date");
   };
 
+  const validate = () => {
+    let valid = true;
+    let errorMessages = {
+      showDate: "",
+      time: "",
+      description: "",
+      landType: "",
+      landArea: "",
+      totalAmount: "",
+    };
+
+    if (showDate === "") {
+      errorMessages.showDate = "Please enter valid date";
+      valid = false;
+    }
+
+    if (time === "") {
+      errorMessages.time = "Please select valid time";
+      valid = false;
+    }
+    if (description.trim() === "") {
+      errorMessages.description = "Please enter your description";
+      valid = false;
+    } else if (!/^[a-zA-Z]+$/.test(description.trim())) {
+      errorMessages.description =
+        "Please enter a valid description (letters only)";
+      valid = false;
+    }
+
+    if (landType.trim() === "") {
+      errorMessages.landType = "Please enter your land type";
+      valid = false;
+    }
+    if (!maleCounts || maleCounts.toString().trim() === "") {
+      errorMessages.maleCounts = "Please select a value for Male Count";
+      valid = false;
+    }
+
+    if (!femaleCounts || femaleCounts.toString().trim() === "") {
+      errorMessages.femaleCounts = "Please select a value for Female Count";
+      valid = false;
+    }
+
+    // if (!femaleCount) {
+    //   errorMessages.femaleCount = "Please enter your Female Count";
+    //   valid = false;
+    // }
+    if (!days || days.toString().trim() === "") {
+      errorMessages.days = "Please select days";
+      valid = false;
+    }
+
+    if (landArea.trim() === "") {
+      errorMessages.landArea = "Please select your land area";
+      valid = false;
+    }
+    // if (malepayamount > 0) {
+    //   errorMessages.malepayamount = "Please enter your Male salery ";
+    //   valid = false;
+    // }
+    if (!malepayamount || malepayamount.trim() === "") {
+      errorMessages.malepayamount = "Please enter your Male Pay";
+      valid = false;
+    }
+    if (!femalepayamount || femalepayamount.trim() === "") {
+      errorMessages.femalepayamount = "Please enter your Male Pay";
+      valid = false;
+    }
+    // if (femalepayamount.trim() === "") {
+    //   errorMessages.femalepayamount = "Please enter your female salery ";
+    //   valid = false;
+    // }
+    setErrors(errorMessages);
+    return valid;
+  };
+
   const sahayakBooking = async () => {
-    const datetime = moment(showDate).format('YYYY-MM-DD') + 'T' +  moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-    console.log('date', datetime)
+    const datetime =
+      moment(showDate).format("YYYY-MM-DD") +
+      "T" +
+      moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+    console.log("date", datetime);
     const params = {
       datetime: datetime,
       // datetime: "2023-03-16 17:05:42.000000",
       description: description,
       land_area: landArea,
-      land_type: landTypes,
+      land_type: landType,
       count_male: maleCounts,
       count_female: femaleCounts,
       pay_amount_male: malepayamount,
@@ -174,8 +255,7 @@ export default function SahayakForm({ navigation }) {
       num_days: days,
     };
 
-    
-    console.log('params::', params)
+    console.log("params::", params);
 
     try {
       const response = await service.post("/api/post_individuals/", params, {
@@ -184,21 +264,22 @@ export default function SahayakForm({ navigation }) {
           Authorization: "Bearer " + token?.access,
         },
       });
-      
+
       const { data } = response;
       Toast.show("Job Posted Successfully!", Toast.SORT);
-      console.log('data::', data)
+      console.log("data::", data);
       navigation.replace("MyBooking");
     } catch (error) {
       console.log("Error:", error);
       Toast.show("Error Occurred. Please try again later.", Toast.SORT);
     }
   };
+
   useEffect(() => {
-   const Total = (((maleCounts * malepayamount) + (femaleCounts * femalepayamount)) * days )
-   return setTotal(Total)
-  
-  }, [maleCounts, femaleCounts, malepayamount, femalepayamount, days])
+    const Total =
+      (maleCounts * malepayamount + femaleCounts * femalepayamount) * days;
+    return setTotal(Total);
+  }, [maleCounts, femaleCounts, malepayamount, femalepayamount, days]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -230,13 +311,13 @@ export default function SahayakForm({ navigation }) {
         </View>
       </View>
 
-      <ScrollView>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <View style={{ marginHorizontal: 10 }}>
           <View
             style={[
               styles.inputView,
               styles.flex,
-              styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
             <TouchableOpacity
@@ -245,12 +326,13 @@ export default function SahayakForm({ navigation }) {
               onPress={showDatepicker}
               title={showDate ? showDate : "तारीख़   dd/mm/yyyy"}
             >
-              <Text style={{color:showDate?'#000':'#ccc'}}>{showDate ? showDate : "तारीख़   dd/mm/yyyy"}</Text>
+              <Text style={{ color: showDate ? "#000" : "#ccc" }}>
+                {showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+              </Text>
             </TouchableOpacity>
 
             <TextInput
               value={selectedDates}
-      
               editable={false}
               onChangeText={(date) => {
                 handleDateChange(date);
@@ -264,26 +346,34 @@ export default function SahayakForm({ navigation }) {
               />
             </TouchableOpacity>
           </View>
+          {!!errors.showDate && (
+            <Text style={styles.error}>{errors.showDate}</Text>
+          )}
 
-       
-          <View style={[styles.dropdownGender, styles.justifyContentBetween, styles.flex]}>
-          <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-            {time ? time : "-समय-"}
-          </Text>
+          <View
+            style={[
+              styles.dropdownGender,
+              styles.justifyContentBetween,
+              styles.flex,
+              { width: "100%" },
+            ]}
+          >
+            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
+              {time ? time : "-समय-"}
+            </Text>
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{width:40}}
+              style={{ width: 40 }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
-                }
+              }
             >
               <Picker.Item enabled={false} label="-समय-" value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
                     key={index}
-                 
                     style={{
                       color: checkIfTimeEnabled(item) ? "black" : "gray",
                       fontSize: 14,
@@ -296,20 +386,13 @@ export default function SahayakForm({ navigation }) {
               })}
             </Picker>
           </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-evenly",
-            }}
-          ></View>
+          {!!errors.time && <Text style={styles.error}>{errors.time}</Text>}
 
           <View
             style={[
               styles.inputView,
               styles.flex,
-              styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
             <TextInput
@@ -322,186 +405,211 @@ export default function SahayakForm({ navigation }) {
               }
             />
           </View>
-
+          {!!errors.description && (
+            <Text style={styles.error}>{errors.description}</Text>
+          )}
           <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "space-evenly",
-            }}
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <View style={[styles.TaxView]}>
-              <TextInput
-                style={styles.TextInput}
-                keyboardType="numeric"
-                maxLength={2}
-                placeholder="भूमि क्षेत्र"
-                placeholderTextColor={"#ccc"}
-                value={landArea}
-                onChangeText={(landArea) => handleLandAreaChange(landArea)}
-              />
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View style={[styles.inputView, { width: "100%" }]}>
+                <TextInput
+                  style={styles.TextInput}
+                  keyboardType="numeric"
+                  maxLength={2}
+                  placeholder="भूमि क्षेत्र"
+                  placeholderTextColor={"#ccc"}
+                  value={landArea}
+                  onChangeText={(landArea) => handleLandAreaChange(landArea)}
+                />
+              </View>
+              {!!errors.landArea && (
+                <Text style={styles.error}>{errors.landArea}</Text>
+              )}
             </View>
-            <View
-              style={[
-                styles.TaxView,
-                styles.flex,
-             styles.justifyContentBetween
-              ]}
-            >
 
-              <Text style={{ color: landTypes ? "#000" : "#ccc", left: 5 }}>
-              {landTypes ? landTypes : "किल्ला/बीघा"}
-            </Text>
-              <Picker
-                style={{ width: 20 }}
-                ref={pickerRef}
-                selectedValue={landTypes}
-                onValueChange={(itemValue, itemIndex) =>
-                  setLandTypes(itemValue)
-                }
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.inputView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                ]}
               >
-                <Picker.Item label="किल्ला/बीघा" value="" />
-                {landtypess.map((item) => (
-                  <Picker.Item
-                    label={item.name}
-                    value={item.name}
-                    key={item.id}
-                  />
-                ))}
-              </Picker>
-            </View>
-   
-          </View>
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "90%",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <View
-              style={[
-                styles.DoubleView,
-                styles.flex,
-                styles.justifyContentBetween,{marginHorizontal:4}
-              ]}
-            >
-           
-           <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
-              {maleCounts ? maleCounts : "पुरुषों"}
-            </Text>
-              <View style={{ flexDirection: "row" }}>
-          
+                <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
+                  {landType ? landType : "किल्ला/बीघा"}
+                </Text>
                 <Picker
-                  style={{ width: 20, paddingTop: 16 }}
+                  style={{ width: 20 }}
                   ref={pickerRef}
-                  selectedValue={maleCounts}
+                  selectedValue={landType}
                   onValueChange={(itemValue, itemIndex) =>
-                    setMaleCounts(itemValue)
+                    setlandType(itemValue)
                   }
                 >
-                  <Picker.Item label="1-5" value="1-5" enabled={false} />
-                  {maleCount.map((item) => (
+                  <Picker.Item label="किल्ला/बीघा" value="" />
+                  {landTypes.map((item) => (
                     <Picker.Item
-                      label={item.toString()}
-                      value={item}
-                      key={item}
+                      label={item.name}
+                      value={item.name}
+                      key={item.id}
                     />
                   ))}
                 </Picker>
               </View>
+
+              {!!errors.landType && (
+                <Text style={styles.error}>{errors.landType}</Text>
+              )}
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent:'space-between' }}>
+          <View style={{maxWidth:'48%', width:'100%'}}>
+              <View
+                style={[
+                  styles.inputView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                  // { marginLeft: 10 },
+
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
+              >
+                <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
+                  {maleCounts ? maleCounts : "पुरुषों"}
+                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Picker
+                    style={{ width: 20, paddingTop: 16 }}
+                    ref={pickerRef}
+                    selectedValue={maleCounts}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setMaleCounts(itemValue)
+                    }
+                  >
+                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    {maleCount.map((item) => (
+                      <Picker.Item
+                        label={item.toString()}
+                        value={item}
+                        key={item}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+              {!!errors.maleCounts && (
+                <Text style={styles.error}>{errors.maleCounts}</Text>
+              )}
             </View>
 
-            <View
-              style={[
-                styles.DoubleView,styles.flex,styles.justifyContentBetween,
-                {
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.inputView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                  // { marginLeft: 10 },
 
-                  marginHorizontal: 10,
-                },
-              ]}
-            >
-               <Text style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}>
-              {femaleCounts ? femaleCounts : "महिलाओं"}
-            </Text>
-          
-              <View style={{ flexDirection: "row" }}>
-                <Picker
-                  style={{ width: 20, paddingTop: 16 }}
-                  ref={pickerRef}
-                  selectedValue={femaleCounts}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setFemaleCounts(itemValue)
-                  }
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
+              >
+                <Text
+                  style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}
                 >
-                  <Picker.Item label="1-5" value="1-5" enabled={false}/>
-                  {femaleCount.map((item) => (
-                    <Picker.Item
-                      label={item.toString()}
-                      value={item}
-                      key={item}
-                    />
-                  ))}
-                </Picker>
+                  {femaleCounts ? femaleCounts : "महिलाओं"}
+                </Text>
+
+                <View style={{ flexDirection: "row" }}>
+                  <Picker
+                    style={{ width: 20, paddingTop: 16 }}
+                    ref={pickerRef}
+                    selectedValue={femaleCounts}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setFemaleCounts(itemValue)
+                    }
+                  >
+                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    {femaleCount.map((item) => (
+                      <Picker.Item
+                        label={item.toString()}
+                        value={item}
+                        key={item}
+                      />
+                    ))}
+                  </Picker>
+                </View>
               </View>
+              {!!errors.femaleCounts && (
+                <Text style={styles.error}>{errors.femaleCounts}</Text>
+              )}
             </View>
           </View>
 
           <View
             style={{
-              display: "flex",
               flexDirection: "row",
-              width: "90%",
-              justifyContent: "space-evenly",
+
+              justifyContent: "space-between",
             }}
           >
-            <View
-              style={[
-                styles.DoubleView,
-                styles.flex,
-                styles.justifyContentBetween
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                keyboardType="numeric"
-                placeholder="एक पुरुष का वेतन "
-                placeholderTextColor={"#ccc"}
-              
-                value={malepayamount}
-                onChangeText={(malepayamount) =>
-                  setMalepayamount(malepayamount)
-                }
-              />
-              <Text style={{ color: "#0099FF", right: 10 }}>
-                ₹
-              </Text>
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.flex,
+                  styles.inputView,
+                  styles.justifyContentBetween,
+                  { width: "100%" },
+
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
+              >
+                <TextInput
+                  style={styles.TextInput}
+                  keyboardType="numeric"
+                  placeholder="एक पुरुष का वेतन "
+                  placeholderTextColor={"#ccc"}
+                  value={malepayamount}
+                  onChangeText={(malepayamount) =>
+                    setMalepayamount(malepayamount)
+                  }
+                />
+                <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
+              </View>
+              {!!errors.malepayamount && (
+                <Text style={styles.error}>{errors.malepayamount}</Text>
+              )}
             </View>
-            <View
-              style={[
-                styles.DoubleView,
-                styles.flex,
-                styles.justifyContentBetween
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="एक महिला का वेतन"
-                keyboardType="numeric"
-                placeholderTextColor={"#ccc"}
-                value={femalepayamount}
-        
-                onChangeText={(femalepayamount) =>
-                  setFemalepayamount(femalepayamount)
-                }
-              />
-              <Text style={{ color: "#0099FF", right: 10 }}>
-                ₹
-              </Text>
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.flex,
+                  styles.inputView,
+                  styles.justifyContentBetween,
+                  { width: "100%" },
+
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
+              >
+                <TextInput
+                  style={styles.TextInput}
+                  placeholder="एक महिला का वेतन"
+                  keyboardType="numeric"
+                  placeholderTextColor={"#ccc"}
+                  value={femalepayamount}
+                  onChangeText={(femalepayamount) =>
+                    setFemalepayamount(femalepayamount)
+                  }
+                />
+                <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
+              </View>
+              {!!errors.femalepayamount && (
+                <Text style={styles.error}>{errors.malepayamount}</Text>
+              )}
             </View>
           </View>
 
@@ -509,10 +617,12 @@ export default function SahayakForm({ navigation }) {
             style={[
               styles.inputView,
               styles.flex,
-             styles.justifyContentBetween
+              styles.justifyContentBetween,
             ]}
           >
-            <Text style={{ paddingLeft: 10, color:'#ccc' }}>दिनों की संख्या</Text>
+            <Text style={{ paddingLeft: 10, color: "#ccc" }}>
+              दिनों की संख्या
+            </Text>
             <View style={{ flexDirection: "row" }}>
               <Text style={{ color: "#0099FF", marginTop: 14, right: 10 }}>
                 {days}
@@ -524,7 +634,7 @@ export default function SahayakForm({ navigation }) {
                 selectedValue={days}
                 onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
               >
-                <Picker.Item label="1-5" value="1-5" enabled={false}/>
+                <Picker.Item label="1-5" value="1-5" enabled={false} />
                 {daysCount.map((item) => (
                   <Picker.Item
                     label={item.toString()}
@@ -535,12 +645,13 @@ export default function SahayakForm({ navigation }) {
               </Picker>
             </View>
           </View>
+          {!!errors.days && <Text style={styles.error}>{errors.days}</Text>}
 
           <View
             style={[
               styles.inputView,
-             styles.flex,
-             styles.justifyContentBetween
+              styles.flex,
+              styles.justifyContentBetween,
             ]}
           >
             <TextInput
@@ -548,18 +659,26 @@ export default function SahayakForm({ navigation }) {
               placeholder="वेतन "
               keyboardType="numeric"
               placeholderTextColor={"#ccc"}
-            
             />
-            <Text style={{ color: "#0099FF", right: 10 }}>
-              ₹ {total}
-            </Text>
+            <Text style={{ color: "#0099FF", right: 10 }}>₹ {total}</Text>
           </View>
-
           <TouchableOpacity
-          onPress={() => {sahayakBooking()}}
-            // onPress={() => sahayakBooking()}
+            onPress={() => {
+              if (validate()) {
+                sahayakBooking();
+              }
+            }}
             style={styles.loginBtn}
           >
+            {/* <TouchableOpacity
+          onPress={() => {
+            
+           if(validate() {
+            sahayakBooking();
+           })}}
+            // onPress={() => sahayakBooking()}
+            style={styles.loginBtn}
+          > */}
             <Text style={[styles.loginText, { color: "#fff" }]}>
               बुकिंग करें
             </Text>
@@ -609,7 +728,7 @@ const styles = StyleSheet.create({
   },
 
   loginBtn: {
-    width: "85%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
@@ -627,7 +746,7 @@ const styles = StyleSheet.create({
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-    width: "85%",
+    width: "100%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -645,7 +764,7 @@ const styles = StyleSheet.create({
   TaxView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-    width: "39%",
+    width: "50%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -654,7 +773,7 @@ const styles = StyleSheet.create({
   BhumiView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-    width: "39%",
+    width: "50%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -663,7 +782,7 @@ const styles = StyleSheet.create({
   DoubleView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-    width: "46%",
+    width: "50%",
     height: 48,
     marginTop: 10,
     borderWidth: 1,
@@ -694,5 +813,9 @@ const styles = StyleSheet.create({
   },
   justifyContentBetween: {
     justifyContent: "space-between",
+  },
+  error: {
+    color: "red",
+    fontSize: 13,
   },
 });
