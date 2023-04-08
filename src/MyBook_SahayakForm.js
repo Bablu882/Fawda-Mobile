@@ -14,6 +14,7 @@ import {
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Toast from 'react-native-simple-toast';
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -221,6 +222,69 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   useEffect(() => {
     RatingApi();
   }, []);
+
+
+  const cancel = async() => {
+
+    let params = {};
+    if (item.status === "Accepted") {
+      params = {
+        job_id :item?.id ,
+      job_number : item?.job_number,
+      booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment"
+    }
+  } else if (item.status === "Pending") {
+    params = {
+      job_id :item?.id ,
+      job_number : item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled"
+    }
+  }
+
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      // setStatus(data.status);
+      Toast.show("Cancelled", Toast.LONG);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const Rejected = async() => {
+    let params = {
+      booking_id: item?.booking_id,
+      count_male: totalMaleAccepted,
+      count_female: totalFemaleAccepted,
+      status: "Rejected",
+    }
+
+    console.log(params , 'hjdsnjnjdsl');
+
+    try {
+      const response = await service.post("/api/rejected/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      console.log(data , "sds");
+      Toast.show('Rejected', Toast.LONG);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
        <View>
@@ -897,7 +961,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               </>
             ) : null)}
 
-          <TouchableOpacity style={styles.loginBtn}>
+          <TouchableOpacity style={styles.loginBtn}
+          onPress={() => {usertype === "Grahak" ? cancel() : Rejected()}}
+          >
             <Text style={[styles.loginText, { color: "#fff" }]}>रद्द करें</Text>
           </TouchableOpacity>
         </View>

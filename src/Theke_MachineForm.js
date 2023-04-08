@@ -194,40 +194,66 @@ function Theke_MachineForm({ navigation, route }) {
   }, []);
 
   const cancel = async() => {
-    
-      let params = {};
-      if (item.status === "Accepted") {
-        params = {
-          job_id :item?.id ,
-        // job_number : item?.job_number,
-        booking_id: item?.booking_id,
-        status: status
-      }
-    } else if (item.status === "Pending") {
+
+    let params = {};
+    if (item.status === "Accepted") {
       params = {
         job_id :item?.id ,
-        job_number : item?.job_number,
-        // booking_id: item?.booking_id,
-        status: status
-      }
-    } 
+       job_number : item?.job_number,
+      booking_id: item?.booking_id,
+      status: "Cancelled"
+    }
+  } else if (item.status === "Pending") {
+    params = {
+      job_id :item?.id ,
+      job_number : item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled"
+    }
+  }
+
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      // setStatus(data.status);
+      Toast.show("Cancelled", Toast.LONG);
      
-      try {
-        const response = await service.post("/api/cancel/", params, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token?.access}`,
-          },
-        });
-        console.log(token?.access, "token");
-        const data = response?.data;
-        // setStatus(data.status);
-        Toast.show(JSON.stringify(data.status), Toast.LONG);
-        console.log("fjfjf", data);
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    };
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const Rejected = async() => {
+    let params = {
+      booking_id: item?.booking_id,
+      status: "Rejected",
+    }
+
+    console.log(params , 'hjdsnjnjdsl');
+
+    try {
+      const response = await service.post("/api/rejected/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      console.log(data , "sds");
+      Toast.show('Rejected', Toast.LONG);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
     
   
   return (
@@ -630,7 +656,7 @@ function Theke_MachineForm({ navigation, route }) {
 
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
-            onPress={() => cancel()}
+            onPress={() => {usertype === "Grahak" ? cancel() : Rejected()}}
             style={{
               backgroundColor: "#D9D9D9",
               alignSelf: "center",

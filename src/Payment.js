@@ -138,7 +138,7 @@ export default function Payment({ route, navigation }) {
             </View>
           </View>
         </View>
-        <View
+        {/* <View
           style={{
             display: "flex",
             flexDirection: "row",
@@ -158,7 +158,7 @@ export default function Payment({ route, navigation }) {
               चालान डाउनलोड करें
             </Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <TouchableOpacity style={styles.BhuktanBtn} onPress={paymentStatus}>
