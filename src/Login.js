@@ -47,8 +47,8 @@ export default function Login({ navigation }) {
       });
       const loginResponse = response.data;
       console.log("login response:", loginResponse);
-      if (loginResponse?.token) {
-        dispatch(setToken(loginResponse?.token));
+      if (loginResponse) {
+        // dispatch(setToken(loginResponse?.token));
         Toast.show(JSON.stringify(loginResponse.otp), Toast.LONG);
         navigation.replace("Verification", {
           user_type: loginResponse.user_type,

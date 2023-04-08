@@ -77,7 +77,7 @@ function Theke_MachineForm({ navigation, route }) {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -119,7 +119,7 @@ function Theke_MachineForm({ navigation, route }) {
       const response = await service.post("/api/edit_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");
@@ -145,7 +145,7 @@ function Theke_MachineForm({ navigation, route }) {
       const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -216,7 +216,7 @@ function Theke_MachineForm({ navigation, route }) {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");
@@ -242,7 +242,7 @@ function Theke_MachineForm({ navigation, route }) {
       const response = await service.post("/api/rejected/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,6 +23,7 @@ export default function MyBooking({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
   const token = useSelector(selectToken);
   const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
@@ -31,11 +33,13 @@ export default function MyBooking({ navigation, route }) {
   const [myjob, setMyjob] = useState({});
   //=====api integration of MyBooking======//
   const booking = async () => {
+    setIsLoading(true); // set isLoading to true when the function starts
+    setRefreshing(true);
     try {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response.data;
@@ -44,6 +48,7 @@ export default function MyBooking({ navigation, route }) {
       setMachineBooking(data?.machine_malik_booking_details);
       setMachinePending(data?.machine_malik_pending_booking_details);
       setIsLoading(false);
+      setRefreshing(false);
       console.log("data:::", data);
     } catch (error) {
       console.log("Error:", error);
@@ -52,23 +57,31 @@ export default function MyBooking({ navigation, route }) {
 
   const Myjobs = async () => {
     try {
-      setIsLoading(true); // set isLoading to true when the function starts
-      const response = await service.get("/api/myjobs/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
-        },
-      });
-      const data = response.data;
-      setMyjob(data?.data);
-      console.log("data:====::", data);
+    setIsLoading(true); // set isLoading to true when the function starts
+    setRefreshing(true); // set refreshing to true when the function starts
+    const response = await service.get("/api/myjobs/", {
+    headers: {
+    "Content-Type": "application/json",
+    'Authorization': `Bearer ${token}`
+    },
+    });
+    const data = response.data;
+    setMyjob(data?.data);
+    console.log("data:====::", data);
     } catch (error) {
-      console.log("Error:", error);
+    console.log("Error:", error);
     } finally {
-      setIsLoading(false); // set isLoading to false when the function completes
+    setIsLoading(false); // set isLoading to false when the function completes
+    setRefreshing(false); // set refreshing to false when the function completes
     }
-  };
+    };
 
+    const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      Myjobs().then(() => {
+      setRefreshing(false);
+      });
+      }, []);
   useEffect(() => {
     booking(), Myjobs();
   }, []);
@@ -81,7 +94,17 @@ export default function MyBooking({ navigation, route }) {
       </View>
       {isLoading && <ActivityIndicator size="small" color="#black" />}
       {!isLoading && (
-        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <ScrollView
+horizontal={false}
+showsVerticalScrollIndicator={false}
+refreshControl={
+<RefreshControl
+refreshing={refreshing}
+onRefresh={onRefresh}
+// Myjobs={Myjobs}
+/>
+}
+>
           {/* {usertype && usertype === "Grahak" && (
         
         )} */}

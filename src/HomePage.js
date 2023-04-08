@@ -36,7 +36,7 @@ export default function Homepage({ navigation, route }) {
       const response = await service.get("/api/nearjob/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response.data;

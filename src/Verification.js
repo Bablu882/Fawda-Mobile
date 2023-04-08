@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectToken, setUserType } from "../slices/authSlice";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
 
-
 export default function Verification({ navigation, route }) {
   const { user_type } = route?.params??{};
   // console.log("hddjdj", user_type);
@@ -34,6 +33,7 @@ export default function Verification({ navigation, route }) {
         {
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
         }
       );
@@ -41,6 +41,8 @@ export default function Verification({ navigation, route }) {
       const verifyData = verifyResponse?.data;
       console.log("verifyData", verifyData);
       // Check if verification was successful
+      dispatch(setToken(verifyData?.token));
+      console.log('token',verifyData?.token)
       if (verifyData?.verified) {
         // Show success message
         Toast.show("Login successful", Toast.SHORT);

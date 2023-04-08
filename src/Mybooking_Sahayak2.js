@@ -45,7 +45,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -94,7 +94,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/accept_individuals/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -120,7 +120,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -142,7 +142,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -170,7 +170,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");

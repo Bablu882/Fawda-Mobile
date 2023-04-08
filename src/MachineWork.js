@@ -73,7 +73,7 @@ export default function MachineWork({ navigation, route }) {
       const response = await service.post("/api/edit_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       let data = response.data;
@@ -102,7 +102,7 @@ export default function MachineWork({ navigation, route }) {
       const response = await service.post("/api/accept_machine/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -128,7 +128,7 @@ console.log('dfjddjdjd', params)
       const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -198,7 +198,7 @@ console.log('dfjddjdjd', params)
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");
@@ -223,7 +223,7 @@ console.log('dfjddjdjd', params)
       const response = await service.post("/api/rejected/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");

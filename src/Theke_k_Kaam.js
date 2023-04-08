@@ -28,7 +28,7 @@ const acceptThekha = async () => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       }
     );

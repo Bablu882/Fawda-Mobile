@@ -51,7 +51,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -96,7 +96,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response.data;
@@ -116,7 +116,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -139,7 +139,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -161,7 +161,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -188,7 +188,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");
