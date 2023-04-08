@@ -15,6 +15,7 @@ import BottomTab from "../Component/BottomTab";
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { selectToken, selectUserType } from "../slices/authSlice";
+import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 const CustomComponent = ({ label, value }) => {
@@ -173,6 +174,67 @@ console.log('dfjddjdjd', params)
   useEffect(() => {
     RatingApi();
   }, []);
+
+  const cancel = async() => {
+
+    let params = {};
+    if (item.status === "Accepted") {
+      params = {
+        job_id :item?.id ,
+      job_number : item?.job_number,
+      booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment"
+    }
+  } else if (item.status === "Pending") {
+    params = {
+      job_id :item?.id ,
+      job_number : item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled"
+    }
+  }
+
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      // setStatus(data.status);
+      Toast.show("Cancelled", Toast.LONG);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const Rejected = async() => {
+    let params = {
+      booking_id: item?.booking_id,
+      status: "Rejected",
+    }
+
+    console.log(params , 'hjdsnjnjdsl');
+
+    try {
+      const response = await service.post("/api/rejected/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      console.log(data , "sds");
+      Toast.show('Rejected', Toast.LONG);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
 
   return (
     <SafeAreaView
@@ -636,7 +698,7 @@ console.log('dfjddjdjd', params)
         )}
         <View style={{ marginTop: "auto", padding: 5 }}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => {usertype === "Grahak" ? cancel() : Rejected()}}
             style={{
               backgroundColor: "#D9D9D9",
               alignSelf: "center",

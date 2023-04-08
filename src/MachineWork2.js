@@ -15,8 +15,9 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
+import Toast from "react-native-simple-toast";
 import { Picker } from "@react-native-picker/picker";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ function MachineWork2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff",item,  data, payment_status);
+  console.log("fjkfkfkff", item, data, payment_status);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
@@ -72,16 +73,16 @@ function MachineWork2({ navigation, route }) {
     // else if (index >= 4 && index < 9) newColors[index] = "yellow";
     // else if (index >= 9) newColors[index] = "green";
     // setColors(newColors);
-   
   };
 
   const renderButton = (index) => {
-    const backgroundColor = index <= selectedButtonIndex ? 'red' : 'transparent';
-    const iconName = index <= selectedButtonIndex ? 'star' :'star-o'
+    const backgroundColor =
+      index <= selectedButtonIndex ? "red" : "transparent";
+    const iconName = index <= selectedButtonIndex ? "star" : "star-o";
     return (
       <TouchableOpacity key={index} onPress={() => handleClick(index)}>
         <View style={[styles.button]}>
-      <FontAwesome name={iconName} size={30} color="#e6b400" /> 
+          <FontAwesome name={iconName} size={30} color="#e6b400" />
         </View>
       </TouchableOpacity>
     );
@@ -170,6 +171,33 @@ function MachineWork2({ navigation, route }) {
     }
   };
 
+  const cancel = async () => {
+    let params = {};
+    if (payment_status === "success") {
+      params = {
+        job_id: item?.id,
+        job_number: item?.job_number,
+        booking_id: item?.booking_id,
+        status: "Cancelled-After-Payment",
+      };
+    }
+    try {
+      const response = await service.post("/api/cancel/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.access}`,
+        },
+      });
+      console.log(token?.access, "token");
+      const data = response?.data;
+      // setStatus(data.status);
+      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      console.log("fjfjf", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -196,7 +224,6 @@ function MachineWork2({ navigation, route }) {
             ]}
           >
             <Text style={[styles.TextInput]}>{item?.machine_malik_name}</Text>
-            
           </View>
 
           <View
@@ -287,7 +314,7 @@ function MachineWork2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {status.status === "Ongoing" ? (
+              {status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -300,7 +327,7 @@ function MachineWork2({ navigation, route }) {
                   जारी है
                   {console.log("")}
                 </Text>
-              ) : status.status === "Completed" ? (
+              ) : status === "Completed" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -330,10 +357,9 @@ function MachineWork2({ navigation, route }) {
             </View>
           </View>
 
-            
-            {status.status ===  "Completed" ?
+          {status.status === "Completed" ? (
             ""
-            :
+          ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
                 <Text
@@ -346,12 +372,9 @@ function MachineWork2({ navigation, route }) {
                     backgroundColor: "#fff",
                   }}
                 >
-                  मशीन मालिक 
+                  मशीन मालिक
                 </Text>
-                <Text
-                  style={styles.TextInput}
-                  
-                >{item?.machine_malik_name}</Text>
+                <Text style={styles.TextInput}>{item?.machine_malik_name}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -368,9 +391,9 @@ function MachineWork2({ navigation, route }) {
                 >
                   गाँव
                 </Text>
-                <Text
-                  style={styles.TextInput}
-                  >{item?.machine_malik_village}</Text>
+                <Text style={styles.TextInput}>
+                  {item?.machine_malik_village}
+                </Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
@@ -387,39 +410,40 @@ function MachineWork2({ navigation, route }) {
                 >
                   मोबाइल नंबर
                 </Text>
-                <Text
-                  style={styles.TextInput}
-                  >{item?.machine_malik_mobile_no}</Text>
+                <Text style={styles.TextInput}>
+                  {item?.machine_malik_mobile_no}
+                </Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
-              </>
-              
-              
-}
-            
-   
-        {  status.status === "Completed" ?
-        <>
-          <View
-            style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-          >
-              {[...Array(5).keys()].map(renderButton)}
-              
-          </View>
+            </>
+          )}
 
-          <View
-            style={{ height: 100, borderWidth: 1, width: "75%", marginTop: 20 }}
-          >
-            <TextInput
-              placeholder="comment"
-              onChangeText={setComment}
-              value={comments}
-            />
-          </View> 
-          </>
-          :
-          ""
-}
+          {status.status === "Completed" ? (
+            <>
+              <View
+                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
+              >
+                {[...Array(5).keys()].map(renderButton)}
+              </View>
+
+              <View
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  width: "75%",
+                  marginTop: 20,
+                }}
+              >
+                <TextInput
+                  placeholder="comment"
+                  onChangeText={setComment}
+                  value={comments}
+                />
+              </View>
+            </>
+          ) : (
+            ""
+          )}
           {status.status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
@@ -430,7 +454,10 @@ function MachineWork2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           ) : status.status === "Completed" ? (
-            <TouchableOpacity style={styles.BhuktanBtn} onPress={() => RatingApi()}>
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => RatingApi()}
+            >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           ) : (
@@ -443,14 +470,11 @@ function MachineWork2({ navigation, route }) {
               </Text>
             </TouchableOpacity>
           )}
-         
 
-         {status.status === "Ongoing" || "Completed" ? 
-    
-         "" 
-         :
-          <View style={{ marginTop: "auto", padding: 5 }}>
+          {status.status === "Accepted" ? (
+            <View style={{ marginTop: "auto", padding: 5 }}>
             <TouchableOpacity
+              onPress={() => cancel()}
               style={{
                 backgroundColor: "#D9D9D9",
                 alignSelf: "center",
@@ -460,11 +484,11 @@ function MachineWork2({ navigation, route }) {
               }}
             >
               <Text style={{ textAlign: "center", color: "#fff" }}>
-                रद्द करें{" "}
+                रद्द करें
               </Text>
             </TouchableOpacity>
           </View>
-         }
+          ) :null}
         </View>
       </ScrollView>
     </SafeAreaView>

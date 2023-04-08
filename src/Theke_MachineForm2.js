@@ -176,13 +176,13 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const cancel = async () => {
     let params = {};
-    // if (payment_status === "success") {
+    if (payment_status === "success") {
     params = {
       job_id: item?.id,
       job_number: item?.job_number,
       booking_id: item?.booking_id,
-      status: status,
-      // }
+      status: "Cancelled-After-Payment",
+      }
     };
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -193,8 +193,8 @@ function Theke_MachineForm2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      setStatus(data.status);
-      // Toast.show(JSON.stringify(data.status), Toast.LONG);s
+      // setStatus(data.status);
+      Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -325,7 +325,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {status.status === "Ongoing" ? (
+              {status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -338,7 +338,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   जारी है
                   {console.log("")}
                 </Text>
-              ) : status.status === "Completed" ? (
+              ) : status === "Completed" ? (
                 <Text
                   style={{
                     textAlign: "center",

@@ -15,6 +15,7 @@ import { selectToken } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
+import Toast from "react-native-simple-toast";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function Mybooking_Sahayak2({ navigation, route }) {
@@ -157,13 +158,13 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const cancel = async() => {
     
     let params = {};
-    // if (payment_status === "success") {
+    if (payment_status === "success") {
       params = {
         job_id :item?.id ,
       job_number : item?.job_number,
       booking_id: item?.booking_id,
-      // status: status
-    // }
+      status: "Cancelled-After-Payment"
+    }
   } 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -174,8 +175,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      setStatus(data.status);
-      // Toast.show(JSON.stringify(data.status), Toast.LONG);s
+      // setStatus(data.status);
+      Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -386,7 +387,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     जारी है
                     {console.log("")}
                   </Text>
-                ) : status.status === "Completed" ? (
+                ) : status === "Completed" ? (
                   <Text
                     style={{
                       textAlign: "center",
