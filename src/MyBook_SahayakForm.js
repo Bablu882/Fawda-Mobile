@@ -75,7 +75,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       const response = await service.post("/api/accept_individuals/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -176,7 +176,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       const data = response?.data;
@@ -247,7 +247,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");
@@ -274,7 +274,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       const response = await service.post("/api/rejected/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+          'Authorization': `Bearer ${token}`
         },
       });
       console.log(token?.access, "token");

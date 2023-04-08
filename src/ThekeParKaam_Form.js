@@ -194,7 +194,7 @@ export default function ThekeParKaam_Form({ navigation }) {
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+          'Authorization': `Bearer ${token}`
         },
       });
 

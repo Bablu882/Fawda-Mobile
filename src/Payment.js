@@ -36,7 +36,7 @@ export default function Payment({ route, navigation }) {
       const response = await service.post("/api/payment_test/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token?.access}`,
+           'Authorization': `Bearer ${token}`
         },
       });
 

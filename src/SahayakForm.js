@@ -261,7 +261,7 @@ export default function SahayakForm({ navigation }) {
       const response = await service.post("/api/post_individuals/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+          'Authorization': `Bearer ${token}`
         },
       });
 
