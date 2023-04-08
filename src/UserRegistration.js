@@ -6,7 +6,6 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  //   RadioButton
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
@@ -19,16 +18,13 @@ import { RadioButton } from "react-native-paper";
 
 import * as Location from "expo-location";
 
-
-
 export default function UserRegistration({ navigation, route }) {
-  const { user  } = route.params;
-  console.log("fnkfjk", user);
+  const user = route?.params?.user;
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
-  const [phoneno, setphoneno] = useState("");
+  const [phone, setphone] = useState(route?.params?.phone || '');
   const [village, setVillage] = useState("");
   const [mohalla, setMohalla] = useState("");
   const [state, setState] = useState([]);
@@ -40,7 +36,7 @@ export default function UserRegistration({ navigation, route }) {
   const [errors, setErrors] = useState({
     name: "",
     gender: "",
-    phoneno: "",
+    phone: "",
     mohalla: "",
     village: "",
     state: "",
@@ -61,7 +57,7 @@ export default function UserRegistration({ navigation, route }) {
     let errorMessages = {
       name: "",
       gender: "",
-      phoneno: "",
+      phone: "",
       mohalla: "",
       village: "",
       state: "",
@@ -80,11 +76,11 @@ export default function UserRegistration({ navigation, route }) {
       errorMessages.gender = "Please select your gender";
       valid = false;
     }
-    if (phoneno.trim() === "") {
-      errorMessages.phoneno = "Please enter your phone number";
+    if (phone.trim() === "") {
+      errorMessages.phone = "Please enter your phone number";
       valid = false;
-    } else if (phoneno.trim().length < 10) {
-      errorMessages.phoneno = "Please enter a valid phone number";
+    } else if (phone.trim().length < 10) {
+      errorMessages.phone = "Please enter a valid phone number";
       valid = false;
     }
     if (mohalla.trim() === "") {
@@ -99,7 +95,7 @@ export default function UserRegistration({ navigation, route }) {
       errorMessages.state = "Please select your state";
       valid = false;
     }
-  
+
     if (selectedDistrict.trim() === "") {
       errorMessages.district = "Please select your district";
       valid = false;
@@ -132,7 +128,7 @@ export default function UserRegistration({ navigation, route }) {
       const params = {
         name,
         gender,
-        phone:phoneno,
+        phone: phone,
         village,
         mohalla,
         state: selectedState,
@@ -140,7 +136,7 @@ export default function UserRegistration({ navigation, route }) {
         user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
-        device_id: '74747474747'
+        device_id: "74747474747",
       };
       console.log("registerparams", params);
 
@@ -239,7 +235,13 @@ export default function UserRegistration({ navigation, route }) {
 
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
-          {route.params.user}
+          {user === "Grahak"
+            ? "ग्राहक रजिस्ट्रेशन"
+            : user === "Sahayak"
+            ? "सहायक रजिस्ट्रेशन"
+            : user === "MachineMalik"
+            ? "मशीन मालिक रजिस्ट्रेशन"
+            : null}
         </Text>
       </View>
 
@@ -312,11 +314,13 @@ export default function UserRegistration({ navigation, route }) {
             maxLength={10}
             placeholder=""
             placeholderTextColor={"#848484"}
-            onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
-            // defaultValue={email}
-            value={phoneno}
+            onChangeText={(phone) => setphone(phone, "phone")}
+            defaultValue={phone}
+          
           />
-          {!!errors.phoneno && <Text style={styles.error}>{errors.phoneno}</Text>}
+          {!!errors.phone && (
+            <Text style={styles.error}>{errors.phone}</Text>
+          )}
         </View>
 
         <View style={styles.flex}>
@@ -393,7 +397,9 @@ export default function UserRegistration({ navigation, route }) {
                 />
               ))}
             </Picker>
-            {!!errors.district && <Text style={styles.error}>{errors.district}</Text>}
+            {!!errors.district && (
+              <Text style={styles.error}>{errors.district}</Text>
+            )}
             {/* <Picker
               selectedValue={selectedDistrict}
               onValueChange={(itemValue, itemIndex) =>
@@ -527,4 +533,3 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
-

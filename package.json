@@ -36,6 +36,7 @@
     "react-native": "^0.70.5",
     "react-native-calendar-picker": "^7.1.4",
     "react-native-datepicker": "^1.7.2",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modern-datepicker": "^1.0.0-beta.91",
     "react-native-paper": "^5.4.1",
     "react-native-root-toast": "^3.4.1",

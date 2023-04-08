@@ -125,7 +125,7 @@ export default function BottomTab() {
       ) : (
         <>
           <Tab.Screen
-            name="MyNaukariStack"
+            name="MyBookingStack"
             component={MyBookingStack}
             options={{
               tabBarIcon: ({ focused, color, size }) => (

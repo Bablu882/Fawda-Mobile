@@ -46,9 +46,18 @@ export default function MachineBooking({ navigation }) {
   const [totalAmount, setTotalAmounts] = useState("");
   const [mode, setMode] = useState("date");
   const [selectedItem, setSelectedItem] = useState("");
-
   const [other, setOther] = useState("");
   const [sowing, setSowing] = useState([]);
+  const [errors, setErrors] = useState({
+    showDate: "",
+    time: "",
+    // description: "",
+    landType: "",
+    landArea: "",
+    totalAmount: "",
+    machiness: "",
+    workType: "",
+  });
   const pickerRef = useRef();
   var isTimeSelected = false;
   function open() {
@@ -214,12 +223,10 @@ export default function MachineBooking({ navigation }) {
   };
 
   const Booking = async () => {
-    
     const datetime =
       moment(showDate).format("YYYY-MM-DD") +
       " " +
-      moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-     ;
+      moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
     let params = {
       datetime: datetime,
       work_type: selectedWorkType,
@@ -229,7 +236,7 @@ export default function MachineBooking({ navigation }) {
       land_area: landArea,
       total_amount_machine: totalAmount,
     };
- 
+
     service
       .post("/api/post_machine/", params, {
         headers: {
@@ -250,6 +257,70 @@ export default function MachineBooking({ navigation }) {
       });
   };
 
+  const validate = () => {
+    let valid = true;
+    let errorMessages = {
+      showDate: "",
+      time: "",
+
+      landType: "",
+      landArea: "",
+      totalAmount: "",
+      machiness: "",
+      workType: "",
+    };
+
+    if (showDate === "") {
+      errorMessages.showDate = "Please enter valid date";
+      valid = false;
+    }
+
+    if (time === "") {
+      errorMessages.time = "Please select valid time";
+      valid = false;
+    }
+    // if (description.trim() === "") {
+    //   errorMessages.description = "Please enter your description";
+    //   valid = false;
+    // } else if (!/^[a-zA-Z]+$/.test(description.trim())) {
+    //   errorMessages.description =
+    //     "Please enter a valid description (letters only)";
+    //   valid = false;
+    // }
+
+    if (landType.trim() === "") {
+      errorMessages.landType = "Please enter your land type";
+      valid = false;
+    }
+    
+
+    if (landArea.trim() === "") {
+      errorMessages.landArea = "Please select your land area";
+      valid = false;
+    }
+    // if (!selectedWorkType) {
+    //   errorMessages.workType = "Please select a work type";
+    //   valid = false;
+    // }
+    if (selectedWorkType.trim() === "") {
+      errorMessages.workType = "Please select your work Type";
+      valid = false;
+    }
+
+
+    if (selectedMachines.trim() === "") {
+      errorMessages.machiness = "Please select your Machines";
+      valid = false;
+    }
+    
+    if (totalAmount.trim() === "") {
+      errorMessages.totalAmount = "Please enter your amount";
+      valid = false;
+    }
+
+    setErrors(errorMessages);
+    return valid;
+  };
   useEffect(() => {
     if (selectedWorkType) {
       machinaryBooking(selectedWorkType);
@@ -272,7 +343,7 @@ export default function MachineBooking({ navigation }) {
         </Text>
       </View>
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <View style={{ marginHorizontal: 10 }}>
           <View
             style={[
               styles.dropdownGender,
@@ -286,18 +357,20 @@ export default function MachineBooking({ navigation }) {
             <Text
               style={{ color: selectedWorkType ? "#000" : "#ccc", left: 5 }}
             >
-              {selectedWorkType ? selectedWorkType : "-भूमि तैयार करना/काटना/बुआई-"}
+              {selectedWorkType
+                ? selectedWorkType
+                : "-भूमि तैयार करना/काटना/बुआई-"}
             </Text>
             <Picker
               style={{ width: 80 }}
               selectedValue={selectedWorkType}
               onValueChange={(itemValue, itemIndex) => {
                 setSelectedWorkType(itemValue);
-                console.log(itemValue);
                 machinaryBooking(itemValue);
               }}
+              required // Add required attribute
             >
-              <Picker.Item label="" value="" enabled={false} />
+              <Picker.Item label="-भूमि तैयार करना/काटना/बुआई-" value="" />
               {workType.map((item, index) => (
                 <Picker.Item
                   label={item.name}
@@ -307,6 +380,9 @@ export default function MachineBooking({ navigation }) {
               ))}
             </Picker>
           </View>
+          {!!errors.workType && (
+            <Text style={styles.error}>{errors.workType}</Text>
+          )}
           <View
             style={[
               styles.dropdownGender,
@@ -340,6 +416,9 @@ export default function MachineBooking({ navigation }) {
               ))}
             </Picker>
           </View>
+          {!!errors.machiness && (
+            <Text style={styles.error}>{errors.machiness}</Text>
+          )}
 
           {/* <View
             style={[
@@ -459,6 +538,9 @@ export default function MachineBooking({ navigation }) {
               />
             </TouchableOpacity>
           </View>
+          {!!errors.showDate && (
+            <Text style={styles.error}>{errors.showDate}</Text>
+          )}
 
           <View
             style={[
@@ -479,7 +561,7 @@ export default function MachineBooking({ navigation }) {
               style={{ width: 50 }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
-                }
+              }
             >
               {/* <Picker.Item enabled={false} label="-समय-" value="" /> */}
               {timings.map((item, index) => {
@@ -499,73 +581,80 @@ export default function MachineBooking({ navigation }) {
               })}
             </Picker>
           </View>
+          {!!errors.time && <Text style={styles.error}>{errors.time}</Text>}
 
-          <View style={{ flexDirection: "row" }}>
-            <View style={styles.dropdownGenders}>
-              <TextInput
-                style={{ flex: 1, alignItems: "center", paddingLeft: 10 }}
-                placeholder="भूमि क्षेत्र"
-                maxLength={2}
-                placeholderTextColor={"#ccc"}
-                keyboardType="numeric"
-                onChangeText={(landArea) => handleLandAreaChange(landArea)}
-                // defaultValue={email}
-                value={landArea}
-              />
-            </View>
-            <View
-              style={[
-                styles.dropdownGenders,
-                {
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                },
-              ]}
-            >
-              {/* <Text style={{ paddingLeft: 10 }}>किल्ला/बीघा </Text> */}
-              <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-                {landType ? landType : "किल्ला/बीघा"}
-              </Text>
-
-              <Picker
-                style={{ width: 20 }}
-                ref={pickerRef}
-                selectedValue={landType}
-                onValueChange={(itemValue, itemIndex) =>
-                  setLandTypes(itemValue)
-                }
+          <View style={{ flexDirection: "row", justifyContent:'space-between' }}>
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.inputView,
+                  { width: "100%" },
+                 
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
               >
-                <Picker.Item label="किल्ला/बीघा" value="" />
-                {landtypes.map((item) => (
-                  <Picker.Item
-                    label={item.name}
-                    value={item.name}
-                    key={item.id}
-                  />
-                ))}
-              </Picker>
+                <TextInput
+                  style={{ flex: 1, alignItems: "center", paddingLeft: 10 }}
+                  placeholder="भूमि क्षेत्र"
+                  maxLength={2}
+                  placeholderTextColor={"#ccc"}
+                  keyboardType="numeric"
+                  onChangeText={(landArea) => handleLandAreaChange(landArea)}
+                  // defaultValue={email}
+                  value={landArea}
+                />
+              </View>
+              {!!errors.landType && (
+                <Text style={styles.error}>{errors.landType}</Text>
+              )}
             </View>
+            <View style={{ maxWidth: "48%", width: "100%" }}>
+              <View
+                style={[
+                  styles.inputView,
+
+                  {
+                 
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  },
+
+                  // styles.flex,
+                  // styles.justifyContentBetween,
+                ]}
+              >
+                <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
+                  {landType ? landType : "किल्ला/बीघा"}
+                </Text>
+                <Picker
+                  style={{ width: 20 }}
+                  ref={pickerRef}
+                  selectedValue={landType}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setLandTypes(itemValue)
+                  }
+                >
+                  <Picker.Item label="किल्ला/बीघा" value="" />
+                  {landtypes.map((item) => (
+                    <Picker.Item
+                      label={item.name}
+                      value={item.name}
+                      key={item.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              {!!errors.landType && (
+                <Text style={styles.error}>{errors.landType}</Text>
+              )}
+            </View>
+            {/* <View style={styles.dropdownGenders}>
+            
+          
+            </View> */}
           </View>
-          {/* <View
-            style={[
-              styles.inputView,
-              {
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
-            <Text style={{ marginTop: 14, left: 10, color: "#ccc" }}>वेतन</Text>
-   
-            <TextInput
-              placeholderTextColor={"#ccc"}
-              value={totalAmount}
-              placeholder="₹0.00"
-              onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
-            />
-          </View> */}
 
           <View
             style={[
@@ -590,7 +679,18 @@ export default function MachineBooking({ navigation }) {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={() => Booking()} style={styles.loginBtn}>
+          {!!errors.totalAmount && (
+            <Text style={styles.error}>{errors.totalAmount}</Text>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              if (validate()) {
+                Booking();
+              }
+            }}
+            style={styles.loginBtn}
+          >
+            {/* <TouchableOpacity onPress={() => Booking()} style={styles.loginBtn}> */}
             <Text style={[styles.loginText, { color: "#fff" }]}>
               बुकिंग करें
             </Text>
@@ -627,7 +727,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+    width: "100%",
     height: 48,
     marginTop: 15,
     borderWidth: 1,
@@ -636,7 +736,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "38%",
+    width: "50%",
     marginHorizontal: 10,
     height: 48,
     marginTop: 15,
@@ -651,7 +751,7 @@ const styles = StyleSheet.create({
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+    width: "100%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -672,12 +772,16 @@ const styles = StyleSheet.create({
   },
 
   loginBtn: {
-    width: "85%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
     backgroundColor: "#0099FF",
+  },
+  error: {
+    color: "red",
+    fontSize: 13,
   },
 });
