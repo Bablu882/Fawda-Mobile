@@ -1,3 +1,4 @@
+
 import { useFocusEffect } from "@react-navigation/core";
 import {
   StyleSheet,
@@ -25,15 +26,14 @@ export default function Login({ navigation }) {
 
   // useEffect(() => {
   //   if (isLoggedIn) {
-  //     navigation.navigate("HomePage", );
+  //     navigation.navigate("HomePage");
   //   }
   // }, []);
-  
+
   const login = async () => {
     setLoading(true);
     const loginData = {
       phone: phone,
-      device_id: "74747474747",
     };
 
     console.log("login data:", loginData);
@@ -47,7 +47,7 @@ export default function Login({ navigation }) {
       });
       const loginResponse = response.data;
       console.log("login response:", loginResponse);
-      if (loginResponse) {
+      if (loginResponse?.success) {
         // dispatch(setToken(loginResponse?.token));
         Toast.show(JSON.stringify(loginResponse.otp), Toast.LONG);
         navigation.replace("Verification", {
@@ -74,10 +74,11 @@ export default function Login({ navigation }) {
       errors.phone = "फ़ोन नंबर आवश्यक है";
       setIsPhoneEmpty(true);
       isValid = false;
-    } else if (phone.length < 10) {
+    } else if (phone.length < 10 ||!/^[0-9]+$/.test(phone)) {
       errors.phone = "कृपया एक वैध फ़ोन नंबर लिखें";
       setIsPhoneEmpty(false);
       isValid = false;
+  
     } else {
       setIsPhoneEmpty(false);
     }
@@ -85,7 +86,6 @@ export default function Login({ navigation }) {
     setErrorMessages(errors);
     return isValid;
   };
-
 
   return (
     <View style={styles.container}>
@@ -134,6 +134,8 @@ export default function Login({ navigation }) {
             maxLength={10}
             placeholderTextColor="#000"
             onChangeText={(value) => {
+              // Remove any non-numeric characters from the input value
+              value = value.replace(/[^0-9]/g, "");
               setPhone(value);
               setIsPhoneEmpty(false);
             }}
@@ -152,7 +154,6 @@ export default function Login({ navigation }) {
           onPress={() => {
             if (handlePress()) {
               login();
-
             }
           }}
           style={styles.loginBtn}
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop:10,
+    marginTop: 10,
     backgroundColor: "#0099FF",
   },
   loginText: {

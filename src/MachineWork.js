@@ -285,11 +285,12 @@ console.log('dfjddjdjd', params)
               (usertype === "Sahayak" || usertype === "MachineMalik") && (
                 <View style={[styles.inputView, { height: 40 }]}>
                   <Text style={styles.label}>गाँव</Text>
-                  <TextInput
+                  <Text  style={[styles.TextInput,{color:'#848484'}]}>{item?.village}</Text>
+                  {/* <TextInput
                     style={styles.TextInput}
                     placeholderTextColor="#848484"
                     placeholder={item?.village}
-                  />
+                  /> */}
                 </View>
               )}
             <View
@@ -330,7 +331,7 @@ console.log('dfjddjdjd', params)
                     }}
                   >
                     {item?.land_area}
-                    {item?.land_type}
+                    {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
                   </Text>
                 </View>
               )}
@@ -364,7 +365,7 @@ console.log('dfjddjdjd', params)
                     }}
                   >
                     {item?.land_area}
-                    {item?.land_type}
+                    {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
                   </Text>
                 </View>
                 <View
@@ -392,7 +393,8 @@ console.log('dfjddjdjd', params)
                 </View>
               </View>
             )}
-            <View style={styles.flex}>
+
+            {item?.status == "Accepted"  ? <></> :     <View style={styles.flex}>
               <View style={{ width: "70%" }}>
                 <Text></Text>
               </View>
@@ -401,6 +403,7 @@ console.log('dfjddjdjd', params)
                   <TouchableOpacity
                     onPress={() => {
                       onEditPress();
+                      setEdit(true);
                     }}
                     style={{
                       backgroundColor: "#0099FF",
@@ -428,7 +431,8 @@ console.log('dfjddjdjd', params)
                   </TouchableOpacity>
                 </View>
               )}
-            </View>
+            </View>} 
+        
 
             {/* <View
             style={[
@@ -510,43 +514,44 @@ console.log('dfjddjdjd', params)
                   placeholder="काम की स्थिति"
                   placeholderTextColor={"#000"}
                 />
-                <View
-                  style={{
-                    width: "30%",
-                    height: 30,
-                    backgroundColor: "#44A347",
-                    marginRight: 10,
-                    marginTop: 8,
-                  }}
-                >
-                  {console.log("thekeperKam?.status", thekeperKam?.status)}
-                  <TouchableOpacity>
-                    <Text
+         <View
                       style={{
-                        textAlign: "center",
-                        marginTop: 5,
-                        color: "#fff",
-                        fontSize: 15,
-                        fontWeight: "600",
+                        width: "30%",
+                        marginRight: 10,
+                    
                       }}
                     >
-                      {item?.status}
-                    </Text>
-                    {/* {thekeperKam && (
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        marginTop: 5,
-                        color: "#fff",
-                        fontSize: 15,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {thekeperKam?.status}
-                    </Text>
-                  )} */}
-                  </TouchableOpacity>
-                </View>
+                      {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
+                      {item?.status === "Pending" ? (
+                        <TouchableOpacity style={{backgroundColor: "#44A347",height:30}}>
+                          <Text
+                            style={{
+                              textAlign: "center",
+                            lineHeight:30,
+                              color: "#fff",
+                              fontSize: 15,
+                              fontWeight: "600",
+                            }}
+                          >
+                            पेंडिंग
+                          </Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity style={{backgroundColor: "#0099FF",height:30}}>
+                          <Text
+                            style={{
+                              textAlign: "center",
+                              lineHeight:30,
+                              color: "#fff",
+                              fontSize: 15,
+                              fontWeight: "600",
+                            }}
+                          >
+                            स्वीकार
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
               </View>
               //    <View>
               //    <>
@@ -629,7 +634,7 @@ console.log('dfjddjdjd', params)
             ))}
 
           {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-          (item.status === "Accepted" ||
+          (
             item.status === "Booked" ||
             item.status === "Ongoing") ? (
             <>

@@ -237,11 +237,12 @@ export default function MachineBooking({ navigation }) {
       total_amount_machine: totalAmount,
     };
 
+
     service
       .post("/api/post_machine/", params, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token?.access,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {

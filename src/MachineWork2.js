@@ -51,7 +51,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -93,7 +93,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response.data;
@@ -113,7 +113,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -136,7 +136,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -158,7 +158,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -185,7 +185,7 @@ function MachineWork2({ navigation, route }) {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(token?.access, "token");
@@ -211,7 +211,9 @@ function MachineWork2({ navigation, route }) {
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {item?.job_type}
+          {item.job_type === "machine_malik"
+                              ? " मशीन का काम "
+                              : "मशीन का काम "}
           </Text>
           <View
             style={[
@@ -234,10 +236,10 @@ function MachineWork2({ navigation, route }) {
             ]}
           >
             <Text style={styles.TextInput}>
-              {moment(item?.date).format("l")}
+              {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment(item?.time).format("HH:mm")}
+            {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
 
@@ -257,7 +259,7 @@ function MachineWork2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                {item?.land_type}
+              {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
               </Text>
             </View>
             <View
@@ -418,31 +420,36 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-          {status.status === "Completed" ? (
-            <>
-              <View
-                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-              >
-                {[...Array(5).keys()].map(renderButton)}
+{status.status === "Completed" && (
+            <View
+              style={{
+                width: "90%",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <View style={{marginBottom:10}}>
+                <Text style={{textAlign:'center'}}>रेटिंग दें </Text>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  {[...Array(5).keys()].map(renderButton)}
+                </View>
               </View>
-
+              <Text>कोई सुझाव</Text>
               <View
                 style={{
                   height: 100,
                   borderWidth: 1,
-                  width: "75%",
+                  borderRadius: 10,
+                  width: "90%",
                   marginTop: 20,
+                  borderColor: "#0099FF",
                 }}
               >
-                <TextInput
-                  placeholder="comment"
-                  onChangeText={setComment}
-                  value={comments}
-                />
+                <TextInput onChangeText={setComment} value={comments} />
               </View>
-            </>
-          ) : (
-            ""
+            </View>
           )}
           {status.status === "Ongoing" ? (
             <TouchableOpacity
@@ -473,22 +480,22 @@ function MachineWork2({ navigation, route }) {
 
           {status.status === "Accepted" ? (
             <View style={{ marginTop: "auto", padding: 5 }}>
-            <TouchableOpacity
-              onPress={() => cancel()}
-              style={{
-                backgroundColor: "#D9D9D9",
-                alignSelf: "center",
-                paddingHorizontal: 50,
-                paddingVertical: 10,
-                borderRadius: 5,
-              }}
-            >
-              <Text style={{ textAlign: "center", color: "#fff" }}>
-                रद्द करें
-              </Text>
-            </TouchableOpacity>
-          </View>
-          ) :null}
+              <TouchableOpacity
+                onPress={() => cancel()}
+                style={{
+                  backgroundColor: "#D9D9D9",
+                  alignSelf: "center",
+                  paddingHorizontal: 50,
+                  paddingVertical: 10,
+                  borderRadius: 5,
+                }}
+              >
+                <Text style={{ textAlign: "center", color: "#fff" }}>
+                  रद्द करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>
