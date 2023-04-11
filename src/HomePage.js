@@ -44,7 +44,7 @@ export default function Homepage({ navigation, route }) {
     } catch (error) {
       console.log("Error:", error);
     } finally {
-      setIsLoading(false); // Hide loader after fetching data
+      setIsLoading(false); 
     }
   };
 

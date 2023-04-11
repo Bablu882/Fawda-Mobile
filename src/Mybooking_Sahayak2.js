@@ -45,7 +45,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -94,7 +94,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/accept_individuals/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -120,7 +120,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -142,7 +142,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -155,22 +155,21 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     }
   };
 
-  const cancel = async() => {
-    
+  const cancel = async () => {
     let params = {};
     if (payment_status === "success") {
       params = {
-        job_id :item?.id ,
-      job_number : item?.job_number,
-      booking_id: item?.booking_id,
-      status: "Cancelled-After-Payment"
+        job_id: item?.id,
+        job_number: item?.job_number,
+        booking_id: item?.booking_id,
+        status: "Cancelled-After-Payment",
+      };
     }
-  } 
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(token?.access, "token");
@@ -181,7 +180,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     } catch (error) {
       console.log("Error:", error);
     }
-  }
+  };
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -228,7 +227,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("HH:mm")}
+            {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
 
@@ -254,7 +253,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               />
               <Text style={{ marginRight: 8, color: "#0099FF" }}>
                 {item?.land_area}
-                {item?.land_type}
+                {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
               </Text>
             </View>
             <View
@@ -564,39 +563,23 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </>
           )}
 
-          {status.status === "Completed" ? (
-            <>
-              <Text>रेटिंग दें </Text>
-              <View
-                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-              >
-                {/* {Array.from((item, index) => <Text style={{color:'#333333'}}>{index}</Text>)}
-            {Array.from({ length: 10 }, (_, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  handleClick(index);
-                }}
-              >
-                <Text
-                  style={{
-                    backgroundColor: colors[index],
-                    padding: 10,
-                    
-                  }}
-                >
-                  
-                  {index + 1}
-                 
-                </Text>
-              </TouchableOpacity>
-            ))} */}
-
-                {[...Array(5).keys()].map(renderButton)}
+          {status.status === "Completed" && (
+            <View
+              style={{
+                width: "90%",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  {[...Array(5).keys()].map(renderButton)}
+                </View>
               </View>
-
               <Text>कोई सुझाव</Text>
-
               <View
                 style={{
                   height: 100,
@@ -609,9 +592,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               >
                 <TextInput onChangeText={setComment} value={comments} />
               </View>
-            </>
-          ) : (
-            ""
+            </View>
           )}
 
           {status.status === "Ongoing" ? (
@@ -641,7 +622,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-{status.status === "Ongoing" ||
+          {status.status === "Ongoing" ||
             ("Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
@@ -660,8 +641,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             ))}
-
-          
         </View>
       </ScrollView>
 

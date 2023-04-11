@@ -43,12 +43,12 @@ export default function Verification({ navigation, route }) {
       // Check if verification was successful
       dispatch(setToken(verifyData?.token));
       console.log('token',verifyData?.token)
-      if (verifyData?.verified) {
+      if (verifyData?.verified == true) {
         // Show success message
         Toast.show("Login successful", Toast.SHORT);
         // Dispatch user type and navigate to homepage
         dispatch(setUserType(user_type));
-        ("");
+      
         navigation.replace("HomePage");
       } else {
         // Show error message
@@ -60,6 +60,36 @@ export default function Verification({ navigation, route }) {
       Toast.show("Error verifying OTP", Toast.SHORT);
     }
   };
+
+  // const verify = () =>{
+  //  let params ={
+  //   otp,
+  //  } 
+  //  console.log('fhjhsdfjhf',params)
+
+
+  //  Service.post('/api/verify/', params,{
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Accept: "application/json",
+  //   },
+  //  }).then((res)=>{
+
+  //    let data = res?.data;
+  //    console.log('rtertr',data)
+  //    dispatch(setUserType(user_type));
+  //   if(data.verified == true){
+  //     console.log('fhjhsdfjhf',data.verified)
+      
+  //     navigation.navigate("HomePage");
+     
+  //   }else if(data?.status == 401){
+  //     navigation.navigate("Login");
+  //   }
+  //  }).catch((error)=>{
+  //   console.log('error', error)
+  //  })
+  // }
 
   // useEffect(() => {
   //   const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);

@@ -51,7 +51,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -96,7 +96,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response.data;
@@ -116,7 +116,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -139,7 +139,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -161,7 +161,7 @@ function Theke_MachineForm2({ navigation, route }) {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -177,18 +177,18 @@ function Theke_MachineForm2({ navigation, route }) {
   const cancel = async () => {
     let params = {};
     if (payment_status === "success") {
-    params = {
-      job_id: item?.id,
-      job_number: item?.job_number,
-      booking_id: item?.booking_id,
-      status: "Cancelled-After-Payment",
-      }
-    };
+      params = {
+        job_id: item?.id,
+        job_number: item?.job_number,
+        booking_id: item?.booking_id,
+        status: "Cancelled-After-Payment",
+      };
+    }
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(token?.access, "token");
@@ -268,7 +268,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                {item?.land_type}
+              {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
               </Text>
             </View>
             <View
@@ -438,15 +438,44 @@ function Theke_MachineForm2({ navigation, route }) {
                   //   error={input.name}
                   //   onFocus={() => handleError(null, "name")}
                 >
-                  {" "}
                   {item?.thekedar_mobile_no}
                 </Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
             </>
           )}
-
-          {status.status === "Completed" ? (
+          {status.status === "Completed" && (
+            <View
+              style={{
+                width: "90%",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <View style={{marginBottom:10}}>
+                <Text style={{textAlign:'center'}}>रेटिंग दें </Text>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  {[...Array(5).keys()].map(renderButton)}
+                </View>
+              </View>
+              <Text>कोई सुझाव</Text>
+              <View
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: "90%",
+                  marginTop: 20,
+                  borderColor: "#0099FF",
+                }}
+              >
+                <TextInput onChangeText={setComment} value={comments} />
+              </View>
+            </View>
+          )}
+          {/* {status.status === "Completed" ? (
             <>
               <View
                 style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
@@ -471,7 +500,7 @@ function Theke_MachineForm2({ navigation, route }) {
             </>
           ) : (
             ""
-          )}
+          )} */}
           {status.status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}

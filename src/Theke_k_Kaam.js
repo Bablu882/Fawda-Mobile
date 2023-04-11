@@ -77,11 +77,12 @@ export default function Theke_k_Kaam({ navigation, route }) {
             </View>
             <View style={[styles.inputView, { height: 40 }]}>
               <Text style={styles.label}>गाँव</Text>
-              <TextInput
+              <Text  style={[styles.TextInput,{color:'#848484'}]}>{thekejobs?.village}</Text>
+              {/* <TextInput
                 style={styles.TextInput}
                 placeholderTextColor="#848484"
                 placeholder={thekejobs?.village}
-              />
+              /> */}
             </View>
 
             <View
