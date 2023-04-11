@@ -86,6 +86,33 @@ export default function ContactUs({ navigation, route }) {
   useEffect(() => {
    detailList()
   }, [0]);
+
+  console.log(token , 'token');
+  const Logout = async() => {
+    try {
+      const response = await Service.post("/api/logout/", {
+        headers: {
+          "Content-Type" : "application/json",
+          'Authorization': `Bearer b4712bfa89ee5211f5a7a066997502ae76a90726`,
+        }
+      });
+  
+      const data = response.data;
+      console.log(data , "data response");
+      if(data?.success) {
+         navigation.replace("Login")
+      }
+      // console.log(phoneno, "checkhone");
+      // setAppVersion(data.app_version);
+      // setPrivacy(data.privacy_policy);
+      // setTermsCondition(data.client_info.terms_condition);
+      // setData(data)
+      // console.log(Data , "terms");  
+      
+    } catch (error) {
+      console.log("error" , error);
+    }
+  }
  
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -293,11 +320,9 @@ export default function ContactUs({ navigation, route }) {
             </View>
             <TouchableOpacity
               onPress={() => {
-                if (validate()) {
-                  RegisterServices();
-
+                Logout()
                   // navigation.navigate("Home")
-                }
+                
               }}
               style={styles.loginBtn}
             >
