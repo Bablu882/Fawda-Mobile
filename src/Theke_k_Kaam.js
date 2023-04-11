@@ -53,7 +53,7 @@ export default function Theke_k_Kaam({ navigation, route }) {
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>

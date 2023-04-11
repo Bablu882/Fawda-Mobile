@@ -25,99 +25,15 @@ export default function ContactUs({ navigation, route }) {
   // const { user  } = route.params;
   // console.log("fnkfjk", user);
   const token = useSelector(selectToken);
-  const [checked, setChecked] = React.useState("");
-  const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
   const [phoneno, setphoneno] = useState("");
-  const [village, setVillage] = useState("");
-  const [mohalla, setMohalla] = useState("");
-  const [state, setState] = useState([]);
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [district, setDistrict] = useState([]);
+  const [state, setState] = useState("");
+  // const [termsCondition , setTermsCondition] = useState("");
+  // const [privacy , setPrivacy] = useState("");
+  // const [appVersion , setAppVersion] = useState("");
+  const [Data , setData] = useState("")
   // const [location, setLocation] = useState({ latitude: "", longitude: "" });
 
-  const [errors, setErrors] = useState({
-    name: "",
-    gender: "",
-    phoneno: "",
-    mohalla: "",
-    village: "",
-    state: "",
-    district: "",
-  });
-  const dispatch = useDispatch();
-
-  const pickerRef = useRef();
-  function open() {
-    pickerRef.current.focus();
-  }
-  function close() {
-    pickerRef.current.blur();
-  }
-
-  const validate = () => {
-    let valid = true;
-    let errorMessages = {
-      name: "",
-      gender: "",
-      phoneno: "",
-      mohalla: "",
-      village: "",
-      state: "",
-      district: "",
-    };
-
-    if (name.trim() === "") {
-      errorMessages.name = "Please enter your name";
-      valid = false;
-    } else if (!/^[a-zA-Z]+$/.test(name.trim())) {
-      errorMessages.name = "Please enter a valid name (letters only)";
-      valid = false;
-    }
-
-    if (gender === "") {
-      errorMessages.gender = "Please select your gender";
-      valid = false;
-    }
-    if (phoneno.trim() === "") {
-      errorMessages.phoneno = "Please enter your phoneno number";
-      valid = false;
-    } else if (phoneno.trim().length < 10) {
-      errorMessages.phoneno = "Please enter a valid phoneno number";
-      valid = false;
-    }
-    if (mohalla.trim() === "") {
-      errorMessages.mohalla = "Please enter your mohalla";
-      valid = false;
-    }
-    // else if (!/^[a-zA-Z0-9\s]+$/.test(mohalla.trim())) {
-    //   errorMessages.mohalla = "Please enter a valid mohalla (alphanumeric characters and spaces only)";
-    //   valid = false;
-    // }
-
-    if (village.trim() === "") {
-      errorMessages.village = "Please enter your village";
-      valid = false;
-    }
-
-    setErrors(errorMessages);
-    return valid;
-  };
-
-  const handleGenderSelection = (value) => {
-    setGender(value);
-    setErrors({ ...errors, gender: "" });
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
-      // submit form here
-      console.log("Form submitted");
-    } else {
-      console.log("Form has errors");
-    }
-  };
+  
   function handleCallPress() {
     const url = `tel:${phoneno}`;
     Linking.canOpenURL(url)?.then(supported => {
@@ -139,107 +55,38 @@ export default function ContactUs({ navigation, route }) {
       setErrors({});
     }
   };
-  // const RegisterServices = async () => {
-  //   try {
-  //     const params = {
-  //       name,
-  //       gender,
-  //       phone:phoneno,
-  //       village,
-  //       mohalla,
-  //       state: selectedState,
-  //       district: selectedDistrict,
-  //       user_type: user,
-  //       latitude: location.latitude,
-  //       longitude: location.longitude,
-  //     };
-  //     console.log("registerparams", params);
 
-  //     const response = await Service.post("/api/register/", params, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const data = response?.data;
-  //     console.log("register", data);
 
-  //     if (data?.success) {
-  //       const token = data?.token;
-  //       dispatch(setToken(token));
-  //       Toast.show("Registration successful", Toast.SHORT);
-  //       Toast.show(JSON.stringify(data.otp), Toast.LONG);
-  //       console.log("fjfjfjf", data);
+ const detailList = async() => {
+  try {
+    const response = await Service.get("/api/client_user_info/", {
+      headers: {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`,
+      }
+    });
 
-  //       navigation.replace("Verification", { user_type: user });
-  //       console.log("djdjkd", user_type);
-  //     } else if (data?.error) {
-  //       Toast.show(data.error, Toast.SHORT);
-  //     } else {
-  //       Toast.show(
-  //         "Something went wrong. Please try again later.",
-  //         Toast.SHORT
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     Toast.show("Something went wrong. Please try again later.", Toast.SHORT);
-  //   }
-  // };
+    const data = response.data;
+    console.log(data , "data response");
+    setState(data.user_details);
+    setphoneno(data?.client_info?.phone_no)
+    console.log(phoneno, "checkhone");
+    // setAppVersion(data.app_version);
+    // setPrivacy(data.privacy_policy);
+    // setTermsCondition(data.client_info.terms_condition);
+    setData(data)
+    console.log(Data , "terms");  
+    
+  } catch (error) {
+    console.log("error" , error);
+  }
+};
 
-  const stateapi = async () => {
-    try {
-      const response = await Service.get("/api/states/", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = response.data;
-      console.log("data::", data);
-      setState(data);
-    } catch (error) {
-      console.log("Error:", error);
-      // Toast.show("Error Occurred. Please try again later.", Toast.SORT);
-    }
-  };
-
-  const districtapi = async (val) => {
-    const params = {
-      state: val,
-    };
-
-    try {
-      const response = await Service.post("/api/districts/", params, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const { data } = response;
-      console.log("data:", data);
-      setDistrict(data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+  
   useEffect(() => {
-    stateapi();
-    if (selectedState) {
-      districtapi(selectedState);
-    }
-  }, []);
-  // useEffect(() => {
-  //   (async () => {
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       console.log("Permission to access location was denied");
-  //       return;
-  //     }
-
-  //     let { coords } = await Location.getCurrentPositionAsync({});
-  //     setLocation(coords);
-  //     // console.log("locationlocation",location);
-  //   })();
-  // }, []);
+   detailList()
+  }, [0]);
+ 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -276,22 +123,21 @@ export default function ContactUs({ navigation, route }) {
             >
               <View style={[styles.inputView]}>
                 <Text style={styles.label}>फ़ोन:</Text>
-                <TextInput
+                <Text
                   style={[
                     styles.TextInput,
-                    { width: "90%", marginHorizontal: 10 },
+                    { width: "90%", marginHorizontal: 10, marginTop:3 },
                   ]}
-                  keyboardType="numeric"
-                  maxLength={10}
+               
                   placeholder=""
                   placeholderTextColor={"#848484"}
-                  onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
-                  // defaultValue={email}
-                  value={phoneno}
-                />
-                {!!errors.phoneno && (
+                  // onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
+                  // // defaultValue={email}
+                  // value={phoneno}
+                >{phoneno}</Text>
+                {/* {!!errors.phoneno && (
                   <Text style={styles.error}>{errors.phoneno}</Text>
-                )}
+                )} */}
               </View>
               <TouchableOpacity
               onPress={() => {handleCallPress()}}
@@ -330,143 +176,110 @@ export default function ContactUs({ navigation, route }) {
               >
                 नाम:
               </Text>
-              <TextInput
+              <Text
                 style={styles.TextInput}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-                onChangeText={(text) => setName(text, "name")}
-                // defaultValue={email}
-                value={name}
-                //   error={input.name}
-                //   onFocus={() => handleError(null, "name")}
-              />
-              {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
+                >{state.name}</Text>
+              {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
               <Text style={styles.label}>लिंग:</Text>
-              <TextInput
+              <Text
                 style={styles.TextInput}
-                keyboardType="numeric"
-                maxLength={10}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-                // onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
-                // // defaultValue={email}
-                // value={phoneno}
-              />
-              {!!errors.phoneno && (
+              >{state.gender}</Text>
+              {/* {!!errors.phoneno && (
                 <Text style={styles.error}>{errors.phoneno}</Text>
-              )}
+              )} */}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
               <Text style={styles.label}>फ़ोन:</Text>
-              <TextInput
+              <Text
                 style={styles.TextInput}
-                keyboardType="numeric"
-                maxLength={10}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-                onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
-                // defaultValue={email}
-                value={phoneno}
-              />
-              {!!errors.phoneno && (
+               >{state.phone}</Text>
+              {/* {!!errors.phoneno && (
                 <Text style={styles.error}>{errors.phoneno}</Text>
-              )}
+              )} */}
             </View>
 
             <View style={styles.flex}>
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>मोहल्ला</Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
                   placeholder=""
-                  placeholderTextColor={"#848484"}
-                  onChangeText={(text) => setMohalla(text)}
-                  // defaultValue={email}
-                  value={mohalla}
-                />
-                {!!errors.mohalla && (
+                  placeholderTextColor={"#848484"}  
+                >{state.mohalla}</Text>
+                {/* {!!errors.mohalla && (
                   <Text style={styles.error}>{errors.mohalla}</Text>
-                )}
+                )} */}
               </View>
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>गांव</Text>
-                <TextInput
+                <Text
                   style={styles.TextInput}
                   placeholder=""
                   placeholderTextColor={"#848484"}
-                  onChangeText={(text) => setVillage(text)}
-                  // defaultValue={email}
-                  value={village}
-                />
-                {!!errors.village && (
+              >{state.village}</Text>
+                {/* {!!errors.village && (
                   <Text style={styles.error}>{errors.village}</Text>
-                )}
+                )} */}
               </View>
             </View>
 
             <View style={styles.flex}>
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>राज्य</Text>
-                {/* <Picker
-                  selectedValue={selectedState}
-                  onValueChange={(itemValue, itemIndex) => {
-                    setSelectedState(itemValue);
-                    console.log("jnjdjdjdjd", itemValue);
-                    districtapi(itemValue);
-                  }}
-                >
-                  <Picker.Item
-                    label="राज्य"
-                    value=""
-                    enabled={false}
-                    style={{ color: "#ccc" }}
-                  />
-                  {state?.map((state) => (
-                    <Picker.Item
-                      key={state.id}
-                      label={state.name}
-                      value={state.name}
-                    />
-                  ))}
-                </Picker> */}
+                <Text style={styles.TextInput}>{state.state}</Text>
               </View>
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>जिला</Text>
-                {/* <Picker
-                  selectedValue={selectedDistrict}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedDistrict(itemValue)
-                  }
-                >
-                  {district?.map((district, index) => (
-                    <Picker.Item
-                      key={index}
-                      label={district.district}
-                      value={district.district}
-                    />
-                  ))}
-                </Picker> */}
+                <Text style={styles.TextInput}>{state.district}</Text>
           
               </View>
             </View>
             <View style={{paddingTop:30}}>
               <View style={styles.flexbetween}>
                 <Text>हमारे बारे में </Text>
+                <TouchableOpacity 
+                onPress={() => navigation.navigate("about_us" , {
+                  terms : Data,
+                })}
+                >
                 <Icon name="right" size={18} color="#0099FF" />
+                </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
                 <Text>नियम और शर्तें </Text>
+                <TouchableOpacity 
+                onPress={() => navigation.navigate("terms" , {
+                  terms : Data,
+                })}>
                 <Icon name="right" size={18} color="#0099FF" />
+                </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
                 <Text>प्राइवेसी नीति</Text>
+                <TouchableOpacity
+                onPress={() => navigation.navigate("privacy" , {
+                  terms : Data,
+                })}>
                 <Icon name="right" size={18} color="#0099FF" />
+                </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
                 <Text>वरजन</Text>
+                <TouchableOpacity
+                // onPress={() => navigation.navigate("version" , {
+                //   terms : Data,
+                // })}
+                >
                 <Icon name="right" size={18} color="#0099FF" />
+                </TouchableOpacity>
               </View>
               <View>
                 
