@@ -38,6 +38,9 @@ import MachineWork2 from "./src/MachineWork2";
 import ContactUs from "./src/ContactUs";
 import UserRegistration from "./src/UserRegistration";
 import MyBookingStack from "./navigations/MyBookingStack";
+import { Terms_Condition } from "./src/Terms&Condition";
+import { About_us } from "./src/AboutUs";
+import { Privacy_policy } from "./src/PrivacyPolicy";
 
 
 
@@ -82,6 +85,10 @@ export default function App() {
           <Stack.Screen name="MachineWork" component={MachineWork} />
           <Stack.Screen name="MachineWork2" component={MachineWork2} />
           <Stack.Screen name="ContactUs" component={ContactUs} />
+          <Stack.Screen name="terms" component={Terms_Condition} />
+          <Stack.Screen name="about_us" component={About_us} />
+          <Stack.Screen name="privacy" component={Privacy_policy} />
+          
 
          
         </Stack.Navigator>
