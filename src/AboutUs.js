@@ -11,7 +11,7 @@ export function About_us ({route, navigation}) {
         <>
         <View style={{ backgroundColor:"#fff", flex:1}}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
@@ -22,7 +22,7 @@ export function About_us ({route, navigation}) {
           हमारे बारे में 
           </Text>
         </View>
-        <ScrollView showsHorizontalScrollIndicator={false} >
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{paddingHorizontal:20, marginTop:20}}>
             <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.about_us}</Text>
         </View>

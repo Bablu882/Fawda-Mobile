@@ -4,14 +4,14 @@ import Icon from "react-native-vector-icons/AntDesign";
 
 
 
-export function Privacy_policy ({route, navigation}) {
+export function Privacy_policy ({route, navigation}) {  
     const {terms} = route?.params??{};
     console.log(terms?.client_info?.privacy_policy , "terms");
     return(
         <>
         <View style={{ backgroundColor:"#fff", flex:1}}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack("HomeTwo")}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
