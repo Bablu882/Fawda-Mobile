@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,7 +39,7 @@ export default function MyBooking({ navigation, route }) {
       const response = await service.get("api/my_booking_details/", {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response.data;
@@ -57,31 +57,31 @@ export default function MyBooking({ navigation, route }) {
 
   const Myjobs = async () => {
     try {
-    setIsLoading(true); // set isLoading to true when the function starts
-    setRefreshing(true); // set refreshing to true when the function starts
-    const response = await service.get("/api/myjobs/", {
-    headers: {
-    "Content-Type": "application/json",
-    'Authorization': `Bearer ${token}`
-    },
-    });
-    const data = response.data;
-    setMyjob(data?.data);
-    console.log("data:====::", data);
-    } catch (error) {
-    console.log("Error:", error);
-    } finally {
-    setIsLoading(false); // set isLoading to false when the function completes
-    setRefreshing(false); // set refreshing to false when the function completes
-    }
-    };
-
-    const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      Myjobs().then(() => {
-      setRefreshing(false);
+      setIsLoading(true); // set isLoading to true when the function starts
+      setRefreshing(true); // set refreshing to true when the function starts
+      const response = await service.get("/api/myjobs/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
-      }, []);
+      const data = response.data;
+      setMyjob(data?.data);
+      console.log("data:====::", data);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false); // set isLoading to false when the function completes
+      setRefreshing(false); // set refreshing to false when the function completes
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    Myjobs().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
   useEffect(() => {
     booking(), Myjobs();
   }, []);
@@ -95,16 +95,16 @@ export default function MyBooking({ navigation, route }) {
       {isLoading && <ActivityIndicator size="small" color="#black" />}
       {!isLoading && (
         <ScrollView
-horizontal={false}
-showsVerticalScrollIndicator={false}
-refreshControl={
-<RefreshControl
-refreshing={refreshing}
-onRefresh={onRefresh}
-// Myjobs={Myjobs}
-/>
-}
->
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              // Myjobs={Myjobs}
+            />
+          }
+        >
           {/* {usertype && usertype === "Grahak" && (
         
         )} */}
@@ -206,7 +206,7 @@ onRefresh={onRefresh}
                           </View>
                         </View>
                       ))}
-                    {sahaykBooking?.length > 0 &&
+                         {sahaykBooking?.length > 0 &&
                       sahaykBooking?.map((item) => (
                         <View
                           style={{
@@ -225,7 +225,7 @@ onRefresh={onRefresh}
                                 ? "ठेके पर काम"
                                 : ""}
                             </Text>
-                            
+
                             <Text style={{ color: "black" }}>
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
@@ -239,56 +239,73 @@ onRefresh={onRefresh}
                               marginTop: 10,
                             }}
                           >
-                            <TouchableOpacity
-                              onPress={() => {
-                                if (
-                                  item.job_type === "individuals_sahayak" &&
-                                  item.status === "Accepted"
-                                ) {
-                                  navigation.navigate("MyBook_SahayakForm", {
-                                    id: item.id,
-                                    item,
-                                  });
-                                } else if (
-                                  item.job_type === "theke_pe_kam" &&
-                                  item.status === "Accepted"
-                                ) {
-                                  navigation.navigate("Theke_MachineForm", {
-                                    item,
-                                  });
-                                }
-                              }}
-                            >
-                               {item.status === "Accepted" && (
-                              <Text
-                                style={{
-                                  textAlign: "center",
-                                  marginTop: 7,
-                                  color: "#fff",
-                                  fontSize: 15,
-                                  fontWeight: "600",
+                            {item.status === "Accepted" ||
+                            item?.status === "Completed" ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  if (item.job_type === "individuals_sahayak") {
+                                    navigation.navigate("MyBook_SahayakForm", {
+                                      id: item.id,
+                                      item,
+                                    });
+                                  } else if (item.job_type === "theke_pe_kam") {
+                                    navigation.navigate("Theke_MachineForm", {
+                                      item,
+                                    });
+                                  }
                                 }}
                               >
-                             स्वीकृत
-                              </Text>
-                            )}
-                            </TouchableOpacity>
-                            {/* <TouchableOpacity>
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
-                              }}
-                            >
-                              {item.status}
-                            </Text>
-                          </TouchableOpacity> */}
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : item?.status === "Ongoing" ||
+                              item?.status === "Booked" ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  if (item.job_type === "individuals_sahayak") {
+                                    navigation.navigate("Mybooking_Sahayak2", {
+                                      id: item.id,
+                                      item,
+                                    });
+                                  } else if (item.job_type === "theke_pe_kam") {
+                                    navigation.navigate("Theke_MachineForm2", {
+                                      item,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {item.status === "Ongoing"
+                                    ? "काम जारी"
+                                    : item?.status === "Booked"
+                                    ? " काम बुक"
+                                    : item?.status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
                           </View>
                         </View>
                       ))}
+
                     {machinePending?.length > 0 &&
                       machinePending?.map((item, index) => (
                         // {console.log('machine', machinePending)}
@@ -339,19 +356,20 @@ onRefresh={onRefresh}
                                 }
                               }}
                             >
-                              {item.status === "Pending" && (
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  पेंडिंग
-                                </Text>
-                              )}
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                पेंडिंग
+                              </Text>
+                              {/* {item.status === "Pending" && (
+                               
+                              )} */}
                             </TouchableOpacity>
                           </View>
                           {/* <View
@@ -399,7 +417,7 @@ onRefresh={onRefresh}
                     </View> */}
                         </View>
                       ))}
-                    {machineBooking?.map((item, index) => (
+                     {machineBooking?.map((item, index) => (
                       // {console.log('machine', machinePending)}
                       <View
                         key={item.id}
@@ -430,7 +448,58 @@ onRefresh={onRefresh}
                             marginTop: 10,
                           }}
                         >
-                          <TouchableOpacity
+                             {item.status === "Accepted" ||
+                            item?.status === "Completed" ? (
+                              <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate("MachineWork", {
+                                  item,
+                                  id: item?.id,
+                                });
+                              }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : item?.status === "Ongoing" ||
+                              item?.status === "Booked" ? (
+                              <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate("MachineWork2", {
+                                  item,
+                                  id: item?.id,
+                                });
+                              }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {item.status === "Ongoing"
+                                    ? "काम जारी"
+                                    : item?.status === "Booked"
+                                    ? " काम बुक"
+                                    : item?.status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+                          {/* <TouchableOpacity
                             onPress={() => {
                               navigation.navigate("MachineWork", {
                                 item,
@@ -438,7 +507,7 @@ onRefresh={onRefresh}
                               });
                             }}
                           >
-                            {item.status === "Accepted" && (
+                            {item.status === "Accepted" ? (
                               <Text
                                 style={{
                                   textAlign: "center",
@@ -448,13 +517,50 @@ onRefresh={onRefresh}
                                   fontWeight: "600",
                                 }}
                               >
-                             स्वीकृत
+                                स्वीकृत
                               </Text>
-                            )}
-                          </TouchableOpacity>
+                            ) : item.status === "Booked" ? (
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                बुक्ड
+                              </Text>
+                            ) : item.status === "Ongoing" ? (
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                जारी है
+                              </Text>
+                            ) : item.status === "Completed" ? (
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                समाप्त
+                              </Text>
+                            ) : null}
+                          </TouchableOpacity> */}
                         </View>
                       </View>
                     ))}
+
                   </>
 
                   <View

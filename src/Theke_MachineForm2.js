@@ -25,7 +25,7 @@ function Theke_MachineForm2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, data, payment_status);
+  console.log("fjkfkfkff", item, );
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -91,60 +91,65 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const ratingColor = "orange";
 
-  const fetchBookings = async () => {
-    try {
-      const response = await service.get("api/my_booking_details/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response.data;
-      setThekeperKam(item.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+  // const fetchBookings = async () => {
+  //   try {
+  //     const response = await service.get("api/my_booking_details/", {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const data = response.data;
+  //     setThekeperKam(item.data);
+  //     console.log("fjfjf", data);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
 
-  const accptThekha = async () => {
-    let params = {
-      job_id: item.id,
-    };
+  // const accptThekha = async () => {
+  //   let params = {
+  //     job_id: item.booking_id,
+  //   };
 
-    try {
-      const response = await service.post("/api/accept_theka/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response?.data;
-      setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-  useEffect(() => {
-    fetchBookings();
-  }, [0]);
+  //   try {
+  //     const response = await service.post("/api/accept_theka/", params, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const data = response?.data;
+  //     setThekeperKam(data.data);
+  //     console.log("fjfjf", data);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchBookings();
+  // }, [0]);
 
   const onGoing = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
+
     try {
-      const response = await service.post("/api/booking_ongoing/", params, {
+      const response = await service.post("/api/booking_ongoing/", params, 
+      // console.log(response);
+      
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response, "check status");
       const data = response?.data;
-      setStatus(data);
-      console.log(status, "check status");
+      setStatus(data.status);
+      console.log('jdjddjd', data?.status)
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
@@ -154,9 +159,10 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const Completed = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
+ 
     try {
       const response = await service.post("/api/booking_completed/", params, {
         headers: {
@@ -165,7 +171,8 @@ function Theke_MachineForm2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
+      console.log('jdjddjd', data?.status)
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -325,7 +332,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {status === "Ongoing" ? (
+              { status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -336,7 +343,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   }}
                 >
                   जारी है
-                  {console.log("")}
+                 
                 </Text>
               ) : status === "Completed" ? (
                 <Text
@@ -368,7 +375,7 @@ function Theke_MachineForm2({ navigation, route }) {
             </View>
           </View>
 
-          {status.status === "Completed" ? (
+          {item.status === "Completed" ? (
             ""
           ) : (
             <>
@@ -444,7 +451,7 @@ function Theke_MachineForm2({ navigation, route }) {
               </View>
             </>
           )}
-          {status.status === "Completed" && (
+          { status === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -501,7 +508,7 @@ function Theke_MachineForm2({ navigation, route }) {
           ) : (
             ""
           )} */}
-          {status.status === "Ongoing" ? (
+          { status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -510,7 +517,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 काम पूरा हुआ
               </Text>
             </TouchableOpacity>
-          ) : status.status === "Completed" ? (
+          ) : status === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
@@ -528,8 +535,8 @@ function Theke_MachineForm2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {status.status === "Ongoing" ||
-            ("Completed" && (
+          { item?.status === "Booked" ? 
+             
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
                   onPress={() => cancel()}
@@ -542,11 +549,24 @@ function Theke_MachineForm2({ navigation, route }) {
                   }}
                 >
                   <Text style={{ textAlign: "center", color: "#fff" }}>
-                    रद्द करें{" "}
+                    रद्द करें
                   </Text>
                 </TouchableOpacity>
               </View>
-            ))}
+              : status ==="Completed" || "Ongoing"?
+              <View style={{ marginTop: "auto", padding: 5 , display:'none'}}>
+              <TouchableOpacity
+              
+                style={{
+                
+                }}
+              >
+                <Text style={{ textAlign: "center", color: "#fff" }}>
+                  रद्द करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+            : null}
         </View>
       </ScrollView>
     </SafeAreaView>

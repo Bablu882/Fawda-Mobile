@@ -28,12 +28,12 @@ const CustomComponent = ({ label, value }) => {
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
-          flex:1
+          flex: 1,
         },
       ]}
     >
       <TextInput
-        style={[styles.TextInput, { width: "100%", left:10 }]}
+        style={[styles.TextInput, { width: "100%", left: 10 }]}
         placeholder={label}
         placeholderTextColor={"#000"}
       />
@@ -57,8 +57,6 @@ export default function MachineWork({ navigation, route }) {
   const [edit, setEdit] = useState(false);
   const textInputRef = useRef(null);
 
-
-  
   const onEditPress = () => {
     setEdit(true);
     textInputRef?.current?.focus();
@@ -73,7 +71,7 @@ export default function MachineWork({ navigation, route }) {
       const response = await service.post("/api/edit_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       let data = response.data;
@@ -89,8 +87,6 @@ export default function MachineWork({ navigation, route }) {
       }
     }
   };
-  
-
 
   const accptThekha = async () => {
     setIsLoading(true);
@@ -102,7 +98,7 @@ export default function MachineWork({ navigation, route }) {
       const response = await service.post("/api/accept_machine/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
@@ -122,17 +118,17 @@ export default function MachineWork({ navigation, route }) {
     let params = {
       booking_job: item?.booking_id,
     };
-console.log('dfjddjdjd', params)
+    console.log("dfjddjdjd", params);
 
     try {
       const response = await service.post("/api/get-rating/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = response?.data;
-      console.log('fjkfkff', data)
+      console.log("fjkfkff", data);
       const ratings = data?.rating;
       const ratingColor = "#e6b400";
 
@@ -142,25 +138,25 @@ console.log('dfjddjdjd', params)
           // let color = num < ratings ? ratingColor : "#e6b400";
           return (
             <View
-            key={num}
-            style={{
-              // borderColor: color,
-              // borderWidth: 1,
-              width: 30,
-              height: 30,
-              // borderRightWidth: 0.1,
-              // borderEndWidth: 0.4,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {num + 1 <= ratings && (
-              <FontAwesome name="star" size={24} color="#e6b400" />
-            )}
-            {num + 1 > ratings && (
-              <FontAwesome name="star-o" size={24} color={ratingColor} />
-            )}
-          </View>
+              key={num}
+              style={{
+                // borderColor: color,
+                // borderWidth: 1,
+                width: 30,
+                height: 30,
+                // borderRightWidth: 0.1,
+                // borderEndWidth: 0.4,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {num + 1 <= ratings && (
+                <FontAwesome name="star" size={24} color="#e6b400" />
+              )}
+              {num + 1 > ratings && (
+                <FontAwesome name="star-o" size={24} color={ratingColor} />
+              )}
+            </View>
           );
         });
 
@@ -174,31 +170,51 @@ console.log('dfjddjdjd', params)
   useEffect(() => {
     RatingApi();
   }, []);
-
-  const cancel = async() => {
-
+  function getStatusButton(status, label) {
+    return (
+      <TouchableOpacity
+        style={{
+          backgroundColor: status === "Pending" ? "#44A347" : "#0099FF",
+          height: 30,
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            lineHeight: 30,
+            color: "#fff",
+            fontSize: 15,
+            fontWeight: "600",
+          }}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+  const cancel = async () => {
     let params = {};
     if (item.status === "Accepted") {
       params = {
-        job_id :item?.id ,
-      job_number : item?.job_number,
-      booking_id: item?.booking_id,
-      status: "Cancelled-After-Payment"
+        job_id: item?.id,
+        job_number: item?.job_number,
+        booking_id: item?.booking_id,
+        status: "Cancelled-After-Payment",
+      };
+    } else if (item.status === "Pending") {
+      params = {
+        job_id: item?.id,
+        job_number: item?.job_number,
+        // booking_id: item?.booking_id,
+        status: "Cancelled",
+      };
     }
-  } else if (item.status === "Pending") {
-    params = {
-      job_id :item?.id ,
-      job_number : item?.job_number,
-      // booking_id: item?.booking_id,
-      status: "Cancelled"
-    }
-  }
 
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(token?.access, "token");
@@ -211,30 +227,29 @@ console.log('dfjddjdjd', params)
     }
   };
 
-  const Rejected = async() => {
+  const Rejected = async () => {
     let params = {
       booking_id: item?.booking_id,
       status: "Rejected",
-    }
+    };
 
-    console.log(params , 'hjdsnjnjdsl');
+    console.log(params, "hjdsnjnjdsl");
 
     try {
       const response = await service.post("/api/rejected/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      console.log(data , "sds");
-      Toast.show('Rejected', Toast.LONG);
+      console.log(data, "sds");
+      Toast.show("Rejected", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
     }
   };
-
 
   return (
     <SafeAreaView
@@ -245,7 +260,7 @@ console.log('dfjddjdjd', params)
         backgroundColor: "#fff",
       }}
     >
-         <View>
+      <View>
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -255,186 +270,194 @@ console.log('dfjddjdjd', params)
       </View>
 
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-      {!isLoading && (
-        <View>
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-          >
-            मशीन का काम
-          </Text>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 20,
-              marginHorizontal: 10,
-            }}
-          >
-            <View
-              style={[
-                styles.inputView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <Text style={styles.label}>मशीन का प्रकार </Text>
-              <Text style={[styles.TextInput]}>{item?.work_type}</Text>
-            </View>
-            {usertype &&
-              (usertype === "Sahayak" || usertype === "MachineMalik") && (
-                <View style={[styles.inputView, { height: 40 }]}>
-                  <Text style={styles.label}>गाँव</Text>
-                  <Text  style={[styles.TextInput,{color:'#848484'}]}>{item?.village}</Text>
-                  {/* <TextInput
+        {!isLoading && (
+          <View>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+              >
+                मशीन का काम
+              </Text>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 20,
+                  marginHorizontal: 10,
+                }}
+              >
+                <View
+                  style={[
+                    styles.inputView,
+                    styles.flex,
+                    styles.justifyContentBetween,
+                  ]}
+                >
+                  <Text style={styles.label}>मशीन का प्रकार </Text>
+                  <Text style={[styles.TextInput]}>{item?.work_type}</Text>
+                </View>
+                {usertype &&
+                  (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                    <View style={[styles.inputView, { height: 40 }]}>
+                      <Text style={styles.label}>गाँव</Text>
+                      <Text style={[styles.TextInput, { color: "#848484" }]}>
+                        {item?.village}
+                      </Text>
+                      {/* <TextInput
                     style={styles.TextInput}
                     placeholderTextColor="#848484"
                     placeholder={item?.village}
                   /> */}
-                </View>
-              )}
-            <View
-              style={[
-                styles.inputView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <Text style={styles.TextInput}>
-                {moment.utc(item?.datetime).format("l")}
-              </Text>
-              <Text style={styles.TextInput}>
-                {moment.utc(item?.datetime).format("LT")}
-              </Text>
-            </View>
-            {usertype &&
-              (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                    </View>
+                  )}
                 <View
                   style={[
                     styles.inputView,
-                    styles.inputbox,
-                    { position: "relative" },
-                  ]}
-                >
-                  <Text style={styles.label}>भूमि क्षेत्र</Text>
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholderTextColor="#848484"
-                    placeholder=""
-                  />
-                  <Text
-                    style={{
-                      top: 10,
-                      right: 5,
-                      position: "absolute",
-                      color: "#0070C0",
-                    }}
-                  >
-                    {item?.land_area}
-                    {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
-                  </Text>
-                </View>
-              )}
-            {usertype && usertype === "Grahak" && (
-              <View
-                style={[
-                  styles.flex,
-                  styles.justifyContentBetween,
-                  { marginHorizontal: 10 },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.TaxView,
-                    styles.inputbox,
-                    { position: "relative", marginHorizontal: 10 },
-                  ]}
-                >
-                  {/* <Text style={styles.label}>भूमि क्षेत्र</Text> */}
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholderTextColor="#000"
-                    placeholder="भूमि क्षेत्र"
-                  />
-                  <Text
-                    style={{
-                      top: 10,
-                      right: 5,
-                      position: "absolute",
-                      color: "#0070C0",
-                    }}
-                  >
-                    {item?.land_area}
-                    {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.TaxView,
                     styles.flex,
                     styles.justifyContentBetween,
-                    { marginHorizontal: 10 },
                   ]}
                 >
-                  {edit ? (
-                    <TextInput
-                      style={styles.TextInput}
-                      placeholder="वेतन"
-                      ref={textInputRef}
-                      onChangeText={(amount) => setAmount(amount)}
-                      value={amount}
-                      placeholderTextColor={"#000"}
-                    />
-                  ) : (
-                    <Text style={styles.Text}>
-                      {item?.total_amount_machine}
-                    </Text>
+                  <Text style={styles.TextInput}>
+                    {moment.utc(item?.datetime).format("l")}
+                  </Text>
+                  <Text style={styles.TextInput}>
+                    {moment.utc(item?.datetime).format("LT")}
+                  </Text>
+                </View>
+                {usertype &&
+                  (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.inputbox,
+                        { position: "relative" },
+                      ]}
+                    >
+                      <Text style={styles.label}>भूमि क्षेत्र</Text>
+                      <TextInput
+                        style={styles.TextInput}
+                        placeholderTextColor="#848484"
+                        placeholder=""
+                      />
+                      <Text
+                        style={{
+                          top: 10,
+                          right: 5,
+                          position: "absolute",
+                          color: "#0070C0",
+                        }}
+                      >
+                        {item?.land_area}
+                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                      </Text>
+                    </View>
                   )}
-                </View>
-              </View>
-            )}
-
-            {item?.status == "Accepted"  ? <></> :     <View style={styles.flex}>
-              <View style={{ width: "70%" }}>
-                <Text></Text>
-              </View>
-              {usertype && usertype === "Grahak" && (
-                <View style={[styles.flex, { marginTop: 10 }]}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onEditPress();
-                      setEdit(true);
-                    }}
-                    style={{
-                      backgroundColor: "#0099FF",
-                      marginRight: 10,
-                      padding: 5,
-                    }}
+                {usertype && usertype === "Grahak" && (
+                  <View
+                    style={[
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      { marginHorizontal: 10 },
+                    ]}
                   >
-                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                      वेतन बदलें
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onAcceptPress();
-                    }}
-                    style={{
-                      backgroundColor: "#44A347",
-                      paddingHorizontal: 10,
-                      padding: 5,
-                    }}
-                  >
-                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                      कन्फर्म
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>} 
-        
+                    <View
+                      style={[
+                        styles.TaxView,
+                        styles.inputbox,
+                        { position: "relative", marginHorizontal: 10 },
+                      ]}
+                    >
+                      {/* <Text style={styles.label}>भूमि क्षेत्र</Text> */}
+                      <TextInput
+                        style={styles.TextInput}
+                        placeholderTextColor="#000"
+                        placeholder="भूमि क्षेत्र"
+                      />
+                      <Text
+                        style={{
+                          top: 10,
+                          right: 5,
+                          position: "absolute",
+                          color: "#0070C0",
+                        }}
+                      >
+                        {item?.land_area}
+                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                      </Text>
+                    </View>
+                    <View
+                      style={[
+                        styles.TaxView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        { marginHorizontal: 10 },
+                      ]}
+                    >
+                      <Text style={{ marginLeft: 10 }}>वेतन</Text>
+                      {edit ? (
+                        <TextInput
+                          style={[styles.TextInput, { marginRight: 10 }]}
+                          placeholder=""
+                          ref={textInputRef}
+                          onChangeText={(amount) => setAmount(amount)}
+                          value={amount}
+                          placeholderTextColor={"#000"}
+                        />
+                      ) : (
+                        <View>
+                          <Text style={[styles.Text, { marginRight: 10 }]}>
+                            {item?.total_amount_machine}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
 
-            {/* <View
+                {item?.status == "Accepted" ? (
+                  <></>
+                ) : (
+                  <View style={styles.flex}>
+                    <View style={{ width: "70%" }}>
+                      <Text></Text>
+                    </View>
+                    {usertype && usertype === "Grahak" && item?.status === "Pending" && (
+                      <View style={[styles.flex, { marginTop: 10 }]}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            onEditPress();
+                            setEdit(true);
+                          }}
+                          style={{
+                            backgroundColor: "#0099FF",
+                            marginRight: 10,
+                            padding: 5,
+                          }}
+                        >
+                          <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                            वेतन बदलें
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            onAcceptPress();
+                          }}
+                          style={{
+                            backgroundColor: "#44A347",
+                            paddingHorizontal: 10,
+                            padding: 5,
+                          }}
+                        >
+                          <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                            कन्फर्म
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* <View
             style={[
               styles.inputView,
               styles.flex,
@@ -471,63 +494,80 @@ console.log('dfjddjdjd', params)
             </View>
           </View> */}
 
-            {/* end */}
+                {/* end */}
 
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <>
-                {usertype &&
-                  (usertype === "Sahayak" || usertype === "MachineMalik") && (
-                    <>
-                      <CustomComponent
-                        label="किसान से वेतन"
-                        value={item?.total_amount_machine}
-                      />
-                      <CustomComponent
-                        label="फावड़ा की फीस"
-                        value={item?.fawda_fee}
-                      />
-                      <CustomComponent
-                        label="आपका भुगतान"
-                        value={item?.payment_your}
-                      />
-                    </>
-                  )}
-              </>
-            </View>
-            {usertype && usertype === "Grahak" && (
-              <View
-                style={[
-                  styles.inputView,
-                  styles.flex,
-                  styles.justifyContentBetween,
-                ]}
-              >
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="काम की स्थिति"
-                  placeholderTextColor={"#000"}
-                />
-         <View
+                <View
+                  style={{
+                    flex: 1,
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <>
+                    {usertype &&
+                      (usertype === "Sahayak" ||
+                        usertype === "MachineMalik") && (
+                        <>
+                          <CustomComponent
+                            label="किसान से वेतन"
+                            value={item?.total_amount_machine}
+                          />
+                          <CustomComponent
+                            label="फावड़ा की फीस"
+                            value={item?.fawda_fee}
+                          />
+                          <CustomComponent
+                            label="आपका भुगतान"
+                            value={item?.payment_your}
+                          />
+                        </>
+                      )}
+                  </>
+                </View>
+                {usertype && usertype === "Grahak" && (
+                  <View
+                    style={[
+                      styles.inputView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                    ]}
+                  >
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholder="काम की स्थिति"
+                      placeholderTextColor={"#000"}
+                    />
+                       <View style={{ width: "30%", marginRight: 10 }}>
+                       <View style={{ width: "30%", marginRight: 10 }}>
+                      {item?.status === "Pending"
+                        ? getStatusButton(item.status, "पेंडिंग")
+                        : item?.status === "Accepted"
+                        ? getStatusButton(item.status, "स्वीकार")
+                        : item?.status === "Booked"
+                        ? getStatusButton(item.status, "बुक्ड")
+                        : item?.status === "Ongoing"
+                        ? getStatusButton(item.status, "जारी है ")
+                        : item?.status === "Completed"
+                        ? getStatusButton(item.status, "समाप्त")
+                        : null}
+                    </View>
+                    </View>
+
+                    {/* <View
                       style={{
                         width: "30%",
                         marginRight: 10,
-                    
                       }}
                     >
-                      {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
                       {item?.status === "Pending" ? (
-                        <TouchableOpacity style={{backgroundColor: "#44A347",height:30}}>
+                        <TouchableOpacity
+                          style={{ backgroundColor: "#44A347", height: 30 }}
+                        >
                           <Text
                             style={{
                               textAlign: "center",
-                            lineHeight:30,
+                              lineHeight: 30,
                               color: "#fff",
                               fontSize: 15,
                               fontWeight: "600",
@@ -537,11 +577,13 @@ console.log('dfjddjdjd', params)
                           </Text>
                         </TouchableOpacity>
                       ) : (
-                        <TouchableOpacity style={{backgroundColor: "#0099FF",height:30}}>
+                        <TouchableOpacity
+                          style={{ backgroundColor: "#0099FF", height: 30 }}
+                        >
                           <Text
                             style={{
                               textAlign: "center",
-                              lineHeight:30,
+                              lineHeight: 30,
                               color: "#fff",
                               fontSize: 15,
                               fontWeight: "600",
@@ -551,113 +593,119 @@ console.log('dfjddjdjd', params)
                           </Text>
                         </TouchableOpacity>
                       )}
+                    </View> */}
+                  </View>
+                  //    <View>
+                  //    <>
+                  //      {item.status === "Accepted" && (
+                  //        <TouchableOpacity
+                  //          style={styles.BhuktanBtn}
+                  //          onPress={() =>
+                  //            navigation.navigate("Payment", {
+                  //              item,
+                  //            })
+                  //          }
+                  //        >
+                  //          <Text style={[styles.loginText, { color: "#fff" }]}>
+                  //            भुगतान करें
+                  //          </Text>
+                  //        </TouchableOpacity>
+                  //      )}
+                  //      {item.status === "Pending" && (
+                  //        <TouchableOpacity style={styles.BhuktanBtn}>
+                  //          <Text style={[styles.loginText, { color: "#fff" }]}>
+                  //            भुगतान करें
+                  //          </Text>
+                  //        </TouchableOpacity>
+                  //      )}
+                  //    </>
+                  //  </View>
+                )}
+                {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+                  <>
+                    {item.status === "Accepted" && (
+                      <TouchableOpacity style={styles.BhuktanBtn}>
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          काम स्वीकृत
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {item.status === "Pending" && (
+                      <TouchableOpacity
+                        style={styles.BhuktanBtn}
+                        onPress={() => accptThekha()}
+                      >
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          काम स्वीकार करें
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {item.status === "Booked" && (
+                      <TouchableOpacity style={styles.BhuktanBtn}>
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          काम बुक
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {item.status === "Ongoing" && (
+                      <TouchableOpacity style={styles.BhuktanBtn}>
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          जारी है
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                     {item.status === "Completed" && (
+                      <TouchableOpacity style={styles.BhuktanBtn}>
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                        समाप्त
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
+                ) : null}
+                {usertype === "Sahayak" ||
+                  (usertype === "MachineMalik" &&
+                    item.status === "Completed" && (
+                      <>
+                        <TouchableOpacity style={styles.BhuktanBtn}>
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            समाप्त
+                          </Text>
+                        </TouchableOpacity>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          {ratingList}
+                        </View>
+                      </>
+                    ))}
+
+                {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+                (item.status === "Booked" || item.status === "Ongoing") ? (
+                  <>
+                    <View style={[styles.inputView, { height: 40 }]}>
+                      <Text style={styles.label}>ग्राहक का नाम</Text>
+                      <TextInput
+                        style={styles.TextInput}
+                        placeholderTextColor="#848484"
+                        placeholder={item?.grahak_name}
+                      />
                     </View>
-              </View>
-              //    <View>
-              //    <>
-              //      {item.status === "Accepted" && (
-              //        <TouchableOpacity
-              //          style={styles.BhuktanBtn}
-              //          onPress={() =>
-              //            navigation.navigate("Payment", {
-              //              item,
-              //            })
-              //          }
-              //        >
-              //          <Text style={[styles.loginText, { color: "#fff" }]}>
-              //            भुगतान करें
-              //          </Text>
-              //        </TouchableOpacity>
-              //      )}
-              //      {item.status === "Pending" && (
-              //        <TouchableOpacity style={styles.BhuktanBtn}>
-              //          <Text style={[styles.loginText, { color: "#fff" }]}>
-              //            भुगतान करें
-              //          </Text>
-              //        </TouchableOpacity>
-              //      )}
-              //    </>
-              //  </View>
-            )}
-            {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-              <>
-                {item.status === "Accepted" && (
-                  <TouchableOpacity style={styles.BhuktanBtn}>
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      काम स्वीकृत
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {item.status === "Pending" && (
-                  <TouchableOpacity
-                    style={styles.BhuktanBtn}
-                    onPress={() => accptThekha()}
-                  >
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      काम स्वीकार करें
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {item.status === "Booked" && (
-                  <TouchableOpacity style={styles.BhuktanBtn}>
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      काम बुक
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {item.status === "Ongoing" && (
-                  <TouchableOpacity style={styles.BhuktanBtn}>
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      जारी है
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            ) : null}
-           {usertype === "Sahayak" ||
-            (usertype === "MachineMalik" && item.status === "Completed" && (
-              <>
-              <TouchableOpacity style={styles.BhuktanBtn}>
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                समाप्त 
-                </Text>
-              </TouchableOpacity>
-               <View
-               style={{
-                 flexDirection: "row",
-                 alignItems: "center",
-               }}
-             >
-               {ratingList}
-             </View>
-             </>
-            ))}
 
-          {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-          (
-            item.status === "Booked" ||
-            item.status === "Ongoing") ? (
-            <>
-              <View style={[styles.inputView, { height: 40 }]}>
-                <Text style={styles.label}>ग्राहक का नाम</Text>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholderTextColor="#848484"
-                  placeholder={item?.grahak_name}
-                />
-              </View>
-
-              <View style={[styles.inputView, { height: 40 }]}>
-                <Text style={styles.label}>फ़ोन:</Text>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholderTextColor="#848484"
-                  placeholder={item?.grahak_phone}
-                />
-              </View>
-            </>
-          ) : null}
-            {/* {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+                    <View style={[styles.inputView, { height: 40 }]}>
+                      <Text style={styles.label}>फ़ोन:</Text>
+                      <TextInput
+                        style={styles.TextInput}
+                        placeholderTextColor="#848484"
+                        placeholder={item?.grahak_phone}
+                      />
+                    </View>
+                  </>
+                ) : null}
+                {/* {(usertype === "Sahayak" || usertype === "MachineMalik") &&
               (item.status === "Accepted" ? (
                 <>
                   <View style={[styles.inputView, { height: 40 }]}>
@@ -679,46 +727,58 @@ console.log('dfjddjdjd', params)
                   </View>
                 </>
               ) : null)} */}
+              </View>
+            </View>
+            {usertype === "Grahak" && item.status === "Accepted" && (
+              <TouchableOpacity
+                style={styles.BhuktanBtn}
+                onPress={() => navigation.navigate("Payment", { item })}
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  भुगतान करें
+                </Text>
+              </TouchableOpacity>
+            )}
+            {usertype === "Grahak" && item.status === "Pending" && (
+              <TouchableOpacity
+                style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                disabled
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  भुगतान करें
+                </Text>
+              </TouchableOpacity>
+            )}
+             {usertype === "Grahak" && item.status === "Booked" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम बुक 
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  usertype === "Grahak" ? cancel() : Rejected();
+                }}
+                style={{
+                  backgroundColor: "#D9D9D9",
+                  alignSelf: "center",
+                  paddingHorizontal: 50,
+                  paddingVertical: 10,
+                  borderRadius: 5,
+                }}
+              >
+                <Text style={{ textAlign: "center", color: "#fff" }}>
+                  रद्द करें
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        {usertype === "Grahak" && item.status === "Accepted" && (
-          <TouchableOpacity
-            style={styles.BhuktanBtn}
-            onPress={() => navigation.navigate("Payment", { item })}
-          >
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              भुगतान करें
-            </Text>
-          </TouchableOpacity>
         )}
-        {usertype === "Grahak" && item.status === "Pending" && (
-          <TouchableOpacity
-            style={[styles.BhuktanBtn, { opacity: 0.5, }]}
-            disabled
-          >
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              भुगतान करें
-            </Text>
-          </TouchableOpacity>
-        )}
-        <View style={{ marginTop: "auto", padding: 5 }}>
-          <TouchableOpacity
-            onPress={() => {usertype === "Grahak" ? cancel() : Rejected()}}
-            style={{
-              backgroundColor: "#D9D9D9",
-              alignSelf: "center",
-              paddingHorizontal: 50,
-              paddingVertical: 10,
-              borderRadius: 5,
-            }}
-          >
-            <Text style={{ textAlign: "center", color: "#fff" }}>
-              रद्द करें
-            </Text>
-          </TouchableOpacity>
-        </View>
-        </View>
-      )}
       </ScrollView>
 
       {/* <BottomTab/> */}
@@ -807,13 +867,13 @@ const styles = StyleSheet.create({
   },
 
   BhuktanBtn: {
-   width:"95%",
+    width: "95%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
-    marginHorizontal:10,
+    marginHorizontal: 10,
     backgroundColor: "#0099FF",
   },
 

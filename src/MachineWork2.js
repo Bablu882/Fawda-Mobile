@@ -68,11 +68,6 @@ function MachineWork2({ navigation, route }) {
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
-    // const newColors = [...colors];
-    // if (index < 4) newColors[index] = "red";
-    // else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    // else if (index >= 9) newColors[index] = "green";
-    // setColors(newColors);
   };
 
   const renderButton = (index) => {
@@ -129,7 +124,7 @@ function MachineWork2({ navigation, route }) {
 
   const onGoing = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -140,7 +135,7 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -151,7 +146,7 @@ function MachineWork2({ navigation, route }) {
 
   const Completed = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -162,7 +157,7 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -206,14 +201,14 @@ function MachineWork2({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView horizontal={false}>
-        <View style={{ alignItems: "center", flex: 1 }}>
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <View style={{ alignItems: "center", flex: 1, marginHorizontal: 10 }}>
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-          {item.job_type === "machine_malik"
-                              ? " मशीन का काम "
-                              : "मशीन का काम "}
+            {item.job_type === "machine_malik"
+              ? " मशीन का काम "
+              : "मशीन का काम "}
           </Text>
           <View
             style={[
@@ -225,7 +220,7 @@ function MachineWork2({ navigation, route }) {
               },
             ]}
           >
-            <Text style={[styles.TextInput]}>{item?.machine_malik_name}</Text>
+            <Text style={[styles.TextInput]}>{item?.machine}</Text>
           </View>
 
           <View
@@ -239,13 +234,42 @@ function MachineWork2({ navigation, route }) {
               {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-            {moment.utc(item?.datetime).format("LT")}
+              {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
 
           <View
-            style={[styles.flex, styles.justifyContentevenly, { width: "92%" }]}
+            style={[
+              styles.flex,
+              styles.justifyContentBetween,
+              { width: "100%" },
+            ]}
           >
+            <View
+              style={[
+                styles.TaxView,
+                styles.flex,
+                styles.justifyContentBetween,
+                { alignItems: "center" },
+              ]}
+            >
+              <Text style={[styles.label,{marginLeft:10}]}>भूमि क्षेत्र</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholderTextColor="#848484"
+                placeholder=""
+              />
+              <Text
+                style={{
+                paddingRight:10,
+                  color: "#0099FF",
+                }}
+              >
+                {item?.land_area }
+                {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+              </Text>
+            </View>
+
             <View
               style={[
                 styles.TaxView,
@@ -255,27 +279,11 @@ function MachineWork2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
-                placeholder={item?.land_area}
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.BhumiView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.total_amount_theka}
+              <Text style={{ marginTop: 13, color: "#0099FF", paddingRight:10 }}>
+                ₹ {item?.total_amount_machine}
               </Text>
             </View>
           </View>
@@ -301,21 +309,7 @@ function MachineWork2({ navigation, route }) {
                 marginTop: 8,
               }}
             >
-              {/* <TouchableOpacity>
-              {thekeperKam && (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {thekeperKam?.status}
-                </Text>
-              )}
-            </TouchableOpacity> */}
+            
               {status === "Ongoing" ? (
                 <Text
                   style={{
@@ -327,7 +321,7 @@ function MachineWork2({ navigation, route }) {
                   }}
                 >
                   जारी है
-                  {console.log("")}
+                 
                 </Text>
               ) : status === "Completed" ? (
                 <Text
@@ -339,7 +333,7 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  समाप्त{" "}
+                  समाप्त
                 </Text>
               ) : (
                 <Text
@@ -353,13 +347,13 @@ function MachineWork2({ navigation, route }) {
                 >
                   {/* {bookingid?.status} */}
                   बुक
-                  {console.log("")}
+                 
                 </Text>
               )}
             </View>
           </View>
 
-          {status.status === "Completed" ? (
+          { status === "Completed" ? (
             ""
           ) : (
             <>
@@ -420,18 +414,18 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-{status.status === "Completed" && (
+          { status === "Completed" && (
             <View
               style={{
-                width: "90%",
+                width: "100%",
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 marginTop: 20,
               }}
             >
-              <View style={{marginBottom:10}}>
-                <Text style={{textAlign:'center'}}>रेटिंग दें </Text>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
@@ -442,7 +436,7 @@ function MachineWork2({ navigation, route }) {
                   height: 100,
                   borderWidth: 1,
                   borderRadius: 10,
-                  width: "90%",
+                  width: "100%",
                   marginTop: 20,
                   borderColor: "#0099FF",
                 }}
@@ -451,7 +445,7 @@ function MachineWork2({ navigation, route }) {
               </View>
             </View>
           )}
-          {status.status === "Ongoing" ? (
+          { status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -460,7 +454,7 @@ function MachineWork2({ navigation, route }) {
                 काम पूरा हुआ
               </Text>
             </TouchableOpacity>
-          ) : status.status === "Completed" ? (
+          ) : status === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
@@ -478,7 +472,7 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {status.status === "Accepted" ? (
+          { status === "Completed" ? (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}
@@ -557,18 +551,9 @@ const styles = StyleSheet.create({
     //   flexDirection:"column",
   },
 
-  loginBtn: {
-    width: "85%",
-    borderRadius: 7,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-    backgroundColor: "#0099FF",
-  },
 
   BhuktanBtn: {
-    width: "85%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
@@ -586,8 +571,8 @@ const styles = StyleSheet.create({
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-    // borderBottomRightRadius: 7,
-    width: "80%",
+   
+    width: "100%",
     height: 48,
     marginTop: 15,
     borderWidth: 1,
@@ -598,53 +583,16 @@ const styles = StyleSheet.create({
 
     fontFamily: "Poppin-Light",
   },
-
-  CheckTextInput: {
-    textAlign: "center",
-    marginTop: 10,
-  },
-
   TaxView: {
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "40%",
+    width: "45%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
   },
 
-  BhumiView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    // borderBottomRightRadius: 0,
-    // borderTopRightRadius:0,
-    width: "40%",
-    height: 48,
-    marginTop: 20,
-    borderWidth: 1,
-  },
-
-  DoubleView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    // borderBottomRightRadius: 7,
-    width: "42%",
-    height: 48,
-    marginTop: 10,
-    borderWidth: 1,
-  },
-
-  FemalecheckView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    width: "40%",
-    height: 48,
-    marginTop: 30,
-    borderWidth: 1,
-  },
   flex: {
     display: "flex",
     flexDirection: "row",

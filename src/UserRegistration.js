@@ -63,14 +63,14 @@ export default function UserRegistration({ navigation, route }) {
       state: "",
       district: "",
     };
-
     if (name.trim() === "") {
       errorMessages.name = "Please enter your name";
       valid = false;
-    } else if (!/^[a-zA-Z]+$/.test(name.trim())) {
-      errorMessages.name = "Please enter a valid name (letters only)";
+    } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
+      errorMessages.name = "Please enter a valid name (letters and spaces only)";
       valid = false;
     }
+  
 
     if (gender === "") {
       errorMessages.gender = "Please select your gender";

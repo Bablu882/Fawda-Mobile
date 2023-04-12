@@ -10,6 +10,7 @@ import MyBookingStack from "../navigations/MyBookingStack";
 import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 import ContactUs from "../src/ContactUs";
+import Thankyou from "../src/Thankyou";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
@@ -243,7 +244,45 @@ export default function BottomTab() {
           ),
         }}
       />
-
+  <Tab.Screen
+        name="Thankyou"
+        component={Thankyou}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <View style={{ alignItems: "center" }}>
+              <Image
+                source={
+                  // require("../assets/image/refer.png")
+                  focused
+                    ? require("../assets/image/refer.png")
+                     : require("../assets/image/refer-active.png")
+                }
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginBottom: 6,
+                  resizeMode: "contain",
+                  // tintColor: darkMode
+                  //   ? focused
+                  //     ? "#fff"
+                  //     : "#888888"
+                  //   : focused
+                  //   ? "#000"
+                  //   : "#888888",
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: "#000",
+                }}
+              >
+               Thank you
+              </Text>
+            </View>
+          ),
+        }}
+      />
       <Tab.Screen
         name="ContactUs"
         component={ContactUs}
