@@ -91,6 +91,28 @@ function Theke_MachineForm({ navigation, route }) {
     }
   };
 
+  function getStatusButton(status, label) {
+    return (
+      <TouchableOpacity
+        style={{
+          backgroundColor: status === "Pending" ? "#44A347" : "#0099FF",
+          height: 30,
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            lineHeight: 30,
+            color: "#fff",
+            fontSize: 15,
+            fontWeight: "600",
+          }}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
   // const handleClicks = (index) => {
   //   setRating(index + 1);
   //   const newColors = [...colors];
@@ -300,7 +322,9 @@ function Theke_MachineForm({ navigation, route }) {
                 (usertype === "Sahayak" || usertype === "MachineMalik") && (
                   <View style={[styles.inputView, { height: 40 }]}>
                     <Text style={styles.label}>गाँव</Text>
-                    <Text  style={[styles.TextInput,{color:'#848484'}]}>{item?.village}</Text>
+                    <Text style={[styles.TextInput, { color: "#848484" }]}>
+                      {item?.village}
+                    </Text>
                   </View>
                 )}
               <View
@@ -334,7 +358,7 @@ function Theke_MachineForm({ navigation, route }) {
                     />
                     <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
                       {item?.land_area}
-                      {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+                      {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
                     </Text>
                   </View>
                 )}
@@ -369,7 +393,7 @@ function Theke_MachineForm({ navigation, route }) {
                       />
                       <Text style={{ right: 10, color: "#0070C0" }}>
                         {item?.land_area}
-                        {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
                       </Text>
                     </View>
                     <View
@@ -395,6 +419,9 @@ function Theke_MachineForm({ navigation, route }) {
                       />
                     </View>
                   </View>
+                  {item.status === "Pending" && (
+                    
+               
                   <View
                     style={[
                       styles.flex,
@@ -433,11 +460,13 @@ function Theke_MachineForm({ navigation, route }) {
                       </TouchableOpacity>
                     </View>
                   </View>
+                       )}
                   <View
                     style={[
                       styles.inputView,
                       styles.flex,
                       styles.justifyContentBetween,
+                      {alignItems:'center'}
                     ]}
                   >
                     <TextInput
@@ -445,20 +474,34 @@ function Theke_MachineForm({ navigation, route }) {
                       placeholder="काम की स्थिति"
                       placeholderTextColor={"#000"}
                     />
-                    <View
+                    <View style={{ width: "30%", marginRight: 10 }}>
+                      {item?.status === "Pending"
+                        ? getStatusButton(item.status, "पेंडिंग")
+                        : item?.status === "Accepted"
+                        ? getStatusButton(item.status, "स्वीकार")
+                        : item?.status === "Booked"
+                        ? getStatusButton(item.status, "बुक्ड")
+                        : item?.status === "Ongoing" 
+                        ? getStatusButton(item.status, "जारी है ")
+                        : item?.status === "Completed"
+                        ? getStatusButton(item.status, "समाप्त")
+                        : null}
+                    </View>
+
+                    {/* <View
                       style={{
                         width: "30%",
                         marginRight: 10,
-                       
                       }}
                     >
-                      {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
                       {item?.status === "Pending" ? (
-                        <TouchableOpacity style={{backgroundColor: "#44A347",height:30}}>
+                        <TouchableOpacity
+                          style={{ backgroundColor: "#44A347", height: 30 }}
+                        >
                           <Text
                             style={{
                               textAlign: "center",
-                            lineHeight:30,
+                              lineHeight: 30,
                               color: "#fff",
                               fontSize: 15,
                               fontWeight: "600",
@@ -468,11 +511,13 @@ function Theke_MachineForm({ navigation, route }) {
                           </Text>
                         </TouchableOpacity>
                       ) : (
-                        <TouchableOpacity style={{backgroundColor: "#0099FF",height:30}}>
+                        <TouchableOpacity
+                          style={{ backgroundColor: "#0099FF", height: 30 }}
+                        >
                           <Text
                             style={{
                               textAlign: "center",
-                              lineHeight:30,
+                              lineHeight: 30,
                               color: "#fff",
                               fontSize: 15,
                               fontWeight: "600",
@@ -482,7 +527,7 @@ function Theke_MachineForm({ navigation, route }) {
                           </Text>
                         </TouchableOpacity>
                       )}
-                    </View>
+                    </View> */}
                   </View>
                   {item.status === "Accepted" && (
                     <TouchableOpacity
@@ -502,6 +547,36 @@ function Theke_MachineForm({ navigation, route }) {
                     <TouchableOpacity style={styles.BhuktanBtn}>
                       <Text style={[styles.loginText, { color: "#fff" }]}>
                         भुगतान करें
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {item.status === "Booked" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम बुक 
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                   {item.status === "Ongoing" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम जारी
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                    {item.status === "Completed" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      समाप्त
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -605,7 +680,7 @@ function Theke_MachineForm({ navigation, route }) {
             </View>
 
             <>
-              {item.status === "Completed" && (
+              {usertype === "Sahayak" || usertype === "MachineMalik" && item.status === "Completed" && (
                 <View
                   style={{
                     display: "flex",

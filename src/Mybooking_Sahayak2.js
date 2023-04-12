@@ -260,15 +260,19 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               style={[
                 styles.TaxView,
                 styles.flex,
-                styles.justifyContentBetween,
+                styles.justifyContentBetween,{alignItems:'center'}
               ]}
             >
-              <Text style={{ marginRight: 8, color: "#0099FF" }}>
-                {/* {item.} */}
+              <TextInput
+                style={styles.TextInput}
+                placeholder="वेतन"
+                placeholderTextColor={"#000"}
+              />
+              <Text style={{ color: "#0099FF", paddingRight:10 }}>
+                ₹ {item?.total_amount_sahayak}
               </Text>
             </View>
           </View>
-
           {/* <View style={[styles.flex, styles.justifyContentBetween]}></View>
 
           <View style={[styles.flex, styles.justifyContentBetween]}></View>

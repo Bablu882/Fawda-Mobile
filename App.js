@@ -41,6 +41,7 @@ import MyBookingStack from "./navigations/MyBookingStack";
 import { Terms_Condition } from "./src/Terms&Condition";
 import { About_us } from "./src/AboutUs";
 import { Privacy_policy } from "./src/PrivacyPolicy";
+import Thankyou from "./src/Thankyou";
 
 
 
@@ -88,6 +89,7 @@ export default function App() {
           <Stack.Screen name="terms" component={Terms_Condition} />
           <Stack.Screen name="about_us" component={About_us} />
           <Stack.Screen name="privacy" component={Privacy_policy} />
+          <Stack.Screen name="Thankyou" component={Thankyou} />
           
 
          

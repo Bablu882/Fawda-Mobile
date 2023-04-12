@@ -491,45 +491,47 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </Text> */}
               </View>
             </View>
-            {item?.status == "Accepted" ? <></>:
-            <View style={styles.flex}>
-              <View style={{ width: "70%" }}>
-                <Text></Text>
-              </View>
-              {usertype && usertype === "Grahak" && (
-                <View style={[styles.flex, { marginTop: 10 }]}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      handleClick();
-                      setEdit(true);
-                      console.log("edit:::::", edit);
-                    }}
-                    style={{
-                      backgroundColor: "#0099FF",
-                      marginRight: 10,
-                      padding: 5,
-                    }}
-                  >
-                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                      वेतन बदलें
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                  onPress={() => Edit()}
-                    style={{
-                      backgroundColor: "#44A347",
-                      paddingHorizontal: 10,
-                      padding: 5,
-                    }}
-                  >
-                    <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                      कन्फर्म
-                    </Text>
-                  </TouchableOpacity>
+            {item?.status == "Accepted" ? (
+              <></>
+            ) : (
+              <View style={styles.flex}>
+                <View style={{ width: "70%" }}>
+                  <Text></Text>
                 </View>
-              )}
-            </View>
-            }
+                {usertype && usertype === "Grahak" && item?.status === "Pending" && (
+                  <View style={[styles.flex, { marginTop: 10 }]}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleClick();
+                        setEdit(true);
+                        console.log("edit:::::", edit);
+                      }}
+                      style={{
+                        backgroundColor: "#0099FF",
+                        marginRight: 10,
+                        padding: 5,
+                      }}
+                    >
+                      <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                        वेतन बदलें
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => Edit()}
+                      style={{
+                        backgroundColor: "#44A347",
+                        paddingHorizontal: 10,
+                        padding: 5,
+                      }}
+                    >
+                      <Text style={[styles.TextWhite, { fontSize: 10 }]}>
+                        कन्फर्म
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            )}
             {usertype && usertype === "Grahak" ? (
               <View
                 style={[
@@ -599,7 +601,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </Text>
               </View>
             )}
-            <View>
+            {/* <View>
               {usertype && usertype === "Grahak" && (
                 <View>
                   <View
@@ -613,10 +615,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                         (index) => (
                           <View
                             style={[
-                              styles.FemalecheckView,
-                              styles.flex,
-                              styles.justifyContentBetween,
-                              { paddingHorizontal: 5 },
+                                 styles.FemalecheckView,
+                                styles.flex,
+                                styles.justifyContentBetween,
+                                { paddingHorizontal: 5, width: "auto" },
                             ]}
                             key={index}
                           >
@@ -632,7 +634,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 padding: 3,
                               }}
                             >
-                              {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
+                            
                               {item?.status === "Pending" ? (
                                 <TouchableOpacity
                                   style={{
@@ -683,7 +685,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.FemalecheckView,
                               styles.flex,
                               styles.justifyContentBetween,
-                              { paddingHorizontal: 5 },
+                              { paddingHorizontal: 5, width: "auto" },
                             ]}
                             key={index}
                           >
@@ -699,7 +701,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 padding: 3,
                               }}
                             >
-                              {/* {console.log("thekeperKam?.status", thekeperKam?.status)} */}
+                             
                               {item?.status === "Pending" ? (
                                 <TouchableOpacity
                                   style={{
@@ -918,7 +920,256 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     ></View>
                   </View>
                 </View>
-              )}
+              )} */}
+                <View>
+            {usertype && usertype === "Grahak" && (
+              <View>
+                <View
+                  style={[
+                    styles.justifyContentBetween,
+                    { flexDirection: "row", flexWrap: "wrap" },
+                  ]}
+                >
+                  <>
+                    {[...Array(parseInt(item?.count_male)).keys()].map(
+                      (index) => (
+                        <View
+                          style={[
+                            styles.FemalecheckView,
+                            styles.flex,
+                            styles.justifyContentBetween,
+                            { paddingHorizontal: 5 },
+                          ]}
+                          key={index}
+                        >
+                          <TextInput
+                            style={styles.CheckTextInput}
+                            placeholder="पुरषो"
+                            placeholderTextColor={"#000"}
+                            name={`Male${index + 1}`}
+                          />
+                          <View
+                            style={{
+                              height: 25,
+                              paddingHorizontal: 5,
+                              backgroundColor: "#44A347",
+                              marginLeft: 5,
+                            }}
+                          >
+                            <TouchableOpacity>
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 5,
+                                  color: "#fff",
+                                  fontSize: 10,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {item?.status}
+                                {console.log('fjfjfjfjfjf',item?.status)}
+
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      )
+                    )}
+                    {[...Array(parseInt(item?.count_female)).keys()].map(
+                      (index) => (
+                        <View
+                          style={[
+                            styles.FemalecheckView,
+                            styles.flex,
+                            styles.justifyContentBetween,
+                            { paddingHorizontal: 5 },
+                          ]}
+                          key={index}
+                        >
+                          <TextInput
+                            style={styles.CheckTextInput}
+                            placeholder="महिला"
+                            placeholderTextColor={"#101010"}
+                            name={`Female${index + 1}`}
+                          />
+                          <View
+                            style={{
+                              height: 25,
+                              paddingHorizontal: 5,
+                              backgroundColor: "#44A347",
+                              marginLeft: 5,
+                            }}
+                          >
+                            <TouchableOpacity>
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 5,
+                                  color: "#fff",
+                                  fontSize: 10,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {item?.status}
+                                {console.log('fjfjfjfjfjf',item?.status)}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      )
+                    )}
+                  </>
+                </View>
+                <View>
+                  <></>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {usertype &&
+            (usertype === "Sahayak" || usertype === "MachineMalik" ) && (
+              <View>
+                <View style={[styles.flex, styles.justifyContentBetween]}>
+                  <View
+                    style={[
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      { flexWrap: "wrap" },
+                    ]}
+                  >
+                    <>
+                      {[...Array(parseInt(item?.count_female)).keys()].map(
+                        (index) => (
+                          <View
+                            style={[
+                              styles.FemalecheckView,
+                              styles.flex,
+                              styles.justifyContentBetween,
+                              { paddingHorizontal: 5, width: "auto" },
+                            ]}
+                            key={index}
+                          >
+                            <TextInput
+                              style={styles.CheckTextInput}
+                              placeholder="महिला"
+                              placeholderTextColor={"#101010"}
+                              name={`Female${index + 1}`}
+                              onChangeText={(text) => {
+                                const updatedStatus = { ...checkboxStatus };
+                                updatedStatus[index] = text;
+                                setCheckboxStatus(updatedStatus);
+                              }}
+                            />
+                            <View
+                              style={{
+                                height: 25,
+                                paddingHorizontal: 5,
+                                backgroundColor:
+                                  checkboxStatus[index] === "Accepted"
+                                    ? "#0099FF"
+                                    : "#44A347",
+                                marginLeft: 5,
+                              }}
+                            >
+                              <TouchableOpacity
+                                onPress={() => handleCheckboxChange(index)}
+                                disabled={checkboxStatus[index] === "Pending"}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 5,
+                                    color: "#fff",
+                                    fontSize: 10,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {checkboxStatus[index] || item?.status}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        )
+                      )}
+                    </>
+                    <>
+                      {[...Array(parseInt(item?.count_male)).keys()].map(
+                        (index) => (
+                          <View
+                            style={[
+                              styles.FemalecheckView,
+                              styles.flex,
+                              styles.justifyContentBetween,
+                              { paddingHorizontal: 5, width: "auto" },
+                            ]}
+                            key={index}
+                          >
+                            <TextInput
+                              style={styles.CheckTextInput}
+                              placeholder="पुरषो"
+                              placeholderTextColor={"#101010"}
+                              name={`Male${index + 1}`}
+                              onChangeText={(text) => {
+                                const updatedMaleStatuses = [...maleStatuses];
+                                updatedMaleStatuses[index] = text;
+                                setMaleStatuses(updatedMaleStatuses);
+                              }}
+                            />
+                            <View
+                              style={{
+                                height: 25,
+                                paddingHorizontal: 5,
+                                backgroundColor:
+                                  maleStatuses[index] === "Accepted"
+                                    ? "#0099FF"
+                                    : "#44A347",
+                                marginLeft: 5,
+                              }}
+                            >
+                              <TouchableOpacity
+                                onPress={() => handleAcceptMale(index)}
+                                disabled={maleStatuses[index] === "Pending"}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 5,
+                                    color: "#fff",
+                                    fontSize: 10,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {maleStatuses[index] || item?.status}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        )
+                      )}
+                    </>
+                  </View>
+                </View>
+
+                <View style={[styles.flex, styles.justifyContentBetween]}>
+                  <View
+                    style={[
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      { flexWrap: "wrap", marginTop: 20 },
+                    ]}
+                  ></View>
+                </View>
+              </View>
+            )}
+          <View
+            style={[
+              styles.flex,
+              styles.justifyContentBetween,
+              { flexWrap: "wrap" },
+            ]}
+          ></View>
+
             <View
               style={[
                 styles.flex,
@@ -951,13 +1202,44 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
                   <View
                     style={{
-                      height: 30,
-                      backgroundColor: "#44A347",
                       marginRight: 10,
-                      marginTop: 8,
+                      marginVertical: 8,
                     }}
                   >
-                    <TouchableOpacity>
+                    {item.status === "Accepted" || item.status === "Booked" && TotalCount > 0 ? (
+                      <TouchableOpacity>
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            backgroundColor: "#0099FF",
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            color: "#fff",
+                            fontSize: 15,
+                            fontWeight: "600",
+                          }}
+                        >
+                        {TotalCount} {item.status === "Accepted" ?  'सहायक स्वीकार करें ':'सहायक बुक्ड  ' }
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity>
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            backgroundColor: "#44A347",
+                            color: "#fff",
+                            fontSize: 15,
+                            fontWeight: "600",
+                          }}
+                        >
+                          0 सहायक स्वीकार करें
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {/* <TouchableOpacity>
                       <Text
                         style={{
                           textAlign: "center",
@@ -972,7 +1254,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           ? `${TotalCount} सहायक स्वीकार करें`
                           : "0 सहायक स्वीकार करें"}
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                 </View>
                 <View style={{ width: "100%" }}>
@@ -997,6 +1279,36 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     >
                       <Text style={[styles.loginText, { color: "#fff" }]}>
                         भुगतान करें
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {item.status === "Booked" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम बुक 
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                       {item.status === "Ongoing" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      काम जारी
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                    {item.status === "Completed" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                      समाप्त
                       </Text>
                     </TouchableOpacity>
                   )}

@@ -51,7 +51,7 @@ export default function MachineBooking({ navigation }) {
   const [errors, setErrors] = useState({
     showDate: "",
     time: "",
-    // description: "",
+    //  description: "",
     landType: "",
     landArea: "",
     totalAmount: "",
@@ -283,7 +283,7 @@ export default function MachineBooking({ navigation }) {
     // if (description.trim() === "") {
     //   errorMessages.description = "Please enter your description";
     //   valid = false;
-    // } else if (!/^[a-zA-Z]+$/.test(description.trim())) {
+    // } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
     //   errorMessages.description =
     //     "Please enter a valid description (letters only)";
     //   valid = false;
