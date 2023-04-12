@@ -124,7 +124,7 @@ function MachineWork2({ navigation, route }) {
 
   const onGoing = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -135,7 +135,7 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -146,7 +146,7 @@ function MachineWork2({ navigation, route }) {
 
   const Completed = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -157,7 +157,7 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -353,7 +353,7 @@ function MachineWork2({ navigation, route }) {
             </View>
           </View>
 
-          {status.status === "Completed" ? (
+          { status === "Completed" ? (
             ""
           ) : (
             <>
@@ -414,7 +414,7 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-          {status.status === "Completed" && (
+          { status === "Completed" && (
             <View
               style={{
                 width: "100%",
@@ -445,7 +445,7 @@ function MachineWork2({ navigation, route }) {
               </View>
             </View>
           )}
-          {status.status === "Ongoing" ? (
+          { status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -454,7 +454,7 @@ function MachineWork2({ navigation, route }) {
                 काम पूरा हुआ
               </Text>
             </TouchableOpacity>
-          ) : status.status === "Completed" ? (
+          ) : status === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
@@ -472,7 +472,7 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {status.status === "Accepted" ? (
+          { status === "Completed" ? (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}

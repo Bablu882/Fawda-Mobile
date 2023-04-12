@@ -206,7 +206,7 @@ export default function MyBooking({ navigation, route }) {
                           </View>
                         </View>
                       ))}
-                    {sahaykBooking?.length > 0 &&
+                         {sahaykBooking?.length > 0 &&
                       sahaykBooking?.map((item) => (
                         <View
                           style={{
@@ -239,7 +239,8 @@ export default function MyBooking({ navigation, route }) {
                               marginTop: 10,
                             }}
                           >
-                            {item.status === "Accepted" ? (
+                            {item.status === "Accepted" ||
+                            item?.status === "Completed" ? (
                               <TouchableOpacity
                                 onPress={() => {
                                   if (item.job_type === "individuals_sahayak") {
@@ -263,11 +264,11 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                  स्वीकृत
+                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
                                 </Text>
                               </TouchableOpacity>
                             ) : item?.status === "Ongoing" ||
-                              item?.status === "Booked"  || item?.status === "Completed" ? (
+                              item?.status === "Booked" ? (
                               <TouchableOpacity
                                 onPress={() => {
                                   if (item.job_type === "individuals_sahayak") {
@@ -291,13 +292,20 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                               {item.status === "Ongoing" ? "काम जारी" :item?.status === "Booked" ? " काम बुक" : item?.status === "Completed" ? "समाप्त" :null}
+                                  {item.status === "Ongoing"
+                                    ? "काम जारी"
+                                    : item?.status === "Booked"
+                                    ? " काम बुक"
+                                    : item?.status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
                                 </Text>
                               </TouchableOpacity>
                             ) : null}
                           </View>
                         </View>
                       ))}
+
                     {machinePending?.length > 0 &&
                       machinePending?.map((item, index) => (
                         // {console.log('machine', machinePending)}
@@ -409,7 +417,7 @@ export default function MyBooking({ navigation, route }) {
                     </View> */}
                         </View>
                       ))}
-                    {machineBooking?.map((item, index) => (
+                     {machineBooking?.map((item, index) => (
                       // {console.log('machine', machinePending)}
                       <View
                         key={item.id}
@@ -440,7 +448,58 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                          <TouchableOpacity
+                             {item.status === "Accepted" ||
+                            item?.status === "Completed" ? (
+                              <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate("MachineWork", {
+                                  item,
+                                  id: item?.id,
+                                });
+                              }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : item?.status === "Ongoing" ||
+                              item?.status === "Booked" ? (
+                              <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate("MachineWork2", {
+                                  item,
+                                  id: item?.id,
+                                });
+                              }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {item.status === "Ongoing"
+                                    ? "काम जारी"
+                                    : item?.status === "Booked"
+                                    ? " काम बुक"
+                                    : item?.status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+                          {/* <TouchableOpacity
                             onPress={() => {
                               navigation.navigate("MachineWork", {
                                 item,
@@ -497,10 +556,11 @@ export default function MyBooking({ navigation, route }) {
                                 समाप्त
                               </Text>
                             ) : null}
-                          </TouchableOpacity>
+                          </TouchableOpacity> */}
                         </View>
                       </View>
                     ))}
+
                   </>
 
                   <View

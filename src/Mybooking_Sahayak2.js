@@ -113,7 +113,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   const onGoing = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -124,7 +124,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data?.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -135,7 +135,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   const Completed = async () => {
     let params = {
-      booking_id: data,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
     try {
@@ -146,7 +146,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data?.status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -421,7 +421,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </View>
           </View>
 
-          {status.status === "Completed" ? (
+          { status === "Completed" ? (
             ""
           ) : (
             <>
@@ -567,7 +567,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </>
           )}
 
-          {status.status === "Completed" && (
+          {status === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -599,7 +599,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </View>
           )}
 
-          {status.status === "Ongoing" ? (
+          { status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -608,7 +608,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 काम पूरा हुआ
               </Text>
             </TouchableOpacity>
-          ) : status.status === "Completed" ? (
+          ) : status === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
@@ -626,7 +626,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {status.status === "Ongoing" ||
+          {status === "Ongoing" ||
             ("Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity

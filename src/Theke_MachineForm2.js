@@ -25,7 +25,7 @@ function Theke_MachineForm2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, data, payment_status);
+  console.log("fjkfkfkff", item, );
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -132,20 +132,24 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const onGoing = async () => {
     let params = {
-      booking_id: item?.booking_id,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
 
     try {
-      const response = await service.post("/api/booking_ongoing/", params, {
+      const response = await service.post("/api/booking_ongoing/", params, 
+      // console.log(response);
+      
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response, "check status");
       const data = response?.data;
-      setStatus(data);
-      console.log(response?.data, "check status");
+      setStatus(data.status);
+      console.log('jdjddjd', data?.status)
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
@@ -155,7 +159,7 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const Completed = async () => {
     let params = {
-      booking_id: item?.booking_id,
+      booking_id: JSON.stringify(item?.booking_id),
     };
     console.log("fhsfhdfhdfh", params);
  
@@ -167,7 +171,8 @@ function Theke_MachineForm2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data);
+      setStatus(data.status);
+      console.log('jdjddjd', data?.status)
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -327,7 +332,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              {item?.status === "Ongoing" ? (
+              { status === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -340,7 +345,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   जारी है
                  
                 </Text>
-              ) : item?.status === "Completed" ? (
+              ) : status === "Completed" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -446,7 +451,7 @@ function Theke_MachineForm2({ navigation, route }) {
               </View>
             </>
           )}
-          {item.status === "Completed" && (
+          { status === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -503,7 +508,7 @@ function Theke_MachineForm2({ navigation, route }) {
           ) : (
             ""
           )} */}
-          {item?.status === "Ongoing" ? (
+          { status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -512,7 +517,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 काम पूरा हुआ
               </Text>
             </TouchableOpacity>
-          ) : item.status === "Completed" ? (
+          ) : status === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
@@ -530,8 +535,8 @@ function Theke_MachineForm2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {item.status === "Ongoing" ||
-            ("Completed" && (
+          { item?.status === "Booked" ? 
+             
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
                   onPress={() => cancel()}
@@ -548,7 +553,20 @@ function Theke_MachineForm2({ navigation, route }) {
                   </Text>
                 </TouchableOpacity>
               </View>
-            ))}
+              : status ==="Completed" || "Ongoing"?
+              <View style={{ marginTop: "auto", padding: 5 , display:'none'}}>
+              <TouchableOpacity
+              
+                style={{
+                
+                }}
+              >
+                <Text style={{ textAlign: "center", color: "#fff" }}>
+                  रद्द करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+            : null}
         </View>
       </ScrollView>
     </SafeAreaView>
