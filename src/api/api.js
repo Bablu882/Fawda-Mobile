@@ -8,14 +8,15 @@ import { useSelector } from "react-redux";
 
 // import {se}
 
-// const state = store.getToken()
-// // const
+const state = store.getToken()
+// const
 
-// let loginToken = await getToken();
-// // getToken().then(token => {loginToken = token;} );
-//     async function reduxtoken() {
+let loginToken = await getToken();
+console.log(loginToken , "login token");
+getToken().then(token => {loginToken = token;} );
+    // async function reduxtoken() {
  
-// let tok = "";
+let tok = "";
 getToken().then((token) => {
   tok = token;
   console.log("ad1", token);
@@ -34,6 +35,7 @@ const api = axios.create({
   },
 });
 getToken().then(token => console.log("tstingNew",token));
+
 getToken().then((token) => {
 api.interceptors.request.use(
   (config) => {

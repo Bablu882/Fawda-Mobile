@@ -82,6 +82,10 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     );
   };
 
+  const totalCount = item.count_female + item.count_male;
+
+  console.log(totalCount , "count check");
+
   const acceptSahayak = async () => {
     let params = {
       count_male: item.count_male,
@@ -446,7 +450,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     marginTop: 8,
                   }}
                 >
-                  <TouchableOpacity>
+                 
                     <View
                       style={[
                         styles.DoubleView,
@@ -471,6 +475,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                       {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
               {numbers ? numbers : ""}
             </Text> */}
+             <TouchableOpacity>
                       <View style={{ flexDirection: "row" }}>
                         <Picker
                           style={{ width: 20, paddingTop: 16 }}
@@ -494,8 +499,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                           ))}
                         </Picker>
                       </View>
-                    </View>
                   </TouchableOpacity>
+                    </View>
                 </View>
               </View>
 

@@ -123,7 +123,7 @@ function Theke_MachineForm({ navigation, route }) {
       // amount:"2221"
       // }
       {
-        job_id: item?.id,
+        job_id: JSON.stringify(item?.id),
         amount: amount,
       };
     console.log(params, "params");
@@ -138,6 +138,7 @@ function Theke_MachineForm({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setThekeperKam(data.data);
+      Toast.show( data.success, Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);

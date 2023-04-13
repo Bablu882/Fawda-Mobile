@@ -62,11 +62,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const [edit, setEdit] = useState(false);
+  const [editmale , setEditMale] = useState(false)
   const [refreshing, setRefreshing] = useState(false);
-  const [amount, setAmount] = useState({});
+  const [amountMale, setAmountMale] = useState({});
+  const [amountFemale, setAmountFemale] = useState({});
   const textInputRef = useRef(null);
   const handleClick = () => {
     setEdit(true);
+    setEditMale(true);
     textInputRef.current.focus();
   };
 
@@ -104,8 +107,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       // amount:"2221"
       // }
       {
-        job_id: item?.id,
-        amount: amount,
+        job_id: JSON.stringify(item?.id),
+        pay_amount_male : amountMale,
+        pay_amount_female: amountFemale
       };
     console.log(params, "params");
 
@@ -118,6 +122,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
+      Toast.show( data.success, Toast.LONG);
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
@@ -479,11 +484,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   placeholderTextColor={"#000"}
                 />
                 <TextInput
-                  editable={edit}
+                  // editable={editmale}
                   keyboardType="numeric"
                   ref={textInputRef}
-                  onChangeText={(amount) => setAmount(amount)}
-                  value={amount}
+                  onChangeText={(amountMale) => setAmountMale(amountMale)}
+                  value={amountMale}
                   style={{ paddingRight: 10 }}
                   defaultValue={item?.pay_amount_male}
                 />
@@ -504,11 +509,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   placeholderTextColor={"#000"}
                 />
                 <TextInput
-                  editable={edit}
+                  // editable={edit}
                   keyboardType="numeric"
                   ref={textInputRef}
-                  onChangeText={(amount) => setAmount(amount)}
-                  value={amount}
+                  onChangeText={(amountFemale) => setAmountFemale(amountFemale)}
+                  value={amountFemale}
                   style={{ paddingRight: 10 }}
                   defaultValue={item?.pay_amount_female}
                 />
@@ -532,6 +537,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                         onPress={() => {
                           handleClick();
                           setEdit(true);
+                          setEditMale(true)
                           console.log("edit:::::", edit);
                         }}
                         style={{
@@ -629,7 +635,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </Text>
               </View>
             )}
-
+          {item?.status === "Pending" && 
             <View>
               {usertype && usertype === "Grahak" && (
                 <View>
@@ -745,6 +751,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </View>
               )}
             </View>
+}
             {item?.status === "Pending" ? (
               <>
                 {usertype &&

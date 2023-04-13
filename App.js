@@ -42,7 +42,7 @@ import { Terms_Condition } from "./src/Terms&Condition";
 import { About_us } from "./src/AboutUs";
 import { Privacy_policy } from "./src/PrivacyPolicy";
 import Thankyou from "./src/Thankyou";
-
+import { navigationRef } from './service/NavigationService';
 
 
 
@@ -60,16 +60,17 @@ export default function App() {
     
     return(
       <RootSiblingParent>
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
           }}
+          initialRouteName="Login"
         >
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Login" component={Login}/>
           <Stack.Screen name="Verification" component={Verification} /> 
           <Stack.Screen name="Register" component={Register} /> 
           <Stack.Screen name="UserRegistration" component={UserRegistration} />

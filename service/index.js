@@ -2,7 +2,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Toast from 'react-native-simple-toast';
+import { CommonActions, navigation } from '@react-navigation/native';
+import { navigate } from './NavigationService';
+// import { DevSettings } from 'react-native';
 
+
+// const navigation = useNavigation();
 
 
 class Service {
@@ -31,39 +36,55 @@ class Service {
     return number.toFixed(2);
   };
 
-  customIosFilterValue = filterValue => {
-    let finalString = 'Filter';
-    switch (filterValue) {
-      case 'BEST_SELLING':
-        finalString = 'Best Selling';
-        break;
+  // customIosFilterValue = filterValue => {
+  //   let finalString = 'Filter';
+  //   switch (filterValue) {
+  //     case 'BEST_SELLING':
+  //       finalString = 'Best Selling';
+  //       break;
 
-      case 'RELEVANCE':
-        finalString = 'Featured';
-        break;
-      case 'CREATED_AT':
-        finalString = 'Newest';
-        break;
-      case 'PRICE1':
-        finalString = 'Price,low to high';
-        break;
-      case 'PRICE':
-        finalString = 'Price,high to low';
-        break;
-      default:
-        finalString = 'Filter';
-    }
-    return finalString;
-  };
+  //     case 'RELEVANCE':
+  //       finalString = 'Featured';
+  //       break;
+  //     case 'CREATED_AT':
+  //       finalString = 'Newest';
+  //       break;
+  //     case 'PRICE1':
+  //       finalString = 'Price,low to high';
+  //       break;
+  //     case 'PRICE':
+  //       finalString = 'Price,high to low';
+  //       break;
+  //     default:
+  //       finalString = 'Filter';
+  //   }
+  //   return finalString;
+  // };
 
   handleSuccess(response) {
     return response;
   }
 
   handleError = error => {
-    switch (error.status) {
+    console.log("Error object:", error);
+    console.log("Error message:", error.message);
+  console.log("Error status:", error.status);
+    switch (error.response.status) {
       case 401:
-        Toast.show(error.toString(), Toast.LONG);
+        //Toast.show(error.toString(), Toast.LONG);
+        Toast.show("here i am ", Toast.LONG);
+        console.log("hsdfdsfdsfdsfdsfsdf");
+        AsyncStorage.clear()
+        .then(() => {
+          console.log('AsyncStorage successfully cleared.');
+          // navigation.navigate('Login');
+          // DevSettings.reload();
+          navigate('Login');
+
+        })
+        .catch((err) => {
+          console.log('Error clearing AsyncStorage: ', err);
+        });
         break;
       case 404:
         Toast.show(error.toString(), Toast.LONG);
