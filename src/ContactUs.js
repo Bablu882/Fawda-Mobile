@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
 import Service from "../service/index";
-import * as Linking from 'expo-linking';
+import * as Linking from "expo-linking";
 
 import Toast from "react-native-simple-toast";
 
@@ -27,22 +27,20 @@ export default function ContactUs({ navigation, route }) {
   const token = useSelector(selectToken);
   const [phoneno, setphoneno] = useState("");
   const [state, setState] = useState("");
-  // const [termsCondition , setTermsCondition] = useState("");
-  // const [privacy , setPrivacy] = useState("");
-  // const [appVersion , setAppVersion] = useState("");
-  const [Data , setData] = useState("")
-  // const [location, setLocation] = useState({ latitude: "", longitude: "" });
+  const dispatch = useDispatch();
+  const [Data, setData] = useState("");
 
-  
   function handleCallPress() {
     const url = `tel:${phoneno}`;
-    Linking.canOpenURL(url)?.then(supported => {
-      if (!supported) {
-        console.log('Phone number is not available');
-      } else {
-        return Linking.openURL(url);
-      }
-    }).catch(err => console.error('An error occurred', err));
+    Linking.canOpenURL(url)
+      ?.then((supported) => {
+        if (!supported) {
+          console.log("Phone number is not available");
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
   }
 
   const validatePhone = () => {
@@ -56,64 +54,79 @@ export default function ContactUs({ navigation, route }) {
     }
   };
 
-
- const detailList = async() => {
-  try {
-    const response = await Service.get("/api/client_user_info/", {
-      headers: {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`,
-      }
-    });
-
-    const data = response.data;
-    console.log(data , "data response");
-    setState(data.user_details);
-    setphoneno(data?.client_info?.phone_no)
-    console.log(phoneno, "checkhone");
-    // setAppVersion(data.app_version);
-    // setPrivacy(data.privacy_policy);
-    // setTermsCondition(data.client_info.terms_condition);
-    setData(data)
-    console.log(Data , "terms");  
-    
-  } catch (error) {
-    console.log("error" , error);
-  }
-};
-
-  
-  useEffect(() => {
-   detailList()
-  }, [0]);
-
-  console.log(token , 'token');
-  const Logout = async() => {
+  const detailList = async () => {
     try {
-      const response = await Service.post("/api/logout/", {
+      const response = await Service.get("/api/client_user_info/", {
         headers: {
-          "Content-Type" : "application/json",
-          'Authorization': `Bearer b4712bfa89ee5211f5a7a066997502ae76a90726`,
-        }
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
-  
+
       const data = response.data;
-      console.log(data , "data response");
-      if(data?.success) {
-         navigation.replace("Login")
-      }
-      // console.log(phoneno, "checkhone");
+      console.log(data, "data response");
+      setState(data.user_details);
+      setphoneno(data?.client_info?.phone_no);
+      console.log(phoneno, "checkhone");
       // setAppVersion(data.app_version);
       // setPrivacy(data.privacy_policy);
       // setTermsCondition(data.client_info.terms_condition);
-      // setData(data)
-      // console.log(Data , "terms");  
-      
+      setData(data);
+      console.log(Data, "terms");
     } catch (error) {
-      console.log("error" , error);
+      console.log("error", error);
     }
-  }
- 
+  };
+
+  useEffect(() => {
+    detailList();
+  }, [0]);
+
+
+  const Logout = () => {
+    
+    Service.post("/api/logout/", null, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        let data = res?.data;
+        navigation.replace("Login");
+        console.log("fjfjf", data);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
+  // const Logout = async() => {
+  //   try {
+  //     const response = await Service.post("/api/logout/", {
+  //       headers: {
+  //         "Content-Type" : "application/json",
+  //         'Authorization': `Bearer ${token}`
+  //       }
+  //     });
+
+  //     const data = response.data;
+  //     console.log(response.data , "data response");
+  //     if(data?.success) {
+  //        navigation.replace("Login")
+  //     }
+  //     // console.log(phoneno, "checkhone");
+  //     // setAppVersion(data.app_version);
+  //     // setPrivacy(data.privacy_policy);
+  //     // setTermsCondition(data.client_info.terms_condition);
+  //     // setData(data)
+  //     // console.log(Data , "terms");
+
+  //   } catch (error) {
+  //     console.log("error" , error);
+  //   }
+  // }
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -153,21 +166,24 @@ export default function ContactUs({ navigation, route }) {
                 <Text
                   style={[
                     styles.TextInput,
-                    { width: "90%", marginHorizontal: 10, marginTop:3 },
+                    { width: "90%", marginHorizontal: 10, marginTop: 3 },
                   ]}
-               
                   placeholder=""
                   placeholderTextColor={"#848484"}
                   // onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
                   // // defaultValue={email}
                   // value={phoneno}
-                >{phoneno}</Text>
+                >
+                  {phoneno}
+                </Text>
                 {/* {!!errors.phoneno && (
                   <Text style={styles.error}>{errors.phoneno}</Text>
                 )} */}
               </View>
               <TouchableOpacity
-              onPress={() => {handleCallPress()}}
+                onPress={() => {
+                  handleCallPress();
+                }}
                 style={{
                   position: "absolute",
                   right: 0,
@@ -207,7 +223,9 @@ export default function ContactUs({ navigation, route }) {
                 style={styles.TextInput}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-                >{state.name}</Text>
+              >
+                {state.name}
+              </Text>
               {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
@@ -216,7 +234,9 @@ export default function ContactUs({ navigation, route }) {
                 style={styles.TextInput}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-              >{state.gender}</Text>
+              >
+                {state.gender}
+              </Text>
               {/* {!!errors.phoneno && (
                 <Text style={styles.error}>{errors.phoneno}</Text>
               )} */}
@@ -227,7 +247,9 @@ export default function ContactUs({ navigation, route }) {
                 style={styles.TextInput}
                 placeholder=""
                 placeholderTextColor={"#848484"}
-               >{state.phone}</Text>
+              >
+                {state.phone}
+              </Text>
               {/* {!!errors.phoneno && (
                 <Text style={styles.error}>{errors.phoneno}</Text>
               )} */}
@@ -239,8 +261,10 @@ export default function ContactUs({ navigation, route }) {
                 <Text
                   style={styles.TextInput}
                   placeholder=""
-                  placeholderTextColor={"#848484"}  
-                >{state.mohalla}</Text>
+                  placeholderTextColor={"#848484"}
+                >
+                  {state.mohalla}
+                </Text>
                 {/* {!!errors.mohalla && (
                   <Text style={styles.error}>{errors.mohalla}</Text>
                 )} */}
@@ -251,7 +275,9 @@ export default function ContactUs({ navigation, route }) {
                   style={styles.TextInput}
                   placeholder=""
                   placeholderTextColor={"#848484"}
-              >{state.village}</Text>
+                >
+                  {state.village}
+                </Text>
                 {/* {!!errors.village && (
                   <Text style={styles.error}>{errors.village}</Text>
                 )} */}
@@ -266,36 +292,43 @@ export default function ContactUs({ navigation, route }) {
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>जिला</Text>
                 <Text style={styles.TextInput}>{state.district}</Text>
-          
               </View>
             </View>
-            <View style={{paddingTop:30}}>
+            <View style={{ paddingTop: 30 }}>
               <View style={styles.flexbetween}>
                 <Text>हमारे बारे में </Text>
-                <TouchableOpacity 
-                onPress={() => navigation.navigate("about_us" , {
-                  terms : Data,
-                })}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("about_us", {
+                      terms: Data,
+                    })
+                  }
                 >
-                <Icon name="right" size={18} color="#0099FF" />
+                  <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
                 <Text>नियम और शर्तें </Text>
-                <TouchableOpacity 
-                onPress={() => navigation.navigate("terms" , {
-                  terms : Data,
-                })}>
-                <Icon name="right" size={18} color="#0099FF" />
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("terms", {
+                      terms: Data,
+                    })
+                  }
+                >
+                  <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
                 <Text>प्राइवेसी नीति</Text>
                 <TouchableOpacity
-                onPress={() => navigation.navigate("privacy" , {
-                  terms : Data,
-                })}>
-                <Icon name="right" size={18} color="#0099FF" />
+                  onPress={() =>
+                    navigation.navigate("privacy", {
+                      terms: Data,
+                    })
+                  }
+                >
+                  <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
@@ -305,24 +338,16 @@ export default function ContactUs({ navigation, route }) {
                 //   terms : Data,
                 // })}
                 >
-                <Icon name="right" size={18} color="#0099FF" />
+                  <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
-              <View>
-                
-                </View>
-                <View>
-                
-                </View>
-                <View>
-                
-                </View>
+              <View></View>
+              <View></View>
+              <View></View>
             </View>
             <TouchableOpacity
               onPress={() => {
-                Logout()
-                  // navigation.navigate("Home")
-                
+                Logout();
               }}
               style={styles.loginBtn}
             >
@@ -427,7 +452,10 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
   },
-  flexbetween:{
-    flexDirection:'row', justifyContent:'space-between',paddingBottom:10, alignItems:'center'
-  }
+  flexbetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingBottom: 10,
+    alignItems: "center",
+  },
 });
