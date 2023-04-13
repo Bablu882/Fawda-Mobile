@@ -227,7 +227,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               {moment.utc(item?.datetime).format("l")}
             </Text>
             <Text style={styles.TextInput}>
-            {moment.utc(item?.datetime).format("LT")}
+              {moment.utc(item?.datetime).format("LT")}
             </Text>
           </View>
 
@@ -253,14 +253,15 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               />
               <Text style={{ marginRight: 8, color: "#0099FF" }}>
                 {item?.land_area}
-                {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+                {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
               </Text>
             </View>
             <View
               style={[
                 styles.TaxView,
                 styles.flex,
-                styles.justifyContentBetween,{alignItems:'center'}
+                styles.justifyContentBetween,
+                { alignItems: "center" },
               ]}
             >
               <TextInput
@@ -268,7 +269,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ color: "#0099FF", paddingRight:10 }}>
+              <Text style={{ color: "#0099FF", paddingRight: 10 }}>
                 ₹ {item?.total_amount_sahayak}
               </Text>
             </View>
@@ -284,7 +285,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               { flexWrap: "wrap" },
             ]}
           ></View> */}
-
+     
           <View
             style={{
               display: "flex",
@@ -292,59 +293,52 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               alignItems: "center",
               marginTop: 15,
               width: "100%",
+              flexWrap: "wrap",
             }}
           >
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: "#0070C0",
-                borderTopLeftRadius: 5,
-                borderBottomLeftRadius: 5,
-                width: "25%",
-                height: 45,
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ textAlign: "center" }}>पुरुष</Text>
-            </View>
-
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: "#0070C0",
-                width: "25%",
-                height: 45,
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ textAlign: "center" }}>पुरुष</Text>
-            </View>
-
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: "#0070C0",
-                width: "25%",
-                height: 45,
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ textAlign: "center" }}>महिला</Text>
-            </View>
-
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: "#0070C0",
-                borderTopRightRadius: 5,
-                borderBottomRightRadius: 5,
-                width: "25%",
-                height: 45,
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ textAlign: "center" }}>महिला </Text>
-            </View>
+            {[...Array(parseInt(item?.count_male)).keys()].map((index) => (
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#0070C0",
+                  borderTopLeftRadius: 5,
+                  borderBottomLeftRadius: 5,
+                  width: "25%",
+                  height: 45,
+                  justifyContent: "center",
+                }}
+                key={index}
+              >
+                <TextInput
+                  style={styles.CheckTextInput}
+                  placeholder="पुरषो"
+                  placeholderTextColor={"#000"}
+                  name={`Male${index + 1}`}
+                />
+              </View>
+            ))}
+            {[...Array(parseInt(item?.count_female)).keys()].map((index) => (
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#0070C0",
+                  borderTopLeftRadius: 5,
+                  borderBottomLeftRadius: 5,
+                  width: "25%",
+                  height: 45,
+                  justifyContent: "center",
+                }}
+                key={index}
+              >
+                <TextInput
+                  style={styles.CheckTextInput}
+                  placeholder="महिला"
+                  placeholderTextColor={"#101010"}
+                  name={`Female${index + 1}`}
+                />
+              </View>
+            ))}
+            {/* <Text style={{ textAlign: "center" }}>पुरुष</Text> */}
           </View>
 
           {/* end */}
@@ -421,7 +415,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </View>
           </View>
 
-          { status === "Completed" ? (
+          {status === "Completed" ? (
             ""
           ) : (
             <>
@@ -599,7 +593,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </View>
           )}
 
-          { status === "Ongoing" ? (
+          {status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -742,7 +736,7 @@ const styles = StyleSheet.create({
   },
 
   BhuktanBtn: {
-    width: "85%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
