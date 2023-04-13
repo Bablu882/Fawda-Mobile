@@ -244,7 +244,7 @@ export default function BottomTab() {
           ),
         }}
       />
-  <Tab.Screen
+  {/* <Tab.Screen
         name="Thankyou"
         component={Thankyou}
         options={{
@@ -282,7 +282,7 @@ export default function BottomTab() {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="ContactUs"
         component={ContactUs}
