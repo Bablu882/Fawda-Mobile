@@ -185,6 +185,7 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
+      navigation.replace("HomePage")
       // setStatus(data.status);
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useCallback} from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -18,6 +19,7 @@ import service from "../service";
 import moment from "moment";
 
 export default function Homepage({ navigation, route }) {
+  const [refreshing, setRefreshing] = useState(false);
   const [currentUsers, setCurrentUsers] = useState([]);
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +34,10 @@ export default function Homepage({ navigation, route }) {
 
   const getalljobs = async () => {
     setIsLoading(true); // Show loader while fetching data
+    setRefreshing(true);
     try {
-      const response = await service.get("/api/nearjob/", {
+      const cacheBuster = new Date().getTime(); // generate a unique timestamp
+      const response = await service.get(`/api/nearjob/?cacheBuster=${cacheBuster}`, {
         headers: {
           "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`
@@ -45,8 +49,17 @@ export default function Homepage({ navigation, route }) {
       console.log("Error:", error);
     } finally {
       setIsLoading(false); 
+      setRefreshing(false);
     }
   };
+
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getalljobs().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
 
   useEffect(() => {
     getalljobs();
@@ -64,7 +77,17 @@ export default function Homepage({ navigation, route }) {
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       {!isLoading && (
-        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+        horizontal={false} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            // Myjobs={Myjobs}
+          />
+        }
+        >
           {usertype === "Sahayak" || usertype === "MachineMalik" ? (
             <>
               <View
