@@ -220,6 +220,7 @@ export default function MachineWork({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
+      navigation.replace("HomePage")
       Toast.show("Cancelled", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
@@ -229,7 +230,7 @@ export default function MachineWork({ navigation, route }) {
 
   const Rejected = async () => {
     let params = {
-      booking_id: item?.booking_id,
+      booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected",
     };
 
@@ -244,6 +245,7 @@ export default function MachineWork({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
+      navigation.replace("HomePage")
       console.log(data, "sds");
       Toast.show("Rejected", Toast.LONG);
     } catch (error) {

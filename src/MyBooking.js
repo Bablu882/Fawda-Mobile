@@ -36,7 +36,8 @@ export default function MyBooking({ navigation, route }) {
     setIsLoading(true); // set isLoading to true when the function starts
     setRefreshing(true);
     try {
-      const response = await service.get("api/my_booking_details/", {
+      const cacheBuster = new Date().getTime(); // generate a unique timestamp
+      const response = await service.get(`api/my_booking_details/?cacheBuster=${cacheBuster}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -56,10 +57,11 @@ export default function MyBooking({ navigation, route }) {
   };
 
   const Myjobs = async () => {
+    setIsLoading(true); // set isLoading to true when the function starts
+    setRefreshing(true); // set refreshing to true when the function starts
     try {
-      setIsLoading(true); // set isLoading to true when the function starts
-      setRefreshing(true); // set refreshing to true when the function starts
-      const response = await service.get("/api/myjobs/", {
+      const cacheBuster = new Date().getTime(); // generate a unique timestamp
+      const response = await service.get(`/api/myjobs/?cacheBuster=${cacheBuster}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -81,6 +83,10 @@ export default function MyBooking({ navigation, route }) {
     Myjobs().then(() => {
       setRefreshing(false);
     });
+    booking().then(() =>{
+      setRefreshing(false);
+    }
+    )
   }, []);
   useEffect(() => {
     booking(), Myjobs();
@@ -206,7 +212,7 @@ export default function MyBooking({ navigation, route }) {
                           </View>
                         </View>
                       ))}
-                         {sahaykBooking?.length > 0 &&
+                    {sahaykBooking?.length > 0 &&
                       sahaykBooking?.map((item) => (
                         <View
                           style={{
@@ -264,7 +270,11 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
+                                  {item.status === "Accepted"
+                                    ? "स्वीकृत"
+                                    : item?.status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
                                 </Text>
                               </TouchableOpacity>
                             ) : item?.status === "Ongoing" ||
@@ -417,7 +427,7 @@ export default function MyBooking({ navigation, route }) {
                     </View> */}
                         </View>
                       ))}
-                     {machineBooking?.map((item, index) => (
+                    {machineBooking?.map((item, index) => (
                       // {console.log('machine', machinePending)}
                       <View
                         key={item.id}
@@ -448,57 +458,61 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                             {item.status === "Accepted" ||
-                            item?.status === "Completed" ? (
-                              <TouchableOpacity
+                          {item.status === "Accepted" ||
+                          item?.status === "Completed" ? (
+                            <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
                                   item,
                                   id: item?.id,
                                 });
                               }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
                               >
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                 {item.status ==="Accepted" ?  "स्वीकृत" : item?.status === "Completed" ? 'समाप्त' : null}
-                                </Text>
-                              </TouchableOpacity>
-                            ) : item?.status === "Ongoing" ||
-                              item?.status === "Booked" ? (
-                              <TouchableOpacity
+                                {item.status === "Accepted"
+                                  ? "स्वीकृत"
+                                  : item?.status === "Completed"
+                                  ? "समाप्त"
+                                  : null}
+                              </Text>
+                            </TouchableOpacity>
+                          ) : item?.status === "Ongoing" ||
+                            item?.status === "Booked" ? (
+                            <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork2", {
                                   item,
                                   id: item?.id,
                                 });
                               }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
                               >
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  {item.status === "Ongoing"
-                                    ? "काम जारी"
-                                    : item?.status === "Booked"
-                                    ? " काम बुक"
-                                    : item?.status === "Completed"
-                                    ? "समाप्त"
-                                    : null}
-                                </Text>
-                              </TouchableOpacity>
-                            ) : null}
+                                {item.status === "Ongoing"
+                                  ? "काम जारी"
+                                  : item?.status === "Booked"
+                                  ? " काम बुक"
+                                  : item?.status === "Completed"
+                                  ? "समाप्त"
+                                  : null}
+                              </Text>
+                            </TouchableOpacity>
+                          ) : null}
                           {/* <TouchableOpacity
                             onPress={() => {
                               navigation.navigate("MachineWork", {
@@ -560,7 +574,6 @@ export default function MyBooking({ navigation, route }) {
                         </View>
                       </View>
                     ))}
-
                   </>
 
                   <View
