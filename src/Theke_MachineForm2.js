@@ -201,6 +201,7 @@ function Theke_MachineForm2({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
+      navigation.replace("HomePage")
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
@@ -224,7 +225,7 @@ function Theke_MachineForm2({ navigation, route }) {
             {item.job_type === "individuals_sahayak"
               ? "सहायक के काम "
               : item.job_type === "theke_pe_kam"
-              ? "ठेकेदार"
+              ? "ठेके पर काम"
               : ""}
           </Text>
           <View
@@ -271,11 +272,11 @@ function Theke_MachineForm2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
-                placeholder={item?.land_area}
+                placeholder="भूमि क्षेत्र "
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+              {item?.land_area}   {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
               </Text>
             </View>
             <View
@@ -375,7 +376,7 @@ function Theke_MachineForm2({ navigation, route }) {
             </View>
           </View>
 
-          {item.status === "Completed" ? (
+          {status === "Completed" ? (
             ""
           ) : (
             <>
@@ -535,7 +536,6 @@ function Theke_MachineForm2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          { item?.status === "Booked" ? 
              
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
@@ -553,20 +553,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   </Text>
                 </TouchableOpacity>
               </View>
-              : status ==="Completed" || "Ongoing"?
-              <View style={{ marginTop: "auto", padding: 5 , display:'none'}}>
-              <TouchableOpacity
-              
-                style={{
-                
-                }}
-              >
-                <Text style={{ textAlign: "center", color: "#fff" }}>
-                  रद्द करें
-                </Text>
-              </TouchableOpacity>
-            </View>
-            : null}
+             
         </View>
       </ScrollView>
     </SafeAreaView>
