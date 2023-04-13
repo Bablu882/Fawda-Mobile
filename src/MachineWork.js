@@ -61,21 +61,25 @@ export default function MachineWork({ navigation, route }) {
     setEdit(true);
     textInputRef?.current?.focus();
   };
+
+
   const onAcceptPress = async () => {
     try {
       setIsLoading(true);
       let params = {
-        job_id: item?.id,
-        amount,
+        job_id: JSON.stringify(item?.id),
+        amount: amount,
       };
-      const response = await service.post("/api/edit_thekepekam/", params, {
+      console.log(params, "params");
+
+      const response = await service.post("/api/edit_machine/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
       let data = response.data;
-      setEdit(false);
+      Toast.show( data.success, Toast.LONG);
       console.log("data", data);
     } catch (error) {
       console.log(error);
