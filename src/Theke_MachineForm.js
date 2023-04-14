@@ -208,7 +208,7 @@ function Theke_MachineForm({ navigation, route }) {
 
   const cancel = async () => {
     let params = {};
-    if (item.status === "Accepted") {
+    if (item.booking_status === "Accepted") {
       params = {
         job_id: item?.id,
         job_number: item?.job_number,
@@ -471,18 +471,18 @@ function Theke_MachineForm({ navigation, route }) {
                     <View style={{ width: "30%", marginRight: 10 }}>
                       {item?.status === "Pending"
                         ? getStatusButton(item.status, "पेंडिंग")
-                        : item?.status === "Accepted"
-                        ? getStatusButton(item.status, "स्वीकार")
-                        : item?.status === "Booked"
-                        ? getStatusButton(item.status, "बुक्ड")
-                        : item?.status === "Ongoing"
-                        ? getStatusButton(item.status, "जारी है ")
-                        : item?.status === "Completed"
-                        ? getStatusButton(item.status, "समाप्त")
+                        : item?.booking_status === "Accepted"
+                        ? getStatusButton(item?.booking_status, "स्वीकार")
+                        : item?.booking_status === "Booked"
+                        ? getStatusButton(item.booking_status, "बुक्ड")
+                        : item?.booking_status === "Ongoing"
+                        ? getStatusButton(item.booking_status, "जारी है ")
+                        : item?.booking_status === "Completed"
+                        ? getStatusButton(item.booking_status, "समाप्त")
                         : null}
                     </View>
                   </View>
-                  {item.status === "Accepted" && (
+                  {item.booking_status === "Accepted" && (
                     <TouchableOpacity
                       style={styles.BhuktanBtn}
                       onPress={() =>
@@ -503,7 +503,7 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.status === "Booked" && (
+                  {item.booking_status === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -513,7 +513,7 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.status === "Ongoing" && (
+                  {item?.booking_status === "Ongoing" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -523,7 +523,7 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.status === "Completed" && (
+                  {item?.booking_status === "Completed" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
