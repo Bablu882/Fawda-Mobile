@@ -360,6 +360,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   समाप्त{" "}
                 </Text>
               ) : (
+               
                 <Text
                   style={{
                     textAlign: "center",
@@ -369,8 +370,18 @@ function Theke_MachineForm2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {/* {bookingid?.status} */}
-                  बुक
+                  {item.booking_status === "Booked" ?
+                     "बुक"
+                     :
+                     item.booking_status === "Ongoing" ?
+                     "जारी है"
+                     :
+                     item.booking_status === "Completed" ?
+                     "समाप्त"
+                     :
+                     ""
+                  }
+                  
                   {console.log("")}
                 </Text>
               )}
@@ -532,7 +543,18 @@ function Theke_MachineForm2({ navigation, route }) {
               onPress={() => onGoing()}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम शुरू करें
+                {item.booking_status === "Ongoing" ?
+                "काम पूरा हुआ"
+                :
+                item.booking_status === "Booked" ?
+                "काम शुरू करें"
+                :
+                item.booking_status === "Completed" ?
+                "समाप्त"
+                :
+                ""
+                }
+                {/* {item.booking_status} */}
               </Text>
             </TouchableOpacity>
           )}
