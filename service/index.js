@@ -72,7 +72,7 @@ class Service {
     switch (error.response.status) {
       case 401:
         //Toast.show(error.toString(), Toast.LONG);
-        Toast.show("here i am ", Toast.LONG);
+        // Toast.show("here i am ", Toast.LONG);
         console.log("hsdfdsfdsfdsfdsfsdf");
         AsyncStorage.clear()
         .then(() => {

@@ -50,7 +50,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
       const data = response?.data;
       // setThekeperKam(data.data);
-      console.log("fjfjf", data);
+      navigation.navigate("HomePage")
+      console.log("fjfjf", data.status);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -369,7 +370,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             <View
               style={{
                 height: 30,
-                backgroundColor: "#44A347",
+                backgroundColor: "#0099FF",
                 marginRight: 10,
                 marginTop: 8,
                 width: "30%",
@@ -594,7 +595,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                   borderColor: "#0099FF",
                 }}
               >
-                <TextInput onChangeText={setComment} value={comments} />
+                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
               </View>
             </View>
           )}

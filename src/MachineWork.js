@@ -544,7 +544,7 @@ export default function MachineWork({ navigation, route }) {
                       placeholder="काम की स्थिति"
                       placeholderTextColor={"#000"}
                     />
-                       <View style={{ width: "30%", marginRight: 10 }}>
+                       {/* <View style={{ width: "30%", marginRight: 10 }}> */}
                        <View style={{ width: "30%", marginRight: 10 }}>
                       {item?.status === "Pending"
                         ? getStatusButton(item.status, "पेंडिंग")
@@ -557,7 +557,7 @@ export default function MachineWork({ navigation, route }) {
                         : item?.status === "Completed"
                         ? getStatusButton(item.status, "समाप्त")
                         : null}
-                    </View>
+                    {/* </View> */}
                     </View>
 
                     {/* <View
@@ -660,13 +660,7 @@ export default function MachineWork({ navigation, route }) {
                         </Text>
                       </TouchableOpacity>
                     )}
-                     {item.status === "Completed" && (
-                      <TouchableOpacity style={styles.BhuktanBtn}>
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
-                        समाप्त
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                     
                   </>
                 ) : null}
                 {usertype === "Sahayak" ||
