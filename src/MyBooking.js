@@ -179,7 +179,7 @@ export default function MyBooking({ navigation, route }) {
                               onPress={() => {
                                 if (
                                   item.job_type === "individuals_sahayak" &&
-                                  item.status === "Pending"
+                                  item?.status === "Pending"
                                 ) {
                                   navigation.navigate("MyBook_SahayakForm", {
                                     id: item.id,
@@ -187,7 +187,7 @@ export default function MyBooking({ navigation, route }) {
                                   });
                                 } else if (
                                   item.job_type === "theke_pe_kam" &&
-                                  item.status === "Pending"
+                                  item?.status === "Pending"
                                 ) {
                                   navigation.navigate("Theke_MachineForm", {
                                     item,
@@ -195,7 +195,7 @@ export default function MyBooking({ navigation, route }) {
                                 }
                               }}
                             >
-                              {item.status === "Pending" && (
+                              {item?.status === "Pending" && (
                                 <Text
                                   style={{
                                     textAlign: "center",
@@ -245,8 +245,8 @@ export default function MyBooking({ navigation, route }) {
                               marginTop: 10,
                             }}
                           >
-                            {item.status === "Accepted" ||
-                            item?.status === "Completed" ? (
+                            {item.booking_status === "Accepted" ||
+                            item?.booking_status === "Completed" ? (
                               <TouchableOpacity
                                 onPress={() => {
                                   if (item.job_type === "individuals_sahayak") {
@@ -270,15 +270,15 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                  {item.status === "Accepted"
+                                  {item?.booking_status === "Accepted"
                                     ? "स्वीकृत"
-                                    : item?.status === "Completed"
+                                    : item?.booking_status === "Completed"
                                     ? "समाप्त"
                                     : null}
                                 </Text>
                               </TouchableOpacity>
-                            ) : item?.status === "Ongoing" ||
-                              item?.status === "Booked" ? (
+                            ) : item?.booking_status === "Ongoing" ||
+                              item?.booking_status === "Booked" ? (
                               <TouchableOpacity
                                 onPress={() => {
                                   if (item.job_type === "individuals_sahayak") {
@@ -302,11 +302,11 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                  {item.status === "Ongoing"
+                                  {item?.booking_status === "Ongoing"
                                     ? "काम जारी"
-                                    : item?.status === "Booked"
+                                    : item?.booking_status === "Booked"
                                     ? " काम बुक"
-                                    : item?.status === "Completed"
+                                    : item?.booking_status === "Completed"
                                     ? "समाप्त"
                                     : null}
                                 </Text>
@@ -458,8 +458,8 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                          {item.status === "Accepted" ||
-                          item?.status === "Completed" ? (
+                          {item.booking_status === "Accepted" ||
+                          item?.booking_status === "Completed" ? (
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
@@ -477,15 +477,15 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                 }}
                               >
-                                {item.status === "Accepted"
+                                {item.booking_status === "Accepted"
                                   ? "स्वीकृत"
-                                  : item?.status === "Completed"
+                                  : item?.booking_status === "Completed"
                                   ? "समाप्त"
                                   : null}
                               </Text>
                             </TouchableOpacity>
-                          ) : item?.status === "Ongoing" ||
-                            item?.status === "Booked" ? (
+                          ) : item?.booking_status === "Ongoing" ||
+                            item?.booking_status === "Booked" ? (
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork2", {
@@ -503,11 +503,11 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                 }}
                               >
-                                {item.status === "Ongoing"
+                                {item.booking_status === "Ongoing"
                                   ? "काम जारी"
-                                  : item?.status === "Booked"
+                                  : item?.booking_status === "Booked"
                                   ? " काम बुक"
-                                  : item?.status === "Completed"
+                                  : item?.booking_status === "Completed"
                                   ? "समाप्त"
                                   : null}
                               </Text>

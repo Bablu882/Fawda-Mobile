@@ -51,7 +51,8 @@ export default function Login({ navigation }) {
         // dispatch(setToken(loginResponse?.token));
         Toast.show(JSON.stringify(loginResponse.otp), Toast.LONG);
         navigation.replace("Verification", {
-          user_type: loginResponse.user_type,
+          user_type: loginResponse.user_type, 
+          phone
         });
       } else {
         Toast.show("User is not Registered", Toast.SHORT);
