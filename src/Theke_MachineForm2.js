@@ -131,32 +131,52 @@ function Theke_MachineForm2({ navigation, route }) {
   //   fetchBookings();
   // }, [0]);
 
-  const onGoing = async () => {
-    let params = {
-      booking_id: JSON.stringify(item?.booking_id),
-    };
-    console.log("fhsfhdfhdfh", params);
+  // const onGoing = async () => {
+  //   let params = {
+  //     booking_id: JSON.stringify(item?.booking_id),
+  //   };
+  //   console.log("fhsfhdfhdfh", params);
 
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, 
-      // console.log(response);
+  //   try {
+  //     const response = await service.post("/api/booking_ongoing/", params, 
+  //     // console.log(response);
       
-      {
+  //     {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(response, "check status");
+  //     const data = response?.data;
+  //     setStatus(data?.booking_status);
+  //     Toast.show(data.message , Toast.LONG)
+  //     console.log('jdjddjd', status)
+  //     // setThekeperKam(data.data);
+  //     console.log("fjfjf", data);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
+  const onGoing = () =>{
+    let params = {
+          booking_id: JSON.stringify(item?.booking_id),
+        };
+        console.log(params);
+      service.post('/api/booking_ongoing/', params,{
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response, "check status");
-      const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+      }).then((res) => {
+        let data =  res?.data;
+        setStatus(data.booking_status);
+        console.log(data)
+      }).catch((error) => {
+        console.log('error', error)
+      })
+  }
+
 
   const Completed = async () => {
     let params = {
@@ -172,9 +192,9 @@ function Theke_MachineForm2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      console.log(status, "check status");
+      setStatus(data?.booking_status);
+      console.log('jdjddjd', status)
+      Toast.show(data.message , Toast.LONG)
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
@@ -373,6 +393,9 @@ function Theke_MachineForm2({ navigation, route }) {
                   {item.booking_status === "Booked" ?
                      "बुक"
                      :
+                     item.booking_status === "Accepted" ?
+                     "स्वीकार" 
+                     :
                      item.booking_status === "Ongoing" ?
                      "जारी है"
                      :
@@ -547,6 +570,9 @@ function Theke_MachineForm2({ navigation, route }) {
                 "काम पूरा हुआ"
                 :
                 item.booking_status === "Booked" ?
+                "ddd"
+                :
+                item.booking_status === "Accepted" ?
                 "काम शुरू करें"
                 :
                 item.booking_status === "Completed" ?

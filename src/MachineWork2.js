@@ -136,7 +136,8 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data.status);
+      setStatus(data?.booking_status);
+      Toast.show(data.message , Toast.LONG)
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -158,9 +159,9 @@ function MachineWork2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data.status);
+      setStatus(data?.booking_status);
+      Toast.show(data.message , Toast.LONG)
       console.log(status, "check status");
-     
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {

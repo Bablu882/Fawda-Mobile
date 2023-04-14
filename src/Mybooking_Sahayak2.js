@@ -129,7 +129,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data?.status);
+      setStatus(data?.booking_status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -151,7 +151,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         },
       });
       const data = response?.data;
-      setStatus(data?.status);
+      setStatus(data?.booking_status);
       console.log(status, "check status");
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
@@ -412,8 +412,17 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                       fontWeight: "600",
                     }}
                   >
-                    {/* {bookingid?.status} */}
-                    बुक
+                    {item.booking_status === "Accepted" ?
+                     "बुक"
+                     :
+                     item.booking_status === "Ongoing" ?
+                     "जारी है"
+                     :
+                     item.booking_status === "Completed" ?
+                     "समाप्त"
+                     :
+                     ""
+                  }
                     {console.log("")}
                   </Text>
                 )}
@@ -600,7 +609,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </View>
           )}
 
-          {status === "Ongoing" ? (
+         {status === "Ongoing" || item.booking_status === "Ongoing"? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => Completed()}
@@ -624,7 +633,19 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               <Text style={[styles.loginText, { color: "#fff" }]}>
                 काम शुरू करें
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> 
+            // :
+            // {item.booking_status === "Ongoing" ?
+            // "काम पूरा हुआ"
+            // :
+            // item.booking_status === "Booked" ?
+            // "काम शुरू करें"
+            // :
+            // item.booking_status === "Completed" ?
+            // "समाप्त"
+            // :
+            // ""
+            // }
           )}
 
           {status === "Ongoing" ||

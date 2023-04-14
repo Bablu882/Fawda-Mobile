@@ -289,6 +289,7 @@ export default function MyBooking({ navigation, route }) {
                                   } else if (item.job_type === "theke_pe_kam") {
                                     navigation.navigate("Theke_MachineForm2", {
                                       item,
+                                      id: item.id,
                                     });
                                   }
                                 }}
