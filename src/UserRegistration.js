@@ -155,7 +155,7 @@ export default function UserRegistration({ navigation, route }) {
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
         console.log("fjfjfjf", data);
 
-        navigation.replace("Verification", { user_type: user });
+        navigation.replace("Verification", { user_type: user, phone });
         console.log("djdjkd", user_type);
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
