@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fawda",
-    "slug": "demo_app",
+    "slug": "fawda",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,21 +14,23 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ayushimishra.demo_app"
+      "package": "in.fawda.app"
     },
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "888c8e29-18fb-4d45-9460-676c2752821f"
+        "projectId": "748e67ac-6fec-4f34-99b6-aa8198d3adc4"
       }
-    }
+    },
+    "owner": "webnyxa"
   }
 }
