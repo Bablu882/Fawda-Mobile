@@ -56,6 +56,7 @@ function MachineWork2({ navigation, route }) {
       });
       const data = response?.data;
       // setThekeperKam(data.data);
+      navigation.navigate("HomePage")
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -159,6 +160,7 @@ function MachineWork2({ navigation, route }) {
       const data = response?.data;
       setStatus(data.status);
       console.log(status, "check status");
+     
       // setThekeperKam(data.data);
       console.log("fjfjf", data);
     } catch (error) {
@@ -305,7 +307,7 @@ function MachineWork2({ navigation, route }) {
               style={{
                 width: "30%",
                 height: 30,
-                backgroundColor: "#44A347",
+                backgroundColor: "#0099FF",
                 marginRight: 10,
                 marginTop: 8,
               }}
@@ -442,7 +444,7 @@ function MachineWork2({ navigation, route }) {
                   borderColor: "#0099FF",
                 }}
               >
-                <TextInput onChangeText={setComment} value={comments} />
+                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
               </View>
             </View>
           )}
