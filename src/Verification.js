@@ -14,8 +14,8 @@ import { selectToken, setUserType } from "../slices/authSlice";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
 
 export default function Verification({ navigation, route }) {
-  const { user_type } = route?.params??{};
-  // console.log("hddjdj", user_type);
+  const { user_type, phone } = route?.params??{};
+  console.log("hddjdj", user_type, phone);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const [otp, setOtp] = useState("");
@@ -29,7 +29,7 @@ export default function Verification({ navigation, route }) {
       // Send verification request to server
       const verifyResponse = await Service.post(
         "/api/verify/",
-        { otp },
+        { otp , phone },
         {
           headers: {
             "Content-Type": "application/json",
