@@ -32,30 +32,40 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [status, setStatus] = useState("");
-
-  const RatingApi = async () => {
+  const [response, setResponse] = useState(null);
+  const [complete, setCompleted] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const RatingApi = () => {
     let params = {
-      booking_job: data,
+      booking_id: JSON.stringify(item?.booking_id),
       rating: ratings,
       comment: comments,
     };
-
-    try {
-      const response = await service.post("/api/rating/create/", params, {
+    console.log('fjfjf', params)
+   
+    service
+      .post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        if(data?.status === 201) {
+          navigation.replace("MyBooking");
+          console.log("fjfjf", data);
+        }
+       else{
+        console.log('error message')
+       }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
-      const data = response?.data;
-      // setThekeperKam(data.data);
-      navigation.navigate("HomePage")
-      console.log("fjfjf", data.status);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
+
 
   // const {  item , status} = route.params;
   // console.log("fjds", status , item);
@@ -85,29 +95,9 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   const totalCount = item.count_female + item.count_male;
 
-  console.log(totalCount , "count check");
+  console.log(totalCount, "count check");
 
-  const acceptSahayak = async () => {
-    let params = {
-      count_male: item.count_male,
-      count_female: item.count_female,
-      job_id: id,
-    };
-    console.log("paramsacceptSahayak", params);
 
-    try {
-      const response = await service.post("/api/accept_individuals/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response?.data;
-      console.log("datadata", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
   // useEffect(() => {
   //   acceptSahayak()
   // }, [])
@@ -116,48 +106,55 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const number = [1, 2, 3, 4];
   // end
 
-  const onGoing = async () => {
+  const Ongoing = () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setResponse(data["booking-status"]);
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data?.booking_status);
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
-  const Completed = async () => {
+  const bookingcompleted = () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_completed/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setCompleted(data["booking-status"]);
+        setResponse(data["booking-status"]);
+
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data?.booking_status);
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
 
   const cancel = async () => {
@@ -179,7 +176,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage")
+      navigation.replace("HomePage");
       // setStatus(data.status);
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
@@ -190,9 +187,9 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
@@ -291,7 +288,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               { flexWrap: "wrap" },
             ]}
           ></View> */}
-     
+
           <View
             style={{
               display: "flex",
@@ -376,63 +373,51 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 width: "30%",
               }}
             >
-              <TouchableOpacity>
-                {status === "Ongoing" ? (
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      marginTop: 5,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
-                    }}
-                  >
-                    जारी है
-                    {console.log("")}
-                  </Text>
-                ) : status === "Completed" ? (
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      marginTop: 5,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
-                    }}
-                  >
-                    समाप्त{" "}
-                  </Text>
-                ) : (
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      marginTop: 5,
-                      color: "#fff",
-                      fontSize: 15,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {item.booking_status === "Accepted" ?
-                     "बुक"
-                     :
-                     item.booking_status === "Ongoing" ?
-                     "जारी है"
-                     :
-                     item.booking_status === "Completed" ?
-                     "समाप्त"
-                     :
-                     ""
-                  }
-                    {console.log("")}
-                  </Text>
-                )}
-              </TouchableOpacity>
+              {response ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {response === "Booked"
+                    ? "बुक"
+                    : response === "Accepted"
+                    ? "स्वीकार"
+                    : response === "Ongoing"
+                    ? "जारी है"
+                    : response === "Completed"
+                    ? "समाप्त"
+                    : ""}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {item.booking_status === "Booked"
+                    ? "बुक"
+                    : item.booking_status === "Accepted"
+                    ? "बुक"
+                    : item.booking_status === "Ongoing"
+                    ? "जारी है"
+                    : ""}
+
+                  {console.log("")}
+                </Text>
+              )}
             </View>
           </View>
 
-          {status === "Completed" ? (
-            ""
-          ) : (
+          {complete !== "Completed" && (
             <>
               <View
                 style={[
@@ -460,32 +445,31 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     marginTop: 8,
                   }}
                 >
-                 
-                    <View
-                      style={[
-                        styles.DoubleView,
-                        styles.flex,
-                        styles.justifyContentBetween,
-                        { marginHorizontal: 4 },
-                      ]}
+                  <View
+                    style={[
+                      styles.DoubleView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      { marginHorizontal: 4 },
+                    ]}
+                  >
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        marginTop: 5,
+                        paddingHorizontal: 10,
+                        color: "#0099FF",
+                        fontSize: 15,
+                        fontWeight: "600",
+                      }}
                     >
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          marginTop: 5,
-                          paddingHorizontal: 10,
-                          color: "#0099FF",
-                          fontSize: 15,
-                          fontWeight: "600",
-                        }}
-                      >
-                        1-4
-                      </Text>
+                      1-4
+                    </Text>
 
-                      {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
-              {numbers ? numbers : ""}
-            </Text> */}
-             <TouchableOpacity>
+                    {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
+             {numbers ? numbers : ""}
+           </Text> */}
+                    <TouchableOpacity>
                       <View style={{ flexDirection: "row" }}>
                         <Picker
                           style={{ width: 20, paddingTop: 16 }}
@@ -509,8 +493,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                           ))}
                         </Picker>
                       </View>
-                  </TouchableOpacity>
-                    </View>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
 
@@ -577,7 +561,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </>
           )}
 
-          {status === "Completed" && (
+          {complete === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -604,69 +588,120 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                   borderColor: "#0099FF",
                 }}
               >
-                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
+                <TextInput
+                  onChangeText={setComment}
+                  value={comments}
+                  style={{ width: "100%" }}
+                />
               </View>
             </View>
           )}
-
-         {status === "Ongoing" || item.booking_status === "Ongoing"? (
+          {complete !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => Completed()}
+              onPress={
+                response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? bookingcompleted
+                  : response === "Completed"
+                  ? () => RatingApi()
+                  : () => Ongoing()
+              }
+              disabled={isLoading}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम पूरा हुआ
+                {complete && complete["booking-status"] === "Ongoing"
+                  ? "रेटिंग दें जारी है"
+                  : complete && complete["booking-status"] === "Completed"
+                  ? "रेटिंग दें"
+                  : response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? "काम पूरा हुआ"
+                  : "काम शुरू करें"}
               </Text>
             </TouchableOpacity>
-          ) : status === "Completed" ? (
+          )}
+
+          {complete === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => onGoing()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम शुरू करें
-              </Text>
-            </TouchableOpacity> 
-            // :
-            // {item.booking_status === "Ongoing" ?
-            // "काम पूरा हुआ"
-            // :
-            // item.booking_status === "Booked" ?
-            // "काम शुरू करें"
-            // :
-            // item.booking_status === "Completed" ?
-            // "समाप्त"
-            // :
-            // ""
-            // }
           )}
 
-          {status === "Ongoing" ||
-            ("Completed" && (
-              <View style={{ marginTop: "auto", padding: 5 }}>
-                <TouchableOpacity
-                  onPress={() => cancel()}
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ textAlign: "center", color: "#fff" }}>
-                    रद्द करें{" "}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+{/* 
+          {response === "Ongoing"  || item?.booking_status ==  "Ongoing" ? (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={bookingcompleted}
+              disabled={isLoading}
+            >
+              <Text>
+              {complete ? complete["booking-status"] : "काम पूरा हुआ "}
+              </Text>
+            </TouchableOpacity>
+          ) :  complete === "Completed" ? (
+            <>
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => RatingApi()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
+            </TouchableOpacity>
+            </>
+          ) : (response !== "Completed") ? (
+            <>
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => Ongoing()}
+              disabled={isLoading}
+            >
+              <Text>
+                {response && response["booking-status"]
+                  ? response["booking-status"]
+                  : "काम शुरू करें "}
+              </Text>
+            </TouchableOpacity>
+            </>  ) : (
+            ""
+          )} */}
+
+{item?.booking_status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
+       <View style={{ marginTop: "auto", padding: 5 }}>
+       <TouchableOpacity
+         onPress={() => cancel()}
+         style={{
+           backgroundColor: "#D9D9D9",
+           alignSelf: "center",
+           paddingHorizontal: 50,
+           paddingVertical: 10,
+           borderRadius: 5,
+         }}
+       >
+         <Text style={{ textAlign: "center", color: "#fff" }}>
+           रद्द करें
+         </Text>
+       </TouchableOpacity>
+     </View>
+      )}
+    {item?.booking_status === "Booked" &&   (
+       <View style={{ marginTop: "auto", padding: 5 }}>
+       <TouchableOpacity
+         onPress={() => cancel()}
+         style={{
+           backgroundColor: "#D9D9D9",
+           alignSelf: "center",
+           paddingHorizontal: 50,
+           paddingVertical: 10,
+           borderRadius: 5,
+         }}
+       >
+         <Text style={{ textAlign: "center", color: "#fff" }}>
+           रद्द करें
+         </Text>
+       </TouchableOpacity>
+     </View>
+      )}
         </View>
       </ScrollView>
 

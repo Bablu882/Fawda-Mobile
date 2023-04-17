@@ -141,78 +141,7 @@ export default function MyBooking({ navigation, route }) {
                     }}
                   />
                   <>
-                    {sahayakPending?.length > 0 &&
-                      sahayakPending?.map((item, index) => (
-                        // {console.log('machine', machinePending)}
-                        <View
-                          key={item.id}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                            marginTop: 50,
-                          }}
-                        >
-                          <View style={{ marginLeft: 30 }}>
-                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                              {item.job_type === "individuals_sahayak"
-                                ? "सहायक  "
-                                : item.job_type === "theke_pe_kam"
-                                ? "ठेके पर काम"
-                                : ""}
-                            </Text>
-                            <Text style={{ color: "black" }}>
-                              {moment.utc(item?.datetime).format("L")}
-                            </Text>
-                          </View>
-                          <View
-                            style={{
-                              width: "30%",
-                              height: 33,
-                              backgroundColor: "#44A347",
-                              marginRight: 20,
-                              marginTop: 10,
-                            }}
-                          >
-                            <TouchableOpacity
-                              onPress={() => {
-                                if (
-                                  item.job_type === "individuals_sahayak" &&
-                                  item?.status === "Pending"
-                                ) {
-                                  navigation.navigate("MyBook_SahayakForm", {
-                                    id: item.id,
-                                    item,
-                                  });
-                                } else if (
-                                  item.job_type === "theke_pe_kam" &&
-                                  item?.status === "Pending"
-                                ) {
-                                  navigation.navigate("Theke_MachineForm", {
-                                    item,
-                                  });
-                                }
-                              }}
-                            >
-                              {item?.status === "Pending" && (
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  पेंडिंग
-                                </Text>
-                              )}
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      ))}
-                    {sahaykBooking?.length > 0 &&
+                  {sahaykBooking?.length > 0 &&
                       sahaykBooking?.map((item) => (
                         <View
                           style={{
@@ -316,6 +245,78 @@ export default function MyBooking({ navigation, route }) {
                           </View>
                         </View>
                       ))}
+                    {sahayakPending?.length > 0 &&
+                      sahayakPending?.map((item, index) => (
+                        // {console.log('machine', machinePending)}
+                        <View
+                          key={item.id}
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 50,
+                          }}
+                        >
+                          <View style={{ marginLeft: 30 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              {item.job_type === "individuals_sahayak"
+                                ? "सहायक  "
+                                : item.job_type === "theke_pe_kam"
+                                ? "ठेके पर काम"
+                                : ""}
+                            </Text>
+                            <Text style={{ color: "black" }}>
+                              {moment.utc(item?.datetime).format("L")}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              height: 33,
+                              backgroundColor: "#44A347",
+                              marginRight: 20,
+                              marginTop: 10,
+                            }}
+                          >
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (
+                                  item.job_type === "individuals_sahayak" &&
+                                  item?.status === "Pending"
+                                ) {
+                                  navigation.navigate("MyBook_SahayakForm", {
+                                    id: item.id,
+                                    item,
+                                  });
+                                } else if (
+                                  item.job_type === "theke_pe_kam" &&
+                                  item?.status === "Pending"
+                                ) {
+                                  navigation.navigate("Theke_MachineForm", {
+                                    item,
+                                  });
+                                }
+                              }}
+                            >
+                              {item?.status === "Pending" && (
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  पेंडिंग
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ))}
+              
 
                     {machinePending?.length > 0 &&
                       machinePending?.map((item, index) => (

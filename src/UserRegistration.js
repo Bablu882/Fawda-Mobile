@@ -6,6 +6,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
+  KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
@@ -13,18 +15,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
 import Service from "../service/index";
 import Toast from "react-native-simple-toast";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Picker } from "@react-native-picker/picker";
 import { RadioButton } from "react-native-paper";
+const { height } = Dimensions.get("window");
 
 import * as Location from "expo-location";
 
 export default function UserRegistration({ navigation, route }) {
-  const user = route?.params?.user;
+  const { user } = route?.params??{};
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
-  const [phone, setphone] = useState(route?.params?.phone || '');
+  const [phone, setphone] = useState(route?.params?.phone || "");
   const [village, setVillage] = useState("");
   const [mohalla, setMohalla] = useState("");
   const [state, setState] = useState([]);
@@ -67,10 +71,10 @@ export default function UserRegistration({ navigation, route }) {
       errorMessages.name = "Please enter your name";
       valid = false;
     } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
-      errorMessages.name = "Please enter a valid name (letters and spaces only)";
+      errorMessages.name =
+        "Please enter a valid name (letters and spaces only)";
       valid = false;
     }
-  
 
     if (gender === "") {
       errorMessages.gender = "Please select your gender";
@@ -244,163 +248,178 @@ export default function UserRegistration({ navigation, route }) {
             : null}
         </Text>
       </View>
-
-      <View
-        style={{
-          marginHorizontal: 13,
-          marginTop: 30,
-        }}
+      <KeyboardAwareScrollView
+        enableAutomaticScroll={true}
+        showsVerticalScrollIndicator={false}
       >
-        <View style={{ display: "none" }}>
-          <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
-          {/* <Text>Longitude: {location.longitude}</Text> */}
-          {console.log("location", location.latitude)}
-        </View>
-        <View style={[styles.inputView, { position: "relative" }]}>
-          <Text
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={{ height: height * 0.8 }}
+        >
+          <View
             style={{
-              position: "absolute",
-              top: -10,
-              left: 30,
-              width: "10%",
-              textAlign: "center",
-              backgroundColor: "#fff",
+              marginHorizontal: 13,
+              marginTop: 30,
             }}
           >
-            नाम:
-          </Text>
-          <TextInput
-            style={styles.TextInput}
-            placeholder=""
-            placeholderTextColor={"#848484"}
-            onChangeText={(text) => setName(text, "name")}
-            // defaultValue={email}
-            value={name}
-            //   error={input.name}
-            //   onFocus={() => handleError(null, "name")}
-          />
-          {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
-        </View>
-        <RadioButton.Group onValueChange={handleGenderSelection} value={gender}>
-          <View style={styles.alignItems}>
-            <View style={[styles.MaleCheckView, { position: "relative" }]}>
-              <Text style={styles.label}>लिंग:</Text>
-              <TouchableOpacity>
-                <RadioButton.Item
-                  label="Male"
-                  value="Male"
-                  uncheckedColor="transparent"
-                />
-              </TouchableOpacity>
+            <View style={{ display: "none" }}>
+              <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
+              {/* <Text>Longitude: {location.longitude}</Text> */}
+              {console.log("location", location.latitude)}
             </View>
-            <View style={[styles.FemalecheckView, { position: "relative" }]}>
-              <TouchableOpacity>
-                <RadioButton.Item
-                  label="Female"
-                  value="Female"
-                  uncheckedColor="transparent"
-                />
-              </TouchableOpacity>
-            </View>
-            {/* </View> */}
-          </View>
-          {!!errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
-        </RadioButton.Group>
-        <View style={[styles.inputView, { position: "relative" }]}>
-          <Text style={styles.label}>फ़ोन:</Text>
-          <TextInput
-            style={styles.TextInput}
-            keyboardType="numeric"
-            maxLength={10}
-            placeholder=""
-            placeholderTextColor={"#848484"}
-            onChangeText={(phone) => setphone(phone, "phone")}
-            defaultValue={phone}
-          
-          />
-          {!!errors.phone && (
-            <Text style={styles.error}>{errors.phone}</Text>
-          )}
-        </View>
-
-        <View style={styles.flex}>
-          <View style={[styles.DoubleView, { position: "relative" }]}>
-            <Text style={styles.label}>मोहल्ला</Text>
-            <TextInput
-              style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              onChangeText={(text) => setMohalla(text)}
-              // defaultValue={email}
-              value={mohalla}
-            />
-            {!!errors.mohalla && (
-              <Text style={styles.error}>{errors.mohalla}</Text>
-            )}
-          </View>
-          <View style={[styles.DoubleView, { position: "relative" }]}>
-            <Text style={styles.label}>गांव</Text>
-            <TextInput
-              style={styles.TextInput}
-              placeholder=""
-              placeholderTextColor={"#848484"}
-              onChangeText={(text) => setVillage(text)}
-              // defaultValue={email}
-              value={village}
-            />
-            {!!errors.village && (
-              <Text style={styles.error}>{errors.village}</Text>
-            )}
-          </View>
-        </View>
-
-        <View style={styles.flex}>
-          <View style={[styles.DoubleView, { position: "relative" }]}>
-            <Text style={styles.label}>राज्य</Text>
-            <Picker
-              selectedValue={selectedState}
-              onValueChange={(itemValue, itemIndex) => {
-                setSelectedState(itemValue);
-                console.log("jnjdjdjdjd", itemValue);
-                districtapi(itemValue);
-              }}
-            >
-              <Picker.Item
-                label="राज्य"
-                value=""
-                enabled={false}
-                style={{ color: "#ccc" }}
+            <View style={[styles.inputView, { position: "relative" }]}>
+              <Text
+                style={{
+                  position: "absolute",
+                  top: -10,
+                  left: 30,
+                  width: "10%",
+                  textAlign: "center",
+                  backgroundColor: "#fff",
+                }}
+              >
+                नाम:
+              </Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholder=""
+                placeholderTextColor={"#848484"}
+                onChangeText={(text) => setName(text, "name")}
+                // defaultValue={email}
+                value={name}
+                //   error={input.name}
+                //   onFocus={() => handleError(null, "name")}
               />
-              {state?.map((state) => (
-                <Picker.Item
-                  key={state.id}
-                  label={state.name}
-                  value={state.name}
-                />
-              ))}
-            </Picker>
-            {!!errors.state && <Text style={styles.error}>{errors.state}</Text>}
-          </View>
-          <View style={[styles.DoubleView, { position: "relative" }]}>
-            <Text style={styles.label}>जिला</Text>
-            <Picker
-              selectedValue={selectedDistrict}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedDistrict(itemValue)
-              }
+              {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
+            </View>
+            <RadioButton.Group
+              onValueChange={handleGenderSelection}
+              value={gender}
             >
-              {district?.map((district, index) => (
-                <Picker.Item
-                  key={index}
-                  label={district.district}
-                  value={district.district}
+              <View style={styles.alignItems}>
+                <View style={[styles.MaleCheckView, { position: "relative" }]}>
+                  <Text style={styles.label}>लिंग:</Text>
+                  <TouchableOpacity>
+                    <RadioButton.Item
+                      label="Male"
+                      value="Male"
+                      uncheckedColor="transparent"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={[styles.FemalecheckView, { position: "relative" }]}
+                >
+                  <TouchableOpacity>
+                    <RadioButton.Item
+                      label="Female"
+                      value="Female"
+                      uncheckedColor="transparent"
+                    />
+                  </TouchableOpacity>
+                </View>
+                {/* </View> */}
+              </View>
+              {!!errors.gender && (
+                <Text style={styles.error}>{errors.gender}</Text>
+              )}
+            </RadioButton.Group>
+            <View style={[styles.inputView, { position: "relative" }]}>
+              <Text style={styles.label}>फ़ोन:</Text>
+              <TextInput
+                style={styles.TextInput}
+                keyboardType="numeric"
+                maxLength={10}
+                placeholder=""
+                placeholderTextColor={"#848484"}
+                onChangeText={(phone) => setphone(phone, "phone")}
+                defaultValue={phone}
+              />
+              {!!errors.phone && (
+                <Text style={styles.error}>{errors.phone}</Text>
+              )}
+            </View>
+
+            <View style={styles.flex}>
+              <View style={[styles.DoubleView, { position: "relative" }]}>
+                <Text style={styles.label}>मोहल्ला</Text>
+                <TextInput
+                  style={styles.TextInput}
+                  placeholder=""
+                  placeholderTextColor={"#848484"}
+                  onChangeText={(text) => setMohalla(text)}
+                  // defaultValue={email}
+                  value={mohalla}
                 />
-              ))}
-            </Picker>
-            {!!errors.district && (
-              <Text style={styles.error}>{errors.district}</Text>
-            )}
-            {/* <Picker
+                {!!errors.mohalla && (
+                  <Text style={styles.error}>{errors.mohalla}</Text>
+                )}
+              </View>
+              <View style={[styles.DoubleView, { position: "relative" }]}>
+                <Text style={styles.label}>गांव</Text>
+                <TextInput
+                  style={styles.TextInput}
+                  placeholder=""
+                  placeholderTextColor={"#848484"}
+                  onChangeText={(text) => setVillage(text)}
+                  // defaultValue={email}
+                  value={village}
+                />
+                {!!errors.village && (
+                  <Text style={styles.error}>{errors.village}</Text>
+                )}
+              </View>
+            </View>
+
+            <View style={styles.flex}>
+              <View style={[styles.DoubleView, { position: "relative" }]}>
+                <Text style={styles.label}>राज्य</Text>
+                <Picker
+                  selectedValue={selectedState}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setSelectedState(itemValue);
+                    console.log("jnjdjdjdjd", itemValue);
+                    districtapi(itemValue);
+                  }}
+                >
+                  <Picker.Item
+                    label="राज्य"
+                    value=""
+                    enabled={false}
+                    style={{ color: "#ccc" }}
+                  />
+                  {state?.map((state) => (
+                    <Picker.Item
+                      key={state.id}
+                      label={state.name}
+                      value={state.name}
+                    />
+                  ))}
+                </Picker>
+                {!!errors.state && (
+                  <Text style={styles.error}>{errors.state}</Text>
+                )}
+              </View>
+              <View style={[styles.DoubleView, { position: "relative" }]}>
+                <Text style={styles.label}>जिला</Text>
+                <Picker
+                  selectedValue={selectedDistrict}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedDistrict(itemValue)
+                  }
+                >
+                  {district?.map((district, index) => (
+                    <Picker.Item
+                      key={index}
+                      label={district.district}
+                      value={district.district}
+                    />
+                  ))}
+                </Picker>
+                {!!errors.district && (
+                  <Text style={styles.error}>{errors.district}</Text>
+                )}
+                {/* <Picker
               selectedValue={selectedDistrict}
               onValueChange={(itemValue, itemIndex) =>
                 setSelectedDistrict(itemValue)
@@ -420,22 +439,24 @@ export default function UserRegistration({ navigation, route }) {
                 />
               ))}
             </Picker> */}
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                if (validate()) {
+                  RegisterServices();
+
+                  // navigation.navigate("Home")
+                }
+              }}
+              style={styles.loginBtn}
+            >
+              <Text style={styles.loginText}>आगे बढ़ें</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            if (validate()) {
-              RegisterServices();
-
-              // navigation.navigate("Home")
-            }
-          }}
-          style={styles.loginBtn}
-        >
-          <Text style={styles.loginText}>आगे बढ़ें</Text>
-        </TouchableOpacity>
-      </View>
+        </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

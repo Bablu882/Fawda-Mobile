@@ -266,7 +266,7 @@ export default function SahayakForm({ navigation }) {
       });
 
       const { data } = response;
-      Toast.show("Job Posted Successfully!", Toast.SORT);
+      Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
       console.log("data::", data);
       navigation.replace("MyBooking");
     } catch (error) {
@@ -358,18 +358,16 @@ export default function SahayakForm({ navigation }) {
               { width: "100%" },
             ]}
           >
-            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-              {time ? time : "-समय-"}
-            </Text>
+           
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{ width: 40 }}
+              style={{ width: '100%' }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
               }
             >
-              <Picker.Item enabled={false} label="-समय-" value="" />
+              <Picker.Item style={{color: time ? "#000" : "#ccc"}}   label={time ? time : "-समय-"}value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
@@ -436,21 +434,19 @@ export default function SahayakForm({ navigation }) {
                   styles.justifyContentBetween,
                 ]}
               >
-                <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-                  {landType ? landType : "किल्ला/बीघा"}
-                </Text>
+                
                 <Picker
-                  style={{ width: 20 }}
+                  style={{ width: '100%' }}
                   ref={pickerRef}
                   selectedValue={landType}
                   onValueChange={(itemValue, itemIndex) =>
                     setlandType(itemValue)
                   }
                 >
-                  <Picker.Item label="किल्ला/बीघा" value="" />
+                  <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
                   {landTypes.map((item) => (
                     <Picker.Item
-                      label={item.name}
+                    label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
                       value={item.name}
                       key={item.id}
                     />
@@ -476,19 +472,17 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-                <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
-                  {maleCounts ? maleCounts : "पुरुषों"}
-                </Text>
+               
                 <View style={{ flexDirection: "row" }}>
                   <Picker
-                    style={{ width: 20, paddingTop: 16 }}
+                    style={{ width: '100%', paddingTop: 16 }}
                     ref={pickerRef}
                     selectedValue={maleCounts}
                     onValueChange={(itemValue, itemIndex) =>
                       setMaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    <Picker.Item style={{color: maleCounts ? "#000" : "#ccc"}}   label={maleCounts ? maleCounts : "पुरुषों"} value=""  />
                     {maleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -516,22 +510,18 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-                <Text
-                  style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}
-                >
-                  {femaleCounts ? femaleCounts : "महिलाओं"}
-                </Text>
+                
 
                 <View style={{ flexDirection: "row" }}>
                   <Picker
-                    style={{ width: 20, paddingTop: 16 }}
+                    style={{ width: '100%', paddingTop: 16 }}
                     ref={pickerRef}
                     selectedValue={femaleCounts}
                     onValueChange={(itemValue, itemIndex) =>
                       setFemaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    <Picker.Item style={{color: femaleCounts ? "#000" : "#ccc"}}   label={femaleCounts ? femaleCounts : "महिलाओं"} value=""  />
                     {femaleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -620,21 +610,15 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
-            <Text style={{ paddingLeft: 10, color: "#ccc" }}>
-              दिनों की संख्या
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={{ color: "#0099FF", marginTop: 14, right: 10 }}>
-                {days}
-              </Text>
-
-              <Picker
-                style={{ width: 40, paddingTop: 16 }}
+          
+            
+          <Picker
+                style={{ width: '100%', paddingTop: 16 }}
                 ref={pickerRef}
                 selectedValue={days}
                 onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
               >
-                <Picker.Item label="1-5" value="1-5" enabled={false} />
+                <Picker.Item style={{color: days ? "#000" : "#ccc"}}   label={days ? days : "दिनों की संख्या"} value="" />
                 {daysCount.map((item) => (
                   <Picker.Item
                     label={item.toString()}
@@ -643,7 +627,6 @@ export default function SahayakForm({ navigation }) {
                   />
                 ))}
               </Picker>
-            </View>
           </View>
           {!!errors.days && <Text style={styles.error}>{errors.days}</Text>}
 
