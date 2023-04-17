@@ -355,15 +355,15 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            <Text
+            {/* <Text
               style={{ color: selectedWorkType ? "#000" : "#ccc", left: 5 }}
             >
               {selectedWorkType
                 ? selectedWorkType
                 : "-भूमि तैयार करना/काटना/बुआई-"}
-            </Text>
+            </Text> */}
             <Picker
-              style={{ width: 80 }}
+              style={{ width: '100%' }}
               selectedValue={selectedWorkType}
               onValueChange={(itemValue, itemIndex) => {
                 setSelectedWorkType(itemValue);
@@ -371,7 +371,9 @@ export default function MachineBooking({ navigation }) {
               }}
               required // Add required attribute
             >
-              <Picker.Item label="-भूमि तैयार करना/काटना/बुआई-" value="" />
+              <Picker.Item style={{color: selectedWorkType ? "#000" : "#ccc"}} label=  {selectedWorkType
+                ? selectedWorkType
+                : "-भूमि तैयार करना/काटना/बुआई-"} value="" />
               {workType.map((item, index) => (
                 <Picker.Item
                   label={item.name}
@@ -394,20 +396,19 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            <Text
+            {/* <Text
               style={{ color: selectedMachines ? "#000" : "#ccc", left: 5 }}
             >
               {selectedMachines ? selectedMachines : "-Select Machine-"}
-            </Text>
+            </Text> */}
             <Picker
-              style={{ width: 40 }}
+              style={{ width: '100%' }}
               selectedValue={selectedMachines}
               onValueChange={(itemValue, itemIndex) =>
                 setSelectedMachines(itemValue)
               }
             >
-              <Picker.Item label="-Select Machine-" value="" />
-
+           <Picker.Item style={{color: selectedMachines ? "#000" : "#ccc",}} label=  {selectedMachines ? selectedMachines : "-Select Machine-"} value="" />
               {machiness.map((item) => (
                 <Picker.Item
                   label={item.machine}
@@ -421,77 +422,7 @@ export default function MachineBooking({ navigation }) {
             <Text style={styles.error}>{errors.machiness}</Text>
           )}
 
-          {/* <View
-            style={[
-              styles.dropdownGender,
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              },
-            ]}
-          >
-            <Text style={{ color: buayiValue ? "#000" : "#ccc", left: 5 }}>
-              {buayiValue ? buayiValue : "-बुआई-"}
-            </Text>
-            <Picker
-              ref={pickerRef}
-              style={{ width: 80 }}
-              selectedValue={buayiValue}
-              onValueChange={(itemValue, itemIndex) => handlesowing(itemValue)}
-            >
-              <Picker.Item
-                label="बुआई"
-                value=""
-                enabled={false}
-                style={{ color: "#ccc" }}
-              />
-              {sowing?.map((item, index) => (
-                <Picker.Item
-                  label={item.name}
-                  value={item.name}
-                  key={item.id}
-                />
-              ))}
-            </Picker>
-          </View>  */}
-
-          {/* <View
-            style={[
-              styles.dropdownGender,
-              {
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              },
-            ]}
-          >
-            <Text style={{ color: katayiValue ? "#000" : "#ccc", left: 5 }}>
-              {katayiValue ? katayiValue : "कटाई"}
-            </Text>
-            <Picker
-              ref={pickerRef}
-              style={{ width: 80 }}
-              selectedValue={katayiValue}
-              onValueChange={(itemValue, itemIndex) =>
-                handleharvesting(itemValue)
-              }
-            >
-              <Picker.Item
-                label="कटाई"
-                value=""
-                enabled={false}
-                style={{ color: "#ccc" }}
-              />
-              {haevesting?.map((item, index) => (
-                <Picker.Item
-                  label={item.name}
-                  value={item.name}
-                  key={item.id}
-                />
-              ))}
-            </Picker>
-          </View> */}
+         
 
           <View style={styles.dropdownGender}>
             <TextInput
@@ -553,18 +484,16 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-              {time ? time : "-समय-"}
-            </Text>
+           
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{ width: 50 }}
+              style={{ width: '100%' }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
               }
             >
-              {/* <Picker.Item enabled={false} label="-समय-" value="" /> */}
+             <Picker.Item style={{color: time ? "#000" : "#ccc"}} label={time ? time : "-समय-"} value="" /> 
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
@@ -626,21 +555,20 @@ export default function MachineBooking({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-                <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-                  {landType ? landType : "किल्ला/बीघा"}
-                </Text>
+          
+              
                 <Picker
-                  style={{ width: 20 }}
+                  style={{ width: '100%' }}
                   ref={pickerRef}
                   selectedValue={landType}
                   onValueChange={(itemValue, itemIndex) =>
                     setLandTypes(itemValue)
                   }
                 >
-                  <Picker.Item label="किल्ला/बीघा" value="" />
+                  <Picker.Item  style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
                   {landtypes.map((item) => (
                     <Picker.Item
-                      label={item.name}
+                    label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
                       value={item.name}
                       key={item.id}
                     />

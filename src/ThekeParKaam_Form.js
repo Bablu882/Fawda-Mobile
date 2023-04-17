@@ -174,11 +174,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
   const handleBooking = async () => {
     try {
-      //   const datetime =
-      //   moment(showDate).format("YYYY-MM-DD") +
-      //   " " +
-      //   moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-      //  ;
+    
       const datetime =
         moment(showDate).format("YYYY-MM-DD") +
         "T" +
@@ -191,6 +187,7 @@ export default function ThekeParKaam_Form({ navigation }) {
         total_amount_theka: totalAmount,
       };
       console.log("params::::::", params);
+    
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
@@ -200,7 +197,7 @@ export default function ThekeParKaam_Form({ navigation }) {
 
       const data = response?.data;
       console.log("form", data);
-      Toast.show("Job Posted Successfully!", Toast.SORT);
+      Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
 
       navigation.replace("MyBooking");
     } catch (error) {
@@ -275,7 +272,7 @@ export default function ThekeParKaam_Form({ navigation }) {
         >
           <KeyboardAvoidingView
             behavior="padding"
-            style={{ height: height * 0.9 }}
+            style={{ height: height * 0.8 }}
           >
             <>
               <View>
@@ -354,18 +351,16 @@ export default function ThekeParKaam_Form({ navigation }) {
                     styles.flex,
                   ]}
                 >
-                  <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-                    {time ? time : "-समय-"}
-                  </Text>
+                 
                   <Picker
                     ref={pickerRef}
                     selectedValue={time}
-                    style={{ width: 40 }}
+                    style={{ width: '100%' }}
                     onValueChange={(itemValue, itemIndex) =>
                       setTimes(timeConverted(itemValue))
                     }
                   >
-                    <Picker.Item enabled={false} label="-समय-" value="" />
+                    <Picker.Item style={{color: time ? "#000" : "#ccc"}}  label=  {time ? time : "-समय-"} value="" />
                     {timings.map((item, index) => {
                       return (
                         <Picker.Item
@@ -452,23 +447,19 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
-                      <Text
-                        style={{ color: landType ? "#000" : "#ccc", left: 5 }}
-                      >
-                        {landType ? landType : "किल्ला/बीघा"}
-                      </Text>
+                   
                       <Picker
-                        style={{ width: 20 }}
+                        style={{ width: '100%' }}
                         ref={pickerRef}
                         selectedValue={landType}
                         onValueChange={(itemValue, itemIndex) =>
                           setLandTypes(itemValue)
                         }
                       >
-                        <Picker.Item label="किल्ला/बीघा" value="" />
+                        <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
                         {landtypes.map((item) => (
                           <Picker.Item
-                            label={item.name}
+                            label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
                             value={item.name}
                             key={item.id}
                           />

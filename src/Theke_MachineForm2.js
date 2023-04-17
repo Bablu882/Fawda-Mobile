@@ -25,7 +25,7 @@ function Theke_MachineForm2({ navigation, route }) {
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
   const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, );
+  console.log("fjkfkfkff", item);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -33,6 +33,10 @@ function Theke_MachineForm2({ navigation, route }) {
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
+  const [response, setResponse] = useState(null);
+  const [complete, setCompleted] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [status, setStatus] = useState("");
 
   //  const [colors, setColors] = useState(Array(10).fill("white"));
@@ -40,30 +44,61 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const number = [1, 2, 3, 4];
 
-  const RatingApi = async () => {
+  //   const RatingApi = async () => {
+  //     let params = {
+  //       booking_job: JSON.stringify(item?.booking_id),
+  //       rating: ratings,
+  //       comment: comments,
+  //     };
+  // console.log('ndndjd', params)
+  //     try {
+  //       const response = await service.post("/api/rating/create/", params, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       const data = response?.data;
+  //       // setThekeperKam(data.data);
+  // if(data?.status === 200){
+  //   navigation.replace("MyBooking");
+  //       console.log("fjfjf", data);
+  // }
+  //    else{
+  //     console.log('fjfjf')
+  //    }
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   };
+  const RatingApi = () => {
     let params = {
-      booking_job: data,
+      booking_id: JSON.stringify(item.booking_id),
       rating: ratings,
       comment: comments,
     };
+    console.log("fjfjf", params);
 
-    try {
-      const response = await service.post("/api/rating/create/", params, {
+    service
+      .post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        if (data?.status === 201) {
+          navigation.replace("MyBooking");
+          console.log("fjfjf", data);
+        } else {
+          console.log("error message");
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
-      const data = response?.data;
-      // setThekeperKam(data.data);
-
-      navigation.replace("MyBooking");
-      console.log("fjfjf", data.status);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
   // const {  item , status} = route.params;
   // console.log("fjds", status , item);
 
@@ -92,96 +127,57 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const ratingColor = "orange";
 
-  // const fetchBookings = async () => {
-  //   try {
-  //     const response = await service.get("api/my_booking_details/", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const data = response.data;
-  //     setThekeperKam(item.data);
-  //     console.log("fjfjf", data);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-
-  // const accptThekha = async () => {
-  //   let params = {
-  //     job_id: item.booking_id,
-  //   };
-
-  //   try {
-  //     const response = await service.post("/api/accept_theka/", params, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const data = response?.data;
-  //     setThekeperKam(data.data);
-  //     console.log("fjfjf", data);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchBookings();
-  // }, [0]);
-
-  const onGoing = async () => {
-    let params = {
-      booking_id: JSON.stringify(item?.booking_id),
-    };
-    console.log("fhsfhdfhdfh", params);
-
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, 
-      // console.log(response);
-      
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response, "check status");
-      const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const Completed = async () => {
-    let params = {
-      booking_id: JSON.stringify(item?.booking_id),
-    };
-    console.log("fhsfhdfhdfh", params);
  
-    try {
-      const response = await service.post("/api/booking_completed/", params, {
+  const Ongoing = () => {
+    setIsLoading(true);
+    let params = {
+      booking_id: JSON.stringify(item?.booking_id),
+    };
+    console.log(params);
+    service
+      .post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setResponse(data["booking-status"]);
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
+  const bookingcompleted = () => {
+    setIsLoading(true);
+    let params = {
+      booking_id: JSON.stringify(item?.booking_id),
+    };
+    console.log(params);
+    service
+      .post("/api/booking_completed/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setCompleted(data["booking-status"]);
+        setResponse(data["booking-status"]);
 
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
+      });
+  };
   const cancel = async () => {
     let params = {};
     if (payment_status === "success") {
@@ -202,7 +198,7 @@ function Theke_MachineForm2({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage")
+      navigation.replace("HomePage");
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
@@ -213,12 +209,12 @@ function Theke_MachineForm2({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
-      <ScrollView horizontal={false}>
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: "center", flex: 1 }}>
           <Text
             style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
@@ -277,7 +273,8 @@ function Theke_MachineForm2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              {item?.land_area}   {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+                {item?.land_area}{" "}
+                {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
               </Text>
             </View>
             <View
@@ -334,7 +331,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 </Text>
               )}
             </TouchableOpacity> */}
-              { status === "Ongoing" ? (
+              {/* {response  === "Ongoing" ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -345,7 +342,93 @@ function Theke_MachineForm2({ navigation, route }) {
                   }}
                 >
                   जारी है
-                 
+                </Text>
+              ): complete === "Completed" ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  समाप्त{" "}
+                </Text>
+              ):(
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {item.booking_status === "Booked"
+                    ? "बुक"
+                    : item.booking_status === "Accepted"
+                    ? "स्वीकार"
+                    : item.booking_status === "Ongoing"
+                    ? "जारी है"
+                    
+                    : ""}
+
+                  {console.log("")}
+                </Text>
+              )} */}
+              {response ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {response === "Booked"
+                    ? "बुक"
+                    : response === "Accepted"
+                    ? "स्वीकार"
+                    : response === "Ongoing"
+                    ? "जारी है"
+                    : response === "Completed"
+                    ? "समाप्त"
+                    : ""}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  {item.booking_status === "Booked"
+                    ? "बुक"
+                    : item.booking_status === "Accepted"
+                    ? "बुक"
+                    : item.booking_status === "Ongoing"
+                    ? "जारी है"
+                    : ""}
+
+                  {console.log("")}
+                </Text>
+              )}
+              {/* {status === "Ongoing" ? (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 5,
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: "600",
+                  }}
+                >
+                  जारी है
                 </Text>
               ) : status === "Completed" ? (
                 <Text
@@ -360,7 +443,6 @@ function Theke_MachineForm2({ navigation, route }) {
                   समाप्त{" "}
                 </Text>
               ) : (
-               
                 <Text
                   style={{
                     textAlign: "center",
@@ -370,26 +452,59 @@ function Theke_MachineForm2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {item.booking_status === "Booked" ?
-                     "बुक"
-                     :
-                     item.booking_status === "Ongoing" ?
-                     "जारी है"
-                     :
-                     item.booking_status === "Completed" ?
-                     "समाप्त"
-                     :
-                     ""
-                  }
-                  
+                  {item.booking_status === "Booked"
+                    ? "बुक"
+                    : item.booking_status === "Accepted"
+                    ? "स्वीकार"
+                    : item.booking_status === "Ongoing"
+                    ? "जारी है"
+                    : item.booking_status === "Completed"
+                    ? "समाप्त"
+                    : ""}
+
                   {console.log("")}
                 </Text>
-              )}
+              )} */}
             </View>
           </View>
-
-          {status === "Completed" ? (
-            ""
+          {/* 
+          {response !=="Completed" && (
+          
+          )} */}
+          {complete === "Completed" ? (
+            <View
+              style={{
+                width: "90%",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 20,
+              }}
+            >
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                <View style={{ display: "flex", flexDirection: "row" }}>
+                  {[...Array(5).keys()].map(renderButton)}
+                </View>
+              </View>
+              <Text>कोई सुझाव</Text>
+              <View
+                style={{
+                  height: 100,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: "90%",
+                  marginTop: 20,
+                  borderColor: "#0099FF",
+                }}
+              >
+                <TextInput
+                  onChangeText={setComment}
+                  value={comments}
+                  style={{ width: "100%" }}
+                />
+              </View>
+            </View>
           ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
@@ -464,37 +579,6 @@ function Theke_MachineForm2({ navigation, route }) {
               </View>
             </>
           )}
-          { status === "Completed" && (
-            <View
-              style={{
-                width: "90%",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 20,
-              }}
-            >
-              <View style={{marginBottom:10}}>
-                <Text style={{textAlign:'center'}}>रेटिंग दें </Text>
-                <View style={{ display: "flex", flexDirection: "row" }}>
-                  {[...Array(5).keys()].map(renderButton)}
-                </View>
-              </View>
-              <Text>कोई सुझाव</Text>
-              <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  width: "90%",
-                  marginTop: 20,
-                  borderColor: "#0099FF",
-                }}
-              >
-                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
-              </View>
-            </View>
-          )}
           {/* {status.status === "Completed" ? (
             <>
               <View
@@ -521,62 +605,140 @@ function Theke_MachineForm2({ navigation, route }) {
           ) : (
             ""
           )} */}
-          { status === "Ongoing" ? (
+
+          {/* {response === "Ongoing" || item?.booking_status === "Ongoing" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => Completed()}
+              onPress={bookingcompleted}
+              disabled={isLoading}
             >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम पूरा हुआ
+              <Text>
+                {complete ? complete["booking-status"] : "Book Nowhdhh"}
               </Text>
             </TouchableOpacity>
-          ) : status === "Completed" ? (
+          ) : 
+          response === "Booked"|| response === "Accepted"  || response === "Ongoing" ? (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => Ongoing()}
+              disabled={isLoading}
+            >
+              <Text>
+                {response && response["booking-status"]
+                  ? response["booking-status"]
+                  : "Book Now"}
+              </Text>
+            </TouchableOpacity>
+          ) : response === "Completed" ? (
+          <TouchableOpacity
+          style={styles.BhuktanBtn}
+          onPress={() => RatingApi()}
+        >
+          <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
+        </TouchableOpacity>) : null} */}
+
+          {/* {response === "Ongoing" || item?.booking_status === "Ongoing" ? (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={bookingcompleted}
+              disabled={isLoading}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                {complete ? complete["booking-status"] : "काम पूरा हुआ "}
+              </Text>
+            </TouchableOpacity>
+          ) : response === "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
-          ) : (
+          ) : response !== "Completed" ? (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => onGoing()}
+              onPress={() => Ongoing()}
+              disabled={isLoading}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>
-                {item.booking_status === "Ongoing" ?
-                "काम पूरा हुआ"
-                :
-                item.booking_status === "Booked" ?
-                "काम शुरू करें"
-                :
-                item.booking_status === "Completed" ?
-                "समाप्त"
-                :
-                ""
-                }
-                {/* {item.booking_status} */}
+                {response && response["booking-status"]
+                  ? response["booking-status"]
+                  : "काम शुरू करें "}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            ""
+          )} */}
+
+{complete !== "Completed" && (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={
+                response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? bookingcompleted
+                  : response === "Completed"
+                  ? () => RatingApi()
+                  : () => Ongoing()
+              }
+              disabled={isLoading}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                {complete && complete["booking-status"] === "Ongoing"
+                  ? "रेटिंग दें जारी है"
+                  : complete && complete["booking-status"] === "Completed"
+                  ? "रेटिंग दें"
+                  : response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? "काम पूरा हुआ"
+                  : "काम शुरू करें "}
               </Text>
             </TouchableOpacity>
           )}
 
-             
-              <View style={{ marginTop: "auto", padding: 5 }}>
-                <TouchableOpacity
-                  onPress={() => cancel()}
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ textAlign: "center", color: "#fff" }}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
-              </View>
-             
+          {complete === "Completed" && (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={() => RatingApi()}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
+            </TouchableOpacity>
+          )}
+
+      {item?.booking_status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
+       <View style={{ marginTop: "auto", padding: 5 }}>
+       <TouchableOpacity
+         onPress={() => cancel()}
+         style={{
+           backgroundColor: "#D9D9D9",
+           alignSelf: "center",
+           paddingHorizontal: 50,
+           paddingVertical: 10,
+           borderRadius: 5,
+         }}
+       >
+         <Text style={{ textAlign: "center", color: "#fff" }}>
+           रद्द करें
+         </Text>
+       </TouchableOpacity>
+     </View>
+      )}
+    {item?.booking_status === "Booked" &&   (
+       <View style={{ marginTop: "auto", padding: 5 }}>
+       <TouchableOpacity
+         onPress={() => cancel()}
+         style={{
+           backgroundColor: "#D9D9D9",
+           alignSelf: "center",
+           paddingHorizontal: 50,
+           paddingVertical: 10,
+           borderRadius: 5,
+         }}
+       >
+         <Text style={{ textAlign: "center", color: "#fff" }}>
+           रद्द करें
+         </Text>
+       </TouchableOpacity>
+     </View>
+      )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -655,6 +817,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
+    color: "#fff",
     backgroundColor: "#0099FF",
   },
 

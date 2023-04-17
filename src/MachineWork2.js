@@ -33,34 +33,41 @@ function MachineWork2({ navigation, route }) {
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [status, setStatus] = useState("");
-
+  const [response, setResponse] = useState(null);
+  const [complete, setCompleted] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   //  const [colors, setColors] = useState(Array(10).fill("white"));
   const [numbers, setNumber] = useState(0);
 
   const number = [1, 2, 3, 4];
 
-  const RatingApi = async () => {
+  const RatingApi = () => {
     let params = {
-      booking_job: data,
+      booking_id: JSON.stringify(item?.booking_id),
       rating: ratings,
       comment: comments,
     };
+    console.log("fjfjf", params);
 
-    try {
-      const response = await service.post("/api/rating/create/", params, {
+    service
+      .post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        if (data?.status === 201) {
+          navigation.replace("MyBooking");
+          console.log("fjfjf", data);
+        } else {
+          console.log("error message");
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
-      const data = response?.data;
-      // setThekeperKam(data.data);
-      navigation.navigate("HomePage")
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
 
   // const {  item , status} = route.params;
@@ -84,88 +91,56 @@ function MachineWork2({ navigation, route }) {
     );
   };
 
-  const fetchBookings = async () => {
-    try {
-      const response = await service.get("api/my_booking_details/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response.data;
-      setThekeperKam(item.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
 
-  const accptThekha = async () => {
-    let params = {
-      job_id: item.id,
-    };
-
-    try {
-      const response = await service.post("/api/accept_theka/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response?.data;
-      setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-  useEffect(() => {
-    fetchBookings();
-  }, [0]);
-
-  const onGoing = async () => {
+  const Ongoing = () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setResponse(data["booking-status"]);
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
-  const Completed = async () => {
+  const bookingcompleted = () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_completed/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setCompleted(data["booking-status"]);
+        setResponse(data["booking-status"]);
+
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log(status, "check status");
-     
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
 
   const cancel = async () => {
@@ -187,7 +162,7 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage")
+      navigation.replace("HomePage");
       // setStatus(data.status);
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
@@ -199,9 +174,9 @@ function MachineWork2({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
@@ -256,7 +231,9 @@ function MachineWork2({ navigation, route }) {
                 { alignItems: "center" },
               ]}
             >
-              <Text style={[styles.label,{marginLeft:10}]}>भूमि क्षेत्र</Text>
+              <Text style={[styles.label, { marginLeft: 10 }]}>
+                भूमि क्षेत्र
+              </Text>
               <TextInput
                 style={styles.TextInput}
                 placeholderTextColor="#848484"
@@ -264,11 +241,11 @@ function MachineWork2({ navigation, route }) {
               />
               <Text
                 style={{
-                paddingRight:10,
+                  paddingRight: 10,
                   color: "#0099FF",
                 }}
               >
-                {item?.land_area }
+                {item?.land_area}
                 {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
               </Text>
             </View>
@@ -285,7 +262,9 @@ function MachineWork2({ navigation, route }) {
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginTop: 13, color: "#0099FF", paddingRight:10 }}>
+              <Text
+                style={{ marginTop: 13, color: "#0099FF", paddingRight: 10 }}
+              >
                 ₹ {item?.total_amount_machine}
               </Text>
             </View>
@@ -312,8 +291,7 @@ function MachineWork2({ navigation, route }) {
                 marginTop: 8,
               }}
             >
-            
-              {status === "Ongoing" ? (
+              {response ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -323,20 +301,15 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  जारी है
-                 
-                </Text>
-              ) : status === "Completed" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  समाप्त
+                  {response === "Booked"
+                    ? "बुक"
+                    : response === "Accepted"
+                    ? "स्वीकार"
+                    : response === "Ongoing"
+                    ? "जारी है"
+                    : response === "Completed"
+                    ? "समाप्त"
+                    : ""}
                 </Text>
               ) : (
                 <Text
@@ -348,15 +321,21 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {/* {bookingid?.status} */}
-                  बुक
-                 
+                  {item.booking_status === "Booked"
+                    ? "बुक"
+                    : item.booking_status === "Accepted"
+                    ? "बुक"
+                    : item.booking_status === "Ongoing"
+                    ? "जारी है"
+                    : ""}
+
+                  {console.log("")}
                 </Text>
               )}
             </View>
           </View>
 
-          { status === "Completed" ? (
+          {complete === "Completed" ? (
             ""
           ) : (
             <>
@@ -417,7 +396,7 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-          { status === "Completed" && (
+          {complete === "Completed" && (
             <View
               style={{
                 width: "100%",
@@ -444,38 +423,114 @@ function MachineWork2({ navigation, route }) {
                   borderColor: "#0099FF",
                 }}
               >
-                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
+                <TextInput
+                  onChangeText={setComment}
+                  value={comments}
+                  style={{ width: "100%" }}
+                />
               </View>
             </View>
           )}
-          { status === "Ongoing" ? (
+         
+          {/* {complete !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => Completed()}
+              onPress={
+                response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? bookingcompleted
+                  : response === "Completed"
+                  ? () => RatingApi()
+                  : () => Ongoing()
+              }
+              disabled={isLoading}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम पूरा हुआ
+                {complete && complete["booking-status"] === "Ongoing"
+                  ? "रेटिंग दें जारी है"
+                  : complete && complete["booking-status"] === "Completed"
+                  ? "रेटिंग दें"
+                  
+                  : "काम शुरू करें"}
               </Text>
             </TouchableOpacity>
-          ) : status === "Completed" ? (
+          )} */}
+
+          {/* {complete !== "Completed" && (
+  <TouchableOpacity
+    style={styles.BhuktanBtn}
+    onPress={
+      response === "Ongoing" || item?.booking_status == "Ongoing"
+        ? bookingcompleted
+        : response === "Completed"
+        ? () => RatingApi()
+        : () => Ongoing()
+    }
+    disabled={isLoading}
+  >
+    <Text>
+      {response && response["booking-status"] == "Ongoing"
+        ? "काम जारी है"
+        : comp === "Completed"
+        ? "रेटिंग दें" :
+       "काम जारी है"
+      }
+    </Text>
+  </TouchableOpacity>
+)} */}
+ {complete !== "Completed" && (
+            <TouchableOpacity
+              style={styles.BhuktanBtn}
+              onPress={
+                response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? bookingcompleted
+                  : response === "Completed"
+                  ? () => RatingApi()
+                  : () => Ongoing()
+              }
+              disabled={isLoading}
+            >
+              <Text style={[styles.loginText, { color: "#fff" }]}>
+                {complete && complete["booking-status"] === "Ongoing"
+                  ? "रेटिंग दें जारी है"
+                  : complete && complete["booking-status"] === "Completed"
+                  ? "रेटिंग दें"
+                  : response === "Ongoing" || item?.booking_status === "Ongoing"
+                  ? "काम पूरा हुआ"
+                  : "काम शुरू करें"}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {complete === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => onGoing()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम शुरू करें
-              </Text>
-            </TouchableOpacity>
           )}
 
-          { status === "Completed" ? (
+          {item?.booking_status === "Accepted" &&
+            response != "Ongoing" &&
+            response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          {item?.booking_status === "Booked" && (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}
@@ -492,7 +547,7 @@ function MachineWork2({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
             </View>
-          ) : null}
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -554,7 +609,6 @@ const styles = StyleSheet.create({
     //   flexDirection:"column",
   },
 
-
   BhuktanBtn: {
     width: "100%",
     borderRadius: 7,
@@ -574,7 +628,7 @@ const styles = StyleSheet.create({
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-   
+
     width: "100%",
     height: 48,
     marginTop: 15,

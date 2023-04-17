@@ -12,12 +12,12 @@ import {
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
+import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
-import Toast from "react-native-simple-toast";
 
 const CustomComponent = ({ label, value }) => {
   return (
@@ -35,6 +35,7 @@ const CustomComponent = ({ label, value }) => {
       <TextInput
         style={[styles.TextInput, { width: "100%" }]}
         placeholder={label}
+        editable={false}
         placeholderTextColor={"#000"}
       />
       <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
@@ -80,10 +81,15 @@ function Theke_MachineForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      console.log("aaaa", data);
-      setThekeperKam(data?.data);
-      console.log("rrrr", thekeperKam);
-      navigation.replace("MyBooking");
+      if(data?.status === 200 ){
+        console.log("aaaa", data);
+        setThekeperKam(data?.data);
+        Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
+        navigation.replace("MyBooking");
+      }else{
+        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
+      }
+     
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -153,7 +159,7 @@ function Theke_MachineForm({ navigation, route }) {
     let params = {
       booking_job: item?.booking_id,
     };
-
+console.log('fjnfjfjfjf', params)
 
     try {
       const response = await service.post("/api/get-rating/", params, {

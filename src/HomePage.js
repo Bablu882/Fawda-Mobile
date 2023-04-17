@@ -45,6 +45,7 @@ export default function Homepage({ navigation, route }) {
       });
       const data = response.data;
       setCurrentUsers(data);
+      console.log('jdjhff',currentUsers)
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -63,7 +64,7 @@ export default function Homepage({ navigation, route }) {
 
   useEffect(() => {
     getalljobs();
-  }, [0]);
+  }, []);
 
   return (
     <SafeAreaView
