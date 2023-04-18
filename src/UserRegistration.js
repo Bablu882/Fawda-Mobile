@@ -151,8 +151,8 @@ export default function UserRegistration({ navigation, route }) {
       });
       const data = response?.data;
       console.log("register", data);
-
-      if (data?.success) {
+ 
+      if (data?.success === true && data?.status == 200) {
         const token = data?.token;
         dispatch(setToken(token));
         Toast.show("Registration successful", Toast.SHORT);
