@@ -102,18 +102,13 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
   const Edit = async () => {
     setIsLoading(true);
-    let params =
-      // {
-      // job_id:"95",
-      // amount:"2221"
-      // }
-      {
-        job_id: JSON.stringify(item?.id),
-        pay_amount_male: amountMale,
-        pay_amount_female: amountFemale,
-      };
+    let params = {
+      job_id: JSON.stringify(item?.id),
+      pay_amount_male: amountMale,
+      pay_amount_female: amountFemale,
+    };
     console.log(params, "params");
-
+  
     try {
       const response = await service.post("/api/edit_individuals/", params, {
         headers: {
@@ -121,17 +116,20 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
-      const data = response?.data;
-      Toast.show(data.success, Toast.LONG);
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
+  
+      if (response.status === 200) {
+        Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
+      } else {
+        Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
+      }
     } catch (error) {
       console.log("Error:", error);
+      Toast.show("एक त्रुटि हुई, कृपया पुनः प्रयास करें।", Toast.LONG);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const toggleViews = () => {
     setShowFirstView(!showFirstView);
@@ -1143,8 +1141,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       marginVertical: 8,
                     }}
                   >
-                    {item.booking_status === "Accepted" ||
-                    (item.booking_status === "Booked" && TotalCount > 0) ? (
+                    {TotalCount > 0 ? (
                       <TouchableOpacity>
                         <Text
                           style={{
@@ -1157,10 +1154,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                             fontWeight: "600",
                           }}
                         >
-                          {TotalCount}{" "}
+                          {TotalCount}
                           {item.booking_status === "Accepted"
-                            ? "सहायक स्वीकार करें "
-                            : "सहायक बुक्ड  "}
+                            ? " सहायक स्वीकार करें "
+                            : " सहायक कम्प्लीट कर चुके हैं।"}
                         </Text>
                       </TouchableOpacity>
                     ) : (
@@ -1207,7 +1204,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.booking_status === "Booked" && (
+
+                  {item?.booking_status === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1217,7 +1215,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.booking_status === "Ongoing" && (
+                  {item?.booking_status === "Ongoing" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1227,7 +1225,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.status === "Completed" && (
+                  {item.booking_status === "Completed" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1268,14 +1266,77 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   )}
               </>
             </View>
+            {(usertype && usertype === "Sahayak") ||
+              (usertype === "MachineMalik" && (
+                <>
+                  {item.status === "Pending" ? (
+                    <TouchableOpacity
+                      style={styles.BhuktanBtn}
+                      onPress={() => acceptSahayak(id)}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                        काम स्वीकार करें
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity style={styles.BhuktanBtn}>
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                        {item.status === "Accepted"
+                          ? "काम स्वीकृत"
+                          : item.status === "Booked"
+                          ? "काम बुक"
+                          : item.status === "Ongoing"
+                          ? "जारी है"
+                          : "समाप्त"}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {item.status === "Completed" && (
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        marginTop: 20,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        {ratingList}
+                      </View>
+                    </View>
+                  )}
+
+                  {(item.status === "Booked" || item.status === "Ongoing") && (
+                    <>
+                      <View style={[styles.inputView, { height: 40 }]}>
+                        <Text style={styles.label}>ग्राहक का नाम</Text>
+                        <TextInput
+                          style={styles.TextInput}
+                          placeholderTextColor="#848484"
+                          placeholder={item?.grahak_name}
+                        />
+                      </View>
+
+                      <View style={[styles.inputView, { height: 40 }]}>
+                        <Text style={styles.label}>फ़ोन:</Text>
+                        <TextInput
+                          style={styles.TextInput}
+                          placeholderTextColor="#848484"
+                          placeholder={item?.grahak_phone}
+                        />
+                      </View>
+                    </>
+                  )}
+                </>
+              ))}
+
             {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-              item.status === "Accepted" ? (
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम स्वीकृत
-                  </Text>
-                </TouchableOpacity>
-              ) : item.status === "Pending" ? (
+              item.status === "Pending" ? (
                 <TouchableOpacity
                   style={styles.BhuktanBtn}
                   onPress={() => acceptSahayak(id)}
@@ -1284,40 +1345,28 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     काम स्वीकार करें
                   </Text>
                 </TouchableOpacity>
-              ) : item.status === "Booked" ? (
+              ) : (
                 <TouchableOpacity style={styles.BhuktanBtn}>
                   <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम बुक
+                    {(() => {
+                      switch (item.status) {
+                        case "Accepted":
+                          return " काम स्वीकृत";
+                        case "Booked":
+                          return " काम बुक";
+                        case "Ongoing":
+                          return " जारी है";
+                        case "Completed":
+                          return " समाप्त";
+                        default:
+                          return "";
+                      }
+                    })()}
                   </Text>
                 </TouchableOpacity>
-              ) : null
+              )
             ) : null}
-            {item.status === "Completed" && (
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: 20,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    समाप्त
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  {ratingList}
-                </View>
-              </View>
-            )}
+
             {(usertype === "Sahayak" || usertype === "MachineMalik") &&
               (item.status === "Booked" || item.status === "Ongoing" ? (
                 <>
@@ -1339,18 +1388,50 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     />
                   </View>
                 </>
+              ) : item.status === "Completed" ? (
+                <>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginTop: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      {ratingList}
+                    </View>
+                  </View>
+                </>
               ) : null)}
-
-            <TouchableOpacity
-              style={styles.loginBtn}
-              onPress={() => {
-                usertype === "Grahak" ? cancel() : Rejected();
-              }}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                रद्द करें
-              </Text>
-            </TouchableOpacity>
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+                (item?.status === "Accepted" || item?.status === "Booked") && (
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#D9D9D9",
+                      alignSelf: "center",
+                      paddingHorizontal: 50,
+                      paddingVertical: 10,
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      usertype === "Grahak" ? cancel() : Rejected();
+                    }}
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      रद्द करें
+                    </Text>
+                  </TouchableOpacity>
+                )}
+            </View>
           </View>
         )}
       </ScrollView>

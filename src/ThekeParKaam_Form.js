@@ -58,7 +58,6 @@ export default function ThekeParKaam_Form({ navigation }) {
     totalAmount: "",
   });
 
-  
   var isTimeSelected = false;
   const pickerRef = useRef();
   function open() {
@@ -174,7 +173,6 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
   const handleBooking = async () => {
     try {
-    
       const datetime =
         moment(showDate).format("YYYY-MM-DD") +
         "T" +
@@ -187,26 +185,32 @@ export default function ThekeParKaam_Form({ navigation }) {
         total_amount_theka: totalAmount,
       };
       console.log("params::::::", params);
-    
+
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = response?.data;
-      console.log("form", data);
-      Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
+      if (data?.status === 201) {
+        console.log("form", data);
+        Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
 
-      navigation.replace("MyBooking");
+        navigation.replace("MyBooking");
+      } else {
+        Toast.show(
+          "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
+          Toast.SORT
+        );
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   // validate fields start
- 
 
   const validate = () => {
     let valid = true;
@@ -232,7 +236,8 @@ export default function ThekeParKaam_Form({ navigation }) {
       errorMessages.description = "Please enter your description";
       valid = false;
     } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
-      errorMessages.description = "Please enter a valid description (letters only)";
+      errorMessages.description =
+        "Please enter a valid description (letters only)";
       valid = false;
     }
 
@@ -255,8 +260,6 @@ export default function ThekeParKaam_Form({ navigation }) {
     return valid;
   };
 
-
-  
   // end validation
   return (
     <SafeAreaView style={styles.container}>
@@ -351,16 +354,19 @@ export default function ThekeParKaam_Form({ navigation }) {
                     styles.flex,
                   ]}
                 >
-                 
                   <Picker
                     ref={pickerRef}
                     selectedValue={time}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     onValueChange={(itemValue, itemIndex) =>
                       setTimes(timeConverted(itemValue))
                     }
                   >
-                    <Picker.Item style={{color: time ? "#000" : "#ccc"}}  label=  {time ? time : "-समय-"} value="" />
+                    <Picker.Item
+                      style={{ color: time ? "#000" : "#ccc" }}
+                      label={time ? time : "-समय-"}
+                      value=""
+                    />
                     {timings.map((item, index) => {
                       return (
                         <Picker.Item
@@ -409,11 +415,11 @@ export default function ThekeParKaam_Form({ navigation }) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <View style={{ maxWidth:'50%',width:'100%'}}>
+                  <View style={{ maxWidth: "50%", width: "100%" }}>
                     <View
                       style={[
-                        styles.inputView,{width:'100%'}
-                        ,
+                        styles.inputView,
+                        { width: "100%" },
                         { marginRight: 10 },
                         // styles.flex,
                         // styles.justifyContentBetween,
@@ -435,7 +441,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                     )}
                   </View>
 
-                  <View style={{maxWidth:'50%', width:'100%'}}>
+                  <View style={{ maxWidth: "50%", width: "100%" }}>
                     <View
                       style={[
                         styles.inputView,
@@ -447,19 +453,22 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
-                   
                       <Picker
-                        style={{ width: '100%' }}
+                        style={{ width: "100%" }}
                         ref={pickerRef}
                         selectedValue={landType}
                         onValueChange={(itemValue, itemIndex) =>
                           setLandTypes(itemValue)
                         }
                       >
-                        <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
+                        <Picker.Item
+                          style={{ color: landType ? "#000" : "#ccc" }}
+                          label={landType ? landType : "किल्ला/बीघा"}
+                          value=""
+                        />
                         {landtypes.map((item) => (
                           <Picker.Item
-                            label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
+                            label={item.name === "Bigha" ? "बीघा" : "किल्ला"}
                             value={item.name}
                             key={item.id}
                           />
@@ -573,7 +582,6 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     fontSize: 13,
-   
   },
 
   loginBtn: {

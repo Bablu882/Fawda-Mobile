@@ -124,10 +124,7 @@ function Theke_MachineForm({ navigation, route }) {
   const Edit = async () => {
     setIsLoading(true);
     let params =
-      // {
-      // job_id:"95",
-      // amount:"2221"
-      // }
+ 
       {
         job_id: JSON.stringify(item?.id),
         amount: amount,
@@ -141,11 +138,15 @@ function Theke_MachineForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
+
       const data = response?.data;
-      // setThekeperKam(data.data);
-      Toast.show( data.success, Toast.LONG);
-      console.log("fjfjf", data);
+    if(data?.status === 200) {
+      Toast.show( 'वेतन सफलतापूर्वक अपडेट किया गया है!', Toast.LONG);
+ 
+    }else{
+      Toast.show( 'राशि अपडेट नहीं की गई है।', Toast.LONG);  
+    }
+    
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -416,6 +417,7 @@ console.log('fjnfjfjfjf', params)
                         ref={textInputRef}
                         onChangeText={(amount) => setAmount(amount)}
                         value={amount}
+                        keyboardType="numeric"
                         style={{ paddingRight: 10 }}
                         defaultValue={item?.total_amount_theka}
                       />
@@ -691,68 +693,26 @@ console.log('fjnfjfjfjf', params)
               ) : null}
             </View>
 
-            <>
-              {/* {usertype === "Sahayak" ||
-                (usertype === "MachineMalik" &&
-                  item?.status === "Completed" && (
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        marginTop: 20,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={[
-                          styles.BhuktanBtn,
-                          { width: "95%", marginBottom: 10 },
-                        ]}
-                      >
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
-                          समाप्त
-                        </Text>
-                      </TouchableOpacity>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        {ratingList}
-                      </View>
-                    </View>
-                  ))} */}
-
-              {/* <View
-            style={{ height: 100, borderWidth: 1, width: "75%", marginTop: 20 }}
-          >
-            <TextInput
-              placeholder="comment"
-              onChangeText={data?.comment}
-              value={data?.comment}
-            />
-          </View>  */}
-            </>
+      
 
             <View style={{ marginTop: "auto", padding: 5 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  usertype === "Grahak" ? cancel() : Rejected();
-                }}
-                style={{
-                  backgroundColor: "#D9D9D9",
-                  alignSelf: "center",
-                  paddingHorizontal: 50,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                }}
-              >
-                <Text style={{ textAlign: "center", color: "#fff" }}>
-                  रद्द करें
-                </Text>
-              </TouchableOpacity>
+            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+              (item?.status === "Accepted" || item?.status === "Booked") && (
+                <TouchableOpacity
+                  style={{  backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,}}
+                  onPress={() => {
+                    usertype === "Grahak" ? cancel() : Rejected();
+                  }}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         )}

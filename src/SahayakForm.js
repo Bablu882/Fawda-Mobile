@@ -265,10 +265,18 @@ export default function SahayakForm({ navigation }) {
         },
       });
 
-      const { data } = response;
-      Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
-      console.log("data::", data);
-      navigation.replace("MyBooking");
+      const data = response?.data;
+      if (data?.status === 201) {
+        console.log("form", data);
+        Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
+
+        navigation.replace("MyBooking");
+      } else {
+        Toast.show(
+          "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
+          Toast.SORT
+        );
+      }
     } catch (error) {
       console.log("Error:", error);
       Toast.show("Error Occurred. Please try again later.", Toast.SORT);

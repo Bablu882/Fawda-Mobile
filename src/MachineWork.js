@@ -79,8 +79,11 @@ export default function MachineWork({ navigation, route }) {
         },
       });
       let data = response.data;
-      Toast.show( data.success, Toast.LONG);
-      console.log("data", data);
+      if (response.status === 200) {
+        Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
+      } else {
+        Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -759,23 +762,24 @@ export default function MachineWork({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-            <View style={{ marginTop: "auto", padding: 5 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  usertype === "Grahak" ? cancel() : Rejected();
-                }}
-                style={{
-                  backgroundColor: "#D9D9D9",
+           <View style={{ marginTop: "auto", padding: 5 }}>
+            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+              (item?.status === "Accepted" || item?.status === "Booked") && (
+                <TouchableOpacity
+                  style={{  backgroundColor: "#D9D9D9",
                   alignSelf: "center",
                   paddingHorizontal: 50,
                   paddingVertical: 10,
-                  borderRadius: 5,
-                }}
-              >
-                <Text style={{ textAlign: "center", color: "#fff" }}>
-                  रद्द करें
-                </Text>
-              </TouchableOpacity>
+                  borderRadius: 5,}}
+                  onPress={() => {
+                    usertype === "Grahak" ? cancel() : Rejected();
+                  }}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         )}
