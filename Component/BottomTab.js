@@ -2,9 +2,6 @@ import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Homepage from "../src/HomePage";
-import SahayakBooking from "../src/SahayakBooking";
-
-import Profile from "../src/Profile";
 import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
 import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
@@ -244,7 +241,7 @@ export default function BottomTab() {
           ),
         }}
       />
-  {/* <Tab.Screen
+  <Tab.Screen
         name="Thankyou"
         component={Thankyou}
         options={{
@@ -282,10 +279,10 @@ export default function BottomTab() {
             </View>
           ),
         }}
-      /> */}
+      />
       <Tab.Screen
         name="ContactUs"
-        component={ContactUs}
+      component={ContactUs}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>

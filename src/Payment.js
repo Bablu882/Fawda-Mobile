@@ -16,23 +16,26 @@ import { selectToken } from "../slices/authSlice";
 
 
 export default function Payment({ route, navigation }) {
-  const [amount, setAmount] = useState(0);
+  const { item, totalamount, fawdafee } = route.params??{} ;
+
+  console.log("payment page", item, fawdafee, totalamount);
+  const [amount, setAmount] = useState(route?.params?.totalamount.toString() || {});
   const [upiId, setUpiId] = useState("");
   const [name, setName] = useState("");
   const token = useSelector(selectToken);
-  const { item } = route.params ?? {};
-
-  console.log("payment page", item);
+  
 
   const paymentStatus = async () => {
     try {
       const params = {
-        booking_id: JSON.stringify(item?.booking_id),
+        job_id: JSON.stringify(item?.job_id),
+        job_number: item?.job_number,
         amount: amount,
         upi_id: upiId,
         beneficiary_name: name,
       };
-      console.log("oadkfdjkdd", params);
+      console.log('fjffj', params)
+
       const response = await service.post("/api/payment_test/", params, {
         headers: {
           "Content-Type": "application/json",
@@ -41,27 +44,32 @@ export default function Payment({ route, navigation }) {
       });
 
       const data = response.data;
-      console.log("Data: ", data);
+   
+      console.log("dddjkddjhd ", data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
           data: data.booking_id,
           payment_status: data.payment_status,
-          item
+          amount: data?.amount?.toString(),
+          item,
         });
       } else if (item.job_type === "theke_pe_kam") {
         navigation.navigate("Theke_MachineForm2", {
           data: data.booking_id,
           payment_status: data.payment_status,
+          amount: amount,
           item
         });
       } else if (item.job_type === "machine_malik") {
         navigation.navigate("MachineWork2", {
-            data: data.booking_id,
-            payment_status: data.payment_status,
+          data: data.booking_id,
+          payment_status: data.payment_status,
+          amount: amount,
             item
           });
       }
       Toast.show("Payment Updated Successfully!!!", Toast.SHORT);
+      console.log('ffhffj',data)
     } catch (error) {
       console.error("Error: ", error);
       throw new Error("Unable to process payment");
@@ -123,7 +131,7 @@ export default function Payment({ route, navigation }) {
 
             <View style={styles.flex}>
               <Text>फावड़ा की फीस</Text>
-              <Text style={{ color: "#0099FF" }}>₹{item?.fawda_fee}</Text>
+              <Text style={{ color: "#0099FF" }}>₹{fawdafee}</Text>
             </View>
 
             <View style={styles.flex}>
@@ -161,7 +169,7 @@ export default function Payment({ route, navigation }) {
         </View> */}
 
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <TouchableOpacity style={styles.BhuktanBtn} onPress={paymentStatus}>
+          <TouchableOpacity style={styles.BhuktanBtn} onPress={() => {paymentStatus()}}>
             <Text style={[styles.loginText, { color: "#fff" }]}>
               अभी भुगतान करें
             </Text>

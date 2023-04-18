@@ -49,8 +49,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState({});
   const [ratingList, setRatingList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { id, item } = route.params;
-  console.log("fjd", item);
+  const { id, item, totalamount, fawdafee } = route.params;
+  console.log("fjd", item, totalamount, fawdafee);
   const [show, setShow] = useState(true);
   const [checkboxStatus, setCheckboxStatus] = useState({});
   const [maleStatuses, setMaleStatuses] = useState({});
@@ -643,7 +643,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       style={[
                         styles.flex,
                         styles.justifyContentBetween,
-                        { justifyContent: "flex-start" },
+                    {flexWrap:'wrap'}
                       ]}
                     >
                       <>
@@ -674,7 +674,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 style={{
                                   height: 25,
                                   paddingHorizontal: 5,
-                                  backgroundColor: "#44A347",
+                                  backgroundColor: item.status === 'Pending' ? '#44A347' : '#0099FF',
                                   marginLeft: 5,
                                 }}
                               >
@@ -684,11 +684,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       textAlign: "center",
                                       marginTop: 5,
                                       color: "#fff",
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: "600",
                                     }}
                                   >
-                                    {item?.status}
+                                    {item?.status  === "Pending" ? 'पेंडिंग' : 'स्वीकार'}
                                     {console.log("fjfjfjfjfjf", item?.status)}
                                   </Text>
                                 </TouchableOpacity>
@@ -723,7 +723,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 style={{
                                   height: 25,
                                   paddingHorizontal: 5,
-                                  backgroundColor: "#44A347",
+                                  backgroundColor: item.status === 'Pending' ? '#44A347' : '#0099FF',
                                   marginLeft: 5,
                                 }}
                               >
@@ -733,11 +733,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       textAlign: "center",
                                       marginTop: 5,
                                       color: "#fff",
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: "600",
                                     }}
                                   >
-                                    {item?.status}
+                                   {item?.status  === "Pending" ? 'पेंडिंग' : 'स्वीकार'}
                                     {console.log("fjfjfjfjfjf", item?.status)}
                                   </Text>
                                 </TouchableOpacity>
@@ -1141,7 +1141,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       marginVertical: 8,
                     }}
                   >
-                    {TotalCount > 0 ? (
+                    {item?.status !== "Pending" && TotalCount > 0 ? (
                       <TouchableOpacity>
                         <Text
                           style={{
@@ -1185,7 +1185,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       style={styles.BhuktanBtn}
                       onPress={() =>
                         navigation.navigate("Payment", {
-                          item,
+                          item, fawdafee, totalamount
                         })
                       }
                     >
