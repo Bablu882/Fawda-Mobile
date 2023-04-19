@@ -59,6 +59,7 @@ export default function MachineBooking({ navigation }) {
     workType: "",
   });
   const pickerRef = useRef();
+  const textInputRef = useRef(null);
   var isTimeSelected = false;
   function open() {
     pickerRef.current.focus();
@@ -223,12 +224,16 @@ export default function MachineBooking({ navigation }) {
   };
 
   const Booking = async () => {
-    const datetime =
-      moment(showDate).format("YYYY-MM-DD") +
-      " " +
-      moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+    // const datetime =
+    //   moment(showDate).format("YYYY-MM-DD") +
+    //   " " +
+    //   moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+    const datetime = `${moment(showDate).format("YYYY-MM-DD")} ${moment(
+      time,
+      "h:mm A"
+    ).format("HH:mm:ss.SSSSSS")}`;
     let params = {
-      datetime: datetime,
+      datetime,
       work_type: selectedWorkType,
       machine: selectedMachines,
       others: other,
@@ -236,8 +241,6 @@ export default function MachineBooking({ navigation }) {
       land_area: landArea,
       total_amount_machine: totalAmount,
     };
-
-
     service
       .post("/api/post_machine/", params, {
         headers: {
@@ -245,16 +248,17 @@ export default function MachineBooking({ navigation }) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        let data = res?.data;
+      .then(({ data }) => {
         console.log("formparamfffff", data);
-
         Toast.show("Job Posted Successfully!", Toast.SORT);
         navigation.replace("MyBooking");
       })
       .catch((error) => {
         console.log("Error:", error);
-        Toast.show("All Fields are required!", Toast.SORT);
+        Toast.show(
+          error.response.data.message || "An error occurred!",
+          Toast.SORT
+        );
       });
   };
 
@@ -293,7 +297,6 @@ export default function MachineBooking({ navigation }) {
       errorMessages.landType = "Please enter your land type";
       valid = false;
     }
-    
 
     if (landArea.trim() === "") {
       errorMessages.landArea = "Please select your land area";
@@ -308,12 +311,11 @@ export default function MachineBooking({ navigation }) {
       valid = false;
     }
 
-
     if (selectedMachines.trim() === "") {
       errorMessages.machiness = "Please select your Machines";
       valid = false;
     }
-    
+
     if (totalAmount.trim() === "") {
       errorMessages.totalAmount = "Please enter your amount";
       valid = false;
@@ -355,15 +357,8 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            {/* <Text
-              style={{ color: selectedWorkType ? "#000" : "#ccc", left: 5 }}
-            >
-              {selectedWorkType
-                ? selectedWorkType
-                : "-भूमि तैयार करना/काटना/बुआई-"}
-            </Text> */}
             <Picker
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               selectedValue={selectedWorkType}
               onValueChange={(itemValue, itemIndex) => {
                 setSelectedWorkType(itemValue);
@@ -371,9 +366,15 @@ export default function MachineBooking({ navigation }) {
               }}
               required // Add required attribute
             >
-              <Picker.Item style={{color: selectedWorkType ? "#000" : "#ccc"}} label=  {selectedWorkType
-                ? selectedWorkType
-                : "-भूमि तैयार करना/काटना/बुआई-"} value="" />
+              <Picker.Item
+                style={{ color: selectedWorkType ? "#000" : "#ccc" }}
+                label={
+                  selectedWorkType
+                    ? selectedWorkType
+                    : "-भूमि तैयार करना/काटना/बुआई-"
+                }
+                value=""
+              />
               {workType.map((item, index) => (
                 <Picker.Item
                   label={item.name}
@@ -402,13 +403,17 @@ export default function MachineBooking({ navigation }) {
               {selectedMachines ? selectedMachines : "-Select Machine-"}
             </Text> */}
             <Picker
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               selectedValue={selectedMachines}
               onValueChange={(itemValue, itemIndex) =>
                 setSelectedMachines(itemValue)
               }
             >
-           <Picker.Item style={{color: selectedMachines ? "#000" : "#ccc",}} label=  {selectedMachines ? selectedMachines : "-Select Machine-"} value="" />
+              <Picker.Item
+                style={{ color: selectedMachines ? "#000" : "#ccc" }}
+                label={selectedMachines ? selectedMachines : "-Select Machine-"}
+                value=""
+              />
               {machiness.map((item) => (
                 <Picker.Item
                   label={item.machine}
@@ -421,8 +426,6 @@ export default function MachineBooking({ navigation }) {
           {!!errors.machiness && (
             <Text style={styles.error}>{errors.machiness}</Text>
           )}
-
-         
 
           <View style={styles.dropdownGender}>
             <TextInput
@@ -484,16 +487,19 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-           
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
               }
             >
-             <Picker.Item style={{color: time ? "#000" : "#ccc"}} label={time ? time : "-समय-"} value="" /> 
+              <Picker.Item
+                style={{ color: time ? "#000" : "#ccc" }}
+                label={time ? time : "-समय-"}
+                value=""
+              />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
@@ -513,13 +519,15 @@ export default function MachineBooking({ navigation }) {
           </View>
           {!!errors.time && <Text style={styles.error}>{errors.time}</Text>}
 
-          <View style={{ flexDirection: "row", justifyContent:'space-between' }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <View style={{ maxWidth: "48%", width: "100%" }}>
               <View
                 style={[
                   styles.inputView,
                   { width: "100%" },
-                 
+
                   // styles.flex,
                   // styles.justifyContentBetween,
                 ]}
@@ -545,7 +553,6 @@ export default function MachineBooking({ navigation }) {
                   styles.inputView,
 
                   {
-                 
                     flexDirection: "row",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -555,20 +562,22 @@ export default function MachineBooking({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-          
-              
                 <Picker
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
                   ref={pickerRef}
                   selectedValue={landType}
                   onValueChange={(itemValue, itemIndex) =>
                     setLandTypes(itemValue)
                   }
                 >
-                  <Picker.Item  style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
+                  <Picker.Item
+                    style={{ color: landType ? "#000" : "#ccc" }}
+                    label={landType ? landType : "किल्ला/बीघा"}
+                    value=""
+                  />
                   {landtypes.map((item) => (
                     <Picker.Item
-                    label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
+                      label={item.name === "Bigha" ? "बीघा" : "किल्ला"}
                       value={item.name}
                       key={item.id}
                     />
@@ -584,8 +593,39 @@ export default function MachineBooking({ navigation }) {
           
             </View> */}
           </View>
-
-          <View
+          <TouchableOpacity
+            onPress={() => {
+              textInputRef.current.focus();
+            }}
+          >
+            <View
+              style={[
+                styles.inputView,
+                {
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
+              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
+                वेतन
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ color: "#0099FF", paddingTop: 4 }}>₹ </Text>
+                <TextInput
+                  ref={textInputRef}
+                  style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
+                  keyboardType="numeric"
+                  placeholderTextColor={"#0099FF"}
+                  value={totalAmount}
+                  placeholder="0.00"
+                  onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+          {/* <View
             style={[
               styles.inputView,
               {
@@ -607,7 +647,7 @@ export default function MachineBooking({ navigation }) {
                 onChangeText={(totalAmount) => handleTotalAmount(totalAmount)}
               />
             </View>
-          </View>
+          </View> */}
           {!!errors.totalAmount && (
             <Text style={styles.error}>{errors.totalAmount}</Text>
           )}

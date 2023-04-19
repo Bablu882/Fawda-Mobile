@@ -6,7 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
@@ -14,16 +14,16 @@ import Toast from "react-native-simple-toast";
 import Icon from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../slices/authSlice";
 
-
 export default function Payment({ route, navigation }) {
+
+  const token = useSelector(selectToken);
   const { item, totalamount, fawdafee } = route.params??{} ;
 
   console.log("payment page", item, fawdafee, totalamount);
-  const [amount, setAmount] = useState(route?.params?.totalamount.toString() || {});
+
+  const [amount, setAmount] = useState(route?.params?.totalamount?.toString() );
   const [upiId, setUpiId] = useState("");
   const [name, setName] = useState("");
-  const token = useSelector(selectToken);
-  
 
   const paymentStatus = async () => {
     try {
@@ -34,42 +34,43 @@ export default function Payment({ route, navigation }) {
         upi_id: upiId,
         beneficiary_name: name,
       };
-      console.log('fjffj', params)
-
+      console.log("oadkfdjkdd", params);
+    
       const response = await service.post("/api/payment_test/", params, {
         headers: {
           "Content-Type": "application/json",
-           'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = response.data;
-   
-      console.log("dddjkddjhd ", data);
+      console.log("Data: ", data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
-          data: data.booking_id,
+          data: item.booking_id,
           payment_status: data.payment_status,
-          amount: data?.amount?.toString(),
           item,
+          amount: amount,
+         
         });
       } else if (item.job_type === "theke_pe_kam") {
         navigation.navigate("Theke_MachineForm2", {
           data: data.booking_id,
           payment_status: data.payment_status,
+          item,
           amount: amount,
-          item
         });
       } else if (item.job_type === "machine_malik") {
         navigation.navigate("MachineWork2", {
           data: data.booking_id,
           payment_status: data.payment_status,
+          item,
           amount: amount,
-            item
-          });
+       
+        });
       }
+
       Toast.show("Payment Updated Successfully!!!", Toast.SHORT);
-      console.log('ffhffj',data)
     } catch (error) {
       console.error("Error: ", error);
       throw new Error("Unable to process payment");
@@ -84,69 +85,73 @@ export default function Payment({ route, navigation }) {
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
-      
+
         <View>
           <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <View style={{ justifyContent: "center" }}>
-            <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-            >
-              भुगतान का विवरण
-            </Text>
-          </View>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <View style={{ justifyContent: "center" }}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontSize: 30,
+                    fontWeight: "600",
+                  }}
+                >
+                  भुगतान का विवरण
+                </Text>
+              </View>
 
-          <View
-            style={{
-              borderWidth: 1,
-              width: "90%",
-              paddingHorizontal: 10,
-              height: 200,
-              borderColor: "#0099FF",
-              marginTop: 30,
-              borderWidth: 0.6,
-              borderRadius: 4,
-            }}
-          >
-            <View style={styles.flex}>
-              <Text>Upi Id</Text>
+              <View
+                style={{
+                  borderWidth: 1,
+                  width: "90%",
+                  paddingHorizontal: 10,
+                  height: 200,
+                  borderColor: "#0099FF",
+                  marginTop: 30,
+                  borderWidth: 0.6,
+                  borderRadius: 4,
+                }}
+              >
+                <View style={styles.flex}>
+                  <Text>Upi Id</Text>
 
-              <TextInput
-                placeholder="उपि आईडी"
-                autoCapitalize="none"
-                value={upiId}
-                onChangeText={setUpiId}
-              />
+                  <TextInput
+                    placeholder="उपि आईडी"
+                    autoCapitalize="none"
+                    value={upiId}
+                    onChangeText={setUpiId}
+                  />
+                </View>
+                <View style={styles.flex}>
+                  <Text>ठेकेदार/सहायक</Text>
+
+                  <TextInput
+                    placeholder="लाभार्थी का नाम"
+                    autoCapitalize="none"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                </View>
+
+                <View style={styles.flex}>
+                  <Text>फावड़ा की फीस</Text>
+                  <Text style={{ color: "#0099FF" }}>₹{fawdafee}</Text>
+                </View>
+
+                <View style={styles.flex}>
+                  <Text>कुल भुगतान</Text>
+                  <TextInput
+                    placeholder="राशि"
+                    keyboardType="numeric"
+                    autoCapitalize="none"
+                    value={amount}
+                    onChangeText={setAmount}
+                  />
+                </View>
+              </View>
             </View>
-            <View style={styles.flex}>
-              <Text>ठेकेदार/सहायक</Text>
-
-              <TextInput
-                placeholder="लाभार्थी का नाम"
-                autoCapitalize="none"
-                value={name}
-                onChangeText={setName}
-              />
-            </View>
-
-            <View style={styles.flex}>
-              <Text>फावड़ा की फीस</Text>
-              <Text style={{ color: "#0099FF" }}>₹{fawdafee}</Text>
-            </View>
-
-            <View style={styles.flex}>
-              <Text>कुल भुगतान</Text>
-              <TextInput
-                placeholder="राशि"
-                keyboardType="numeric"
-                autoCapitalize="none"
-                value={amount}
-                onChangeText={setAmount}
-              />
-            </View>
-          </View>
-        </View>
-        {/* <View
+            {/* <View
           style={{
             display: "flex",
             flexDirection: "row",
@@ -168,16 +173,18 @@ export default function Payment({ route, navigation }) {
           </View>
         </View> */}
 
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <TouchableOpacity style={styles.BhuktanBtn} onPress={() => {paymentStatus()}}>
-            <Text style={[styles.loginText, { color: "#fff" }]}>
-              अभी भुगतान करें
-            </Text>
-          </TouchableOpacity>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <TouchableOpacity
+                style={styles.BhuktanBtn}
+                onPress={paymentStatus}
+              >
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  अभी भुगतान करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
         </View>
-        </ScrollView>
-        </View>
-    
       </SafeAreaView>
     </>
   );

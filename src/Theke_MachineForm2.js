@@ -24,8 +24,8 @@ function Theke_MachineForm2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
-  const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item);
+  const { data, payment_status, amount, item } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -184,7 +184,7 @@ function Theke_MachineForm2({ navigation, route }) {
     let params = {};
     if (payment_status === "success") {
       params = {
-        job_id: item?.id,
+        job_id: JSON.stringify(item?.job_id),
         job_number: item?.job_number,
         booking_id: item?.booking_id,
         status: "Cancelled-After-Payment",
@@ -292,7 +292,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.total_amount_theka}
+                ₹ {amount}
               </Text>
             </View>
           </View>
@@ -842,7 +842,7 @@ const styles = StyleSheet.create({
   TextInput: {
     padding: 10,
     color: "#000",
-    fontFamily: "Poppin-Light",
+    
   },
 
   CheckTextInput: {

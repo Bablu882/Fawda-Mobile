@@ -46,7 +46,8 @@ const CustomComponent = ({ label, value }) => {
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const { id, item } = route?.params ?? {};
+  const { id, item, totalamount, fawdafee } = route?.params ?? {};
+  console.log("fjd", item, totalamount, fawdafee);
   const [ratingList, setRatingList] = useState([]);
   console.log("rating", item, item?.rating);
   const usertype = useSelector(selectUserType);
@@ -81,15 +82,14 @@ function Theke_MachineForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      if(data?.status === 200 ){
+      if (data?.status === 200) {
         console.log("aaaa", data);
         setThekeperKam(data?.data);
         Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
         navigation.replace("MyBooking");
-      }else{
+      } else {
         Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
       }
-     
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -119,16 +119,13 @@ function Theke_MachineForm({ navigation, route }) {
       </TouchableOpacity>
     );
   }
- 
 
   const Edit = async () => {
     setIsLoading(true);
-    let params =
- 
-      {
-        job_id: JSON.stringify(item?.id),
-        amount: amount,
-      };
+    let params = {
+      job_id: JSON.stringify(item?.id),
+      amount: amount,
+    };
     console.log(params, "params");
 
     try {
@@ -140,13 +137,11 @@ function Theke_MachineForm({ navigation, route }) {
       });
 
       const data = response?.data;
-    if(data?.status === 200) {
-      Toast.show( 'वेतन सफलतापूर्वक अपडेट किया गया है!', Toast.LONG);
- 
-    }else{
-      Toast.show( 'राशि अपडेट नहीं की गई है।', Toast.LONG);  
-    }
-    
+      if (data?.status === 200) {
+        Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
+      } else {
+        Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
+      }
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -160,7 +155,7 @@ function Theke_MachineForm({ navigation, route }) {
     let params = {
       booking_job: item?.booking_id,
     };
-console.log('fjnfjfjfjf', params)
+    console.log("fjnfjfjfjf", params);
 
     try {
       const response = await service.post("/api/get-rating/", params, {
@@ -172,7 +167,7 @@ console.log('fjnfjfjfjf', params)
       const data = response?.data;
       const ratings = data?.rating;
       const ratingColor = "#e6b400";
-      console.log('fjkdfjkdffjk', data )
+      console.log("fjkdfjkdffjk", data);
       const ratingList = Array(5)
         .fill(0)
         .map((_, num) => {
@@ -241,7 +236,7 @@ console.log('fjnfjfjfjf', params)
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace('HomePage')
+      navigation.replace("HomePage");
       Toast.show("Cancelled", Toast.LONG);
 
       console.log("fjfjf", data);
@@ -267,7 +262,7 @@ console.log('fjnfjfjfjf', params)
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace('HomePage')
+      navigation.replace("HomePage");
       console.log(data, "sds");
       Toast.show("Rejected", Toast.LONG);
     } catch (error) {
@@ -407,20 +402,41 @@ console.log('fjnfjfjfjf', params)
                         { width: "40%" },
                       ]}
                     >
-                      <TextInput
-                        style={styles.TextInput}
-                        placeholderTextColor="#000"
-                        placeholder="वेतन"
-                      />
-                      <TextInput
-                        editable={edit}
-                        ref={textInputRef}
-                        onChangeText={(amount) => setAmount(amount)}
-                        value={amount}
-                        keyboardType="numeric"
-                        style={{ paddingRight: 10 }}
-                        defaultValue={item?.total_amount_theka}
-                      />
+                      {item?.status === "Pending" ? (
+                        <>
+                          <TextInput
+                            style={styles.TextInput}
+                            placeholderTextColor="#000"
+                            placeholder="वेतन"
+                          />
+                          <TextInput
+                            editable={edit}
+                            ref={textInputRef}
+                            onChangeText={(amount) => setAmount(amount)}
+                            value={amount}
+                            keyboardType="numeric"
+                            style={{ paddingRight: 10 }}
+                            defaultValue={item?.total_amount_theka}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <TextInput
+                            style={styles.TextInput}
+                            placeholder="वेतन"
+                            placeholderTextColor={"#000"}
+                          />
+                          <Text
+                            style={{
+                              marginTop: 13,
+                              marginRight: 8,
+                              color: "#0099FF",
+                            }}
+                          >
+                            ₹ {totalamount}
+                          </Text>
+                        </>
+                      )}
                     </View>
                   </View>
                   {item.status === "Pending" && (
@@ -495,7 +511,7 @@ console.log('fjnfjfjfjf', params)
                       style={styles.BhuktanBtn}
                       onPress={() =>
                         navigation.navigate("Payment", {
-                          item,
+                          item, fawdafee, totalamount
                         })
                       }
                     >
@@ -604,35 +620,35 @@ console.log('fjnfjfjfjf', params)
                       </Text>
                     </TouchableOpacity>
                   )}
-                   {item.status === "Completed" && (
-                    <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      // marginTop: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={[
-                        styles.BhuktanBtn,
-                        { width: "95%", marginBottom: 10 },
-                      ]}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        समाप्त
-                      </Text>
-                    </TouchableOpacity>
+                  {item.status === "Completed" && (
                     <View
                       style={{
-                        flexDirection: "row",
+                        display: "flex",
+                        flexDirection: "column",
+                        // marginTop: 20,
+                        justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
-                      {ratingList}
+                      <TouchableOpacity
+                        style={[
+                          styles.BhuktanBtn,
+                          { width: "95%", marginBottom: 10 },
+                        ]}
+                      >
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          समाप्त
+                        </Text>
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        {ratingList}
+                      </View>
                     </View>
-                  </View>
                   )}
                 </>
               ) : null}
@@ -693,26 +709,26 @@ console.log('fjnfjfjfjf', params)
               ) : null}
             </View>
 
-      
-
             <View style={{ marginTop: "auto", padding: 5 }}>
-            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-              (item?.status === "Accepted" || item?.status === "Booked") && (
-                <TouchableOpacity
-                  style={{  backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,}}
-                  onPress={() => {
-                    usertype === "Grahak" ? cancel() : Rejected();
-                  }}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
-              )}
+              {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+                (item?.status === "Accepted" || item?.status === "Booked") && (
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#D9D9D9",
+                      alignSelf: "center",
+                      paddingHorizontal: 50,
+                      paddingVertical: 10,
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      usertype === "Grahak" ? cancel() : Rejected();
+                    }}
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      रद्द करें
+                    </Text>
+                  </TouchableOpacity>
+                )}
             </View>
           </View>
         )}

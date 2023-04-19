@@ -56,7 +56,7 @@ export default function MyBooking({ navigation, route }) {
       setIsLoading(false);
       setRefreshing(false);
 
-    console.log('data',data?.sahayk_booking_details?.bookings)
+    console.log('data',data)
 
     } catch (error) {
       console.log("Error:", error);
@@ -716,7 +716,7 @@ export default function MyBooking({ navigation, route }) {
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
                                   item,
-                                  id: item?.id,
+                                  id: item?.id, fawdafee: item?.fawda_fee, totalamount: item?.total_amount
                                 });
                               }}
                             >

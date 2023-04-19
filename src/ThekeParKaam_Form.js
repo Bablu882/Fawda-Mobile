@@ -39,7 +39,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   const token = useSelector(selectToken);
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
-
+  const textInputRef = useRef(null);
   const [time, setTimes] = useState("");
   const [description, setDescriptions] = useState("");
   const [landType, setLandTypes] = useState("");
@@ -480,8 +480,41 @@ export default function ThekeParKaam_Form({ navigation }) {
                     )}
                   </View>
                 </View>
-
-                <View
+                <TouchableOpacity
+            onPress={() => {
+              textInputRef.current.focus();
+            }}
+          >
+            <View
+              style={[
+                styles.inputView,
+                {
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
+              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
+                वेतन
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ color: "#0099FF", paddingTop: 4 }}>₹ </Text>
+                <TextInput
+                  ref={textInputRef}
+                  style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
+                  keyboardType="numeric"
+                  placeholderTextColor={"#0099FF"}
+                  value={totalAmount}
+                  placeholder="0.00"
+                  onChangeText={(totalAmount) =>
+                    handleTotalAmount(totalAmount)
+                  }
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+                {/* <View
                   style={[
                     styles.inputView,
                     styles.flex,
@@ -503,7 +536,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                       value={totalAmount}
                     />
                   </View>
-                </View>
+                </View> */}
                 {!!errors.totalAmount && (
                   <Text style={styles.error}>{errors.totalAmount}</Text>
                 )}
