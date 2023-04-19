@@ -22,21 +22,14 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const [checked, setChecked] = React.useState("first");
-  const [thekeperKam, setThekeperKam] = useState({});
-  const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, data, payment_status);
+  const { data, payment_status, amount, item } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item);s
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  // const bookingid = route?.params?.item;
-  // console.log("bookingid", bookingid);
-  const [colors, setColors] = useState(Array(10).fill("white"));
-  const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
   const [response, setResponse] = useState(null);
   const [complete, setCompleted] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  //  const [colors, setColors] = useState(Array(10).fill("white"));
   const [numbers, setNumber] = useState(0);
 
   const number = [1, 2, 3, 4];
@@ -70,9 +63,7 @@ function MachineWork2({ navigation, route }) {
       });
   };
 
-  // const {  item , status} = route.params;
-  // console.log("fjds", status , item);
-
+  
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
@@ -267,7 +258,7 @@ function MachineWork2({ navigation, route }) {
               <Text
                 style={{ marginTop: 13, color: "#0099FF", paddingRight: 10 }}
               >
-                ₹ {item?.total_amount_machine}
+                ₹ {amount}
               </Text>
             </View>
           </View>
@@ -640,7 +631,7 @@ const styles = StyleSheet.create({
   TextInput: {
     padding: 10,
 
-    fontFamily: "Poppin-Light",
+    // fontFamily: "Poppin-Light",
   },
   TaxView: {
     borderColor: "#0070C0",

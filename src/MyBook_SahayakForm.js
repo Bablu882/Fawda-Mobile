@@ -609,7 +609,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   <Text
                     style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}
                   >
-                    ₹ {item?.total_amount_sahayak}
+                    ₹ {totalamount}
                   </Text>
                 </View>
               </View>
@@ -1180,7 +1180,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </View>
                 </View>
                 <View style={{ width: "100%" }}>
-                  {item.booking_status === "Accepted" && (
+                  {item?.booking_status === "Accepted" && (
                     <TouchableOpacity
                       style={styles.BhuktanBtn}
                       onPress={() =>

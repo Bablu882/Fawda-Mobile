@@ -51,9 +51,9 @@ export default function MachineWork({ navigation, route }) {
   const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
-  const { id, item } = route.params ?? {};
-  console.log("fjd", item);
-  const [amount, setAmount] = useState(item?.total_amount_machine);
+  const { id, item, fawdafee, totalamount } = route.params ?? {};
+  console.log("fjd", item, fawdafee, totalamount);
+  const [amount, setAmount] = useState(totalamount);
   const [edit, setEdit] = useState(false);
   const textInputRef = useRef(null);
 
@@ -735,7 +735,7 @@ export default function MachineWork({ navigation, route }) {
             {usertype === "Grahak" && item.booking_status === "Accepted" && (
               <TouchableOpacity
                 style={styles.BhuktanBtn}
-                onPress={() => navigation.navigate("Payment", { item })}
+                onPress={() => navigation.navigate("Payment", { item, fawdafee, totalamount })}
               >
                 <Text style={[styles.loginText, { color: "#fff" }]}>
                   भुगतान करें
