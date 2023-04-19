@@ -19,10 +19,12 @@ import {
   selectUserType,
 } from "../slices/authSlice";
 import moment from "moment";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function MyBooking({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const token = useSelector(selectToken);
@@ -98,8 +100,11 @@ export default function MyBooking({ navigation, route }) {
     });
   }, []);
   useEffect(() => {
-    booking(), Myjobs();
-  }, []);
+    if(isFocused) {
+      booking(), Myjobs();
+    }
+   
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -203,7 +208,7 @@ export default function MyBooking({ navigation, route }) {
                                         "MyBook_SahayakForm",
                                         {
                                           id: item?.job_id,
-                                          item, totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, 
+                                          item, totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,  useramount: sahayak?.total_amount_sahayak
                                         }
                                       );
                                     } else if (
@@ -212,7 +217,7 @@ export default function MyBooking({ navigation, route }) {
                                       navigation.navigate("Theke_MachineForm", {
                                         item,
                                         id: item?.job_id,
-                                        totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                        totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, useramount: sahayak?.total_amount_sahayak
                                       });
                                     }
                                   }}
@@ -245,7 +250,7 @@ export default function MyBooking({ navigation, route }) {
                                         {
                                           item,
                                           id: item?.job_id,
-                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, useramount: sahayak?.total_amount_sahayak
                                         }
                                       );
                                     } else if (
@@ -256,7 +261,7 @@ export default function MyBooking({ navigation, route }) {
                                         {
                                           item,
                                           id: item?.job_id,
-                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, useramount: sahayak?.total_amount_sahayak
                                         }
                                       );
                                     }
@@ -716,7 +721,7 @@ export default function MyBooking({ navigation, route }) {
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
                                   item,
-                                  id: item?.id, fawdafee: item?.fawda_fee, totalamount: item?.total_amount
+                                  id: item?.id, fawdafee: item?.fawda_fee, totalamount: item?.total_amount,
                                 });
                               }}
                             >

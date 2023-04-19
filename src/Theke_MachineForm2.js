@@ -73,7 +73,8 @@ function Theke_MachineForm2({ navigation, route }) {
   //   };
   const RatingApi = () => {
     let params = {
-      booking_id: JSON.stringify(item.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
       rating: ratings,
       comment: comments,
     };
@@ -89,7 +90,7 @@ function Theke_MachineForm2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("MyBooking");
+          navigation.replace("Thankyou");
           console.log("fjfjf", data);
         } else {
           console.log("error message");
@@ -237,7 +238,7 @@ function Theke_MachineForm2({ navigation, route }) {
               },
             ]}
           >
-            <Text style={[styles.TextInput]}>{item?.description}</Text>
+            <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item?.description}</Text>
             <Image
               source={require("../assets/image/edit.png")}
               style={{ width: 20, height: 20, marginTop: 10, right: 10 }}

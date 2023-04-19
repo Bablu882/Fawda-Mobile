@@ -8,6 +8,7 @@ import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 import ContactUs from "../src/ContactUs";
 import Thankyou from "../src/Thankyou";
+import HomeStack from "../navigations/HomeStack";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
@@ -30,8 +31,8 @@ export default function BottomTab() {
       })}
     >
       <Tab.Screen
-        name="HomePage"
-        component={Homepage}
+        name="HomeStack"
+        component={HomeStack}
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
             e.preventDefault();
@@ -241,7 +242,7 @@ export default function BottomTab() {
           ),
         }}
       />
-  <Tab.Screen
+  {/* <Tab.Screen
         name="Thankyou"
         component={Thankyou}
         options={{
@@ -279,7 +280,7 @@ export default function BottomTab() {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="ContactUs"
       component={ContactUs}

@@ -15,13 +15,12 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../slices/authSlice";
 
 export default function Payment({ route, navigation }) {
-
   const token = useSelector(selectToken);
-  const { item, totalamount, fawdafee } = route.params??{} ;
+  const { item, totalamount, fawdafee, useramount } = route.params ?? {};
 
-  console.log("payment page", item, fawdafee, totalamount);
+  console.log("payment page", item, fawdafee, totalamount, useramount);
 
-  const [amount, setAmount] = useState(route?.params?.totalamount?.toString() );
+  const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
   const [upiId, setUpiId] = useState("");
   const [name, setName] = useState("");
 
@@ -35,7 +34,7 @@ export default function Payment({ route, navigation }) {
         beneficiary_name: name,
       };
       console.log("oadkfdjkdd", params);
-    
+
       const response = await service.post("/api/payment_test/", params, {
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +50,6 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item,
           amount: amount,
-         
         });
       } else if (item.job_type === "theke_pe_kam") {
         navigation.navigate("Theke_MachineForm2", {
@@ -66,7 +64,6 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item,
           amount: amount,
-       
         });
       }
 
@@ -106,7 +103,7 @@ export default function Payment({ route, navigation }) {
                   borderWidth: 1,
                   width: "90%",
                   paddingHorizontal: 10,
-                  height: 200,
+                  height: 'auto',
                   borderColor: "#0099FF",
                   marginTop: 30,
                   borderWidth: 0.6,
@@ -123,6 +120,21 @@ export default function Payment({ route, navigation }) {
                     onChangeText={setUpiId}
                   />
                 </View>
+                {item?.job_type === "theke_pe_kam" ||
+                item?.job_type === "individuals_sahayak" ? (
+                  <View style={styles.flex}>
+                    <Text>ठेकेदार राशि</Text>
+
+                    <Text>₹{useramount}</Text>
+                  </View>
+                ) : (
+                  <View style={styles.flex}>
+                    <Text>मशीन मालिक राशि[ ] </Text>
+
+                    <Text>₹{useramount}</Text>
+                  </View>
+                )}
+
                 <View style={styles.flex}>
                   <Text>ठेकेदार/सहायक</Text>
 

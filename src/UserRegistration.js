@@ -140,7 +140,7 @@ export default function UserRegistration({ navigation, route }) {
         user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
-        device_id: "74747474747",
+      
       };
       console.log("registerparams", params);
 
@@ -159,8 +159,8 @@ export default function UserRegistration({ navigation, route }) {
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
         console.log("fjfjfjf", data);
 
-        navigation.replace("Verification", { user_type: user, phone });
-        console.log("djdjkd", user_type);
+        navigation.replace("Verification", { user_type: data?.user_type, phone });
+       
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {

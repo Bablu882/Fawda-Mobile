@@ -46,9 +46,10 @@ const CustomComponent = ({ label, value }) => {
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const { id, item, totalamount, fawdafee } = route?.params ?? {};
-  console.log("fjd", item, totalamount, fawdafee);
+  const { id, item, totalamount, fawdafee,useramount } = route?.params ?? {};
+  console.log("fjd", item, totalamount, fawdafee, useramount);
   const [ratingList, setRatingList] = useState([]);
+  const [bookingstate, setBookingState] = useState(item?.status)
   console.log("rating", item, item?.rating);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
@@ -86,7 +87,7 @@ function Theke_MachineForm({ navigation, route }) {
         console.log("aaaa", data);
         setThekeperKam(data?.data);
         Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
-        navigation.replace("MyBooking");
+        navigation.navigate('MyBookingStack', {screen: "MyBooking"});
       } else {
         Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
       }
@@ -270,6 +271,10 @@ function Theke_MachineForm({ navigation, route }) {
     }
   };
 
+useEffect(() => {
+  setBookingState(item?.status)
+},[item?.status])
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -310,7 +315,7 @@ function Theke_MachineForm({ navigation, route }) {
                 ]}
               >
                 <Text style={styles.label}>काम का विवरण</Text>
-                <Text style={[styles.TextInput]}>{item.description}</Text>
+                <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item.description}</Text>
                 <Image
                   source={require("../assets/image/edit.png")}
                   style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -402,7 +407,7 @@ function Theke_MachineForm({ navigation, route }) {
                         { width: "40%" },
                       ]}
                     >
-                      {item?.status === "Pending" ? (
+                      {bookingstate === "Pending" ? (
                         <>
                           <TextInput
                             style={styles.TextInput}
@@ -439,7 +444,7 @@ function Theke_MachineForm({ navigation, route }) {
                       )}
                     </View>
                   </View>
-                  {item.status === "Pending" && (
+                  {bookingstate === "Pending" && (
                     <View
                       style={[
                         styles.flex,
@@ -493,25 +498,25 @@ function Theke_MachineForm({ navigation, route }) {
                       placeholderTextColor={"#000"}
                     />
                     <View style={{ width: "30%", marginRight: 10 }}>
-                      {item?.status === "Pending"
+                      {bookingstate === "Pending"
                         ? getStatusButton(item.status, "पेंडिंग")
-                        : item?.booking_status === "Accepted"
-                        ? getStatusButton(item?.booking_status, "स्वीकार")
-                        : item?.booking_status === "Booked"
-                        ? getStatusButton(item.booking_status, "बुक्ड")
-                        : item?.booking_status === "Ongoing"
-                        ? getStatusButton(item.booking_status, "जारी है ")
-                        : item?.booking_status === "Completed"
-                        ? getStatusButton(item.booking_status, "समाप्त")
+                        : bookingstate === "Accepted"
+                        ? getStatusButton(bookingstate, "स्वीकार")
+                        : bookingstate === "Booked"
+                        ? getStatusButton(bookingstate, "बुक्ड")
+                        : bookingstate === "Ongoing"
+                        ? getStatusButton(bookingstate, "जारी है ")
+                        : bookingstate === "Completed"
+                        ? getStatusButton(bookingstate, "समाप्त")
                         : null}
                     </View>
                   </View>
-                  {item.booking_status === "Accepted" && (
+                  {bookingstate === "Accepted" && (
                     <TouchableOpacity
                       style={styles.BhuktanBtn}
                       onPress={() =>
                         navigation.navigate("Payment", {
-                          item, fawdafee, totalamount
+                          item, fawdafee, totalamount, useramount
                         })
                       }
                     >
@@ -520,14 +525,14 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.status === "Pending" && (
+                  {bookingstate === "Pending" && (
                     <TouchableOpacity style={styles.BhuktanBtn}>
                       <Text style={[styles.loginText, { color: "#fff" }]}>
                         भुगतान करें
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.booking_status === "Booked" && (
+                  {bookingstate === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -537,7 +542,7 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.booking_status === "Ongoing" && (
+                  {bookingstate === "Ongoing" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -547,7 +552,7 @@ function Theke_MachineForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.booking_status === "Completed" && (
+                  {bookingstate === "Completed" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}

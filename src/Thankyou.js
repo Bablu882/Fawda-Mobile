@@ -32,7 +32,8 @@ export default function Thankyou({navigation}) {
               </Text>
             </View>
             <View style={{paddingTop:30}}>
-              <TouchableOpacity
+              <TouchableOpacity 
+              onPress={() => {navigation.navigate('HomePage')}}
                 style={{
                   width: "100%",
                   maxWidth: 300,

@@ -63,8 +63,11 @@ export default function Homepage({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    getalljobs();
-  }, []);
+    if(isfocused) {
+      getalljobs();
+    }
+ 
+  }, [isfocused]);
 
   return (
     <SafeAreaView

@@ -36,7 +36,8 @@ function MachineWork2({ navigation, route }) {
 
   const RatingApi = () => {
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
       rating: ratings,
       comment: comments,
     };
@@ -52,7 +53,7 @@ function MachineWork2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("MyBooking");
+          navigation.replace("Thankyou");
           console.log("fjfjf", data);
         } else {
           console.log("error message");

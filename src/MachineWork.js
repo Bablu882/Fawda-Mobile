@@ -112,7 +112,7 @@ export default function MachineWork({ navigation, route }) {
       console.log("aaaa", data);
       setThekeperKam(data?.data);
       console.log("rrrr", thekeperKam);
-      navigation.replace("MyBooking");
+      navigation.navigate('MyBookingStack', {screen: "MyBooking"});
     } catch (error) {
       console.log("Error:", error);
     } finally {

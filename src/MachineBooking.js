@@ -250,8 +250,17 @@ export default function MachineBooking({ navigation }) {
       })
       .then(({ data }) => {
         console.log("formparamfffff", data);
-        Toast.show("Job Posted Successfully!", Toast.SORT);
-        navigation.replace("MyBooking");
+        if (data?.status === 201) {
+          console.log("form", data);
+          Toast.show("कार्य सफलतापूर्वक पोस्ट किया गया!", Toast.SORT);
+
+          navigation.navigate("MyBookingStack", {screen: 'MyBooking'});
+        } else {
+          Toast.show(
+            "कार्य फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
+            Toast.SORT
+          );
+        }
       })
       .catch((error) => {
         console.log("Error:", error);
