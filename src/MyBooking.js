@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,6 +28,7 @@ export default function MyBooking({ navigation, route }) {
   const token = useSelector(selectToken);
   const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
+
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
   const [sahaykBooking, setSahayakBooking] = useState([]);
@@ -37,12 +39,15 @@ export default function MyBooking({ navigation, route }) {
     setRefreshing(true);
     try {
       const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(`api/my_booking_details/?cacheBuster=${cacheBuster}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await service.get(
+        `api/my_booking_details/?cacheBuster=${cacheBuster}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = response.data;
       setSahayakPending(data?.sahayak_pending_booking_details);
       setSahayakBooking(data?.sahayk_booking_details?.bookings);
@@ -50,7 +55,9 @@ export default function MyBooking({ navigation, route }) {
       setMachinePending(data?.machine_malik_pending_booking_details);
       setIsLoading(false);
       setRefreshing(false);
-      console.log("data:::", data);
+
+    console.log('data',data?.sahayk_booking_details?.bookings)
+
     } catch (error) {
       console.log("Error:", error);
     }
@@ -61,12 +68,15 @@ export default function MyBooking({ navigation, route }) {
     setRefreshing(true); // set refreshing to true when the function starts
     try {
       const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(`/api/myjobs/?cacheBuster=${cacheBuster}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await service.get(
+        `/api/myjobs/?cacheBuster=${cacheBuster}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = response.data;
       setMyjob(data?.data);
       console.log("data:====::", data);
@@ -83,10 +93,9 @@ export default function MyBooking({ navigation, route }) {
     Myjobs().then(() => {
       setRefreshing(false);
     });
-    booking().then(() =>{
+    booking().then(() => {
       setRefreshing(false);
-    }
-    )
+    });
   }, []);
   useEffect(() => {
     booking(), Myjobs();
@@ -141,7 +150,144 @@ export default function MyBooking({ navigation, route }) {
                     }}
                   />
                   <>
-                  {sahaykBooking?.length > 0 &&
+                    {sahaykBooking?.length > 0 &&
+                      sahaykBooking.map((sahayak, index) =>
+                        sahayak.sahayaks.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                              
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                            
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#0099FF",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              {item?.booking_status === "Accepted" ||
+                              item?.booking_status === "Completed" ? (
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    if (
+                                      item?.job_type === "individuals_sahayak"
+                                    ) {
+                                      navigation.navigate(
+                                        "MyBook_SahayakForm",
+                                        {
+                                          id: item?.job_id,
+                                          item, totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, 
+                                        }
+                                      );
+                                    } else if (
+                                      item.job_type === "theke_pe_kam"
+                                    ) {
+                                      navigation.navigate("Theke_MachineForm", {
+                                        item,
+                                        id: item?.job_id,
+                                        totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      textAlign: "center",
+                                      marginTop: 7,
+                                      color: "#fff",
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    {item?.booking_status === "Accepted"
+                                      ? "स्वीकृत"
+                                      : item?.booking_status === "Completed"
+                                      ? "समाप्त"
+                                      : null}
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : item?.booking_status === "Ongoing" ||
+                              item?.booking_status === "Booked" ? (
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    if (
+                                      item?.job_type === "individuals_sahayak"
+                                    ) {
+                                      navigation.navigate(
+                                        "Mybooking_Sahayak2",
+                                        {
+                                          item,
+                                          id: item?.job_id,
+                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                        }
+                                      );
+                                    } else if (
+                                      item.job_type === "theke_pe_kam"
+                                    ) {
+                                      navigation.navigate(
+                                        "Theke_MachineForm2",
+                                        {
+                                          item,
+                                          id: item?.job_id,
+                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                        }
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      textAlign: "center",
+                                      marginTop: 7,
+                                      color: "#fff",
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                    }}
+                                  >
+                                    
+                                    {item?.booking_status === "Ongoing"
+                                      ? "काम जारी"
+                                      : item?.booking_status === "Booked"
+                                      ? " काम बुक"
+                                      : item?.booking_status === "Completed"
+                                      ? "समाप्त"
+                                      : null}
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : null}
+                            </View>
+                          </View>
+                        ))
+                      )}
+
+                    {/* {sahaykBooking?.length > 0 &&
                       sahaykBooking?.map((item) => (
                         <View
                           style={{
@@ -169,7 +315,7 @@ export default function MyBooking({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor: "#44A347",
+                              backgroundColor: "#0099FF",
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -244,7 +390,112 @@ export default function MyBooking({ navigation, route }) {
                             ) : null}
                           </View>
                         </View>
-                      ))}
+                      ))} */}
+
+                    {/* {sahaykBooking?.length > 0 &&
+                      sahaykBooking?.map((item) => (
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 50,
+                          }}
+                        >
+                          <View style={{ marginLeft: 30 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              {item.job_type === "individuals_sahayak"
+                                ? "सहायक  "
+                                : item.job_type === "theke_pe_kam"
+                                ? "ठेके पर काम"
+                                : ""}
+                            </Text>
+
+                            <Text style={{ color: "black" }}>
+                              {moment.utc(item?.datetime).format("L")}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              height: 33,
+                              backgroundColor: "#0099FF",
+                              marginRight: 20,
+                              marginTop: 10,
+                            }}
+                          >
+                            {item.booking_status === "Accepted" ||
+                            item?.booking_status === "Completed" ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  if (item.job_type === "individuals_sahayak") {
+                                    navigation.navigate("MyBook_SahayakForm", {
+                                      id: item.id,
+                                      item,
+                                    });
+                                  } else if (item.job_type === "theke_pe_kam") {
+                                    navigation.navigate("Theke_MachineForm", {
+                                      item,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {item?.booking_status === "Accepted"
+                                    ? "स्वीकृत"
+                                    : item?.booking_status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : item?.booking_status === "Ongoing" ||
+                              item?.booking_status === "Booked" ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  if (item.job_type === "individuals_sahayak") {
+                                    navigation.navigate("Mybooking_Sahayak2", {
+                                      id: item.id,
+                                      item,
+                                    });
+                                  } else if (item.job_type === "theke_pe_kam") {
+                                    navigation.navigate("Theke_MachineForm2", {
+                                      item,
+                                      id: item.id,
+                                    });
+                                  }
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {item?.booking_status === "Ongoing"
+                                    ? "काम जारी"
+                                    : item?.booking_status === "Booked"
+                                    ? " काम बुक"
+                                    : item?.booking_status === "Completed"
+                                    ? "समाप्त"
+                                    : null}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+                          </View>
+                        </View>
+                      ))} */}
                     {sahayakPending?.length > 0 &&
                       sahayakPending?.map((item, index) => (
                         // {console.log('machine', machinePending)}
@@ -316,7 +567,6 @@ export default function MyBooking({ navigation, route }) {
                           </View>
                         </View>
                       ))}
-              
 
                     {machinePending?.length > 0 &&
                       machinePending?.map((item, index) => (
@@ -455,7 +705,7 @@ export default function MyBooking({ navigation, route }) {
                           style={{
                             width: "30%",
                             height: 33,
-                            backgroundColor: "#44A347",
+                            backgroundColor: "#0099FF",
                             marginRight: 20,
                             marginTop: 10,
                           }}
@@ -645,7 +895,7 @@ export default function MyBooking({ navigation, route }) {
                               style={{
                                 width: "30%",
                                 height: 33,
-                                backgroundColor: "#44A347",
+                                backgroundColor: "#0099FF",
                                 marginRight: 20,
                                 marginTop: 10,
                               }}
@@ -682,7 +932,14 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                  विवरण देखे
+                                  {/* विवरण देखे */}
+                                  {item?.status === "Accepted"
+                                    ? "स्वीकार"
+                                    : item?.status === "Booked"
+                                    ? "बुक "
+                                    : item?.status === "Ongoing"
+                                    ? "जारी है"
+                                    : "समाप्त"}
                                 </Text>
                               </TouchableOpacity>
                             </View>

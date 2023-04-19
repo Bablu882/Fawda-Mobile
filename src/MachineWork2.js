@@ -95,7 +95,8 @@ function MachineWork2({ navigation, route }) {
   const Ongoing = () => {
     setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number
     };
     console.log(params);
     service
@@ -119,7 +120,8 @@ function MachineWork2({ navigation, route }) {
   const bookingcompleted = () => {
     setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number
     };
     console.log(params);
     service

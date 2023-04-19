@@ -24,8 +24,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  const { item, data, payment_status } = route?.params ?? {};
-  console.log("fjkfkfkff", item, data, payment_status);
+  const { data, payment_status, amount, item } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -109,7 +109,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const Ongoing = () => {
     setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number
     };
     console.log(params);
     service
@@ -133,7 +134,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const bookingcompleted = () => {
     setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number
     };
     console.log(params);
     service
@@ -273,7 +275,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ color: "#0099FF", paddingRight: 10 }}>
-                ₹ {item?.total_amount_sahayak}
+                ₹ {amount}
               </Text>
             </View>
           </View>
