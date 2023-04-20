@@ -23,7 +23,7 @@ function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { data, payment_status, amount, item } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item);s
+  console.log("fjkfkfkff", amount, item);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
@@ -36,7 +36,8 @@ function MachineWork2({ navigation, route }) {
 
   const RatingApi = () => {
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
       rating: ratings,
       comment: comments,
     };
@@ -52,7 +53,7 @@ function MachineWork2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("MyBooking");
+          navigation.replace("Thankyou");
           console.log("fjfjf", data);
         } else {
           console.log("error message");
@@ -314,11 +315,11 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {item.booking_status === "Booked"
+                  {item.status === "Booked"
                     ? "बुक"
-                    : item.booking_status === "Accepted"
+                    : item.status === "Accepted"
                     ? "बुक"
-                    : item.booking_status === "Ongoing"
+                    : item.status === "Ongoing"
                     ? "जारी है"
                     : ""}
 
@@ -474,7 +475,7 @@ function MachineWork2({ navigation, route }) {
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
-                response === "Ongoing" || item?.booking_status === "Ongoing"
+                response === "Ongoing" || item?.status === "Ongoing"
                   ? bookingcompleted
                   : response === "Completed"
                   ? () => RatingApi()
@@ -487,7 +488,7 @@ function MachineWork2({ navigation, route }) {
                   ? "रेटिंग दें जारी है"
                   : complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
-                  : response === "Ongoing" || item?.booking_status === "Ongoing"
+                  : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
                   : "काम शुरू करें"}
               </Text>
@@ -503,7 +504,7 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {item?.booking_status === "Accepted" &&
+          {item?.status === "Accepted" &&
             response != "Ongoing" &&
             response !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
@@ -523,7 +524,7 @@ function MachineWork2({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             )}
-          {item?.booking_status === "Booked" && (
+          {item?.status === "Booked" && (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}

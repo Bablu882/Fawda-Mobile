@@ -43,6 +43,7 @@ import { About_us } from "./src/AboutUs";
 import { Privacy_policy } from "./src/PrivacyPolicy";
 import Thankyou from "./src/Thankyou";
 import { navigationRef } from './service/NavigationService';
+import HomeStack from "./navigations/HomeStack";
 
 
 
@@ -75,23 +76,22 @@ export default function App() {
           <Stack.Screen name="Register" component={Register} /> 
           <Stack.Screen name="UserRegistration" component={UserRegistration} />
           <Stack.Screen name="HomePage" component={BottomTab} />
-          <Stack.Screen name="MyBooking" component={MyBookingStack} />
-          <Stack.Screen name="Payment" component={Payment} />
+          <Stack.Screen name="BottomTab" component={BottomTab} />
+          <Stack.Screen name="HomeStack" component={HomeStack} />
+          <Stack.Screen name="MyBookingStack" component={MyBookingStack} />
+
           <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} />
-          <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} /> 
-          <Stack.Screen name="SahayakForm" component={SahayakForm} />
+        
           <Stack.Screen name="MachineBooking" component={MachineBooking} />
           <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
-          <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
           <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
-          <Stack.Screen name="MachineWork" component={MachineWork} />
           <Stack.Screen name="MachineWork2" component={MachineWork2} />
           <Stack.Screen name="ContactUs" component={ContactUs} />
           <Stack.Screen name="terms" component={Terms_Condition} />
           <Stack.Screen name="about_us" component={About_us} />
           <Stack.Screen name="privacy" component={Privacy_policy} />
           <Stack.Screen name="Thankyou" component={Thankyou} />
-          
+       
 
          
         </Stack.Navigator>

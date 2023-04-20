@@ -198,7 +198,7 @@ export default function ThekeParKaam_Form({ navigation }) {
         console.log("form", data);
         Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
 
-        navigation.replace("MyBooking");
+        navigation.navigate('MyBookingStack',{screen: "MyBooking"});
       } else {
         Toast.show(
           "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
@@ -235,7 +235,7 @@ export default function ThekeParKaam_Form({ navigation }) {
     if (description.trim() === "") {
       errorMessages.description = "Please enter your description";
       valid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
+    } else if (!/^[a-zA-Z\s.]+$/.test(description.trim())) {
       errorMessages.description =
         "Please enter a valid description (letters only)";
       valid = false;

@@ -45,6 +45,7 @@ const CustomComponent = ({ label, value }) => {
 
 export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
+  const [bookingstate, setBookingState] = useState(item?.status)
   const token = useSelector(selectToken);
   const [thekeperKam, setThekeperKam] = useState({});
   const [ratingList, setRatingList] = useState([]);
@@ -92,7 +93,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       });
       const data = response?.data;
       console.log("datadatadatadatadata|||||||||", data);
-      navigation.replace("MyBooking", { item, usertype });
+      navigation.navigate('MyBookingStack', {
+        screen: 'MyBooking',
+        params: {
+          item: item,
+          usertype: usertype
+        }
+      });
+      
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -268,7 +276,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
   const cancel = async () => {
     let params = {};
-    if (item.booking_status === "Accepted") {
+    if (item.status === "Accepted") {
       params = {
         job_id: item?.id,
         job_number: item?.job_number,
@@ -352,6 +360,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       </TouchableOpacity>
     );
   }
+
+
+
+useEffect(() => {
+  setBookingState(item?.status)
+},[item?.status])
+
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View>
@@ -400,7 +416,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               ]}
             >
               <Text style={styles.label}>काम का विवरण</Text>
-              <Text style={[styles.TextInput]}>{item?.description}</Text>
+              <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item?.description}</Text>
               <Image
                 source={require("../assets/image/edit.png")}
                 style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -521,7 +537,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 </Text> */}
               </View>
             </View>
-            {item?.booking_status == "Accepted" ? (
+            {bookingstate == "Accepted" ? (
               <></>
             ) : (
               <View style={styles.flex}>
@@ -959,18 +975,18 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               placeholderTextColor={"#000"}
                               name={`Male${index + 1}`}
                             />
-                            {item?.status === "Pending"
-                              ? getStatusButton(item.status, "पेंडिंग")
-                              : item?.status === "Accepted"
-                              ? getStatusButton(item.booking_status, "स्वीकार")
-                              : item?.status === "Booked"
-                              ? getStatusButton(item.booking_status, "बुक्ड")
-                              : item?.status === "Ongoing"
-                              ? getStatusButton(item.booking_status, "जारी है ")
-                              : item?.status === "Completed"
-                              ? getStatusButton(item.booking_status, "समाप्त")
+                            {bookingstate === "Pending"
+                              ? getStatusButton(bookingstate, "पेंडिंग")
+                              : bookingstate === "Accepted"
+                              ? getStatusButton(bookingstate, "स्वीकार")
+                              : bookingstate === "Booked"
+                              ? getStatusButton(bookingstate, "बुक्ड")
+                              : bookingstate === "Ongoing"
+                              ? getStatusButton(bookingstate, "जारी है ")
+                              : bookingstate === "Completed"
+                              ? getStatusButton(bookingstate, "समाप्त")
                               : null}
-                            {item?.booking_status === "Accepted"
+                            {/* {item?.booking_status === "Accepted"
                               ? getStatusButton(item.booking_status, "स्वीकार")
                               : item?.booking_status === "Booked"
                               ? getStatusButton(item.booking_status, "बुक्ड")
@@ -978,7 +994,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               ? getStatusButton(item.booking_status, "जारी है ")
                               : item?.booking_status === "Completed"
                               ? getStatusButton(item.booking_status, "समाप्त")
-                              : null}
+                              : null} */}
                             {/* <View
                               style={{
                                 paddingVertical: 4,
@@ -1053,7 +1069,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               : item?.status === "Completed"
                               ? getStatusButton(item.status, "समाप्त")
                               : null}
-                            {item?.booking_status === "Accepted"
+                            {/* {item?.booking_status === "Accepted"
                               ? getStatusButton(item.booking_status, "स्वीकार")
                               : item?.booking_status === "Booked"
                               ? getStatusButton(item.booking_status, "बुक्ड")
@@ -1061,7 +1077,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               ? getStatusButton(item.booking_status, "जारी है ")
                               : item?.booking_status === "Completed"
                               ? getStatusButton(item.booking_status, "समाप्त")
-                              : null}
+                              : null} */}
                             {/* <View
                               style={{
                                 paddingVertical: 4,
@@ -1155,7 +1171,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           }}
                         >
                           {TotalCount}
-                          {item.booking_status === "Accepted"
+                          {item.status === "Accepted"
                             ? " सहायक स्वीकार करें "
                             : " सहायक कम्प्लीट कर चुके हैं।"}
                         </Text>
@@ -1180,7 +1196,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   </View>
                 </View>
                 <View style={{ width: "100%" }}>
-                  {item?.booking_status === "Accepted" && (
+                  {item?.status === "Accepted" && (
                     <TouchableOpacity
                       style={styles.BhuktanBtn}
                       onPress={() =>
@@ -1205,7 +1221,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     </TouchableOpacity>
                   )}
 
-                  {item?.booking_status === "Booked" && (
+                  {item?.status === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1215,7 +1231,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.booking_status === "Ongoing" && (
+                  {item?.status === "Ongoing" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1225,7 +1241,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.booking_status === "Completed" && (
+                  {item.status === "Completed" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}

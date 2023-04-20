@@ -19,21 +19,37 @@ import {
   selectUserType,
 } from "../slices/authSlice";
 import moment from "moment";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function MyBooking({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const token = useSelector(selectToken);
   const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
-
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
   const [sahaykBooking, setSahayakBooking] = useState([]);
   const [myjob, setMyjob] = useState({});
   //=====api integration of MyBooking======//
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
   const booking = async () => {
     setIsLoading(true); // set isLoading to true when the function starts
     setRefreshing(true);
@@ -56,37 +72,35 @@ export default function MyBooking({ navigation, route }) {
       setIsLoading(false);
       setRefreshing(false);
 
-    console.log('data',data)
-
+      console.log("data", data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
-  const Myjobs = async () => {
-    setIsLoading(true); // set isLoading to true when the function starts
-    setRefreshing(true); // set refreshing to true when the function starts
-    try {
-      const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(
-        `/api/myjobs/?cacheBuster=${cacheBuster}`,
-        {
+  useEffect(() => {
+    const Myjobs = async () => {
+      setIsLoading(true);
+      setRefreshing(true);
+      try {
+        const response = await service.get(`/api/myjobs/?page=${page}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-      const data = response.data;
-      setMyjob(data?.data);
-      console.log("data:====::", data);
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      setIsLoading(false); // set isLoading to false when the function completes
-      setRefreshing(false); // set refreshing to false when the function completes
-    }
-  };
+        });
+        const data = response.data;
+        setMyjob(data?.data?.results);
+        setTotalPages(data?.data?.total_pages);
+      } catch (error) {
+        console.log("Error:", error);
+      } finally {
+        setIsLoading(false);
+        setRefreshing(false);
+      }
+    };
+    Myjobs();
+  }, [page]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -98,8 +112,10 @@ export default function MyBooking({ navigation, route }) {
     });
   }, []);
   useEffect(() => {
-    booking(), Myjobs();
-  }, []);
+    if (isFocused) {
+      booking();
+    }
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -170,7 +186,6 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#000",
                                 }}
                               >
-                              
                                 {item.job_type === "individuals_sahayak"
                                   ? "सहायक  "
                                   : item.job_type === "theke_pe_kam"
@@ -180,7 +195,6 @@ export default function MyBooking({ navigation, route }) {
 
                               <Text style={{ color: "black" }}>
                                 {moment.utc(item?.datetime).format("L")}
-                            
                               </Text>
                             </View>
                             <View
@@ -192,8 +206,8 @@ export default function MyBooking({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              {item?.booking_status === "Accepted" ||
-                              item?.booking_status === "Completed" ? (
+                              {item?.status === "Accepted" ||
+                              item?.status === "Completed" ? (
                                 <TouchableOpacity
                                   onPress={() => {
                                     if (
@@ -203,7 +217,11 @@ export default function MyBooking({ navigation, route }) {
                                         "MyBook_SahayakForm",
                                         {
                                           id: item?.job_id,
-                                          item, totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee, 
+                                          item,
+                                          totalamount: sahayak.total_amount,
+                                          fawdafee: sahayak?.fawda_fee,
+                                          useramount:
+                                            sahayak?.total_amount_sahayak,
                                         }
                                       );
                                     } else if (
@@ -212,7 +230,10 @@ export default function MyBooking({ navigation, route }) {
                                       navigation.navigate("Theke_MachineForm", {
                                         item,
                                         id: item?.job_id,
-                                        totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                        totalamount: sahayak.total_amount,
+                                        fawdafee: sahayak?.fawda_fee,
+                                        useramount:
+                                          sahayak?.total_amount_sahayak,
                                       });
                                     }
                                   }}
@@ -226,15 +247,15 @@ export default function MyBooking({ navigation, route }) {
                                       fontWeight: "600",
                                     }}
                                   >
-                                    {item?.booking_status === "Accepted"
+                                    {item?.status === "Accepted"
                                       ? "स्वीकृत"
-                                      : item?.booking_status === "Completed"
+                                      : item?.status === "Completed"
                                       ? "समाप्त"
                                       : null}
                                   </Text>
                                 </TouchableOpacity>
-                              ) : item?.booking_status === "Ongoing" ||
-                              item?.booking_status === "Booked" ? (
+                              ) : item?.status === "Ongoing" ||
+                                item?.status === "Booked" ? (
                                 <TouchableOpacity
                                   onPress={() => {
                                     if (
@@ -245,7 +266,10 @@ export default function MyBooking({ navigation, route }) {
                                         {
                                           item,
                                           id: item?.job_id,
-                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                          totalamount: sahayak.total_amount,
+                                          fawdafee: sahayak?.fawda_fee,
+                                          useramount:
+                                            sahayak?.total_amount_sahayak,
                                         }
                                       );
                                     } else if (
@@ -256,7 +280,10 @@ export default function MyBooking({ navigation, route }) {
                                         {
                                           item,
                                           id: item?.job_id,
-                                          totalamount:sahayak.total_amount, fawdafee: sahayak?.fawda_fee,
+                                          totalamount: sahayak.total_amount,
+                                          fawdafee: sahayak?.fawda_fee,
+                                          useramount:
+                                            sahayak?.total_amount_sahayak,
                                         }
                                       );
                                     }
@@ -271,12 +298,11 @@ export default function MyBooking({ navigation, route }) {
                                       fontWeight: "600",
                                     }}
                                   >
-                                    
-                                    {item?.booking_status === "Ongoing"
+                                    {item?.status === "Ongoing"
                                       ? "काम जारी"
-                                      : item?.booking_status === "Booked"
+                                      : item?.status === "Booked"
                                       ? " काम बुक"
-                                      : item?.booking_status === "Completed"
+                                      : item?.status === "Completed"
                                       ? "समाप्त"
                                       : null}
                                   </Text>
@@ -710,13 +736,15 @@ export default function MyBooking({ navigation, route }) {
                             marginTop: 10,
                           }}
                         >
-                          {item.booking_status === "Accepted" ||
-                          item?.booking_status === "Completed" ? (
+                          {item.status === "Accepted" ||
+                          item?.status === "Completed" ? (
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
                                   item,
-                                  id: item?.id, fawdafee: item?.fawda_fee, totalamount: item?.total_amount
+                                  id: item?.id,
+                                  fawdafee: item?.fawda_fee,
+                                  totalamount: item?.total_amount,
                                 });
                               }}
                             >
@@ -729,15 +757,15 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                 }}
                               >
-                                {item.booking_status === "Accepted"
+                                {item.status === "Accepted"
                                   ? "स्वीकृत"
-                                  : item?.booking_status === "Completed"
+                                  : item?.status === "Completed"
                                   ? "समाप्त"
                                   : null}
                               </Text>
                             </TouchableOpacity>
-                          ) : item?.booking_status === "Ongoing" ||
-                            item?.booking_status === "Booked" ? (
+                          ) : item?.status === "Ongoing" ||
+                            item?.status === "Booked" ? (
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork2", {
@@ -755,11 +783,11 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                 }}
                               >
-                                {item.booking_status === "Ongoing"
+                                {item.status === "Ongoing"
                                   ? "काम जारी"
-                                  : item?.booking_status === "Booked"
+                                  : item?.status === "Booked"
                                   ? " काम बुक"
-                                  : item?.booking_status === "Completed"
+                                  : item?.status === "Completed"
                                   ? "समाप्त"
                                   : null}
                               </Text>
@@ -866,7 +894,7 @@ export default function MyBooking({ navigation, route }) {
                       }}
                     />
                     <>
-                      {myjob.length > 0 &&
+                      {myjob?.length > 0 &&
                         myjob?.map((item) => (
                           <View
                             style={{
@@ -949,12 +977,52 @@ export default function MyBooking({ navigation, route }) {
 
                     <View
                       style={{
-                        borderTopWidth: 0.7,
-                        borderTopColor: "#0099FF",
-                        width: "100%",
-                        marginTop: 15,
+                        flexDirection: "row",
                       }}
                     />
+
+                
+                  </View>
+                  <View style={{flexDirection:'row', justifyContent:'flex-end', marginRight:20, marginVertical:20}}>
+                  <TouchableOpacity
+                      style={{
+                        width: 30,
+                        height: 30,
+                        backgroundColor: "#000",
+                        textAlign: "center",
+                        alignItems: "center",
+                        marginRight: 10,
+                      }}
+                      onPress={() => {
+                        handlePrevPage();
+                      }}
+                    >
+                      <Icon
+                        name="left"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        width: 30,
+                        height: 30,
+                        backgroundColor: "#000",
+                        textAlign: "center",
+                        alignItems: "center",
+                      }}
+                      onPress={() => {
+                        handleNextPage();
+                      }}
+                    >
+                      <Icon
+                        name="right"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity>
                   </View>
                 </>
               )}

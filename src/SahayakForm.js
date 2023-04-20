@@ -15,6 +15,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-root-toast";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+
 import moment from "moment";
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import {
@@ -183,7 +184,7 @@ export default function SahayakForm({ navigation }) {
     if (description.trim() === "") {
       errorMessages.description = "Please enter your description";
       valid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
+    } else if (!/^[a-zA-Z\s.]+$/.test(description.trim())) {
       errorMessages.description =
         "Please enter a valid description (letters only)";
       valid = false;
@@ -270,7 +271,7 @@ export default function SahayakForm({ navigation }) {
         console.log("form", data);
         Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
 
-        navigation.replace("MyBooking");
+        navigation.navigate('MyBookingStack',{  screen: 'MyBooking'});
       } else {
         Toast.show(
           "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
