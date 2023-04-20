@@ -27,6 +27,7 @@ export default function Homepage({ navigation, route }) {
   const [sahayak, setSahayak] = useState("");
   const isfocused = useIsFocused();
   const [page, setPage] = useState(1);
+  const [activeButtons, setActiveButtons] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
@@ -42,6 +43,9 @@ export default function Homepage({ navigation, route }) {
     if (page > 1) {
       setPage(page - 1);
     }
+  };
+  const handlePress = (buttonIndex) => {
+    setActiveButtons(buttonIndex);
   };
 
   // const getalljobs = async () => {
@@ -76,12 +80,16 @@ export default function Homepage({ navigation, route }) {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await service.get(`/api/nearjob/?page=${page}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const cacheBuster = Date.now();
+        const response = await service.get(
+          `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = response.data;
         setCurrentUsers(data.results);
         setTotalPages(data.total_pages);
@@ -153,7 +161,8 @@ export default function Homepage({ navigation, route }) {
                 {currentUsers?.length > 0 && (
                   <>
                     {currentUsers.map((item, index) => (
-                      <View key={index} style={styles.booking}>
+                      <View key={index}  >
+                        <View style={[styles.booking,{paddingVertical:15,}]}>
                         <View style={styles.bookingLeft}>
                           {item.job_type === "individuals_sahayak" ||
                           item.job_type === "theke_pe_kam" ? (
@@ -213,6 +222,8 @@ export default function Homepage({ navigation, route }) {
                             विवरण देखे
                           </Text>
                         </TouchableOpacity>
+                        </View>
+                       
                       </View>
                     ))}
                     <View style={styles.line} />
@@ -232,22 +243,43 @@ export default function Homepage({ navigation, route }) {
                 style={{
                   marginVertical: 20,
                   flexDirection: "row",
-                  justifyContent: "flex-end", marginRight:10
+                  justifyContent: "flex-end",
+                  marginRight: 10,
                 }}
               >
-                <TouchableOpacity style={{width:30, height:30, backgroundColor:'#000', textAlign:'center', alignItems:'center', marginRight:10}}
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    activeButtons === 1 && styles.activeButton,
+                  ]}
                   onPress={() => {
-                    handlePrevPage();
+                    handlePress(1), handlePrevPage();
                   }}
                 >
-                  <Icon name="left" size={20} color={'#fff'} style={{lineHeight:30}}/>
+                  <Icon
+                    name="left"
+                    size={20}
+                    color={"#fff"}
+                    style={{ lineHeight: 30 }}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity style={{width:30, height:30, backgroundColor:'#000', textAlign:'center', alignItems:'center'}}
+
+                <TouchableOpacity
+                  style={[
+                    {marginLeft:10},
+                    styles.button,
+                    activeButtons === 2 && styles.activeButton,
+                  ]}
                   onPress={() => {
-                    handleNextPage();
+                    handlePress(2), handleNextPage();
                   }}
                 >
-                  <Icon name="right" size={20}  color={'#fff'} style={{lineHeight:30,}}/>
+                  <Icon
+                    name="right"
+                    size={20}
+                    color={"#fff"}
+                    style={{ lineHeight: 30 }}
+                  />
                 </TouchableOpacity>
               </View>
             </>
@@ -510,7 +542,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-    marginTop: 50,
+
+
   },
   sahayak: {
     width: "35%",
@@ -594,5 +627,16 @@ const styles = StyleSheet.create({
 
   VerifyText: {
     color: "#fff",
+  },
+  button: {
+    width: 30,
+    height: 30,
+    textAlign: "center",
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#ccc",
+  },
+  activeButton: {
+    backgroundColor: "#0099FF",
   },
 });

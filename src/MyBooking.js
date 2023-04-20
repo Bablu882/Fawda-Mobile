@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   FlatList,
+  StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +32,7 @@ export default function MyBooking({ navigation, route }) {
   const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
   const [page, setPage] = useState(1);
+  const [activeButton, setActiveButton] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [machinePending, setMachinePending] = useState([]);
   const [sahayakPending, setSahayakPending] = useState([]);
@@ -48,6 +50,9 @@ export default function MyBooking({ navigation, route }) {
     if (page > 1) {
       setPage(page - 1);
     }
+  };
+  const handlePress = (buttonIndex) => {
+    setActiveButton(buttonIndex);
   };
 
   const booking = async () => {
@@ -83,12 +88,16 @@ export default function MyBooking({ navigation, route }) {
       setIsLoading(true);
       setRefreshing(true);
       try {
-        const response = await service.get(`/api/myjobs/?page=${page}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const cacheBuster = Date.now();
+        const response = await service.get(
+          `/api/myjobs/?page=${page}&cacheBuster=${cacheBuster}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = response.data;
         setMyjob(data?.data?.results);
         setTotalPages(data?.data?.total_pages);
@@ -771,7 +780,7 @@ export default function MyBooking({ navigation, route }) {
                                 navigation.navigate("MachineWork2", {
                                   item,
                                   id: item?.id,
-                                  useramount: item?.payment_your
+                                  useramount: item?.payment_your,
                                 });
                               }}
                             >
@@ -981,18 +990,23 @@ export default function MyBooking({ navigation, route }) {
                         flexDirection: "row",
                       }}
                     />
-
-                
                   </View>
-                  <View style={{flexDirection:'row', justifyContent:'flex-end', marginRight:20, marginVertical:20}}>
-                  <TouchableOpacity
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-end",
+                      marginRight: 20,
+                      marginVertical: 20,
+                    }}
+                  >
+                    {/* <TouchableOpacity
                       style={{
                         width: 30,
                         height: 30,
-                        backgroundColor: "#000",
+                        backgroundColor: "#0099FF",
                         textAlign: "center",
+                        borderRadius:20,
                         alignItems: "center",
-                        marginRight: 10,
                       }}
                       onPress={() => {
                         handlePrevPage();
@@ -1009,12 +1023,47 @@ export default function MyBooking({ navigation, route }) {
                       style={{
                         width: 30,
                         height: 30,
-                        backgroundColor: "#000",
+                        backgroundColor: "#0099FF",
                         textAlign: "center",
+                        borderRadius:20,
                         alignItems: "center",
                       }}
                       onPress={() => {
                         handleNextPage();
+                      }}
+                    >
+                      <Icon
+                        name="right"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity> */}
+                    <TouchableOpacity
+                      style={[
+                        styles.button,
+                        activeButton === 1 && styles.activeButton,
+                      ]}
+                      onPress={() => {
+                        handlePress(1), handlePrevPage();
+                      }}
+                    >
+                      <Icon
+                        name="left"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        {marginLeft:10},
+                        styles.button,
+                        activeButton === 2 && styles.activeButton,
+                      ]}
+                      onPress={() => {
+                        handlePress(2), handleNextPage();
                       }}
                     >
                       <Icon
@@ -1033,3 +1082,21 @@ export default function MyBooking({ navigation, route }) {
     </SafeAreaView>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+  width:30,
+  height:30,
+  textAlign: "center",
+  borderRadius:20,
+  alignItems: "center",
+  backgroundColor:'#ccc'
+  },
+  activeButton: {
+    backgroundColor: "#0099FF",
+  },
+});

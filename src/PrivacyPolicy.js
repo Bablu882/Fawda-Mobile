@@ -1,5 +1,5 @@
 import React from "react";
-import { View ,Text , TouchableOpacity, ScrollView } from "react-native";
+import { View ,Text , TouchableOpacity, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import RenderHtml from 'react-native-render-html';
 
@@ -18,14 +18,16 @@ const results = terms?.client_info?.privacy_policy;
             <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
-        <View style={{ justifyContent: "center" }}>
+        
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        <View style={{ justifyContent: "center", alignItems:'center' }}>
+        <Image source={require('../assets/image/Fawda-logo.png')} style={{width:120, height:120, alignItems:"center" , justifyContent:"center" }}/>
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600", marginTop:10 }}
           >
          प्राइवेसी नीति
           </Text>
         </View>
-        <ScrollView horizontal={false} >
         <View style={{paddingHorizontal:20, marginTop:20}}>
             {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}
             {/* <Text style={{fontSize:18, textAlign:"justify"}}>{results}</Text> */}
