@@ -24,8 +24,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState({});
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  const { data, payment_status, amount, item } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item);
+  const { data, payment_status, amount, item, useramount } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item, useramount);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [colors, setColors] = useState(Array(10).fill("white"));
@@ -161,15 +161,12 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   };
 
   const cancel = async () => {
-    let params = {};
-    if (payment_status === "success") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    }
+    let params = {
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment",
+    };
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -276,7 +273,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ color: "#0099FF", paddingRight: 10 }}>
-                ₹ {amount}
+                ₹ {useramount}
               </Text>
             </View>
           </View>

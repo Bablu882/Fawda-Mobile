@@ -22,8 +22,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const { data, payment_status, amount, item } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item);
+  const { data, payment_status, amount, item, useramount } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item, useramount);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
@@ -138,15 +138,12 @@ function MachineWork2({ navigation, route }) {
   };
 
   const cancel = async () => {
-    let params = {};
-    if (payment_status === "success") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    }
+    let  params = {
+      job_id: item?.id,
+      job_number: item?.job_number,
+      booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment",
+    };
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -156,7 +153,7 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack",{screen: 'HomePage'});
       // setStatus(data.status);
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
@@ -259,7 +256,7 @@ function MachineWork2({ navigation, route }) {
               <Text
                 style={{ marginTop: 13, color: "#0099FF", paddingRight: 10 }}
               >
-                ₹ {amount}
+                ₹ {useramount}
               </Text>
             </View>
           </View>

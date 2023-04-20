@@ -210,22 +210,13 @@ function Theke_MachineForm({ navigation, route }) {
   }, []);
 
   const cancel = async () => {
-    let params = {};
-    if (item.booking_status === "Accepted") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled",
-      };
-    } else if (item.status === "Pending") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        // booking_id: item?.booking_id,
-        status: "Cancelled",
-      };
-    }
+    let params = {
+      job_id: item?.id,
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled",
+    };
+    console.log('jfjgjg', params)
 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -234,10 +225,9 @@ function Theke_MachineForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack",{screen: 'HomePage'});
       Toast.show("Cancelled", Toast.LONG);
 
       console.log("fjfjf", data);
@@ -526,7 +516,7 @@ useEffect(() => {
                     </TouchableOpacity>
                   )}
                   {bookingstate === "Pending" && (
-                    <TouchableOpacity style={styles.BhuktanBtn}>
+                    <TouchableOpacity style={[styles.BhuktanBtn,{opacity:0.5}]}>
                       <Text style={[styles.loginText, { color: "#fff" }]}>
                         भुगतान करें
                       </Text>
@@ -715,7 +705,7 @@ useEffect(() => {
             </View>
 
             <View style={{ marginTop: "auto", padding: 5 }}>
-              {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+              {(usertype === "Sahayak" || usertype === "MachineMalik") ?
                 (item?.status === "Accepted" || item?.status === "Booked") && (
                   <TouchableOpacity
                     style={{
@@ -726,13 +716,30 @@ useEffect(() => {
                       borderRadius: 5,
                     }}
                     onPress={() => {
-                      usertype === "Grahak" ? cancel() : Rejected();
+                      Rejected();
                     }}
                   >
                     <Text style={[styles.loginText, { color: "#fff" }]}>
                       रद्द करें
                     </Text>
                   </TouchableOpacity>
+                ): (
+                  <TouchableOpacity
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                  onPress={() => {
+                   cancel();
+                  }}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
                 )}
             </View>
           </View>

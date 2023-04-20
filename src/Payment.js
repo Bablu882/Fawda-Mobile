@@ -50,6 +50,7 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item,
           amount: amount,
+          useramount: useramount
         });
       } else if (item.job_type === "theke_pe_kam") {
         navigation.navigate("Theke_MachineForm2", {
@@ -57,6 +58,7 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item,
           amount: amount,
+          useramount: useramount
         });
       } else if (item.job_type === "machine_malik") {
         navigation.navigate("MachineWork2", {
@@ -64,6 +66,7 @@ export default function Payment({ route, navigation }) {
           payment_status: data.payment_status,
           item,
           amount: amount,
+          useramount: useramount
         });
       }
 
@@ -129,7 +132,7 @@ export default function Payment({ route, navigation }) {
                   </View>
                 ) : (
                   <View style={styles.flex}>
-                    <Text>मशीन मालिक राशि[ ] </Text>
+                    <Text>मशीन मालिक राशि </Text>
 
                     <Text>₹{useramount}</Text>
                   </View>

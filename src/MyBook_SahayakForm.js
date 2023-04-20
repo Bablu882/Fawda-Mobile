@@ -273,24 +273,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   useEffect(() => {
     RatingApi();
   }, []);
-
   const cancel = async () => {
-    let params = {};
-    if (item.status === "Accepted") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    } else if (item.status === "Pending") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        // booking_id: item?.booking_id,
-        status: "Cancelled",
-      };
-    }
+    let params = {
+      job_id: item?.id,
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled",
+    };
+    console.log('jfjgjg', params)
 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -299,16 +289,17 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack",{screen: 'HomePage'});
       Toast.show("Cancelled", Toast.LONG);
+
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
+
 
   const Rejected = async () => {
     let params = {
@@ -1427,8 +1418,8 @@ useEffect(() => {
                   </View>
                 </>
               ) : null)}
-            <View style={{ marginTop: "auto", padding: 5 }}>
-              {(usertype === "Sahayak" || usertype === "MachineMalik") &&
+         <View style={{ marginTop: "auto", padding: 5 }}>
+              {(usertype === "Sahayak" || usertype === "MachineMalik") ?
                 (item?.status === "Accepted" || item?.status === "Booked") && (
                   <TouchableOpacity
                     style={{
@@ -1439,13 +1430,30 @@ useEffect(() => {
                       borderRadius: 5,
                     }}
                     onPress={() => {
-                      usertype === "Grahak" ? cancel() : Rejected();
+                      Rejected();
                     }}
                   >
                     <Text style={[styles.loginText, { color: "#fff" }]}>
                       रद्द करें
                     </Text>
                   </TouchableOpacity>
+                ): (
+                  <TouchableOpacity
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                  onPress={() => {
+                   cancel();
+                  }}
+                >
+                  <Text style={[styles.loginText, { color: "#fff" }]}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
                 )}
             </View>
           </View>

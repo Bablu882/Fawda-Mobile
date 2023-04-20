@@ -408,6 +408,12 @@ export default function UserRegistration({ navigation, route }) {
                     setSelectedDistrict(itemValue)
                   }
                 >
+                   <Picker.Item
+                    label="जिला"
+                    value=""
+                    enabled={false}
+                    style={{ color: "#ccc" }}
+                  />
                   {district?.map((district, index) => (
                     <Picker.Item
                       key={index}
