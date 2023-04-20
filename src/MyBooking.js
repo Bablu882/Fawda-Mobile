@@ -72,7 +72,7 @@ export default function MyBooking({ navigation, route }) {
       setIsLoading(false);
       setRefreshing(false);
 
-      console.log("data", data);
+      console.log("data", data?.sahayk_booking_details?.bookings);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -104,9 +104,9 @@ export default function MyBooking({ navigation, route }) {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    Myjobs().then(() => {
-      setRefreshing(false);
-    });
+    // Myjobs().then(() => {
+    //   setRefreshing(false);
+    // });
     booking().then(() => {
       setRefreshing(false);
     });
@@ -467,7 +467,7 @@ export default function MyBooking({ navigation, route }) {
                                   }
                                 }}
                               >
-                                <Text
+                         https://expo.dev/accounts/webnyxa/projects/fawda/builds/c76ca0f2-79e1-4a62-81de-c6dd757f0e58       <Text
                                   style={{
                                     textAlign: "center",
                                     marginTop: 7,
@@ -743,8 +743,8 @@ export default function MyBooking({ navigation, route }) {
                                 navigation.navigate("MachineWork", {
                                   item,
                                   id: item?.id,
-                                  fawdafee: item?.fawda_fee,
-                                  totalamount: item?.total_amount,
+                                  // fawdafee: item?.fawda_fee,
+                                  // totalamount: item?.total_amount,
                                 });
                               }}
                             >
@@ -771,6 +771,7 @@ export default function MyBooking({ navigation, route }) {
                                 navigation.navigate("MachineWork2", {
                                   item,
                                   id: item?.id,
+                                  useramount: item?.payment_your
                                 });
                               }}
                             >

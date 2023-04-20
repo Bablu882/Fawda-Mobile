@@ -24,8 +24,8 @@ function Theke_MachineForm2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
-  const { data, payment_status, amount, item } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item);
+  const { data, useramount, amount, item, totalamount, payment_status } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item, totalamount, useramount);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -182,15 +182,14 @@ function Theke_MachineForm2({ navigation, route }) {
       });
   };
   const cancel = async () => {
-    let params = {};
-    if (payment_status === "success") {
-      params = {
-        job_id: JSON.stringify(item?.job_id),
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    }
+   let params = {
+      job_id:item?.job_id,
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment",
+    };
+    console.log('fjffjfjf', params)
+  
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -201,7 +200,7 @@ function Theke_MachineForm2({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack",{screen: 'HomePage'});
       Toast.show("Cancelled-After-Payment", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
@@ -293,7 +292,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                ₹ {amount}
+                ₹ {useramount}
               </Text>
             </View>
           </View>

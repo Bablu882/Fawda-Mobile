@@ -1,12 +1,15 @@
 import React from "react";
-import { View ,Text , TouchableOpacity } from "react-native";
+import { View ,Text , TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-
+import RenderHtml from 'react-native-render-html';
 
 
 export function Privacy_policy ({route, navigation}) {  
     const {terms} = route?.params??{};
-    console.log(terms?.client_info?.privacy_policy , "terms");
+    console.log(terms , "terms");
+const results = terms?.client_info?.privacy_policy;
+    // const regex = /(<([^>]+)>)/gi;
+    // const result = terms?.client_info?.privacy_policy.replace(regex, "");
     return(
         <>
         <View style={{ backgroundColor:"#fff", flex:1}}>
@@ -22,9 +25,14 @@ export function Privacy_policy ({route, navigation}) {
          प्राइवेसी नीति
           </Text>
         </View>
+        <ScrollView horizontal={false} >
         <View style={{paddingHorizontal:20, marginTop:20}}>
-            <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text>
+            {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}
+            {/* <Text style={{fontSize:18, textAlign:"justify"}}>{results}</Text> */}
+            <RenderHtml contentWidth={300} source={{html: results}} />
         </View>
+        </ScrollView>
+      
         </View>
         </>
     )

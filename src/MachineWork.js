@@ -109,10 +109,18 @@ export default function MachineWork({ navigation, route }) {
         },
       });
       const data = response?.data;
-      console.log("aaaa", data);
-      setThekeperKam(data?.data);
-      console.log("rrrr", thekeperKam);
-      navigation.navigate('MyBookingStack', {screen: "MyBooking"});
+      if (data?.status === 200) {
+        console.log("aaaa", data);
+        setThekeperKam(data?.data);
+        Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
+        navigation.navigate('MyBookingStack', {screen: "MyBooking"});
+      } else {
+        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
+      }
+      // console.log("aaaa", data);
+      // setThekeperKam(data?.data);
+      // console.log("rrrr", thekeperKam);
+      // navigation.navigate('MyBookingStack', {screen: "MyBooking"});
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -200,22 +208,13 @@ export default function MachineWork({ navigation, route }) {
     );
   }
   const cancel = async () => {
-    let params = {};
-    if (item.status === "Accepted") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    } else if (item.status === "Pending") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        // booking_id: item?.booking_id,
-        status: "Cancelled",
-      };
-    }
+    let params = {
+      job_id: item?.id,
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled",
+    };
+    console.log('jfjgjg', params)
 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -224,11 +223,11 @@ export default function MachineWork({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage")
+      navigation.navigate("HomeStack",{screen: 'HomePage'});
       Toast.show("Cancelled", Toast.LONG);
+
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -735,7 +734,7 @@ export default function MachineWork({ navigation, route }) {
             {usertype === "Grahak" && item.status === "Accepted" && (
               <TouchableOpacity
                 style={styles.BhuktanBtn}
-                onPress={() => navigation.navigate("Payment", { item, fawdafee, totalamount })}
+                onPress={() => navigation.navigate("Payment", { item, fawdafee:item?.fawda_fee, totalamount:item?.total_amount_machine, useramount:item?.payment_your })}
               >
                 <Text style={[styles.loginText, { color: "#fff" }]}>
                   भुगतान करें
@@ -762,24 +761,53 @@ export default function MachineWork({ navigation, route }) {
                       </Text>
                     </TouchableOpacity>
                   )}
-           <View style={{ marginTop: "auto", padding: 5 }}>
-            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-              (item?.status === "Accepted" || item?.status === "Booked") && (
-                <TouchableOpacity
-                  style={{  backgroundColor: "#D9D9D9",
-                  alignSelf: "center",
-                  paddingHorizontal: 50,
-                  paddingVertical: 10,
-                  borderRadius: 5,}}
+                   {usertype === "Grahak" && item.status === "Completed" && (
+                    <TouchableOpacity
+                      style={[styles.BhuktanBtn]}
+                      disabled={true}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                        समाप्त
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+       <View style={{ marginTop: "auto", padding: 5 }}>
+              {(usertype === "Sahayak" || usertype === "MachineMalik") ?
+                (item?.status === "Accepted" || item?.status === "Booked") && (
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#D9D9D9",
+                      alignSelf: "center",
+                      paddingHorizontal: 50,
+                      paddingVertical: 10,
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      Rejected();
+                    }}
+                  >
+                    <Text style={[styles.loginText, { color: "#fff" }]}>
+                      रद्द करें
+                    </Text>
+                  </TouchableOpacity>
+                ): (
+                  <TouchableOpacity
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
                   onPress={() => {
-                    usertype === "Grahak" ? cancel() : Rejected();
+                   cancel();
                   }}
                 >
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     रद्द करें
                   </Text>
                 </TouchableOpacity>
-              )}
+                )}
             </View>
           </View>
         )}

@@ -68,9 +68,9 @@ export default function Homepage({ navigation, route }) {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getalljobs().then(() => {
-      setRefreshing(false);
-    });
+    // fetchJobs().then(() => {
+    //   setRefreshing(false);
+    // });
   }, []);
 
   useEffect(() => {
