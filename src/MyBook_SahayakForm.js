@@ -1324,6 +1324,7 @@ useEffect(() => {
                         <Text style={styles.label}>ग्राहक का नाम</Text>
                         <TextInput
                           style={styles.TextInput}
+                          editable={false}
                           placeholderTextColor="#848484"
                           placeholder={item?.grahak_name}
                         />
@@ -1333,6 +1334,7 @@ useEffect(() => {
                         <Text style={styles.label}>फ़ोन:</Text>
                         <TextInput
                           style={styles.TextInput}
+                          editable={false}
                           placeholderTextColor="#848484"
                           placeholder={item?.grahak_phone}
                         />
