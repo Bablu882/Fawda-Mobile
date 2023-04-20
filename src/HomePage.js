@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -26,34 +26,45 @@ export default function Homepage({ navigation, route }) {
   const [activeButton, setActiveButton] = useState("");
   const [sahayak, setSahayak] = useState("");
   const isfocused = useIsFocused();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
 
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-
-  const getalljobs = async () => {
-    setIsLoading(true); // Show loader while fetching data
-    setRefreshing(true);
-    try {
-      const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(`/api/nearjob/?cacheBuster=${cacheBuster}`, {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
-        },
-      });
-      const data = response.data;
-      setCurrentUsers(data);
-      console.log('jdjhff',currentUsers)
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      setIsLoading(false); 
-      setRefreshing(false);
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
     }
   };
 
+  // const getalljobs = async () => {
+  //   setIsLoading(true); // Show loader while fetching data
+  //   setRefreshing(true);
+  //   try {
+  //     const cacheBuster = new Date().getTime(); // generate a unique timestamp
+  //     const response = await service.get(`/api/nearjob/?cacheBuster=${cacheBuster}`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         'Authorization': `Bearer ${token}`
+  //       },
+  //     });
+  //     const data = response.data;
+  //     setCurrentUsers(data.results);
+  //     console.log('jdjhff',currentUsers)
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     setRefreshing(false);
+  //   }
+  // };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -63,11 +74,23 @@ export default function Homepage({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    if(isfocused) {
-      getalljobs();
-    }
- 
-  }, [isfocused]);
+    const fetchJobs = async () => {
+      try {
+        const response = await service.get(`/api/nearjob/?page=${page}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = response.data;
+        setCurrentUsers(data.results);
+        setTotalPages(data.total_pages);
+      } catch (error) {
+        console.log("Error:", error);
+      }
+    };
+    fetchJobs();
+  }, [page]);
 
   return (
     <SafeAreaView
@@ -81,16 +104,16 @@ export default function Homepage({ navigation, route }) {
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       {!isLoading && (
-        <ScrollView 
-        horizontal={false} 
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            // Myjobs={Myjobs}
-          />
-        }
+        <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              // Myjobs={Myjobs}
+            />
+          }
         >
           {usertype === "Sahayak" || usertype === "MachineMalik" ? (
             <>
@@ -190,7 +213,6 @@ export default function Homepage({ navigation, route }) {
                             विवरण देखे
                           </Text>
                         </TouchableOpacity>
-                        
                       </View>
                     ))}
                     <View style={styles.line} />
@@ -205,6 +227,28 @@ export default function Homepage({ navigation, route }) {
                     marginTop: 15,
                   }}
                 />
+              </View>
+              <View
+                style={{
+                  marginVertical: 20,
+                  flexDirection: "row",
+                  justifyContent: "flex-end", marginRight:10
+                }}
+              >
+                <TouchableOpacity style={{width:30, height:30, backgroundColor:'#000', textAlign:'center', alignItems:'center', marginRight:10}}
+                  onPress={() => {
+                    handlePrevPage();
+                  }}
+                >
+                  <Icon name="left" size={20} color={'#fff'} style={{lineHeight:30}}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={{width:30, height:30, backgroundColor:'#000', textAlign:'center', alignItems:'center'}}
+                  onPress={() => {
+                    handleNextPage();
+                  }}
+                >
+                  <Icon name="right" size={20}  color={'#fff'} style={{lineHeight:30,}}/>
+                </TouchableOpacity>
               </View>
             </>
           ) : (

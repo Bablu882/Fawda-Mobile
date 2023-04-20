@@ -410,11 +410,11 @@ function Theke_MachineForm2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {item.booking_status === "Booked"
+                  {item.status === "Booked"
                     ? "बुक"
-                    : item.booking_status === "Accepted"
+                    : item.status === "Accepted"
                     ? "बुक"
-                    : item.booking_status === "Ongoing"
+                    : item.status === "Ongoing"
                     ? "जारी है"
                     : ""}
 
@@ -677,7 +677,7 @@ function Theke_MachineForm2({ navigation, route }) {
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
-                response === "Ongoing" || item?.booking_status === "Ongoing"
+                response === "Ongoing" || item?.status === "Ongoing"
                   ? bookingcompleted
                   : response === "Completed"
                   ? () => RatingApi()
@@ -690,7 +690,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   ? "रेटिंग दें जारी है"
                   : complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
-                  : response === "Ongoing" || item?.booking_status === "Ongoing"
+                  : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
                   : "काम शुरू करें "}
               </Text>
@@ -706,7 +706,7 @@ function Theke_MachineForm2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-      {item?.booking_status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
+      {item?.status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
        <View style={{ marginTop: "auto", padding: 5 }}>
        <TouchableOpacity
          onPress={() => cancel()}
@@ -724,7 +724,7 @@ function Theke_MachineForm2({ navigation, route }) {
        </TouchableOpacity>
      </View>
       )}
-    {item?.booking_status === "Booked" &&   (
+    {item?.status === "Booked" &&   (
        <View style={{ marginTop: "auto", padding: 5 }}>
        <TouchableOpacity
          onPress={() => cancel()}

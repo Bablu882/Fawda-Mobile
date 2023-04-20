@@ -201,7 +201,7 @@ export default function MachineWork({ navigation, route }) {
   }
   const cancel = async () => {
     let params = {};
-    if (item.booking_status === "Accepted") {
+    if (item.status === "Accepted") {
       params = {
         job_id: item?.id,
         job_number: item?.job_number,
@@ -423,7 +423,7 @@ export default function MachineWork({ navigation, route }) {
                   </View>
                 )}
 
-                {item?.booking_status == "Accepted" ? (
+                {item?.status == "Accepted" ? (
                   <></>
                 ) : (
                   <View style={styles.flex}>
@@ -551,14 +551,14 @@ export default function MachineWork({ navigation, route }) {
                        <View style={{ width: "30%", marginRight: 10 }}>
                       {item?.status === "Pending"
                         ? getStatusButton(item.status, "पेंडिंग")
-                        : item?.booking_status === "Accepted"
-                        ? getStatusButton(item.booking_status, "स्वीकार")
-                        : item?.booking_status === "Booked"
-                        ? getStatusButton(item.booking_status, "बुक्ड")
-                        : item?.booking_status === "Ongoing"
-                        ? getStatusButton(item.booking_status, "जारी है ")
-                        : item?.booking_status === "Completed"
-                        ? getStatusButton(item.booking_status, "समाप्त")
+                        : item?.status === "Accepted"
+                        ? getStatusButton(item.status, "स्वीकार")
+                        : item?.status === "Booked"
+                        ? getStatusButton(item.status, "बुक्ड")
+                        : item?.status === "Ongoing"
+                        ? getStatusButton(item.status, "जारी है ")
+                        : item?.status === "Completed"
+                        ? getStatusButton(item.status, "समाप्त")
                         : null}
                     {/* </View> */}
                     </View>
@@ -732,7 +732,7 @@ export default function MachineWork({ navigation, route }) {
               ) : null)} */}
               </View>
             </View>
-            {usertype === "Grahak" && item.booking_status === "Accepted" && (
+            {usertype === "Grahak" && item.status === "Accepted" && (
               <TouchableOpacity
                 style={styles.BhuktanBtn}
                 onPress={() => navigation.navigate("Payment", { item, fawdafee, totalamount })}
@@ -752,7 +752,7 @@ export default function MachineWork({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
             )}
-             {usertype === "Grahak" && item.booking_status === "Booked" && (
+             {usertype === "Grahak" && item.status === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}

@@ -276,7 +276,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
   const cancel = async () => {
     let params = {};
-    if (item.booking_status === "Accepted") {
+    if (item.status === "Accepted") {
       params = {
         job_id: item?.id,
         job_number: item?.job_number,
@@ -1069,7 +1069,7 @@ useEffect(() => {
                               : item?.status === "Completed"
                               ? getStatusButton(item.status, "समाप्त")
                               : null}
-                            {item?.booking_status === "Accepted"
+                            {/* {item?.booking_status === "Accepted"
                               ? getStatusButton(item.booking_status, "स्वीकार")
                               : item?.booking_status === "Booked"
                               ? getStatusButton(item.booking_status, "बुक्ड")
@@ -1077,7 +1077,7 @@ useEffect(() => {
                               ? getStatusButton(item.booking_status, "जारी है ")
                               : item?.booking_status === "Completed"
                               ? getStatusButton(item.booking_status, "समाप्त")
-                              : null}
+                              : null} */}
                             {/* <View
                               style={{
                                 paddingVertical: 4,
@@ -1171,7 +1171,7 @@ useEffect(() => {
                           }}
                         >
                           {TotalCount}
-                          {item.booking_status === "Accepted"
+                          {item.status === "Accepted"
                             ? " सहायक स्वीकार करें "
                             : " सहायक कम्प्लीट कर चुके हैं।"}
                         </Text>
@@ -1196,7 +1196,7 @@ useEffect(() => {
                   </View>
                 </View>
                 <View style={{ width: "100%" }}>
-                  {item?.booking_status === "Accepted" && (
+                  {item?.status === "Accepted" && (
                     <TouchableOpacity
                       style={styles.BhuktanBtn}
                       onPress={() =>
@@ -1221,7 +1221,7 @@ useEffect(() => {
                     </TouchableOpacity>
                   )}
 
-                  {item?.booking_status === "Booked" && (
+                  {item?.status === "Booked" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1231,7 +1231,7 @@ useEffect(() => {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item?.booking_status === "Ongoing" && (
+                  {item?.status === "Ongoing" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}
@@ -1241,7 +1241,7 @@ useEffect(() => {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {item.booking_status === "Completed" && (
+                  {item.status === "Completed" && (
                     <TouchableOpacity
                       style={[styles.BhuktanBtn]}
                       disabled={true}

@@ -273,7 +273,7 @@ function Theke_MachineForm({ navigation, route }) {
 
 useEffect(() => {
   setBookingState(item?.status)
-},[item?.status])
+},[bookingstate])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -499,7 +499,7 @@ useEffect(() => {
                     />
                     <View style={{ width: "30%", marginRight: 10 }}>
                       {bookingstate === "Pending"
-                        ? getStatusButton(item.status, "पेंडिंग")
+                        ? getStatusButton(bookingstate, "पेंडिंग")
                         : bookingstate === "Accepted"
                         ? getStatusButton(bookingstate, "स्वीकार")
                         : bookingstate === "Booked"
