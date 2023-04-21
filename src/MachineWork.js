@@ -237,6 +237,8 @@ export default function MachineWork({ navigation, route }) {
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
+      count_male: 1,
+      count_female:1,
       status: "Rejected",
     };
 
@@ -251,7 +253,7 @@ export default function MachineWork({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage")
+      navigation.navigate('HomeStack',{screen: "HomePage"});
       console.log(data, "sds");
       Toast.show("Rejected", Toast.LONG);
     } catch (error) {
