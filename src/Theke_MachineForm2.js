@@ -24,7 +24,8 @@ function Theke_MachineForm2({ navigation, route }) {
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
-  const { data, useramount, amount, item, totalamount, payment_status } = route.params ?? {};
+  const { data, useramount, amount, item, totalamount, payment_status } =
+    route.params ?? {};
   console.log("fjkfkfkff", amount, item, totalamount, useramount);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
@@ -128,12 +129,11 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const ratingColor = "orange";
 
- 
   const Ongoing = () => {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -158,7 +158,7 @@ function Theke_MachineForm2({ navigation, route }) {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -182,14 +182,14 @@ function Theke_MachineForm2({ navigation, route }) {
       });
   };
   const cancel = async () => {
-   let params = {
-      job_id:item?.job_id,
+    let params = {
+      job_id: item?.job_id,
       job_number: item?.job_number,
       // booking_id: item?.booking_id,
       status: "Cancelled-After-Payment",
     };
-    console.log('fjffjfjf', params)
-  
+    console.log("fjffjfjf", params);
+
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -200,8 +200,8 @@ function Theke_MachineForm2({ navigation, route }) {
       console.log(token?.access, "token");
       const data = response?.data;
       // setStatus(data.status);
-      navigation.navigate("HomeStack",{screen: 'HomePage'});
-      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      navigation.navigate("HomeStack", { screen: "HomePage" });
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -237,7 +237,9 @@ function Theke_MachineForm2({ navigation, route }) {
               },
             ]}
           >
-            <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item?.description}</Text>
+            <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+              {item?.description}
+            </Text>
             <Image
               source={require("../assets/image/edit.png")}
               style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -271,6 +273,7 @@ function Theke_MachineForm2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
+                editable={false}
                 placeholder="भूमि क्षेत्र "
                 placeholderTextColor={"#000"}
               />
@@ -288,6 +291,7 @@ function Theke_MachineForm2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
+                editable={false}
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
@@ -672,7 +676,7 @@ function Theke_MachineForm2({ navigation, route }) {
             ""
           )} */}
 
-{complete !== "Completed" && (
+          {complete !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
@@ -705,42 +709,44 @@ function Theke_MachineForm2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-      {item?.status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
-       <View style={{ marginTop: "auto", padding: 5 }}>
-       <TouchableOpacity
-         onPress={() => cancel()}
-         style={{
-           backgroundColor: "#D9D9D9",
-           alignSelf: "center",
-           paddingHorizontal: 50,
-           paddingVertical: 10,
-           borderRadius: 5,
-         }}
-       >
-         <Text style={{ textAlign: "center", color: "#fff" }}>
-           रद्द करें
-         </Text>
-       </TouchableOpacity>
-     </View>
-      )}
-    {item?.status === "Booked" &&   (
-       <View style={{ marginTop: "auto", padding: 5 }}>
-       <TouchableOpacity
-         onPress={() => cancel()}
-         style={{
-           backgroundColor: "#D9D9D9",
-           alignSelf: "center",
-           paddingHorizontal: 50,
-           paddingVertical: 10,
-           borderRadius: 5,
-         }}
-       >
-         <Text style={{ textAlign: "center", color: "#fff" }}>
-           रद्द करें
-         </Text>
-       </TouchableOpacity>
-     </View>
-      )}
+          {item?.status === "Accepted" &&
+            response != "Ongoing" &&
+            response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          {item?.status === "Booked" && (
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              <TouchableOpacity
+                onPress={() => cancel()}
+                style={{
+                  backgroundColor: "#D9D9D9",
+                  alignSelf: "center",
+                  paddingHorizontal: 50,
+                  paddingVertical: 10,
+                  borderRadius: 5,
+                }}
+              >
+                <Text style={{ textAlign: "center", color: "#fff" }}>
+                  रद्द करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -842,7 +848,6 @@ const styles = StyleSheet.create({
   TextInput: {
     padding: 10,
     color: "#000",
-    
   },
 
   CheckTextInput: {

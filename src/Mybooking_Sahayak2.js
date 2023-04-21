@@ -178,7 +178,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       const data = response?.data;
       navigation.replace("HomePage");
       // setStatus(data.status);
-      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -252,6 +252,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               <TextInput
                 style={styles.TextInput}
                 placeholder="भूमि क्षेत्र"
+                editable={false}
                 placeholderTextColor={"#000"}
               />
               <Text style={{ marginRight: 8, color: "#0099FF" }}>
@@ -270,6 +271,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               <TextInput
                 style={styles.TextInput}
                 placeholder="वेतन"
+                editable={false}
                 placeholderTextColor={"#000"}
               />
               <Text style={{ color: "#0099FF", paddingRight: 10 }}>

@@ -155,7 +155,7 @@ function MachineWork2({ navigation, route }) {
       const data = response?.data;
       navigation.navigate("HomeStack",{screen: 'HomePage'});
       // setStatus(data.status);
-      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -228,6 +228,7 @@ function MachineWork2({ navigation, route }) {
               <TextInput
                 style={styles.TextInput}
                 placeholderTextColor="#848484"
+                editable={false}
                 placeholder=""
               />
               <Text
@@ -250,6 +251,7 @@ function MachineWork2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
+                editable={false}
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
