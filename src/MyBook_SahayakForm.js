@@ -14,7 +14,8 @@ import {
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -275,7 +276,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   }, []);
   const cancel = async () => {
     let params = {
-      job_id: item?.id,
+      job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
       // booking_id: item?.booking_id,
       status: "Cancelled",
@@ -292,7 +293,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       const data = response?.data;
       // setStatus(data.status);
       navigation.navigate("HomeStack",{screen: 'HomePage'});
-      Toast.show("Cancelled", Toast.LONG);
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
 
       console.log("fjfjf", data);
     } catch (error) {

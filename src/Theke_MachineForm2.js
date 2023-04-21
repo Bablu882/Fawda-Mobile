@@ -17,7 +17,8 @@ import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();

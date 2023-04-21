@@ -15,7 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 

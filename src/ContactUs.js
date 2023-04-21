@@ -17,7 +17,8 @@ import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
 import Service from "../service/index";
 import * as Linking from "expo-linking";
 
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 
 // import * as Location from "expo-location";
 

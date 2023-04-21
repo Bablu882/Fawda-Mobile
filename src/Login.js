@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Service from "../service/index";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
 import { useIsFocused } from "@react-navigation/native";
