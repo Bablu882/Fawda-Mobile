@@ -27,8 +27,9 @@ export default function MyBooking({ navigation, route }) {
   console.log("usrrjfjf", usertype);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const [refreshing, setRefreshing] = useState(false);
+ 
   const token = useSelector(selectToken);
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [machineBooking, setMachineBooking] = useState([]);
   const [page, setPage] = useState(1);
@@ -54,7 +55,6 @@ export default function MyBooking({ navigation, route }) {
   const handlePress = (buttonIndex) => {
     setActiveButton(buttonIndex);
   };
-
   const booking = async () => {
     setIsLoading(true); // set isLoading to true when the function starts
     setRefreshing(true);
@@ -108,8 +108,11 @@ export default function MyBooking({ navigation, route }) {
         setRefreshing(false);
       }
     };
-    Myjobs();
-  }, [page]);
+    if (isFocused) {
+      Myjobs();
+    }
+   
+  }, [page, isFocused]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -134,14 +137,14 @@ export default function MyBooking({ navigation, route }) {
       </View>
       {isLoading && <ActivityIndicator size="small" color="#black" />}
       {!isLoading && (
-        <ScrollView
+      <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              // Myjobs={Myjobs}
+            
             />
           }
         >
@@ -274,6 +277,7 @@ export default function MyBooking({ navigation, route }) {
                                         "Mybooking_Sahayak2",
                                         {
                                           item,
+                                          
                                           id: item?.job_id,
                                           totalamount: sahayak.total_amount,
                                           fawdafee: sahayak?.fawda_fee,
@@ -572,15 +576,20 @@ export default function MyBooking({ navigation, route }) {
                                   item?.status === "Pending"
                                 ) {
                                   navigation.navigate("MyBook_SahayakForm", {
-                                    id: item.id,
+                                    id: item?.id,
                                     item,
+                                   bookingid: item.booking_id,
+                                    jobtype: item?.job_type
                                   });
                                 } else if (
                                   item.job_type === "theke_pe_kam" &&
                                   item?.status === "Pending"
                                 ) {
                                   navigation.navigate("Theke_MachineForm", {
+                                    id: item?.id,
                                     item,
+                               
+                                    jobtype: item?.job_type
                                   });
                                 }
                               }}
@@ -643,8 +652,10 @@ export default function MyBooking({ navigation, route }) {
                                   item.status === "Pending"
                                 ) {
                                   navigation.navigate("MachineWork", {
-                                    item,
                                     id: item?.id,
+                                    item,
+                                   
+                                    jobtype: item?.job_type
                                   });
                                 } else {
                                   console.log(
@@ -750,8 +761,10 @@ export default function MyBooking({ navigation, route }) {
                             <TouchableOpacity
                               onPress={() => {
                                 navigation.navigate("MachineWork", {
+                                  id: item?.job_id,
                                   item,
-                                  id: item?.id,
+                                 
+                                  jobtype: item?.job_type
                                   // fawdafee: item?.fawda_fee,
                                   // totalamount: item?.total_amount,
                                 });
@@ -972,7 +985,7 @@ export default function MyBooking({ navigation, route }) {
                                 >
                                   {/* विवरण देखे */}
                                   {item?.status === "Accepted"
-                                    ? "स्वीकार"
+                                    ? "स्वीकृत "
                                     : item?.status === "Booked"
                                     ? "बुक "
                                     : item?.status === "Ongoing"

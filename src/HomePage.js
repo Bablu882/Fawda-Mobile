@@ -27,6 +27,7 @@ export default function Homepage({ navigation, route }) {
   const [sahayak, setSahayak] = useState("");
   const isfocused = useIsFocused();
   const [page, setPage] = useState(1);
+
   const [activeButtons, setActiveButtons] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const usertype = useSelector(selectUserType);
@@ -70,15 +71,17 @@ export default function Homepage({ navigation, route }) {
   //   }
   // };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    // fetchJobs().then(() => {
-    //   setRefreshing(false);
-    // });
-  }, []);
+  // const onRefresh = useCallback(() => {
+  //   setRefreshing(true);
+  //   fetchJobs().then(() => {
+  //     setRefreshing(false);
+  //   });
+  // }, []);
 
   useEffect(() => {
     const fetchJobs = async () => {
+    //     setIsLoading(true); // Show loader while fetching data
+    // setRefreshing(true);
       try {
         const cacheBuster = Date.now();
         const response = await service.get(
@@ -93,6 +96,8 @@ export default function Homepage({ navigation, route }) {
         const data = response.data;
         setCurrentUsers(data.results);
         setTotalPages(data.total_pages);
+    //       setIsLoading(true); // Show loader while fetching data
+    // setRefreshing(true);
       } catch (error) {
         console.log("Error:", error);
       }
@@ -108,20 +113,19 @@ export default function Homepage({ navigation, route }) {
       }}
     >
       <View style={{ padding: 20, marginTop: 25 }}></View>
-      <View>
+      {/* <View>
         {isLoading && <ActivityIndicator size="small" color="#black" />}
-      </View>
-      {!isLoading && (
-        <ScrollView
+      </View> */}
+      <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              // Myjobs={Myjobs}
-            />
-          }
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={refreshing}
+          //     onRefresh={onRefresh}
+          //     // Myjobs={Myjobs}
+          //   />
+          // }
         >
           {usertype === "Sahayak" || usertype === "MachineMalik" ? (
             <>
@@ -427,7 +431,6 @@ export default function Homepage({ navigation, route }) {
             </>
           )}
         </ScrollView>
-      )}
     </SafeAreaView>
   );
 }

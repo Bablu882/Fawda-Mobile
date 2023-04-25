@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,18 @@ import {
   Image,
   KeyboardAvoidingView,
   ActivityIndicator,
+  RefreshControl,
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-import Toast from "react-native-simple-toast";
+import Toast from "react-native-root-toast";
+
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
+import { setTime } from "../slices/SahayakBookingSlice";
 
 const CustomComponent = ({ label, value }) => {
   return (
@@ -46,18 +49,20 @@ const CustomComponent = ({ label, value }) => {
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const { id, item, totalamount, fawdafee,useramount } = route?.params ?? {};
-  console.log("fjd", item, totalamount, fawdafee, useramount);
+  const { id, item, totalamount, fawdafee, useramount, jobtype } =
+    route?.params ?? {};
+
   const [ratingList, setRatingList] = useState([]);
-  const [bookingstate, setBookingState] = useState(item?.status)
-  console.log("rating", item, item?.rating);
+  const [bookingstate, setBookingState] = useState();
+
   const usertype = useSelector(selectUserType);
-  console.log("usrrjfjf", usertype);
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [checked, setChecked] = React.useState("first");
-  const [thekeperKam, setThekeperKam] = useState({ status: "pending" });
-
+  const [thekeperKam, setThekeperKam] = useState([]);
+  const [thekeperKams, setThekeperKams] = useState([]);
+  const [thekeparpending, setThekeperKamPending] = useState([]);
   const [amount, setAmount] = useState({});
   const [edit, setEdit] = useState(false);
   const [editable, setEditable] = useState(false);
@@ -68,13 +73,12 @@ function Theke_MachineForm({ navigation, route }) {
     textInputRef.current.focus();
   };
 
-  console.log("fnfjff", item, item.booking_id);
   const accptThekha = async () => {
-    setIsLoading(true);
+    //setIsLoading(true);
     let params = {
       job_id: item?.id,
     };
-    console.log("jjff", params);
+
     try {
       const response = await service.post("/api/accept_theka/", params, {
         headers: {
@@ -87,17 +91,14 @@ function Theke_MachineForm({ navigation, route }) {
         console.log("aaaa", data);
         setThekeperKam(data?.data);
         Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
-        navigation.navigate('MyBookingStack', {screen: "MyBooking"});
+        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
         Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
       }
     } catch (error) {
       console.log("Error:", error);
-    } finally {
-      setIsLoading(false); // Hide loader after fetching data
     }
   };
-
   function getStatusButton(status, label) {
     return (
       <TouchableOpacity
@@ -122,7 +123,7 @@ function Theke_MachineForm({ navigation, route }) {
   }
 
   const Edit = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.id),
       amount: amount,
@@ -145,9 +146,10 @@ function Theke_MachineForm({ navigation, route }) {
       }
     } catch (error) {
       console.log("Error:", error);
-    } finally {
-      setIsLoading(false);
     }
+    //  finally {
+    //   setIsLoading(false);
+    // }
   };
 
   //   };
@@ -156,7 +158,6 @@ function Theke_MachineForm({ navigation, route }) {
     let params = {
       booking_job: item?.booking_id,
     };
-    console.log("fjnfjfjfjf", params);
 
     try {
       const response = await service.post("/api/get-rating/", params, {
@@ -168,7 +169,7 @@ function Theke_MachineForm({ navigation, route }) {
       const data = response?.data;
       const ratings = data?.rating;
       const ratingColor = "#e6b400";
-      console.log("fjkdfjkdffjk", data);
+
       const ratingList = Array(5)
         .fill(0)
         .map((_, num) => {
@@ -200,23 +201,29 @@ function Theke_MachineForm({ navigation, route }) {
       setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
-    } finally {
-      setIsLoading(false);
     }
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
 
+  // useEffect(() => {
+
+  // }, []);
+
   useEffect(() => {
-    RatingApi();
+    mybookingdetail();
+    myjobs();
   }, []);
 
   const cancel = async () => {
     let params = {
-      job_id: item?.id,
+      job_id: JSON.stringify(id),
       job_number: item?.job_number,
       // booking_id: item?.booking_id,
       status: "Cancelled",
     };
-    console.log('jfjgjg', params)
+    console.log("cancelled data", params);
 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -227,23 +234,76 @@ function Theke_MachineForm({ navigation, route }) {
       });
       const data = response?.data;
       // setStatus(data.status);
-      navigation.navigate("HomeStack",{screen: 'HomePage'});
-      Toast.show("Cancelled", Toast.LONG);
+      navigation.navigate("HomeStack", { screen: "HomePage" });
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
 
-      console.log("fjfjf", data);
+      console.log("cancel api data ", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  const mybookingdetail = async () => {
+    setIsLoading(true); // set isLoading to true when the function starts
+    setRefreshing(true);
+    let params = {
+      sahayak_job_id: JSON.stringify(id),
+      sahayak_job_number: item?.job_number,
+    };
+    console.log("jfjgjg", params);
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      setThekeperKams(data?.booking_theke_pe_kam);
+      setThekeperKamPending(data?.sahayak_pending_booking_details);
+      console.log("thekeparbooking", data?.booking_theke_pe_kam);
+      console.log("thekeparpending", data?.sahayak_pending_booking_details);
+      setIsLoading(false);
+      setRefreshing(false);
     } catch (error) {
       console.log("Error:", error);
     }
   };
 
+  const myjobs = async () => {
+    let params = {
+      booking_id: JSON.stringify(item?.booking_id),
+    };
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-myjobs/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      setThekeperKam(data);
+      console.log("myjobsdata", data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected",
     };
-
-    console.log(params, "hjdsnjnjdsl");
-
     try {
       const response = await service.post("/api/rejected/", params, {
         headers: {
@@ -251,20 +311,32 @@ function Theke_MachineForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
+
       const data = response?.data;
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack", { screen: "HomePage" });
       console.log(data, "sds");
-      Toast.show("Rejected", Toast.LONG);
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
     }
   };
-
-useEffect(() => {
-  setBookingState(item?.status)
-},[bookingstate])
-
+  useEffect(() => {
+    // mybookingdetail();
+    //myjobs();
+    RatingApi();
+  }, []);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    myjobs().then(() => {
+      setRefreshing(false);
+    });
+    RatingApi().then(() => {
+      setRefreshing(false);
+    });
+    mybookingdetail().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -275,9 +347,14 @@ useEffect(() => {
       <View>
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
-
-      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-        {!isLoading && (
+      {!isLoading && (
+        <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <View>
             <View
               style={{
@@ -305,7 +382,9 @@ useEffect(() => {
                 ]}
               >
                 <Text style={styles.label}>काम का विवरण</Text>
-                <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item.description}</Text>
+                <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                  {item.description}
+                </Text>
                 <Image
                   source={require("../assets/image/edit.png")}
                   style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -359,6 +438,7 @@ useEffect(() => {
               {/* {usertype === "Grahak" && (
            
           )} */}
+
               {usertype && usertype === "Grahak" && (
                 <>
                   <View
@@ -382,6 +462,7 @@ useEffect(() => {
                       <TextInput
                         style={styles.TextInput}
                         placeholderTextColor="#000"
+                        editable={false}
                         placeholder="भूमि क्षेत्र "
                       />
                       <Text style={{ right: 10, color: "#0070C0" }}>
@@ -397,10 +478,11 @@ useEffect(() => {
                         { width: "40%" },
                       ]}
                     >
-                      {bookingstate === "Pending" ? (
+                      {item.status === "Pending" ? (
                         <>
                           <TextInput
                             style={styles.TextInput}
+                            editable={false}
                             placeholderTextColor="#000"
                             placeholder="वेतन"
                           />
@@ -419,6 +501,7 @@ useEffect(() => {
                           <TextInput
                             style={styles.TextInput}
                             placeholder="वेतन"
+                            editable={false}
                             placeholderTextColor={"#000"}
                           />
                           <Text
@@ -434,7 +517,7 @@ useEffect(() => {
                       )}
                     </View>
                   </View>
-                  {bookingstate === "Pending" && (
+                  {item?.status === "Pending" && (
                     <View
                       style={[
                         styles.flex,
@@ -442,35 +525,45 @@ useEffect(() => {
                       ]}
                     >
                       <View style={{ width: "60%" }}></View>
-                      <View style={{ flexDirection: "row" }}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleClick();
-                            setEdit(true);
-                            console.log("edit:::::", edit);
-                          }}
-                          style={{
-                            backgroundColor: "#0099FF",
-                            marginRight: 10,
-                            padding: 5,
-                          }}
-                        >
-                          <Text style={[styles.TextWhite, { fontSize: 12 }]}>
-                            वेतन बदलें
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => Edit()}
-                          style={{
-                            backgroundColor: "#44A347",
-                            paddingHorizontal: 10,
-                            paddingTop: 4,
-                          }}
-                        >
-                          <Text style={[styles.TextWhite, { fontSize: 12 }]}>
-                            कन्फर्म
-                          </Text>
-                        </TouchableOpacity>
+                      <View>
+                        {thekeparpending?.map((item) => (
+                          <View key={item.id}>
+                            <View style={{ flexDirection: "row" }}>
+                              <TouchableOpacity
+                                onPress={() => {
+                                  handleClick();
+                                  setEdit(true);
+                                  console.log("edit:::::", edit);
+                                }}
+                                style={{
+                                  backgroundColor: "#0099FF",
+                                  marginRight: 10,
+                                  padding: 5,
+                                }}
+                              >
+                                <Text
+                                  style={[styles.TextWhite, { fontSize: 12 }]}
+                                >
+                                  वेतन बदलें
+                                </Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => Edit()}
+                                style={{
+                                  backgroundColor: "#44A347",
+                                  paddingHorizontal: 10,
+                                  paddingTop: 4,
+                                }}
+                              >
+                                <Text
+                                  style={[styles.TextWhite, { fontSize: 12 }]}
+                                >
+                                  कन्फर्म
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))}
                       </View>
                     </View>
                   )}
@@ -485,73 +578,73 @@ useEffect(() => {
                     <TextInput
                       style={styles.TextInput}
                       placeholder="काम की स्थिति"
+                      editable={false}
                       placeholderTextColor={"#000"}
                     />
                     <View style={{ width: "30%", marginRight: 10 }}>
-                      {bookingstate === "Pending"
-                        ? getStatusButton(bookingstate, "पेंडिंग")
-                        : bookingstate === "Accepted"
-                        ? getStatusButton(bookingstate, "स्वीकार")
-                        : bookingstate === "Booked"
-                        ? getStatusButton(bookingstate, "बुक्ड")
-                        : bookingstate === "Ongoing"
-                        ? getStatusButton(bookingstate, "जारी है ")
-                        : bookingstate === "Completed"
-                        ? getStatusButton(bookingstate, "समाप्त")
-                        : null}
+                      <View>
+                        {[...thekeparpending, ...thekeperKams].map((item) => (
+                          <>
+                            <View key={item.id}>
+                              {item?.status === "Pending"
+                                ? getStatusButton(item?.status, "पेंडिंग")
+                                : item?.status === "Accepted"
+                                ? getStatusButton(item?.status, "स्वीकार")
+                                : item?.status === "Booked"
+                                ? getStatusButton(item?.status, "बुक्ड")
+                                : item?.status === "Ongoing"
+                                ? getStatusButton(item?.status, "जारी है ")
+                                : item?.status === "Completed"
+                                ? getStatusButton(item?.status, "समाप्त")
+                                : null}
+                              {console.log("item?.status", item?.status)}
+                              {/* 
+                                {console.log("bookingstate",bookingstate)} */}
+                            </View>
+                            {console.log("aaaa", item?.status)}
+
+                            {/* {setBookingState(item?.status)} */}
+                          </>
+                        ))}
+                      </View>
                     </View>
                   </View>
-                  {bookingstate === "Accepted" && (
-                    <TouchableOpacity
-                      style={styles.BhuktanBtn}
-                      onPress={() =>
-                        navigation.navigate("Payment", {
-                          item, fawdafee, totalamount, useramount
-                        })
-                      }
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        भुगतान करें
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {bookingstate === "Pending" && (
-                    <TouchableOpacity style={[styles.BhuktanBtn,{opacity:0.5}]}>
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        भुगतान करें
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {bookingstate === "Booked" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम बुक
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {bookingstate === "Ongoing" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम जारी
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {bookingstate === "Completed" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        समाप्त
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                  <View style={{ width: "100%" }}>
+                    {(item?.status === "Pending" ||
+                      item?.status === "Accepted") && (
+                      <>
+                        {[...thekeparpending, ...thekeperKams].map((item) => (
+                          <View key={item.id}>
+                            <TouchableOpacity
+                              style={[
+                                styles.BhuktanBtn,
+                                item?.status === "Pending"
+                                  ? { opacity: 0.5 }
+                                  : {},
+                              ]}
+                              disabled={item?.status === "Pending"}
+                              onPress={() =>
+                                navigation.navigate("Payment", {
+                                  item,
+                                  fawdafee: item?.fawda_fee,
+                                  totalamount: item?.total_amount,
+                                  useramount: item?.total_amount_theka,
+                                })
+                              }
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                {item?.status === "Pending"
+                                  ? "भुगतान करें"
+                                  : "भुगतान करें"}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        ))}
+                      </>
+                    )}
+                  </View>
                 </>
               )}
 
@@ -582,171 +675,233 @@ useEffect(() => {
                     )}
                 </>
               </View>
-              {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-                <>
-                  {item.status === "Accepted" && (
-                    <TouchableOpacity style={styles.BhuktanBtn}>
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम स्वीकृत
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Pending" && (
-                    <TouchableOpacity
-                      style={styles.BhuktanBtn}
-                      onPress={() => accptThekha()}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम स्वीकार करें
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Booked" && (
-                    <TouchableOpacity style={styles.BhuktanBtn}>
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम बुक
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Ongoing" && (
-                    <TouchableOpacity style={styles.BhuktanBtn}>
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        जारी है
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Completed" && (
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        // marginTop: 20,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={[
-                          styles.BhuktanBtn,
-                          { width: "95%", marginBottom: 10 },
-                        ]}
-                      >
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
-                          समाप्त
-                        </Text>
-                      </TouchableOpacity>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        {ratingList}
-                      </View>
+
+              <View style={{ width: "100%" }}>
+                {usertype === "Sahayak" || usertype === "MachineMalik" ? (
+                  <>
+                    <View style={{ marginTop: 10 }}>
+                      {console.log("thekeparkaam", thekeperKam)}
+                      {item?.status === "Pending" ? (
+                        <TouchableOpacity
+                          style={styles.BhuktanBtn}
+                          onPress={() => accptThekha()}
+                        >
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            काम स्वीकार करें
+                          </Text>
+                        </TouchableOpacity>
+                      ) : (
+                        thekeperKam.map((item) => (
+                          <View key={item.id}>
+                           
+                            <>
+                              {item.status === "Accepted" ? (
+                                <>
+                                  <TouchableOpacity
+                                    style={[styles.BhuktanBtn]}
+                                    disabled={true}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      {item?.status === "Accepted"
+                                        ? "काम स्वीकृत "
+                                        : item?.status === "Booked"
+                                        ? "बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? "जारी है "
+                                        : ""}
+                                    </Text>
+                                  </TouchableOpacity>
+                                </>
+                              ) : item.status === "Ongoing" ||
+                                item.status === "Booked" ? (
+                                <>
+                                  <TouchableOpacity
+                                    style={[styles.BhuktanBtn]}
+                                    disabled={true}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      {item?.status === "Accepted"
+                                        ? "काम स्वीकृत "
+                                        : item?.status === "Booked"
+                                        ? "बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? "जारी है "
+                                        : ""}
+                                    </Text>
+                                  </TouchableOpacity>
+                                  <View
+                                    style={[styles.inputView, { height: 40 }]}
+                                  >
+                                    <Text style={styles.label}>
+                                      ग्राहक का नाम
+                                    </Text>
+                                    <TextInput
+                                      style={styles.TextInput}
+                                      editable={false}
+                                      placeholderTextColor="#848484"
+                                      placeholder={item.grahak_name}
+                                    />
+                                  </View>
+                                  <View
+                                    style={[styles.inputView, { height: 40 }]}
+                                  >
+                                    <Text style={styles.label}>फ़ोन:</Text>
+                                    <TextInput
+                                      style={styles.TextInput}
+                                      editable={false}
+                                      placeholderTextColor="#848484"
+                                      placeholder={item.grahak_phone}
+                                    />
+                                  </View>
+                                </>
+                              ) : (
+                                <View
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    // marginTop: 20,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.BhuktanBtn,
+                                      { width: "95%", marginBottom: 10 },
+                                    ]}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      समाप्त
+                                    </Text>
+                                  </TouchableOpacity>
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {ratingList}
+                                  </View>
+                                </View>
+                              )}
+                            </>
+                            {item.status === "Accepted" ||
+                              (item.status === "Booked" && (
+                                <View>
+                                  <TouchableOpacity
+                                    style={{
+                                      backgroundColor: "#D9D9D9",
+                                      alignSelf: "center",
+                                      paddingHorizontal: 50,
+                                      paddingVertical: 10,
+                                      borderRadius: 5,
+                                      marginTop: 10,
+                                    }}
+                                    onPress={() => {
+                                      Rejected();
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      रद्द करें
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              ))}
+                          </View>
+                        ))
+                      )}
                     </View>
-                  )}
-                </>
-              ) : null}
+                  </>
+                ) : null}
+              </View>
 
-              {/* {usertype === "Sahayak" ||
-                (usertype === "MachineMalik" && item.status === "Completed" && (
-                  <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: 20,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.BhuktanBtn,
-                      { width: "95%", marginBottom: 10 },
-                    ]}
-                  >
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      समाप्त
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    {ratingList}
-                  </View>
-                </View>
-                ))} */}
-
-              {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-              (item.status === "Booked" || item.status === "Ongoing") ? (
-                <>
-                  <View style={[styles.inputView, { height: 40 }]}>
-                    <Text style={styles.label}>ग्राहक का नाम</Text>
-                    <TextInput
-                      style={styles.TextInput}
-                      editable={false}
-                      placeholderTextColor="#848484"
-                      placeholder={item?.grahak_name}
-                    />
-                  </View>
-
-                  <View style={[styles.inputView, { height: 40 }]}>
-                    <Text style={styles.label}>फ़ोन:</Text>
-                    <TextInput
-                      style={styles.TextInput}
-                      editable={false}
-                      placeholderTextColor="#848484"
-                      placeholder={item?.grahak_phone}
-                    />
-                  </View>
-                </>
-              ) : null}
+              <View style={{ width: "100%" }}></View>
             </View>
-
             <View style={{ marginTop: "auto", padding: 5 }}>
-              {(usertype === "Sahayak" || usertype === "MachineMalik") ?
-                (item?.status === "Accepted" || item?.status === "Booked") && (
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: "#D9D9D9",
-                      alignSelf: "center",
-                      paddingHorizontal: 50,
-                      paddingVertical: 10,
-                      borderRadius: 5,
-                    }}
-                    onPress={() => {
-                      Rejected();
-                    }}
-                  >
-                    <Text style={[styles.loginText, { color: "#fff" }]}>
-                      रद्द करें
-                    </Text>
-                  </TouchableOpacity>
-                ): (
-                  <TouchableOpacity
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
-                  onPress={() => {
-                   cancel();
-                  }}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
-                )}
+              {usertype === "Grahak" ||
+                (item.status != "Completed" || (item.status === "Pending" ||"Accepted" )&& (
+                  <>
+                    {thekeperKams != 0 &&
+                      thekeperKams.map((item) => (
+                        <View key={item.booking_id}>
+                          {item.status === "Pending" ||
+                          item.status === "Accepted" ||
+                          item.status != "Completed" ? (
+                            <TouchableOpacity
+                              style={{
+                                backgroundColor: "#D9D9D9",
+                                alignSelf: "center",
+                                paddingHorizontal: 50,
+                                paddingVertical: 10,
+                                borderRadius: 5,
+                              }}
+                              onPress={() => {
+                                cancel();
+                              }}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                रद्द करें
+                              </Text>
+                            </TouchableOpacity>
+                          ) : null}
+                        </View>
+                      ))}
+                    {thekeparpending?.map((item) => (
+                      <View key={item.booking_id}>
+                        {item.status === "Pending" ||
+                        item.status === "Accepted" ? (
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: "#D9D9D9",
+                              alignSelf: "center",
+                              paddingHorizontal: 50,
+                              paddingVertical: 10,
+                              borderRadius: 5,
+                            }}
+                            onPress={() => {
+                              cancel();
+                            }}
+                          >
+                            <Text style={[styles.loginText, { color: "#fff" }]}>
+                              रद्द करें
+                            </Text>
+                          </TouchableOpacity>
+                        ) : null}
+                      </View>
+                    ))}
+                  </>
+                ))}
             </View>
+
+          
           </View>
-        )}
-      </ScrollView>
+          {/* {!isLoading && (
+        
+        )} */}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -755,8 +910,7 @@ export default Theke_MachineForm;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-    justifyContent: "center",
+    // justifyContent: "center",
     backgroundColor: "#fff",
   },
   OptionButton: {
@@ -844,8 +998,6 @@ const styles = StyleSheet.create({
 
   TextInput: {
     padding: 10,
-
-    fontFamily: "Poppin-Light",
   },
 
   CheckTextInput: {

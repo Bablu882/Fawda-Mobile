@@ -10,15 +10,16 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import Icon from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../slices/authSlice";
 
 export default function Payment({ route, navigation }) {
   const token = useSelector(selectToken);
-  const { item, totalamount, fawdafee, useramount } = route.params ?? {};
+  const { totalamount, fawdafee, useramount, item } = route.params ?? {};
 
-  console.log("payment page", item, fawdafee, totalamount, useramount);
+  console.log("payment page",  item);
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
   const [upiId, setUpiId] = useState("");
@@ -43,6 +44,7 @@ export default function Payment({ route, navigation }) {
       });
 
       const data = response.data;
+    
       console.log("Data: ", data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
@@ -126,13 +128,13 @@ export default function Payment({ route, navigation }) {
                 {item?.job_type === "theke_pe_kam" ||
                 item?.job_type === "individuals_sahayak" ? (
                   <View style={styles.flex}>
-                    <Text>ठेकेदार राशि</Text>
+                    <Text>{item?.job_type === "theke_pe_kam" ?  "ठेकेदार को वेतन" : "सहायक या सहायकों को वेतन "}  </Text>
 
                     <Text>₹{useramount}</Text>
                   </View>
                 ) : (
                   <View style={styles.flex}>
-                    <Text>मशीन मालिक राशि </Text>
+                    <Text>मशीन मालिक को वेतन</Text>
 
                     <Text>₹{useramount}</Text>
                   </View>

@@ -143,7 +143,6 @@ export default function UserRegistration({ navigation, route }) {
         longitude: location.longitude,
       
       };
-      console.log("registerparams", params);
 
       const response = await Service.post("/api/register/", params, {
         headers: {
@@ -151,28 +150,21 @@ export default function UserRegistration({ navigation, route }) {
         },
       });
       const data = response?.data;
-      console.log("register", data);
- 
-      if (data?.success === true || data?.status == 201) {
+      if (data?.status == 201) {
         const token = data?.token;
         dispatch(setToken(token));
-        Toast.show("Registration successful", Toast.SHORT);
-        Toast.show(JSON.stringify(data.otp), Toast.LONG);
-        console.log("fjfjfjf", data);
-
+        Toast.show("Registration successful", Toast.SHORT,);
+        Toast.show(JSON.stringify(data.otp), Toast.LONG,);
         navigation.replace("Verification", { user_type: data?.user_type, phone });
        
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {
-        Toast.show(
-          "Something went wrong. Please try again later.",
-          Toast.SHORT
-        );
+        Toast.show(data.error, Toast.SHORT);
       }
     } catch (error) {
       console.log(error);
-      Toast.show("Something went wrong. Please try again later.", Toast.SHORT);
+      Toast.show("User already exists", Toast.SHORT);
     }
   };
 
@@ -387,7 +379,7 @@ export default function UserRegistration({ navigation, route }) {
                     label="राज्य"
                     value=""
                     enabled={false}
-                    style={{ color: "#ccc" }}
+                  
                   />
                   {state?.map((state) => (
                     <Picker.Item
@@ -401,9 +393,10 @@ export default function UserRegistration({ navigation, route }) {
                   <Text style={styles.error}>{errors.state}</Text>
                 )}
               </View>
-              <View style={[styles.DoubleView, { position: "relative" }]}>
+              <View style={[styles.DoubleView,]}>
                 <Text style={styles.label}>जिला</Text>
                 <Picker
+                style={{width:'100%'}}
                   selectedValue={selectedDistrict}
                   onValueChange={(itemValue, itemIndex) =>
                     setSelectedDistrict(itemValue)
@@ -413,7 +406,7 @@ export default function UserRegistration({ navigation, route }) {
                     label="जिला"
                     value=""
                     enabled={false}
-                    style={{ color: "#ccc" }}
+                   
                   />
                   {district?.map((district, index) => (
                     <Picker.Item
@@ -426,26 +419,7 @@ export default function UserRegistration({ navigation, route }) {
                 {!!errors.district && (
                   <Text style={styles.error}>{errors.district}</Text>
                 )}
-                {/* <Picker
-              selectedValue={selectedDistrict}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedDistrict(itemValue)
-              }
-            >
-              <Picker.Item
-                label="जिला"
-                value=""
-                enabled={false}
-                style={{ color: "#ccc" }}
-              />
-              {district?.map((item) => (
-                <Picker.Item
-
-                  label={item.district}
-                  value={item.district}
-                />
-              ))}
-            </Picker> */}
+               
               </View>
             </View>
 
