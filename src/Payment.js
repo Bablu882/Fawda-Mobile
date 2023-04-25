@@ -34,7 +34,6 @@ export default function Payment({ route, navigation }) {
         upi_id: upiId,
         beneficiary_name: name,
       };
-      console.log("oadkfdjkdd", params);
 
       const response = await service.post("/api/payment_test/", params, {
         headers: {
@@ -44,8 +43,6 @@ export default function Payment({ route, navigation }) {
       });
 
       const data = response.data;
-    
-      console.log("Data: ", data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
           data: item.booking_id,
@@ -168,28 +165,6 @@ export default function Payment({ route, navigation }) {
                 </View>
               </View>
             </View>
-            {/* <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              width: "33%",
-              marginTop: 20,
-              height: 33,
-            }}
-          >
-            <Text style={{ textAlign: "center", marginTop: 6, color: "#fff" }}>
-              चालान डाउनलोड करें
-            </Text>
-          </View>
-        </View> */}
-
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <TouchableOpacity
                 style={styles.BhuktanBtn}
