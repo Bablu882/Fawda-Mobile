@@ -61,17 +61,7 @@ export default function MachineBooking({ navigation }) {
   const pickerRef = useRef();
   const textInputRef = useRef(null);
   var isTimeSelected = false;
-  function open() {
-    pickerRef.current.focus();
-  }
 
-  function close() {
-    pickerRef.current.blur();
-  }
-
-  const onSubmit = (data) => {
-    console.log(data, "data");
-  };
   const onChange = (event, selectedDate) => {
     setDefaultDate(selectedDate);
 
@@ -79,17 +69,14 @@ export default function MachineBooking({ navigation }) {
     // const currentTime = moment(selectedDate).format("H:mm");
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     const showTime = moment(selectedDate).format("H:mm");
-    console.log("isTimeSelected", currentDate);
-    // console.log(currentDate);
-    // console.log(currentTime);
     setDate(currentDate);
     setShowDate(showDate);
-    console.log("fkdfk", showDate);
+  
   };
   const onChanges = (event, selectedDate) => {
-    // alert(selectedDate)
+   
     setDate(selectedDate);
-    // console.log("isTimeSelected", selectedDate);
+ 
   };
 
   const showMode = (currentMode) => {
@@ -186,11 +173,13 @@ export default function MachineBooking({ navigation }) {
     let params = {
       work_type: val,
     };
-    console.log("params", params);
+   
+    
     service
       .post("/api/machine_detail/", params, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
@@ -210,19 +199,13 @@ export default function MachineBooking({ navigation }) {
       })
       .then((res) => {
         setWorkType(res.data);
-        console.log("data====>", res.data);
+       
       })
       .catch((error) => {
         console.log("Error:", error);
       });
   };
-  const handleDateChange = (value) => {
-    // alert(value);
-    console.log("dddd", value);
-    // setDateState(value);
-    // dispatch(setDate(value));
-  };
-
+ 
   const Booking = async () => {
     // const datetime =
     //   moment(showDate).format("YYYY-MM-DD") +
@@ -249,9 +232,8 @@ export default function MachineBooking({ navigation }) {
         },
       })
       .then(({ data }) => {
-        console.log("formparamfffff", data);
+      
         if (data?.status === 201) {
-          console.log("form", data);
           Toast.show("कार्य सफलतापूर्वक पोस्ट किया गया!", Toast.SORT);
 
           navigation.navigate("MyBookingStack", {screen: 'MyBooking'});
@@ -328,7 +310,14 @@ export default function MachineBooking({ navigation }) {
     if (totalAmount.trim() === "") {
       errorMessages.totalAmount = "Please enter your amount";
       valid = false;
+    } else if (!/^[0-9\s.]+$/.test(totalAmount.trim())) {
+      errorMessages.totalAmount = "Only numbers are allowed";
+      valid = false;
+    } else if (parseFloat(totalAmount.trim()) <= 5) {
+      errorMessages.totalAmount = "Please enter an amount greater than 5";
+      valid = false;
     }
+
 
     setErrors(errorMessages);
     return valid;
@@ -377,11 +366,7 @@ export default function MachineBooking({ navigation }) {
             >
               <Picker.Item
                 style={{ color: selectedWorkType ? "#000" : "#ccc" }}
-                label={
-                  selectedWorkType
-                    ? selectedWorkType
-                    : "-भूमि तैयार करना/काटना/बुआई-"
-                }
+                label="-भूमि तैयार करना/काटना/बुआई/अन्य-"
                 value=""
               />
               {workType.map((item, index) => (
@@ -420,7 +405,7 @@ export default function MachineBooking({ navigation }) {
             >
               <Picker.Item
                 style={{ color: selectedMachines ? "#000" : "#ccc" }}
-                label={selectedMachines ? selectedMachines : "-Select Machine-"}
+                label="-Select Machine-"
                 value=""
               />
               {machiness.map((item) => (
@@ -436,7 +421,7 @@ export default function MachineBooking({ navigation }) {
             <Text style={styles.error}>{errors.machiness}</Text>
           )}
 
-          <View style={styles.dropdownGender}>
+          <View style={[styles.dropdownGender,{display:'none'}]}>
             <TextInput
               value={other}
               onChangeText={(other) => setOther(other)}
@@ -464,7 +449,6 @@ export default function MachineBooking({ navigation }) {
               <Text style={{ color: showDate ? "#000" : "#ccc" }}>
                 {showDate ? showDate : "तारीख़   dd/mm/yyyy"}
               </Text>
-              {console.log("jfjdj", showDate)}
             </TouchableOpacity>
 
             <TextInput
@@ -581,7 +565,7 @@ export default function MachineBooking({ navigation }) {
                 >
                   <Picker.Item
                     style={{ color: landType ? "#000" : "#ccc" }}
-                    label={landType ? landType : "किल्ला/बीघा"}
+                    label="किल्ला/बीघा"
                     value=""
                   />
                   {landtypes.map((item) => (

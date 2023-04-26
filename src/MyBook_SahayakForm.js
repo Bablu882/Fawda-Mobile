@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,13 @@ import {
   Image,
   ScrollView,
   Button,
+  RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
 
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,29 +47,31 @@ const CustomComponent = ({ label, value }) => {
 
 export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
-  const [bookingstate, setBookingState] = useState(item?.status)
+  const [bookingstate, setBookingState] = useState(item?.status);
   const token = useSelector(selectToken);
-  const [thekeperKam, setThekeperKam] = useState({});
+
   const [ratingList, setRatingList] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
-  const { id, item, totalamount, fawdafee } = route.params;
-  console.log("fjd", item, totalamount, fawdafee);
+  const { id, item, totalamount, fawdafee, bookingid } = route.params;
   const [show, setShow] = useState(true);
   const [checkboxStatus, setCheckboxStatus] = useState({});
   const [maleStatuses, setMaleStatuses] = useState({});
   const [totalMaleAccepted, setTotalMaleAccepted] = useState(0);
   const [showFirstView, setShowFirstView] = useState(true);
   const [showSecondView, setShowSecondView] = useState(false);
+  const [thekeperKams, setThekeperKams] = useState([]);
+  const [thekeparpending, setThekeperKamPending] = useState([]);
+  const [thekeperKam, setThekeperKam] = useState([]);
   const [totalFemaleAccepted, setTotalFemaleAccepted] = useState(0);
   const [acceptedCount, setAcceptedCount] = useState(null);
   const [maleCount, setMaleCount] = useState(null);
   const usertype = useSelector(selectUserType);
-  console.log("usrrjfjf", usertype);
   const [edit, setEdit] = useState(false);
   const [editmale, setEditMale] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [amountMale, setAmountMale] = useState({});
-  const [amountFemale, setAmountFemale] = useState({});
+  const [amountMale, setAmountMale] = useState(0);
+  const [amountFemale, setAmountFemale] = useState(0);
   const textInputRef = useRef(null);
   const handleClick = () => {
     setEdit(true);
@@ -81,10 +84,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     let params = {
       count_male: totalMaleAccepted,
       count_female: totalFemaleAccepted,
-      job_id: id,
+      job_id: JSON.stringify(id),
     };
-    console.log("jjjdjjdd", params);
-
     try {
       const response = await service.post("/api/accept_individuals/", params, {
         headers: {
@@ -93,31 +94,22 @@ export default function MyBook_SahayakForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      console.log("datadatadatadatadata|||||||||", data);
-      navigation.navigate('MyBookingStack', {
-        screen: 'MyBooking',
-        params: {
-          item: item,
-          usertype: usertype
-        }
+      navigation.navigate("MyBookingStack", {
+        screen: "MyBooking",
       });
-      
     } catch (error) {
       console.log("Error:", error);
-    } finally {
-      setIsLoading(false); // Hide loader after fetching data
     }
+    // finally {
+    //   setIsLoading(false); // Hide loader after fetching data
+    // }
   };
-
   const Edit = async () => {
-    setIsLoading(true);
     let params = {
-      job_id: JSON.stringify(item?.id),
+      job_id: JSON.stringify(id),
       pay_amount_male: amountMale,
       pay_amount_female: amountFemale,
     };
-    console.log(params, "params");
-  
     try {
       const response = await service.post("/api/edit_individuals/", params, {
         headers: {
@@ -125,20 +117,20 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      if (response.status === 200) {
+      const data = response?.data;
+
+      if (data.status === 200) {
         Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
       } else {
         Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
       }
     } catch (error) {
       console.log("Error:", error);
-      Toast.show("एक त्रुटि हुई, कृपया पुनः प्रयास करें।", Toast.LONG);
-    } finally {
-      setIsLoading(false);
     }
+    // finally {
+    //   setIsLoading(false); // Hide loader after fetching data
+    // }
   };
-  
 
   const toggleViews = () => {
     setShowFirstView(!showFirstView);
@@ -196,11 +188,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     setTotalFemaleAccepted(totalfemale);
     console.log("totalFemaleAcceptedtotalFemaleAccepted", totalFemaleAccepted);
   }
-  // function handleTotalAccepted() {
-  //   const totalAccepted = malecount();
-  //   setTotalMaleAccepted(totalAccepted);
-  //   console.log("totalMaleAcceptedtotalMaleAccepted", totalMaleAccepted);
-  // }
 
   useEffect(() => {
     const totalAccepted = malecount();
@@ -271,9 +258,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     }
   };
 
-  useEffect(() => {
-    RatingApi();
-  }, []);
   const cancel = async () => {
     let params = {
       job_id: JSON.stringify(item?.job_id),
@@ -281,7 +265,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       // booking_id: item?.booking_id,
       status: "Cancelled",
     };
-    console.log('jfjgjg', params)
 
     try {
       const response = await service.post("/api/cancel/", params, {
@@ -292,15 +275,12 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       });
       const data = response?.data;
       // setStatus(data.status);
-      navigation.navigate("HomeStack",{screen: 'HomePage'});
+      navigation.navigate("HomeStack", { screen: "HomePage" });
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
-
-      console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
-
 
   const Rejected = async () => {
     let params = {
@@ -309,9 +289,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       count_female: totalFemaleAccepted,
       status: "Rejected",
     };
-
-    console.log(params, "hjdsnjnjdsl");
-
     try {
       const response = await service.post("/api/rejected/", params, {
         headers: {
@@ -319,10 +296,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
+
       const data = response?.data;
-      navigation.replace("HomePage");
-      console.log(data, "sds");
+      navigation.navigate("HomeStack", { screen: "HomePage" });
+
       Toast.show("Rejected", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
@@ -334,8 +311,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       <TouchableOpacity
         style={{
           backgroundColor: status === "Pending" ? "#44A347" : "#0099FF",
-          paddingVertical: 2,
-          paddingHorizontal: 5,
+          width: "100%",
+          borderRadius: 7,
+          height: 30,
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Text
@@ -353,17 +333,83 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     );
   }
 
+  const mybookingdetail = async () => {
+    setIsLoading(true); // set isLoading to true when the function starts
+    setRefreshing(true);
+    let params = {
+      sahayak_job_id: JSON.stringify(id),
+      sahayak_job_number: item?.job_number,
+    };
 
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      setThekeperKamPending(data?.sahayak_pending_booking_details);
+      setThekeperKams(data?.sahayk_booking_details?.bookings);
+      setIsLoading(false);
+      setRefreshing(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
-useEffect(() => {
-  setBookingState(item?.status)
-},[item?.status])
-
+  const myjobs = async () => {
+    let params = {
+      booking_id: JSON.stringify(item.booking_id),
+    };
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-myjobs/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      setThekeperKam(data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    mybookingdetail();
+    myjobs();
+    RatingApi();
+  }, []);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    myjobs().then(() => {
+      setRefreshing(false);
+    });
+    RatingApi().then(() => {
+      setRefreshing(false);
+    });
+    mybookingdetail().then(() => {
+      setRefreshing(false);
+    });
+    Edit().then(() => {
+      setEdit(false);
+    });
+  }, []);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View>
-        {isLoading && <ActivityIndicator size="small" color="#black" />}
+        {/* {isLoading && <ActivityIndicator size="small" color="#black" />} */}
       </View>
       <View style={{ padding: 20, marginTop: 25 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -375,8 +421,17 @@ useEffect(() => {
           {item?.job_type === "individuals_sahayak" && "सहायक का काम "}
         </Text>
       </View>
-      <ScrollView>
-        {!isLoading && (
+      <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
+      </View>
+      {!isLoading && (
+        <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <View
             style={{
               justifyContent: "center",
@@ -385,20 +440,6 @@ useEffect(() => {
               marginHorizontal: 10,
             }}
           >
-            {/* <View style={[styles.inputView, { height: 80 }]}>
-              <Text style={styles.label}>काम का विवरण</Text>
-              <TextInput
-                style={styles.TextInput}
-                placeholderTextColor="#848484"
-                placeholder={item?.description}
-               
-              >
-                 <Image
-                source={require("../assets/image/edit.png")}
-                style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-              />
-                </TextInput>
-            </View> */}
             <View
               style={[
                 styles.inputView,
@@ -408,7 +449,9 @@ useEffect(() => {
               ]}
             >
               <Text style={styles.label}>काम का विवरण</Text>
-              <Text style={[styles.TextInput,{maxWidth:'98%'}]}>{item?.description}</Text>
+              <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                {item?.description}
+              </Text>
               <Image
                 source={require("../assets/image/edit.png")}
                 style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
@@ -435,21 +478,9 @@ useEffect(() => {
               </Text>
               <Text style={styles.TextInput}>
                 {moment.utc(item?.datetime).format("LT")}
-                {console.log(
-                  "fffffffffffffff",
-                  moment.utc(item?.datetime).format("LT")
-                )}
               </Text>
             </View>
-            {/* {usertype && usertype === "Grahak" && (
-          <View style={styles.inputView}>
-            <TextInput
-              style={[styles.TextInput]}
-              placeholder="काम लिखें १५ शब्दों से कम,नंबर न लिखें "
-              placeholderTextColor={"#000"}
-            />
-          </View>
-          )} */}
+
             <View
               style={[
                 styles.inputView,
@@ -461,6 +492,7 @@ useEffect(() => {
               <TextInput
                 style={styles.TextInput}
                 placeholderTextColor="#848484"
+                editable={false}
                 placeholder=""
               />
               <Text
@@ -488,6 +520,7 @@ useEffect(() => {
                 <TextInput
                   style={styles.TextInput}
                   placeholder="एक पुरुष का वेतन"
+                  editable={false}
                   placeholderTextColor={"#000"}
                 />
                 <TextInput
@@ -513,6 +546,7 @@ useEffect(() => {
                 <TextInput
                   style={styles.TextInput}
                   placeholder="एक महिला का वेतन"
+                  editable={false}
                   placeholderTextColor={"#000"}
                 />
                 <TextInput
@@ -529,50 +563,127 @@ useEffect(() => {
                 </Text> */}
               </View>
             </View>
-            {bookingstate == "Accepted" ? (
-              <></>
-            ) : (
-              <View style={styles.flex}>
-                <View style={{ width: "70%" }}>
-                  <Text></Text>
-                </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ width: "70%" }}></View>
+              <View>
                 {usertype &&
                   usertype === "Grahak" &&
                   item?.status === "Pending" && (
-                    <View style={[styles.flex, { marginTop: 10 }]}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          handleClick();
-                          setEdit(true);
-                          setEditMale(true);
-                          console.log("edit:::::", edit);
-                        }}
-                        style={{
-                          backgroundColor: "#0099FF",
-                          marginRight: 10,
-                          padding: 5,
-                        }}
-                      >
-                        <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                          वेतन बदलें
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => Edit()}
-                        style={{
-                          backgroundColor: "#44A347",
-                          paddingHorizontal: 10,
-                          padding: 5,
-                        }}
-                      >
-                        <Text style={[styles.TextWhite, { fontSize: 10 }]}>
-                          कन्फर्म
-                        </Text>
-                      </TouchableOpacity>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      {thekeperKams.length > 0 ? (
+                        thekeperKams.map((item) => (
+                          <View key={item.id}>
+                            {item.status === "Accepted" ? (
+                              <View key={item.id}></View>
+                            ) : (
+                              <View>
+                                <View key={item.id}>
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      marginTop: 5,
+                                    }}
+                                  >
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        handleClick();
+                                        setEdit(true);
+                                        setEditMale(true);
+                                        console.log("edit:::::", edit);
+                                      }}
+                                      style={{
+                                        backgroundColor: "#0099FF",
+                                        marginRight: 10,
+                                        padding: 5,
+                                      }}
+                                    >
+                                      <Text
+                                        style={[
+                                          styles.TextWhite,
+                                          { fontSize: 10 },
+                                        ]}
+                                      >
+                                        वेतन बदलें
+                                      </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                      onPress={() => Edit()}
+                                      style={{
+                                        backgroundColor: "#44A347",
+                                        paddingHorizontal: 10,
+                                        padding: 5,
+                                      }}
+                                    >
+                                      <Text
+                                        style={[
+                                          styles.TextWhite,
+                                          { fontSize: 10 },
+                                        ]}
+                                      >
+                                        कन्फर्म
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              </View>
+                            )}
+                          </View>
+                        ))
+                      ) : (
+                        <View>
+                          <View key={item.id}>
+                            <View
+                              style={{ flexDirection: "row", marginTop: 5 }}
+                            >
+                              <TouchableOpacity
+                                onPress={() => {
+                                  handleClick();
+                                  setEdit(true);
+                                  setEditMale(true);
+                                  console.log("edit:::::", edit);
+                                }}
+                                style={{
+                                  backgroundColor: "#0099FF",
+                                  marginRight: 10,
+                                  padding: 5,
+                                }}
+                              >
+                                <Text
+                                  style={[styles.TextWhite, { fontSize: 10 }]}
+                                >
+                                  वेतन बदलें
+                                </Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => Edit()}
+                                style={{
+                                  backgroundColor: "#44A347",
+                                  paddingHorizontal: 10,
+                                  padding: 5,
+                                }}
+                              >
+                                <Text
+                                  style={[styles.TextWhite, { fontSize: 10 }]}
+                                >
+                                  कन्फर्म
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </View>
+                      )}
                     </View>
                   )}
               </View>
-            )}
+            </View>
+
             {usertype && usertype === "Grahak" ? (
               <View
                 style={[
@@ -612,13 +723,66 @@ useEffect(() => {
                   <TextInput
                     style={styles.TextInput}
                     placeholder="वेतन"
+                    editable={false}
                     placeholderTextColor={"#000"}
                   />
-                  <Text
+                  <View style={{marginRight:10}}>
+                    {console.log("thekeparpending", thekeparpending)}
+                    {console.log("thekeparpending", thekeparpending)}
+                    {item.status === "Accepted" ? (
+                      thekeperKams != 0 &&
+                      thekeperKams?.map((item, index) => (
+                        <View key={item?.id}>
+                          <Text> ₹ {item.total_amount_sahayak}</Text>
+                        </View>
+                      ))
+                    ) : item.status === "Completed" ? (
+                      <View>
+                        {thekeperKams != 0 &&
+                          thekeperKams?.map((item, index) => (
+                            <View key={item?.id}>
+                              {item.status === "Completed" && (
+                                <Text> ₹ {item.total_amount_sahayak}</Text>
+                              )}
+                            </View>
+                          ))}
+                      </View>
+                    ) : (
+                      thekeparpending?.map((item, index) => (
+                        <View key={item?.id}>
+                          <Text> ₹ {item.total_amount_sahayak}</Text>
+                        </View>
+                      ))
+                    )}
+                  </View>
+
+                  {/* <Text
                     style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}
                   >
-                    ₹ {totalamount}
-                  </Text>
+                    {item.status === "Pending" &&
+                      thekeparpending.map((item) => (
+                        <View key={item.id}>
+                          <Text> ₹ {item.total_amount_sahayak}</Text>
+                        </View>
+                      ))}
+
+                    {thekeperKams != 0
+                      ? thekeperKams.map((item) => (
+                          <View key={item.id}>
+                            {item.status === "Accepted" ||
+                              (item.status === "Completed" && (
+                                <Text> ₹ {item.total_amount_sahayak}</Text>
+                              ))}
+                          </View>
+                        ))
+                      : thekeparpending.map((item) => (
+                          <View key={item.id}>
+                            {item.status != "Pending" && (
+                              <Text> ₹ {item.total_amount_sahayak}</Text>
+                            )}
+                          </View>
+                        ))}
+                  </Text> */}
                 </View>
               </View>
             ) : (
@@ -643,147 +807,217 @@ useEffect(() => {
                 </Text>
               </View>
             )}
-            {item?.status === "Pending" && (
-              <View>
-                {usertype && usertype === "Grahak" && (
-                  <View>
-                    <View
-                      style={[
-                        styles.flex,
-                        styles.justifyContentBetween,
-                    {flexWrap:'wrap'}
-                      ]}
-                    >
-                      <>
-                        {[...Array(parseInt(item?.count_male)).keys()].map(
-                          (index) => (
-                            <View
-                              style={[
-                                styles.flex,
-                                styles.justifyContentBetween,
-                                {
-                                  paddingHorizontal: 5,
-                                  borderColor: "#0070C0",
-                                  // borderRadius: 7,
-                                  borderWidth: 0.4,
-                                  paddingVertical: 10,
-                                },
-                              ]}
-                              key={index}
-                            >
-                              <TextInput
-                                style={styles.CheckTextInput}
-                                placeholder="पुरषो"
-                                editable={false}
-                                placeholderTextColor={"#000"}
-                                name={`Male${index + 1}`}
-                              />
-                              <View
-                                style={{
-                                  height: 25,
-                                  paddingHorizontal: 5,
-                                  backgroundColor: item.status === 'Pending' ? '#44A347' : '#0099FF',
-                                  marginLeft: 5,
-                                }}
-                              >
-                                <TouchableOpacity>
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 5,
-                                      color: "#fff",
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    {item?.status  === "Pending" ? 'पेंडिंग' : 'स्वीकार'}
-                                    {console.log("fjfjfjfjfjf", item?.status)}
-                                  </Text>
-                                </TouchableOpacity>
-                              </View>
-                            </View>
-                          )
-                        )}
-                        {[...Array(parseInt(item?.count_female)).keys()].map(
-                          (index) => (
-                            <View
-                              style={[
-                                styles.flex,
-                                styles.justifyContentBetween,
-                                {
-                                  paddingHorizontal: 5,
-                                  borderColor: "#0070C0",
-                                  // borderRadius: 7,
-                                  borderWidth: 0.4,
-                                  paddingVertical: 10,
-                                },
-                              ]}
-                              key={index}
-                            >
-                              <TextInput
-                                style={styles.CheckTextInput}
-                                placeholder="महिला"
-                                editable={false}
-                                placeholderTextColor={"#101010"}
-                                name={`Female${index + 1}`}
-                              />
-                              <View
-                                style={{
-                                  height: 25,
-                                  paddingHorizontal: 5,
-                                  backgroundColor: item.status === 'Pending' ? '#44A347' : '#0099FF',
-                                  marginLeft: 5,
-                                }}
-                              >
-                                <TouchableOpacity>
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 5,
-                                      color: "#fff",
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                   {item?.status  === "Pending" ? 'पेंडिंग' : 'स्वीकार'}
-                                    {console.log("fjfjfjfjfjf", item?.status)}
-                                  </Text>
-                                </TouchableOpacity>
-                              </View>
-                            </View>
-                          )
-                        )}
-                      </>
-                    </View>
-                    <View>
-                      <></>
-                    </View>
-                  </View>
-                )}
-              </View>
-            )}
-            {item?.status === "Pending" ? (
-              <>
-                {usertype &&
-                  (usertype === "Sahayak" || usertype === "MachineMalik") && (
-                    <View>
-                      <View
-                        style={[
-                          styles.flex,
-                          styles.justifyContentBetween,
-                          { justifyContent: "flex-start" },
-                        ]}
-                      >
+            <View>
+              {usertype && usertype === "Grahak" && (
+                <View>
+                  {item.status === "Accepted" || item.status == "Completed" ? (
+                    thekeperKams != 0 &&
+                    thekeperKams?.map((item, index) => (
+                      <View key={item?.id}>
                         <View
+                          style={{ flexDirection: "row", flexWrap: "wrap" }}
+                        >
+                          {[...Array(parseInt(item?.count_male)).keys()].map(
+                            (index) => (
+                              <View
+                                style={[
+                                  styles.flex,
+                                  styles.justifyContentBetween,
+                                  {
+                                    paddingHorizontal: 5,
+                                    borderColor: "#0070C0",
+                                    // borderRadius: 7,
+                                    borderWidth: 0.4,
+                                    paddingVertical: 10,
+                                    maxWidth: "33.33%",
+                                    width: "100%",
+                                    marginBottom: 5,
+                                  },
+                                ]}
+                                key={index}
+                              >
+                                <TextInput
+                                  style={styles.CheckTextInput}
+                                  placeholder="पुरषो"
+                                  editable={false}
+                                  placeholderTextColor={"#000"}
+                                  name={`Male${index + 1}`}
+                                />
+                                <View
+                                  style={{
+                                    height: 25,
+                                    paddingHorizontal: 5,
+                                    backgroundColor:
+                                      item.status === "Pending"
+                                        ? "#44A347"
+                                        : "#0099FF",
+                                    marginLeft: 5,
+                                  }}
+                                >
+                                  <TouchableOpacity>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 5,
+                                        color: "#fff",
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      {item?.status === "Pending"
+                                        ? "पेंडिंग"
+                                        : item?.status === "Accepted"
+                                        ? "स्वीकार "
+                                        : item?.status === "Booked"
+                                        ? "बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? "जारी है "
+                                        : "समाप्त"}
+                                      {console.log("fjfjfjfjfjf", item?.status)}
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                            )
+                          )}
+                          {[...Array(parseInt(item?.count_female)).keys()].map(
+                            (index) => (
+                              <View
+                                style={[
+                                  styles.flex,
+                                  {
+                                    paddingHorizontal: 5,
+                                    borderColor: "#0070C0",
+                                    // borderRadius: 7,
+                                    borderWidth: 0.4,
+                                    paddingVertical: 10,
+                                    maxWidth: "33.33%",
+                                    width: "100%",
+                                    marginBottom: 5,
+                                  },
+                                ]}
+                                key={index}
+                              >
+                                <TextInput
+                                  style={{ ...styles.CheckTextInput }}
+                                  placeholder="महिला"
+                                  editable={false}
+                                  placeholderTextColor={"#101010"}
+                                  name={`Female${index + 1}`}
+                                />
+                                <View
+                                  style={{
+                                    height: 25,
+                                    paddingHorizontal: 5,
+                                    backgroundColor:
+                                      item.status === "Pending"
+                                        ? "#44A347"
+                                        : "#0099FF",
+                                    marginLeft: 5,
+                                  }}
+                                >
+                                  <TouchableOpacity>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 5,
+                                        color: "#fff",
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      {item?.status === "Pending"
+                                        ? "पेंडिंग"
+                                        : item?.status === "Accepted"
+                                        ? "स्वीकार "
+                                        : item?.status === "Booked"
+                                        ? "बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? "जारी है "
+                                        : "समाप्त"}
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                            )
+                          )}
+                        </View>
+                      </View>
+                    ))
+                  ) : (
+                    <View>
+                      {thekeparpending?.map((item, index) => (
+                        <View
+                          key={item?.id}
                           style={[
-                            {
-                              flexWrap: "wrap",
-                              justifyContent: "flex-start",
-                              flexDirection: "row",
-                            },
+                            styles.flex,
+                            styles.justifyContentBetween,
+                            { flexWrap: "wrap" },
                           ]}
                         >
                           <>
+                            {[...Array(parseInt(item?.count_male)).keys()].map(
+                              (index) => (
+                                <View
+                                  style={[
+                                    styles.flex,
+                                    styles.justifyContentBetween,
+                                    {
+                                      paddingHorizontal: 5,
+                                      borderColor: "#0070C0",
+                                      // borderRadius: 7,
+                                      borderWidth: 0.4,
+                                      paddingVertical: 10,
+                                      maxWidth: "33.33%",
+                                      width: "100%",
+                                      marginBottom: 5,
+                                    },
+                                  ]}
+                                  key={index}
+                                >
+                                  <TextInput
+                                    style={styles.CheckTextInput}
+                                    placeholder="पुरषो"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    name={`Male${index + 1}`}
+                                  />
+                                  <View
+                                    style={{
+                                      height: 25,
+                                      paddingHorizontal: 5,
+                                      backgroundColor:
+                                        item.status === "Pending"
+                                          ? "#44A347"
+                                          : "#0099FF",
+                                      marginLeft: 5,
+                                    }}
+                                  >
+                                    <TouchableOpacity>
+                                      <Text
+                                        style={{
+                                          textAlign: "center",
+                                          marginTop: 5,
+                                          color: "#fff",
+                                          fontSize: 12,
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        {item?.status === "Pending"
+                                          ? "पेंडिंग"
+                                          : item?.status === "Accepted"
+                                          ? "स्वीकार "
+                                          : item?.status === "Booked"
+                                          ? "बुक्ड"
+                                          : item?.status === "Ongoing"
+                                          ? "जारी है "
+                                          : "समाप्त"}
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              )
+                            )}
                             {[
                               ...Array(parseInt(item?.count_female)).keys(),
                             ].map((index) => (
@@ -797,6 +1031,9 @@ useEffect(() => {
                                     // borderRadius: 7,
                                     borderWidth: 0.4,
                                     paddingVertical: 10,
+                                    maxWidth: "33.33%",
+                                    width: "100%",
+                                    marginBottom: 5,
                                   },
                                 ]}
                                 key={index}
@@ -807,131 +1044,323 @@ useEffect(() => {
                                   editable={false}
                                   placeholderTextColor={"#101010"}
                                   name={`Female${index + 1}`}
-                                  onChangeText={(text) => {
-                                    const updatedStatus = { ...checkboxStatus };
-                                    updatedStatus[index] = text;
-                                    setCheckboxStatus(updatedStatus);
-                                  }}
                                 />
                                 <View
                                   style={{
-                                    paddingBottom: 5,
-                                    paddingHorizontal: 3,
+                                    height: 25,
+                                    paddingHorizontal: 5,
                                     backgroundColor:
-                                      checkboxStatus[index] === "Accepted"
-                                        ? "#0099FF"
-                                        : "#44A347",
+                                      item.status === "Pending"
+                                        ? "#44A347"
+                                        : "#0099FF",
                                     marginLeft: 5,
                                   }}
                                 >
-                                  <TouchableOpacity
-                                    onPress={() => handleCheckboxChange(index)}
-                                    disabled={
-                                      checkboxStatus[index] === "Pending"
-                                    }
-                                  >
+                                  <TouchableOpacity>
                                     <Text
                                       style={{
                                         textAlign: "center",
                                         marginTop: 5,
                                         color: "#fff",
-                                        fontSize: 9,
+                                        fontSize: 12,
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {checkboxStatus[index] || item?.status}
+                                      {item?.status === "Pending"
+                                        ? "पेंडिंग"
+                                        : item?.status === "Accepted"
+                                        ? "स्वीकार "
+                                        : item?.status === "Booked"
+                                        ? "बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? "जारी है "
+                                        : "समाप्त"}
+                                      {/* {item?.status === "Pending"
+                                    ? "पेंडिंग"
+                                    : "स्वीकार"} */}
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
                               </View>
                             ))}
                           </>
-                          <>
-                            {[...Array(parseInt(item?.count_male)).keys()].map(
-                              (index) => (
-                                <View
-                                  style={[
-                                    styles.flex,
-                                    // styles.justifyContentBetween,
-                                    {
-                                      paddingHorizontal: 3,
-                                      borderColor: "#0070C0",
-                                      // borderRadius: 7,
-                                      borderWidth: 0.4,
-                                      paddingVertical: 10,
-                                    },
-                                  ]}
-                                  key={index}
-                                >
-                                  <TextInput
-                                    style={styles.CheckTextInput}
-                                    placeholder="पुरषो"
-                                    placeholderTextColor={"#101010"}
-                                    name={`Male${index + 1}`}
-                                    editable={false}
-                                    onChangeText={(text) => {
-                                      const updatedMaleStatuses = [
-                                        ...maleStatuses,
-                                      ];
-                                      updatedMaleStatuses[index] = text;
-                                      setMaleStatuses(updatedMaleStatuses);
-                                    }}
-                                  />
-                                  <View
-                                    style={{
-                                      paddingBottom: 5,
-                                      paddingHorizontal: 3,
-                                      backgroundColor:
-                                        maleStatuses[index] === "Accepted"
-                                          ? "#0099FF"
-                                          : "#44A347",
-                                      marginLeft: 5,
-                                    }}
-                                  >
-                                    <TouchableOpacity
-                                      onPress={() => handleAcceptMale(index)}
-                                      disabled={
-                                        maleStatuses[index] === "Pending"
-                                      }
-                                    >
-                                      <Text
-                                        style={{
-                                          textAlign: "center",
-                                          marginTop: 5,
-                                          color: "#fff",
-                                          fontSize: 9,
-                                          fontWeight: "600",
-                                        }}
-                                      >
-                                        {maleStatuses[index] || item?.status}
-                                      </Text>
-                                    </TouchableOpacity>
-                                  </View>
-                                </View>
-                              )
-                            )}
-                          </>
                         </View>
-                      </View>
+                      ))}
 
-                      <View style={[styles.flex, styles.justifyContentBetween]}>
+                      {thekeperKams != 0 &&
+                        thekeperKams?.map((item, index) => (
+                          <View key={item?.id}>
+                            {item.status === "Accepted" && (
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                {[
+                                  ...Array(parseInt(item?.count_male)).keys(),
+                                ].map((index) => (
+                                  <View
+                                    style={[
+                                      styles.flex,
+                                      styles.justifyContentBetween,
+                                      {
+                                        paddingHorizontal: 5,
+                                        borderColor: "#0070C0",
+                                        // borderRadius: 7,
+                                        borderWidth: 0.4,
+                                        paddingVertical: 10,
+                                        maxWidth: "33.33%",
+                                        width: "100%",
+                                        marginBottom: 5,
+                                      },
+                                    ]}
+                                    key={index}
+                                  >
+                                    <TextInput
+                                      style={styles.CheckTextInput}
+                                      placeholder="पुरषो"
+                                      editable={false}
+                                      placeholderTextColor={"#000"}
+                                      name={`Male${index + 1}`}
+                                    />
+                                    <View
+                                      style={{
+                                        height: 25,
+                                        paddingHorizontal: 5,
+                                        backgroundColor:
+                                          item.status === "Pending"
+                                            ? "#44A347"
+                                            : "#0099FF",
+                                        marginLeft: 5,
+                                      }}
+                                    >
+                                      <TouchableOpacity>
+                                        <Text
+                                          style={{
+                                            textAlign: "center",
+                                            marginTop: 5,
+                                            color: "#fff",
+                                            fontSize: 12,
+                                            fontWeight: "600",
+                                          }}
+                                        >
+                                          {item?.status === "Pending"
+                                            ? "पेंडिंग"
+                                            : item?.status === "Accepted"
+                                            ? "स्वीकार "
+                                            : item?.status === "Booked"
+                                            ? "बुक्ड"
+                                            : item?.status === "Ongoing"
+                                            ? "जारी है "
+                                            : "समाप्त"}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                ))}
+                                {[
+                                  ...Array(parseInt(item?.count_female)).keys(),
+                                ].map((index) => (
+                                  <View
+                                    style={[
+                                      styles.flex,
+                                      {
+                                        paddingHorizontal: 5,
+                                        borderColor: "#0070C0",
+                                        // borderRadius: 7,
+                                        borderWidth: 0.4,
+                                        paddingVertical: 10,
+                                        maxWidth: "33.33%",
+                                        width: "100%",
+                                        marginBottom: 5,
+                                      },
+                                    ]}
+                                    key={index}
+                                  >
+                                    <TextInput
+                                      style={{ ...styles.CheckTextInput }}
+                                      placeholder="महिला"
+                                      editable={false}
+                                      placeholderTextColor={"#101010"}
+                                      name={`Female${index + 1}`}
+                                    />
+                                    <View
+                                      style={{
+                                        height: 25,
+                                        paddingHorizontal: 5,
+                                        backgroundColor:
+                                          item.status === "Pending"
+                                            ? "#44A347"
+                                            : "#0099FF",
+                                        marginLeft: 5,
+                                      }}
+                                    >
+                                      <TouchableOpacity>
+                                        <Text
+                                          style={{
+                                            textAlign: "center",
+                                            marginTop: 5,
+                                            color: "#fff",
+                                            fontSize: 12,
+                                            fontWeight: "600",
+                                          }}
+                                        >
+                                          {item?.status === "Pending"
+                                            ? "पेंडिंग"
+                                            : item?.status === "Accepted"
+                                            ? "स्वीकार "
+                                            : item?.status === "Booked"
+                                            ? "बुक्ड"
+                                            : item?.status === "Ongoing"
+                                            ? "जारी है "
+                                            : "समाप्त"}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                ))}
+                              </View>
+                            )}
+                          </View>
+                        ))}
+                    </View>
+                  )}
+                </View>
+              )}
+            </View>
+            <>
+              {item.status != "Pending" &&
+                usertype &&
+                (usertype === "Sahayak" || usertype === "MachineMalik") && (
+                  <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                    {[...Array(parseInt(item?.count_male)).keys()].map(
+                      (index) => (
                         <View
                           style={[
                             styles.flex,
-                            // styles.justifyContentBetween,
-                            { flexWrap: "wrap", marginTop: 20 },
+                            styles.justifyContentBetween,
+                            {
+                              paddingHorizontal: 5,
+                              borderColor: "#0070C0",
+                              // borderRadius: 7,
+                              borderWidth: 0.4,
+                              paddingVertical: 10,
+                              maxWidth: "33.33%",
+                              width: "100%",
+                              marginBottom: 5,
+                            },
                           ]}
-                        ></View>
-                      </View>
-                    </View>
-                  )}
-              </>
-            ) : (
-              <>
-                <View>
+                          key={index}
+                        >
+                          <TextInput
+                            style={styles.CheckTextInput}
+                            placeholder="पुरषो"
+                            editable={false}
+                            placeholderTextColor={"#000"}
+                            name={`Male${index + 1}`}
+                          />
+                          <View
+                            style={{
+                              // height: 25,
+                              paddingHorizontal: 5,
+                              backgroundColor:
+                                item.status === "Pending"
+                                  ? "#44A347"
+                                  : "#0099FF",
+                              marginLeft: 5,
+                            }}
+                          >
+                            {thekeperKam.map((item, index) => (
+                              <View key={index}>
+                                {item?.status === "Pending"
+                                  ? getStatusButton(item?.status, "पेंडिंग")
+                                  : item?.status === "Accepted"
+                                  ? getStatusButton(item?.status, "स्वीकार")
+                                  : item?.status === "Booked"
+                                  ? getStatusButton(item?.status, "बुक्ड")
+                                  : item?.status === "Ongoing"
+                                  ? getStatusButton(item?.status, "जारी है ")
+                                  : item?.status === "Completed"
+                                  ? getStatusButton(item?.status, "समाप्त")
+                                  : null}
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )
+                    )}
+                    {[...Array(parseInt(item?.count_female)).keys()].map(
+                      (index) => (
+                        <View
+                          style={[
+                            styles.flex,
+                            styles.justifyContentBetween,
+                            {
+                              paddingHorizontal: 5,
+                              borderColor: "#0070C0",
+                              // borderRadius: 7,
+                              borderWidth: 0.4,
+                              paddingVertical: 10,
+                              maxWidth: "33.33%",
+                              width: "100%",
+                              marginBottom: 5,
+                            },
+                          ]}
+                          key={index}
+                        >
+                          <TextInput
+                            style={{ ...styles.CheckTextInput }}
+                            placeholder="महिला"
+                            editable={false}
+                            placeholderTextColor={"#101010"}
+                            name={`Female${index + 1}`}
+                          />
+                          <View
+                            style={{
+                              // height: 25,
+                              paddingHorizontal: 5,
+                              backgroundColor:
+                                item.status === "Pending"
+                                  ? "#44A347"
+                                  : "#0099FF",
+                              marginLeft: 5,
+                            }}
+                          >
+                            {thekeperKam.map((item, index) => (
+                              <View key={index}>
+                                {item?.status === "Pending"
+                                  ? getStatusButton(item?.status, "पेंडिंग")
+                                  : item?.status === "Accepted"
+                                  ? getStatusButton(item?.status, "स्वीकार")
+                                  : item?.status === "Booked"
+                                  ? getStatusButton(item?.status, "बुक्ड")
+                                  : item?.status === "Ongoing"
+                                  ? getStatusButton(item?.status, "जारी है ")
+                                  : item?.status === "Completed"
+                                  ? getStatusButton(item?.status, "समाप्त")
+                                  : null}
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )
+                    )}
+                  </View>
+                )}
+            </>
+
+            {item.status === "Pending" && usertype === "Sahayak" && (
+              <View>
+                <View
+                  style={[
+                    styles.flex,
+                    styles.justifyContentBetween,
+                    { justifyContent: "flex-start" },
+                  ]}
+                >
                   <View
                     style={[
-                      //styles.justifyContentBetween,
                       {
                         flexWrap: "wrap",
                         justifyContent: "flex-start",
@@ -940,16 +1369,14 @@ useEffect(() => {
                     ]}
                   >
                     <>
-                      {[...Array(parseInt(item?.count_male)).keys()].map(
+                      {[...Array(parseInt(item?.count_female)).keys()].map(
                         (index) => (
                           <View
                             style={[
-                              // styles.FemalecheckView,
-
                               styles.flex,
                               styles.justifyContentBetween,
                               {
-                                paddingHorizontal: 10,
+                                paddingHorizontal: 5,
                                 borderColor: "#0070C0",
                                 // borderRadius: 7,
                                 borderWidth: 0.4,
@@ -959,82 +1386,60 @@ useEffect(() => {
                             key={index}
                           >
                             <TextInput
-                              style={[
-                                styles.CheckTextInput,
-                                { paddingRight: 10 },
-                              ]}
-                              placeholder="पुरषो"
-                              placeholderTextColor={"#000"}
-                              name={`Male${index + 1}`}
+                              style={styles.CheckTextInput}
+                              placeholder="महिला"
+                              editable={false}
+                              placeholderTextColor={"#101010"}
+                              name={`Female${index + 1}`}
+                              onChangeText={(text) => {
+                                const updatedStatus = { ...checkboxStatus };
+                                updatedStatus[index] = text;
+                                setCheckboxStatus(updatedStatus);
+                              }}
                             />
-                            {bookingstate === "Pending"
-                              ? getStatusButton(bookingstate, "पेंडिंग")
-                              : bookingstate === "Accepted"
-                              ? getStatusButton(bookingstate, "स्वीकार")
-                              : bookingstate === "Booked"
-                              ? getStatusButton(bookingstate, "बुक्ड")
-                              : bookingstate === "Ongoing"
-                              ? getStatusButton(bookingstate, "जारी है ")
-                              : bookingstate === "Completed"
-                              ? getStatusButton(bookingstate, "समाप्त")
-                              : null}
-                            {/* {item?.booking_status === "Accepted"
-                              ? getStatusButton(item.booking_status, "स्वीकार")
-                              : item?.booking_status === "Booked"
-                              ? getStatusButton(item.booking_status, "बुक्ड")
-                              : item?.booking_status === "Ongoing"
-                              ? getStatusButton(item.booking_status, "जारी है ")
-                              : item?.booking_status === "Completed"
-                              ? getStatusButton(item.booking_status, "समाप्त")
-                              : null} */}
-                            {/* <View
+                            <View
                               style={{
-                                paddingVertical: 4,
-                                paddingHorizontal: 8,
-                                backgroundColor: "#44A347",
+                                paddingBottom: 5,
+                                paddingHorizontal: 3,
+                                backgroundColor:
+                                  checkboxStatus[index] === "Accepted"
+                                    ? "#0099FF"
+                                    : "#44A347",
                                 marginLeft: 5,
                               }}
                             >
-                              <TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => handleCheckboxChange(index)}
+                                disabled={checkboxStatus[index] === "Pending"}
+                              >
                                 <Text
                                   style={{
                                     textAlign: "center",
-
+                                    marginTop: 5,
                                     color: "#fff",
                                     fontSize: 9,
                                     fontWeight: "600",
                                   }}
                                 >
-                                  {item?.status === "Pending"
-                                    ? getStatusButton(item.status, "पेंडिंग")
-                                    : item?.status === "Accepted"
-                                    ? getStatusButton(item.status, "स्वीकार")
-                                    : item?.status === "Booked"
-                                    ? getStatusButton(item.status, "बुक्ड")
-                                    : item?.status === "Ongoing"
-                                    ? getStatusButton(item.status, "जारी है ")
-                                    : item?.status === "Completed"
-                                    ? getStatusButton(item.status, "समाप्त")
-                                    : null}
-                                 
-                                  {console.log("fjfjfjfjfjf", item?.status)}
+                                  {checkboxStatus[index] || item?.status}
                                 </Text>
                               </TouchableOpacity>
-                            </View> */}
+                            </View>
                           </View>
                         )
                       )}
-                      {[...Array(parseInt(item?.count_female)).keys()].map(
+                    </>
+                    <>
+                      {[...Array(parseInt(item?.count_male)).keys()].map(
                         (index) => (
                           <View
                             style={[
-                              // styles.FemalecheckView,
                               styles.flex,
-                              styles.justifyContentBetween,
+                              // styles.justifyContentBetween,
                               {
-                                paddingHorizontal: 5,
+                                paddingHorizontal: 3,
+                                borderColor: "#0070C0",
                                 // borderRadius: 7,
-
                                 borderWidth: 0.4,
                                 paddingVertical: 10,
                               },
@@ -1042,210 +1447,951 @@ useEffect(() => {
                             key={index}
                           >
                             <TextInput
-                              style={[
-                                styles.CheckTextInput,
-                                { paddingRight: 10 },
-                              ]}
-                              placeholder="महिला"
+                              style={styles.CheckTextInput}
+                              placeholder="पुरषो"
                               placeholderTextColor={"#101010"}
-                              name={`Female${index + 1}`}
+                              name={`Male${index + 1}`}
+                              editable={false}
+                              onChangeText={(text) => {
+                                const updatedMaleStatuses = [...maleStatuses];
+                                updatedMaleStatuses[index] = text;
+                                setMaleStatuses(updatedMaleStatuses);
+                              }}
                             />
-                            {item?.status === "Pending"
-                              ? getStatusButton(item.status, "पेंडिंग")
-                              : item?.status === "Accepted"
-                              ? getStatusButton(item.status, "स्वीकार")
-                              : item?.status === "Booked"
-                              ? getStatusButton(item.status, "बुक्ड")
-                              : item?.status === "Ongoing"
-                              ? getStatusButton(item.status, "जारी है ")
-                              : item?.status === "Completed"
-                              ? getStatusButton(item.status, "समाप्त")
-                              : null}
-                            {/* {item?.booking_status === "Accepted"
-                              ? getStatusButton(item.booking_status, "स्वीकार")
-                              : item?.booking_status === "Booked"
-                              ? getStatusButton(item.booking_status, "बुक्ड")
-                              : item?.booking_status === "Ongoing"
-                              ? getStatusButton(item.booking_status, "जारी है ")
-                              : item?.booking_status === "Completed"
-                              ? getStatusButton(item.booking_status, "समाप्त")
-                              : null} */}
-                            {/* <View
+                            <View
                               style={{
-                                paddingVertical: 4,
-                                paddingHorizontal: 8,
-                                backgroundColor: "#44A347",
+                                paddingBottom: 5,
+                                paddingHorizontal: 3,
+                                backgroundColor:
+                                  maleStatuses[index] === "Accepted"
+                                    ? "#0099FF"
+                                    : "#44A347",
                                 marginLeft: 5,
                               }}
                             >
-                              <TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => handleAcceptMale(index)}
+                                disabled={maleStatuses[index] === "Pending"}
+                              >
                                 <Text
                                   style={{
                                     textAlign: "center",
-
+                                    marginTop: 5,
                                     color: "#fff",
                                     fontSize: 9,
                                     fontWeight: "600",
                                   }}
                                 >
-                                 
-                                  {console.log("fjfjfjfjfjf", item?.status)}
+                                  {maleStatuses[index] || item?.status}
                                 </Text>
                               </TouchableOpacity>
-                            </View> */}
+                            </View>
                           </View>
                         )
                       )}
                     </>
                   </View>
-                  <View>
-                    <></>
-                  </View>
                 </View>
-              </>
-            )}
 
-            <View
-              style={[
-                styles.flex,
-                styles.justifyContentBetween,
-                { flexWrap: "wrap" },
-              ]}
-            ></View>
-
-            <View
-              style={[
-                styles.flex,
-                styles.justifyContentBetween,
-                { flexWrap: "wrap" },
-              ]}
-            ></View>
-
-            {/* end */}
-            {usertype && usertype === "Grahak" && (
-              <>
-                <View
-                  style={[
-                    styles.inputView,
-                    {
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    },
-                  ]}
-                >
-                  <TextInput
-                    style={styles.TextInput}
-                    placeholder="काम की स्थिति"
-                    placeholderTextColor={"#000"}
-                    // onChangeText={(email) => setEmail(email)}
-                    // defaultValue={email}
-                    // value={email}
-                  />
-
+                <View style={[styles.flex, styles.justifyContentBetween]}>
                   <View
-                    style={{
-                      marginRight: 10,
-                      marginVertical: 8,
-                    }}
-                  >
-                    {item?.status !== "Pending" && TotalCount > 0 ? (
-                      <TouchableOpacity>
-                        <Text
-                          style={{
-                            textAlign: "center",
-                            backgroundColor: "#0099FF",
-                            paddingHorizontal: 10,
-                            paddingVertical: 5,
-                            color: "#fff",
-                            fontSize: 15,
-                            fontWeight: "600",
-                          }}
-                        >
-                          {TotalCount}
-                          {item.status === "Accepted"
-                            ? " सहायक स्वीकार करें "
-                            : " सहायक कम्प्लीट कर चुके हैं।"}
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity>
-                        <Text
-                          style={{
-                            textAlign: "center",
-                            paddingHorizontal: 10,
-                            paddingVertical: 5,
-                            backgroundColor: "#44A347",
-                            color: "#fff",
-                            fontSize: 15,
-                            fontWeight: "600",
-                          }}
-                        >
-                          0 सहायक स्वीकार करें
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
+                    style={[
+                      styles.flex,
+                      // styles.justifyContentBetween,
+                      { flexWrap: "wrap", marginTop: 20 },
+                    ]}
+                  ></View>
                 </View>
-                <View style={{ width: "100%" }}>
-                  {item?.status === "Accepted" && (
-                    <TouchableOpacity
-                      style={styles.BhuktanBtn}
-                      onPress={() =>
-                        navigation.navigate("Payment", {
-                          item, fawdafee, totalamount
-                        })
-                      }
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        भुगतान करें
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Pending" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn, { opacity: 0.5 }]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        भुगतान करें
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {item?.status === "Booked" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम बुक
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item?.status === "Ongoing" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम जारी
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {item.status === "Completed" && (
-                    <TouchableOpacity
-                      style={[styles.BhuktanBtn]}
-                      disabled={true}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        समाप्त
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </>
+              </View>
             )}
+
+            <View style={{ width: "100%" }}>
+              {usertype && usertype === "Grahak" && (
+                <View>
+                  {item.status == "Completed" ? (
+                    thekeperKams != 0 &&
+                    thekeperKams?.map((item, index) => (
+                      <View key={item?.id}>
+                        {item.status != "Ongoing" && (
+                          <>
+                          
+                        <View
+                          style={[
+                            {
+                              borderColor: "#0070C0",
+                              borderRadius: 7,
+                              // borderBottomRightRadius: 7,
+
+                              height: 48,
+                              marginTop: 10,
+                              borderWidth: 1,
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            },
+                          ]}
+                        >
+                          <TextInput
+                            style={styles.TextInput}
+                            placeholder="काम की स्थिति"
+                            editable={false}
+                            placeholderTextColor={"#000"}
+                          />
+
+                          <View style={{ marginRight: 10 }}>
+                            <View style={{ width: "100%" }}>
+                              <TouchableOpacity key={item.id}>
+                                <Text style={styles.accepted}>
+                                  {parseInt(item.count_female) +
+                                    parseInt(item.count_male)}
+                                  सहायक
+                                  {item?.status === "Accepted"
+                                    ? " स्वीकार करे "
+                                    : item?.status === "Booked"
+                                    ? " बुक्ड "
+                                    : item?.status === "Ongoing"
+                                    ? " जारी है "
+                                    : " समाप्त "}
+                                  करें
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </View>
+
+                        <TouchableOpacity
+                          style={[styles.BhuktanBtn]}
+                          disabled={true}
+                        >
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            {item?.status === "Accepted"
+                              ? "भुगतान करें "
+                              : item?.status === "Booked"
+                              ? "बुक्ड"
+                              : item?.status === "Ongoing"
+                              ? "जारी है "
+                              : "समाप्त"}
+                          </Text>
+                        </TouchableOpacity>
+
+                        </>)}
+                      </View>
+                    ))
+                  ) : item.status === "Pending" ? (
+                    <View>
+                      {thekeperKams.length > 0 ? (
+                        thekeperKams.map((item) => (
+                          <View key={item.id}>
+                            {item.status === "Accepted" ||
+                            item.status != "Completed" ? (
+                              <>
+                                <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    // onChangeText={(email) => setEmail(email)}
+                                    // defaultValue={email}
+                                    // value={email}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.accepted}>
+                                          {parseInt(item.count_female) +
+                                            parseInt(item.count_male)}
+                                          सहायक स्वीकार करे
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn]}
+                                  onPress={() =>
+                                    navigation.navigate("Payment", {
+                                      item,
+                                      fawdafee: item?.fawda_fee,
+                                      totalamount: item?.total_amount,
+                                      useramount: item?.total_amount_sahayak,
+                                    })
+                                  }
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    भुगतान करें
+                                  </Text>
+                                </TouchableOpacity>
+                              </>
+                            ) : (
+                              <>
+                                <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    // onChangeText={(email) => setEmail(email)}
+                                    // defaultValue={email}
+                                    // value={email}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.pending}>
+                                          0 सहायक स्वीकार करे
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                                  disabled={true}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    भुगतान करें
+                                  </Text>
+                                </TouchableOpacity>
+                              </>
+                            )}
+                          </View>
+                        ))
+                      ) : (
+                        <View>
+                          {thekeparpending.map((item) => (
+                            <>
+                              <View
+                                style={[
+                                  {
+                                    borderColor: "#0070C0",
+                                    borderRadius: 7,
+                                    // borderBottomRightRadius: 7,
+
+                                    height: 48,
+                                    marginTop: 10,
+                                    borderWidth: 1,
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                  },
+                                ]}
+                              >
+                                <TextInput
+                                  style={styles.TextInput}
+                                  placeholder="काम की स्थिति"
+                                  editable={false}
+                                  placeholderTextColor={"#000"}
+                                  // onChangeText={(email) => setEmail(email)}
+                                  // defaultValue={email}
+                                  // value={email}
+                                />
+
+                                <View style={{ marginRight: 10 }}>
+                                  <View style={{ width: "100%" }}>
+                                    <TouchableOpacity key={item.id}>
+                                      <Text style={styles.pending}>
+                                        0 सहायक स्वीकार करे
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              </View>
+                              <TouchableOpacity
+                                style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                                disabled={true}
+                              >
+                                <Text
+                                  style={[styles.loginText, { color: "#fff" }]}
+                                >
+                                  भुगतान करें
+                                </Text>
+                              </TouchableOpacity>
+                            </>
+                          ))}
+                        </View>
+                      )}
+                      {/* {thekeparpending?.map((item, index) => (
+                        <View
+                          key={item?.id}
+                          style={[
+                            styles.flex,
+                            styles.justifyContentBetween,
+                            { flexWrap: "wrap" },
+                          ]}
+                        >
+                          <View
+                            style={[
+                              {
+                                borderColor: "#0070C0",
+                                borderRadius: 7,
+                                // borderBottomRightRadius: 7,
+
+                                height: 48,
+                                marginTop: 10,
+                                borderWidth: 1,
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              },
+                            ]}
+                          >
+                            <TextInput
+                              style={styles.TextInput}
+                              placeholder="काम की स्थिति"
+                              editable={false}
+                              placeholderTextColor={"#000"}
+                              // onChangeText={(email) => setEmail(email)}
+                              // defaultValue={email}
+                              // value={email}
+                            />
+
+                            <View style={{ marginRight: 10 }}>
+                              <View style={{ width: "100%" }}>
+                                <TouchableOpacity key={item.id}>
+                                  <Text style={styles.pending}>
+                                    0 सहायक स्वीकार करे {item.status}
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          </View>
+                          <TouchableOpacity
+                            style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                            disabled={true}
+                          >
+                            <Text style={[styles.loginText, { color: "#fff" }]}>
+                              भुगतान करें
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+
+                      {thekeperKams != 0 &&
+                        thekeperKams?.map((item, index) => (
+                          <View key={item?.id}>
+                            {item.status === "Accepted" && (
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.accepted}>
+                                          {parseInt(item.count_female) +
+                                            parseInt(item.count_male)}
+                                          सहायक
+                                          {item?.status === "Accepted"
+                                            ? "स्वीकार करे"
+                                            : item?.status === "Booked"
+                                            ? " बुक्ड"
+                                            : item?.status === "Ongoing"
+                                            ? " जारी है "
+                                            : " समाप्त"}
+                                          करें
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn]}
+                                  disabled={true}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    {item?.status === "Accepted"
+                                      ? "भुगतान करें "
+                                      : item?.status === "Booked"
+                                      ? "बुक्ड"
+                                      : item?.status === "Ongoing"
+                                      ? "जारी है "
+                                      : "समाप्त"}
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            )}
+                          </View>
+                        ))} */}
+                    </View>
+                  ) : (
+                    thekeperKams != 0 &&
+                    thekeperKams?.map((item, index) => (
+                      <View key={item?.id}>
+                        <View
+                          style={[
+                            {
+                              borderColor: "#0070C0",
+                              borderRadius: 7,
+                              // borderBottomRightRadius: 7,
+
+                              height: 48,
+                              marginTop: 10,
+                              borderWidth: 1,
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            },
+                          ]}
+                        >
+                          <TextInput
+                            style={styles.TextInput}
+                            placeholder="काम की स्थिति"
+                            editable={false}
+                            placeholderTextColor={"#000"}
+                          />
+
+                          <View style={{ marginRight: 10 }}>
+                            <View style={{ width: "100%" }}>
+                              <TouchableOpacity key={item.id}>
+                                <Text style={styles.accepted}>
+                                  {parseInt(item.count_female) +
+                                    parseInt(item.count_male)}
+                                  {item?.status === "Accepted"
+                                    ? " सहायक स्वीकार "
+                                    : item?.status === "Booked"
+                                    ? " सहायक बुक्ड "
+                                    : item?.status === "Ongoing"
+                                    ? " सहायक जारी है "
+                                    : " सहायक समाप्त "}
+                                  करें
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </View>
+
+                        <TouchableOpacity
+                          style={[styles.BhuktanBtn]}
+                          disabled={true}
+                        >
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            {item?.status === "Accepted"
+                              ? "भुगतान करें "
+                              : item?.status === "Booked"
+                              ? "बुक्ड"
+                              : item?.status === "Ongoing"
+                              ? "जारी है "
+                              : " समाप्त "}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))
+                  )}
+                </View>
+              )}
+            </View>
+            {/* <View style={{ width: "100%" }}>
+              {usertype && usertype === "Grahak" && (
+                <View>
+                  {item.status === "Accepted" || item.status == "Completed" ? (
+                    thekeperKams != 0 &&
+                    thekeperKams?.map((item, index) => (
+                      <View key={item?.id}>
+                        {item.status !== "Ongoing" && (
+                          <>
+                            <View
+                              style={[
+                                {
+                                  borderColor: "#0070C0",
+                                  borderRadius: 7,
+                                  // borderBottomRightRadius: 7,
+
+                                  height: 48,
+                                  marginTop: 10,
+                                  borderWidth: 1,
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                },
+                              ]}
+                            >
+                              <TextInput
+                                style={styles.TextInput}
+                                placeholder="काम की स्थिति"
+                                editable={false}
+                                placeholderTextColor={"#000"}
+                              />
+
+                              <View style={{ marginRight: 10 }}>
+                                <View style={{ width: "100%" }}>
+                                  <TouchableOpacity key={item.id}>
+                                    <Text style={styles.accepted}>
+                                      {parseInt(item.count_female) +
+                                        parseInt(item.count_male)}
+                                      सहायक
+                                      {item?.status === "Accepted"
+                                        ? "स्वीकार करे"
+                                        : item?.status === "Booked"
+                                        ? " बुक्ड"
+                                        : item?.status === "Ongoing"
+                                        ? " जारी है "
+                                        : " समाप्त"}
+                                      करें
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                            </View>
+
+                            <TouchableOpacity
+                              style={[styles.BhuktanBtn]}
+                              disabled={true}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                {item?.status === "Accepted"
+                                  ? "भुगतान करें "
+                                  : item?.status === "Booked"
+                                  ? "बुक्ड"
+                                  : item?.status === "Ongoing"
+                                  ? "जारी है "
+                                  : "समाप्त"}
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        )}
+                      </View>
+                    ))
+                  ) : (
+                    <View>
+                      {console.log("thekeparpending", thekeparpending.length)}
+                      {console.log(
+                        "thekeperKamsthekeperKamsthekeperKams",
+                        thekeperKams.length
+                      )}
+
+                      {thekeperKams.length > 0 ? (
+                        thekeperKams.map((item) => (
+                          <View key={item.id}>
+                            {item.status === "Accepted"  || item.status != "Completed"  ? (
+                              <>
+                                <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    // onChangeText={(email) => setEmail(email)}
+                                    // defaultValue={email}
+                                    // value={email}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.pending}>
+                                          {parseInt(item.count_female) +
+                                            parseInt(item.count_male)}
+                                          सहायक स्वीकार करे {item.status}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn]}
+                                  onPress={() =>
+                                    navigation.navigate("Payment", {
+                                      item,
+                                      fawdafee: item?.fawda_fee,
+                                      totalamount: item?.total_amount,
+                                      useramount: item?.total_amount_sahayak,
+                                    })
+                                  }
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    भुगतान करें
+                                  </Text>
+                                </TouchableOpacity>
+                              </>
+                            ) : (
+                              <>
+                                <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    // onChangeText={(email) => setEmail(email)}
+                                    // defaultValue={email}
+                                    // value={email}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.pending}>
+                                          0 सहायक स्वीकार करे {item.status}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                                  disabled={true}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    भुगतान करें
+                                  </Text>
+                                </TouchableOpacity>
+                              </>
+                            )}
+                          </View>
+                        ))
+                      ) : (
+                        <View>
+                          {thekeparpending.map((item) => (
+                            <>
+                               <View
+                                  style={[
+                                    {
+                                      borderColor: "#0070C0",
+                                      borderRadius: 7,
+                                      // borderBottomRightRadius: 7,
+
+                                      height: 48,
+                                      marginTop: 10,
+                                      borderWidth: 1,
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                    },
+                                  ]}
+                                >
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    placeholder="काम की स्थिति"
+                                    editable={false}
+                                    placeholderTextColor={"#000"}
+                                    // onChangeText={(email) => setEmail(email)}
+                                    // defaultValue={email}
+                                    // value={email}
+                                  />
+
+                                  <View style={{ marginRight: 10 }}>
+                                    <View style={{ width: "100%" }}>
+                                      <TouchableOpacity key={item.id}>
+                                        <Text style={styles.pending}>
+                                          0 सहायक स्वीकार करे {item.status}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                </View>
+                            <TouchableOpacity
+                              style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                              disabled={true}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                भुगतान करें
+                              </Text>
+                            </TouchableOpacity>
+                            </>  ))}
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </View>
+              )}
+            </View> */}
+
+            {/* <View style={{ width: "100%" }}>
+              {(item.status === "Accepted" || item.status === "Pending") &&
+                usertype === "Grahak" && (
+                  <>
+                    <View
+                      style={[
+                        styles.inputView,
+                        {
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        },
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.TextInput}
+                        placeholder="काम की स्थिति"
+                        editable={false}
+                        placeholderTextColor={"#000"}
+                       
+                      />
+
+                      <View style={{ marginRight: 10 }}>
+                        {thekeperKams != 0 ? (
+                          thekeperKams.map((item) => (
+                            <View key={item.id}>
+                              {item.status === "Completed" ||
+                              item.status === "Accepted" ? (
+                                <TouchableOpacity>
+                                  <Text style={styles.accepted}>
+                                    {parseInt(item.count_female) +
+                                      parseInt(item.count_male)}
+                                    सहायक स्वीकार करे
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : (
+                                <TouchableOpacity>
+                                  <Text style={styles.pending}>
+                                    0 सहायक स्वीकार करें
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
+                            </View>
+                          ))
+                        ) : (
+                          <View>
+                            {thekeparpending.map((item) => (
+                              <TouchableOpacity key={item.id}>
+                                <Text style={styles.pending}>
+                                  0 सहायक स्वीकार करें
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={{ width: "100%" }}>
+                      {thekeperKams.length > 0 ? (
+                        thekeperKams.map((item) => (
+                          <View key={item.id}>
+                            {item.status === "Accepted" ? (
+                              <TouchableOpacity
+                                style={[styles.BhuktanBtn]}
+                                onPress={() =>
+                                  navigation.navigate("Payment", {
+                                    item,
+                                    fawdafee: item?.fawda_fee,
+                                    totalamount: item?.total_amount,
+                                    useramount: item?.total_amount_sahayak,
+                                  })
+                                }
+                              >
+                                <Text
+                                  style={[styles.loginText, { color: "#fff" }]}
+                                >
+                                  भुगतान करें
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity
+                                style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                                disabled={true}
+                              >
+                                <Text
+                                  style={[styles.loginText, { color: "#fff" }]}
+                                >
+                                  भुगतान करें
+                                </Text>
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        ))
+                      ) : (
+                        <View>
+                          {thekeparpending.map((item) => (
+                            <TouchableOpacity
+                              style={[styles.BhuktanBtn, { opacity: 0.5 }]}
+                              disabled={true}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                भुगतान करें
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  </>
+                )}
+              {item.status === "Completed" && usertype === "Grahak" && (
+                <>
+                  <View
+                    style={[
+                      styles.inputView,
+                      {
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      },
+                    ]}
+                  >
+                    <TextInput
+                      style={styles.TextInput}
+                      placeholder="काम की स्थिति"
+                      editable={false}
+                      placeholderTextColor={"#000"}
+                  
+                    />
+
+                    <View style={{ marginRight: 10 }}>
+                      <TouchableOpacity>
+                        <Text style={styles.accepted}>
+                          {parseInt(item.count_female) +
+                            parseInt(item.count_male)}
+                          सहायक समाप्त करे
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={{ width: "100%" }}>
+                    {thekeperKams != 0 &&
+                      thekeperKams.map(
+                        (item) =>
+                          item.status === "Completed" && (
+                            <TouchableOpacity
+                              style={[styles.BhuktanBtn]}
+                              disabled={true}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                समाप्त
+                              </Text>
+                            </TouchableOpacity>
+                          )
+                      )}
+                  </View>
+                </>
+              )}
+            </View> */}
+
             <View
               style={{
                 flex: 1,
@@ -1274,157 +2420,169 @@ useEffect(() => {
                   )}
               </>
             </View>
-            {(usertype && usertype === "Sahayak") ||
-              (usertype === "MachineMalik" && (
+            <View style={{ width: "100%" }}>
+              {usertype === "Sahayak" || usertype === "MachineMalik" ? (
                 <>
-                  {item.status === "Pending" ? (
-                    <TouchableOpacity
-                      style={styles.BhuktanBtn}
-                      onPress={() => acceptSahayak(id)}
-                    >
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        काम स्वीकार करें
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity style={styles.BhuktanBtn}>
-                      <Text style={[styles.loginText, { color: "#fff" }]}>
-                        {item.status === "Accepted"
-                          ? "काम स्वीकृत"
-                          : item.status === "Booked"
-                          ? "काम बुक"
-                          : item.status === "Ongoing"
-                          ? "जारी है"
-                          : "समाप्त"}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {item.status === "Completed" && (
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        marginTop: 20,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
+                  <View style={{ marginTop: 10 }}>
+                    {item?.status === "Pending" ? (
+                      <TouchableOpacity
+                        style={styles.BhuktanBtn}
+                        onPress={() => acceptSahayak()}
                       >
-                        {ratingList}
-                      </View>
-                    </View>
-                  )}
-
-                  {(item.status === "Booked" || item.status === "Ongoing") && (
-                    <>
-                      <View style={[styles.inputView, { height: 40 }]}>
-                        <Text style={styles.label}>ग्राहक का नाम</Text>
-                        <TextInput
-                          style={styles.TextInput}
-                          editable={false}
-                          placeholderTextColor="#848484"
-                          placeholder={item?.grahak_name}
-                        />
-                      </View>
-
-                      <View style={[styles.inputView, { height: 40 }]}>
-                        <Text style={styles.label}>फ़ोन:</Text>
-                        <TextInput
-                          style={styles.TextInput}
-                          editable={false}
-                          placeholderTextColor="#848484"
-                          placeholder={item?.grahak_phone}
-                        />
-                      </View>
-                    </>
-                  )}
-                </>
-              ))}
-
-            {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-              item.status === "Pending" ? (
-                <TouchableOpacity
-                  style={styles.BhuktanBtn}
-                  onPress={() => acceptSahayak(id)}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    काम स्वीकार करें
-                  </Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity style={styles.BhuktanBtn}>
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    {(() => {
-                      switch (item.status) {
-                        case "Accepted":
-                          return " काम स्वीकृत";
-                        case "Booked":
-                          return " काम बुक";
-                        case "Ongoing":
-                          return " जारी है";
-                        case "Completed":
-                          return " समाप्त";
-                        default:
-                          return "";
-                      }
-                    })()}
-                  </Text>
-                </TouchableOpacity>
-              )
-            ) : null}
-
-            {(usertype === "Sahayak" || usertype === "MachineMalik") &&
-              (item.status === "Booked" || item.status === "Ongoing" ? (
-                <>
-                  <View style={[styles.inputView, { height: 40 }]}>
-                    <Text style={styles.label}>ग्राहक का नाम</Text>
-                    <TextInput
-                      style={styles.TextInput}
-                      placeholderTextColor="#848484"
-                      placeholder={item?.grahak_name}
-                    />
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          काम स्वीकार करें
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      thekeperKam?.map((item) => (
+                        <View key={item.id}>
+                          <>
+                            {item.status === "Accepted" ? (
+                              <>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn]}
+                                  disabled={true}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    {item?.status === "Accepted"
+                                      ? "काम स्वीकृत "
+                                      : item?.status === "Booked"
+                                      ? "बुक्ड"
+                                      : item?.status === "Ongoing"
+                                      ? "जारी है "
+                                      : ""}
+                                  </Text>
+                                </TouchableOpacity>
+                              </>
+                            ) : item.status === "Ongoing" ||
+                              item.status === "Booked" ? (
+                              <>
+                                <TouchableOpacity
+                                  style={[styles.BhuktanBtn]}
+                                  disabled={true}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    {item?.status === "Accepted"
+                                      ? "काम स्वीकृत "
+                                      : item?.status === "Booked"
+                                      ? "बुक्ड"
+                                      : item?.status === "Ongoing"
+                                      ? "जारी है "
+                                      : ""}
+                                  </Text>
+                                </TouchableOpacity>
+                                <View
+                                  style={[styles.inputView, { height: 40 }]}
+                                >
+                                  <Text style={styles.label}>
+                                    ग्राहक का नाम
+                                  </Text>
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    editable={false}
+                                    placeholderTextColor="#848484"
+                                    placeholder={item.grahak_name}
+                                  />
+                                </View>
+                                <View
+                                  style={[styles.inputView, { height: 40 }]}
+                                >
+                                  <Text style={styles.label}>फ़ोन:</Text>
+                                  <TextInput
+                                    style={styles.TextInput}
+                                    editable={false}
+                                    placeholderTextColor="#848484"
+                                    placeholder={item.grahak_phone}
+                                  />
+                                </View>
+                              </>
+                            ) : (
+                              <View
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  // marginTop: 20,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <TouchableOpacity
+                                  style={[
+                                    styles.BhuktanBtn,
+                                    { width: "95%", marginBottom: 10 },
+                                  ]}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    समाप्त
+                                  </Text>
+                                </TouchableOpacity>
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {ratingList}
+                                </View>
+                              </View>
+                            )}
+                          </>
+                          {item.status === "Accepted" ||
+                            (item.status === "Booked" && (
+                              <View>
+                                <TouchableOpacity
+                                  style={{
+                                    backgroundColor: "#D9D9D9",
+                                    alignSelf: "center",
+                                    paddingHorizontal: 50,
+                                    paddingVertical: 10,
+                                    borderRadius: 5,
+                                    marginTop: 10,
+                                  }}
+                                  onPress={() => {
+                                    Rejected();
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      { color: "#fff" },
+                                    ]}
+                                  >
+                                    रद्द करें
+                                  </Text>
+                                </TouchableOpacity>
+                              </View>
+                            ))}
+                        </View>
+                      ))
+                    )}
                   </View>
-
-                  <View style={[styles.inputView, { height: 40 }]}>
-                    <Text style={styles.label}>फ़ोन:</Text>
-                    <TextInput
-                      style={styles.TextInput}
-                      placeholderTextColor="#848484"
-                      placeholder={item?.grahak_phone}
-                    />
-                  </View>
                 </>
-              ) : item.status === "Completed" ? (
-                <>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      {ratingList}
-                    </View>
-                  </View>
-                </>
-              ) : null)}
-         <View style={{ marginTop: "auto", padding: 5 }}>
-              {(usertype === "Sahayak" || usertype === "MachineMalik") ?
-                (item?.status === "Accepted" || item?.status === "Booked") && (
-                  <TouchableOpacity
+              ) : null}
+            </View>
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype &&
+              usertype === "Grahak" &&
+              thekeperKams?.length > 1
+                ?  thekeperKams.map((item) => (
+                  item.status != "Completed" && (
+                    <TouchableOpacity
                     style={{
                       backgroundColor: "#D9D9D9",
                       alignSelf: "center",
@@ -1433,36 +2591,100 @@ useEffect(() => {
                       borderRadius: 5,
                     }}
                     onPress={() => {
-                      Rejected();
+                      cancel();
                     }}
                   >
                     <Text style={[styles.loginText, { color: "#fff" }]}>
                       रद्द करें
                     </Text>
                   </TouchableOpacity>
-                ): (
-                  <TouchableOpacity
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
-                  onPress={() => {
-                   cancel();
-                  }}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
-                )}
+                  )
+                  
+                  ))
+                : 
+                  thekeparpending.map((item) => (
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#D9D9D9",
+                        alignSelf: "center",
+                        paddingHorizontal: 50,
+                        paddingVertical: 10,
+                        borderRadius: 5,
+                      }}
+                      onPress={() => {
+                        cancel();
+                      }}
+                    >
+                      <Text style={[styles.loginText, { color: "#fff" }]}>
+                        रद्द करें
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+            </View>
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype === "Grahak" ||
+                item.status != "Completed" ||
+                ((item.status === "Pending" || "Accepted") && (
+                  <>
+                
+</>
+                  // <>
+                  //   {thekeperKams != 0 &&
+                  //     thekeperKams.map((item) => (
+                  //       <View key={item.booking_id}>
+                  //         {item.status === "Pending" ||
+                  //         item.status === "Accepted" ||
+                  //         item.status != "Completed" ? (
+                  //           <TouchableOpacity
+                  //             style={{
+                  //               backgroundColor: "#D9D9D9",
+                  //               alignSelf: "center",
+                  //               paddingHorizontal: 50,
+                  //               paddingVertical: 10,
+                  //               borderRadius: 5,
+                  //             }}
+                  //             onPress={() => {
+                  //               cancel();
+                  //             }}
+                  //           >
+                  //             <Text
+                  //               style={[styles.loginText, { color: "#fff" }]}
+                  //             >
+                  //               रद्द करें
+                  //             </Text>
+                  //           </TouchableOpacity>
+                  //         ) : null}
+                  //       </View>
+                  //     ))}
+                  //   {thekeparpending?.map((item) => (
+                  //     <View key={item.booking_id}>
+                  //       {item.status === "Pending" ||
+                  //       item.status === "Accepted" ? (
+                  //         <TouchableOpacity
+                  //           style={{
+                  //             backgroundColor: "#D9D9D9",
+                  //             alignSelf: "center",
+                  //             paddingHorizontal: 50,
+                  //             paddingVertical: 10,
+                  //             borderRadius: 5,
+                  //           }}
+                  //           onPress={() => {
+                  //             cancel();
+                  //           }}
+                  //         >
+                  //           <Text style={[styles.loginText, { color: "#fff" }]}>
+                  //             रद्द करें
+                  //           </Text>
+                  //         </TouchableOpacity>
+                  //       ) : null}
+                  //     </View>
+                  //   ))}
+                  // </>
+                ))}
             </View>
           </View>
-        )}
-      </ScrollView>
-
+        </ScrollView>
+      )}
       {/* <BottomTab/> */}
     </SafeAreaView>
   );
@@ -1691,5 +2913,23 @@ const styles = StyleSheet.create({
 
     textAlign: "center",
     backgroundColor: "#fff",
+  },
+  accepted: {
+    textAlign: "center",
+    backgroundColor: "#0099FF",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  pending: {
+    textAlign: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "#44A347",
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

@@ -56,13 +56,13 @@ export default function Login({ navigation }) {
           phone
         });
       } else {
-        Toast.show("User is not Registered", Toast.SHORT);
+        Toast.show(JSON.stringify(loginResponse.message), Toast.SHORT);
         navigation.replace("Register", { phone });
         console.log("phone:", phone);
       }
     } catch (error) {
       console.log(error);
-      Toast.show("Invalid Credentials", Toast.SHORT);
+      Toast.show(JSON.stringify(error.message), Toast.SHORT);
     } finally {
       setLoading(false);
     }

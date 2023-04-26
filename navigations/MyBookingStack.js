@@ -13,6 +13,7 @@ import MachineBooking from "../src/MachineBooking";
 import Mybooking_Sahayak2 from "../src/Mybooking_Sahayak2";
 import Theke_MachineForm2 from "../src/Theke_MachineForm2";
 import MachineWork from "../src/MachineWork";
+import MachineWork2 from "../src/MachineWork2";
 
 
 export default function MyBookingStack () {
@@ -35,6 +36,7 @@ export default function MyBookingStack () {
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="Mybooking_Sahayak2" component={Mybooking_Sahayak2} />
         <Stack.Screen name="MachineWork" component={MachineWork} />
+        <Stack.Screen name="MachineWork2" component={MachineWork2} />
 
           
 

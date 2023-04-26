@@ -10,15 +10,16 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import Icon from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../slices/authSlice";
 
 export default function Payment({ route, navigation }) {
   const token = useSelector(selectToken);
-  const { item, totalamount, fawdafee, useramount } = route.params ?? {};
+  const { totalamount, fawdafee, useramount, item } = route.params ?? {};
 
-  console.log("payment page", item, fawdafee, totalamount, useramount);
+  console.log("payment page",  item);
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
   const [upiId, setUpiId] = useState("");
@@ -33,7 +34,6 @@ export default function Payment({ route, navigation }) {
         upi_id: upiId,
         beneficiary_name: name,
       };
-      console.log("oadkfdjkdd", params);
 
       const response = await service.post("/api/payment_test/", params, {
         headers: {
@@ -43,7 +43,6 @@ export default function Payment({ route, navigation }) {
       });
 
       const data = response.data;
-      console.log("Data: ", data);
       if (item.job_type === "individuals_sahayak") {
         navigation.navigate("Mybooking_Sahayak2", {
           data: item.booking_id,
@@ -126,13 +125,13 @@ export default function Payment({ route, navigation }) {
                 {item?.job_type === "theke_pe_kam" ||
                 item?.job_type === "individuals_sahayak" ? (
                   <View style={styles.flex}>
-                    <Text>ठेकेदार राशि</Text>
+                    <Text>{item?.job_type === "theke_pe_kam" ?  "ठेकेदार को वेतन" : "सहायक या सहायकों को वेतन "}  </Text>
 
                     <Text>₹{useramount}</Text>
                   </View>
                 ) : (
                   <View style={styles.flex}>
-                    <Text>मशीन मालिक राशि </Text>
+                    <Text>मशीन मालिक को वेतन</Text>
 
                     <Text>₹{useramount}</Text>
                   </View>
@@ -166,28 +165,6 @@ export default function Payment({ route, navigation }) {
                 </View>
               </View>
             </View>
-            {/* <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "#44A347",
-              marginRight: 20,
-              width: "33%",
-              marginTop: 20,
-              height: 33,
-            }}
-          >
-            <Text style={{ textAlign: "center", marginTop: 6, color: "#fff" }}>
-              चालान डाउनलोड करें
-            </Text>
-          </View>
-        </View> */}
-
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <TouchableOpacity
                 style={styles.BhuktanBtn}

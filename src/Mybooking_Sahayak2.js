@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
   ScrollView,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
@@ -21,21 +22,22 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const [thekeperKam, setThekeperKam] = useState({});
+
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const { data, payment_status, amount, item, useramount } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item, useramount);
-  // const bookingid = route?.params?.item;
-  // console.log("bookingid", bookingid);
+
   const [colors, setColors] = useState(Array(10).fill("white"));
-  const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
   const [response, setResponse] = useState(null);
   const [complete, setCompleted] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  const [thekeperKams, setThekeperKams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const RatingApi = () => {
     let params = {
       job_id: JSON.stringify(item?.job_id),
@@ -43,8 +45,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       rating: ratings,
       comment: comments,
     };
-    console.log('fjfjf', params)
-   
+    console.log("fjfjf", params);
+
     service
       .post("/api/rating/create/", params, {
         headers: {
@@ -54,19 +56,17 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       })
       .then((res) => {
         let data = res?.data;
-        if(data?.status === 201) {
+        if (data?.status === 201) {
           navigation.replace("Thankyou");
           console.log("fjfjf", data);
+        } else {
+          console.log("error message");
         }
-       else{
-        console.log('error message')
-       }
       })
       .catch((error) => {
         console.log("error", error);
       });
   };
-
 
   // const {  item , status} = route.params;
   // console.log("fjds", status , item);
@@ -74,11 +74,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
-    // const newColors = [...colors];
-    // if (index < 4) newColors[index] = "red";
-    // else if (index >= 4 && index < 9) newColors[index] = "yellow";
-    // else if (index >= 9) newColors[index] = "green";
-    // setColors(newColors);
   };
 
   const renderButton = (index) => {
@@ -98,11 +93,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   console.log(totalCount, "count check");
 
-
-  // useEffect(() => {
-  //   acceptSahayak()
-  // }, [])
-
   // phone number dropdown
   const number = [1, 2, 3, 4];
   // end
@@ -111,7 +101,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -136,7 +126,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -151,8 +141,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         setIsLoading(false);
         setCompleted(data["booking-status"]);
         setResponse(data["booking-status"]);
-
-        console.log("jdjjdd", data);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -179,17 +167,50 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       navigation.replace("HomePage");
       // setStatus(data.status);
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
-      console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
     }
   };
+
+  // const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
+  // const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+
+  const mybookingdetail = async () => {
+    let params = {
+      sahayak_job_id: JSON.stringify(item.job_id),
+      sahayak_job_number: item?.job_number,
+    };
+    console.log("jfjgjg", params);
+
+    try {
+      const response = await service.post(`api/refresh-my-booking/`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      console.log("datadata", data);
+      setBookings(data?.sahayk_booking_details?.bookings);
+      console.log("data?.sahayk_booking_details?.bookings", thekeperKams);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    mybookingdetail();
+  }, []);
+  const handleBookingSelect = (booking) => {
+    setSelectedBooking(booking);
+    setModalVisible(true);
+  };
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrowleft" size={25} />
-        </TouchableOpacity> */}
+       
       </View>
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
@@ -279,18 +300,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </Text>
             </View>
           </View>
-          {/* <View style={[styles.flex, styles.justifyContentBetween]}></View>
-
-          <View style={[styles.flex, styles.justifyContentBetween]}></View>
-
-          <View
-            style={[
-              styles.flex,
-              styles.justifyContentBetween,
-              { flexWrap: "wrap" },
-            ]}
-          ></View> */}
-
+         
           <View
             style={{
               display: "flex",
@@ -304,13 +314,15 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             {[...Array(parseInt(item?.count_male)).keys()].map((index) => (
               <View
                 style={{
-                  borderWidth: 1,
-                  borderColor: "#0070C0",
-                  borderTopLeftRadius: 5,
-                  borderBottomLeftRadius: 5,
-                  width: "25%",
-                  height: 45,
-                  justifyContent: "center",
+                      paddingHorizontal: 5,
+                    borderColor: "#0070C0",
+                    // borderRadius: 7,
+                    borderWidth: 0.4,
+                    paddingVertical: 10,
+                    maxWidth: "33.33%",
+                    width: "100%",
+                    marginBottom: 5,
+               
                 }}
                 key={index}
               >
@@ -324,14 +336,15 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             ))}
             {[...Array(parseInt(item?.count_female)).keys()].map((index) => (
               <View
-                style={{
-                  borderWidth: 1,
+                style={ {
+                  paddingHorizontal: 5,
                   borderColor: "#0070C0",
-                  borderTopLeftRadius: 5,
-                  borderBottomLeftRadius: 5,
-                  width: "25%",
-                  height: 45,
-                  justifyContent: "center",
+                  // borderRadius: 7,
+                  borderWidth: 0.4,
+                  paddingVertical: 10,
+                  maxWidth: "33.33%",
+                  width: "100%",
+                  marginBottom: 5,
                 }}
                 key={index}
               >
@@ -361,6 +374,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             <TextInput
               style={styles.TextInput}
               placeholder="काम की स्थिति"
+              editable={false}
               placeholderTextColor={"#000"}
               // onChangeText={(email) => setEmail(email)}
               // defaultValue={email}
@@ -421,144 +435,136 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
           {complete !== "Completed" && (
             <>
-              <View
-                style={[
-                  styles.inputView,
-                  {
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  },
-                ]}
-              >
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="सहायकों के मोबाइल नंबर "
-                  placeholderTextColor={"#000"}
-                  // onChangeText={(email) => setEmail(email)}
-                  // defaultValue={email}
-                  // value={email}
-                />
+              <View style={[styles.inputView,{ flex: 1, width: "100%", justifyContent:'center' }]}>
                 <View
                   style={{
-                    height: 30,
-                    // backgroundColor: "#44A347",
-                    marginRight: 10,
-                    marginTop: 8,
+                   
                   }}
                 >
-                  <View
-                    style={[
-                      styles.DoubleView,
-                      styles.flex,
-                      styles.justifyContentBetween,
-                      { marginHorizontal: 4 },
-                    ]}
+                  {/* <Text></Text> */}
+
+                  <Picker
+                    selectedValue={selectedBooking}
+                    style={{ width: "100%" }}
+                    onValueChange={(itemValue) =>
+                      handleBookingSelect(itemValue)
+                    }
                   >
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        marginTop: 5,
-                        paddingHorizontal: 10,
-                        color: "#0099FF",
-                        fontSize: 15,
-                        fontWeight: "600",
-                      }}
-                    >
-                      1-4
-                    </Text>
-
-                    {/* <Text style={{ color: numbers ? "#000" : "#ccc", left: 5 }}>
-             {numbers ? numbers : ""}
-           </Text> */}
-                    <TouchableOpacity>
-                      <View style={{ flexDirection: "row" }}>
-                        <Picker
-                          style={{ width: 20, paddingTop: 16 }}
-                          // ref={pickerRef}
-                          selectedValue={numbers}
-                          onValueChange={(itemValue, itemIndex) =>
-                            setNumber(itemValue)
-                          }
-                        >
-                          <Picker.Item
-                            label="1-4"
-                            value="1-4"
-                            enabled={false}
-                          />
-                          {number.map((item) => (
-                            <Picker.Item
-                              label={item.toString()}
-                              value={item}
-                              key={item}
-                            />
-                          ))}
-                        </Picker>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
+                     <Picker.Item
+                   
+                        label='सहायकों के मोबाइल नंबर '
+                        value=''
+                      />
+                    {bookings.slice(0, 5).map((booking, index) => (
+                      <Picker.Item
+                        key={booking.booking_id}
+                        label={`${index + 1}`}
+                        value={booking}
+                      />
+                    ))}
+                  </Picker>
                 </View>
-              </View>
 
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "15%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+                <Modal
+                  visible={modalVisible}
+                  animationType="slide"
+                  onRequestClose={() => setModalVisible(false)}
+                  transparent={true}
                 >
-                  सहायक
-                </Text>
-                <Text style={styles.TextInput}>{item?.sahayak_name}</Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-              </View>
+                  <TouchableOpacity
+                    style={{ flex: 1 }}
+                    onPress={() => setModalVisible(false)}
+                  >
+                  
+                    <View style={[styles.modalContainer, styles.modalRight]}>
+                    <TouchableOpacity   onPress={() => setModalVisible(false)}>
+                        <Text style={{textAlign:'right', marginBottom:10}}>  <Icon name="close" size={20} color="#000" /></Text>
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          flex: 1,
+                        }}
+                      >
+                        {selectedBooking && (
+                          <View style={{ width: "100%" }}>
+                            <View style={{ width: "100%" }}>
+                              <View
+                                style={[
+                                  styles.inputView,
+                                  { position: "relative" },
+                                ]}
+                              >
+                                <Text
+                                  style={{
+                                    position: "absolute",
+                                    top: -10,
+                                    left: 30,
+                                    width: "auto",
+                                    textAlign: "center",
+                                    backgroundColor: "#fff",
+                                  }}
+                                >
+                                  सहायक
+                                </Text>
+                                <Text style={styles.TextInput}>
+                                  {selectedBooking?.sahayak_name}
+                                </Text>
+                              </View>
 
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "10%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  गाँव
-                </Text>
-                <Text style={styles.TextInput}>{item?.sahayak_village}</Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-              </View>
+                              <View
+                                style={[
+                                  styles.inputView,
+                                  { position: "relative" },
+                                ]}
+                              >
+                                <Text
+                                  style={{
+                                    position: "absolute",
+                                    top: -10,
+                                    left: 30,
+                                    width: "auto",
+                                    textAlign: "center",
+                                    backgroundColor: "#fff",
+                                  }}
+                                >
+                                  गाँव
+                                </Text>
+                                <Text style={styles.TextInput}>
+                                  {selectedBooking?.sahayak_village}
+                                </Text>
+                              </View>
 
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "20%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  मोबाइल नंबर
-                </Text>
-                <Text
-                  style={styles.TextInput}
-
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                >
-                  {item?.sahayak_mobile_no}
-                </Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+                              <View
+                                style={[
+                                  styles.inputView,
+                                  { position: "relative" },
+                                ]}
+                              >
+                                <Text
+                                  style={{
+                                    position: "absolute",
+                                    top: -10,
+                                    left: 30,
+                                    width: "auto",
+                                    textAlign: "center",
+                                    backgroundColor: "#fff",
+                                  }}
+                                >
+                                  मोबाइल नंबर
+                                </Text>
+                                <Text style={styles.TextInput}>
+                                  {selectedBooking?.sahayak_mobile_no}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </Modal>
               </View>
             </>
           )}
@@ -580,22 +586,18 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 </View>
               </View>
               <Text>कोई सुझाव</Text>
-              <View
+              <TextInput
+                onChangeText={setComment}
+                value={comments}
                 style={{
                   height: 100,
                   borderWidth: 1,
                   borderRadius: 10,
-                  width: "90%",
+                  width: "100%",
                   marginTop: 20,
                   borderColor: "#0099FF",
                 }}
-              >
-                <TextInput
-                  onChangeText={setComment}
-                  value={comments}
-                  style={{ width: "100%" }}
-                />
-              </View>
+              />
             </View>
           )}
           {complete !== "Completed" && (
@@ -631,79 +633,28 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-{/* 
-          {response === "Ongoing"  || item?.booking_status ==  "Ongoing" ? (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={bookingcompleted}
-              disabled={isLoading}
-            >
-              <Text>
-              {complete ? complete["booking-status"] : "काम पूरा हुआ "}
-              </Text>
-            </TouchableOpacity>
-          ) :  complete === "Completed" ? (
-            <>
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => RatingApi()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
-            </TouchableOpacity>
-            </>
-          ) : (response !== "Completed") ? (
-            <>
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => Ongoing()}
-              disabled={isLoading}
-            >
-              <Text>
-                {response && response["booking-status"]
-                  ? response["booking-status"]
-                  : "काम शुरू करें "}
-              </Text>
-            </TouchableOpacity>
-            </>  ) : (
-            ""
-          )} */}
 
-{item?.status === "Accepted" && response != "Ongoing"   && response !== "Completed" &&    (
-       <View style={{ marginTop: "auto", padding: 5 }}>
-       <TouchableOpacity
-         onPress={() => cancel()}
-         style={{
-           backgroundColor: "#D9D9D9",
-           alignSelf: "center",
-           paddingHorizontal: 50,
-           paddingVertical: 10,
-           borderRadius: 5,
-         }}
-       >
-         <Text style={{ textAlign: "center", color: "#fff" }}>
-           रद्द करें
-         </Text>
-       </TouchableOpacity>
-     </View>
-      )}
-    {item?.booking_status === "Booked" &&   (
-       <View style={{ marginTop: "auto", padding: 5 }}>
-       <TouchableOpacity
-         onPress={() => cancel()}
-         style={{
-           backgroundColor: "#D9D9D9",
-           alignSelf: "center",
-           paddingHorizontal: 50,
-           paddingVertical: 10,
-           borderRadius: 5,
-         }}
-       >
-         <Text style={{ textAlign: "center", color: "#fff" }}>
-           रद्द करें
-         </Text>
-       </TouchableOpacity>
-     </View>
-      )}
+          {item?.status != "Completed" &&
+            response != "Ongoing" &&
+            response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
         </View>
       </ScrollView>
 
@@ -764,7 +715,34 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
   },
-
+  modalRight: {
+    position: "absolute",
+    bottom: "10%",
+    left: 0,
+    width: "100%",
+    height: "auto",
+    backgroundColor: "#fff",
+    padding: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    // alignItems: "center",
+  },
+  modalText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: "#ff6666",
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: "#fff",
+  },
   button: {
     width: 30,
     height: 50,

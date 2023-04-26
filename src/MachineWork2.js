@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
 
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -65,7 +65,6 @@ function MachineWork2({ navigation, route }) {
       });
   };
 
-  
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
@@ -84,12 +83,11 @@ function MachineWork2({ navigation, route }) {
     );
   };
 
-
   const Ongoing = () => {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -114,7 +112,7 @@ function MachineWork2({ navigation, route }) {
     setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
-      job_number: item?.job_number
+      job_number: item?.job_number,
     };
     console.log(params);
     service
@@ -139,10 +137,10 @@ function MachineWork2({ navigation, route }) {
   };
 
   const cancel = async () => {
-    let  params = {
-      job_id: item?.id,
+    let params = {
+      job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
-      booking_id: item?.booking_id,
+      // booking_id: item?.booking_id,
       status: "Cancelled-After-Payment",
     };
     try {
@@ -154,7 +152,7 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.navigate("HomeStack",{screen: 'HomePage'});
+      navigation.navigate("HomeStack", { screen: "HomePage" });
       // setStatus(data.status);
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
@@ -273,6 +271,7 @@ function MachineWork2({ navigation, route }) {
           >
             <TextInput
               style={styles.TextInput}
+              editable={false}
               placeholder="काम की स्थिति"
               placeholderTextColor={"#000"}
             />
@@ -395,7 +394,7 @@ function MachineWork2({ navigation, route }) {
               style={{
                 width: "100%",
                 flexDirection: "column",
-                justifyContent: "center",
+                // justifyContent: "center",
                 alignItems: "center",
                 marginTop: 20,
               }}
@@ -407,71 +406,25 @@ function MachineWork2({ navigation, route }) {
                 </View>
               </View>
               <Text>कोई सुझाव</Text>
-              <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  width: "100%",
-                  marginTop: 20,
-                  borderColor: "#0099FF",
-                }}
-              >
+              <View style={{ width: "100%" }}>
                 <TextInput
+                  style={{
+                    height: 100,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    width: "100%",
+                    marginTop: 20,
+                    borderColor: "#0099FF",
+                  }}
                   onChangeText={setComment}
                   value={comments}
-                  style={{ width: "100%" }}
+                  //
                 />
               </View>
             </View>
           )}
-         
-          {/* {complete !== "Completed" && (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={
-                response === "Ongoing" || item?.booking_status === "Ongoing"
-                  ? bookingcompleted
-                  : response === "Completed"
-                  ? () => RatingApi()
-                  : () => Ongoing()
-              }
-              disabled={isLoading}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                {complete && complete["booking-status"] === "Ongoing"
-                  ? "रेटिंग दें जारी है"
-                  : complete && complete["booking-status"] === "Completed"
-                  ? "रेटिंग दें"
-                  
-                  : "काम शुरू करें"}
-              </Text>
-            </TouchableOpacity>
-          )} */}
 
-          {/* {complete !== "Completed" && (
-  <TouchableOpacity
-    style={styles.BhuktanBtn}
-    onPress={
-      response === "Ongoing" || item?.booking_status == "Ongoing"
-        ? bookingcompleted
-        : response === "Completed"
-        ? () => RatingApi()
-        : () => Ongoing()
-    }
-    disabled={isLoading}
-  >
-    <Text>
-      {response && response["booking-status"] == "Ongoing"
-        ? "काम जारी है"
-        : comp === "Completed"
-        ? "रेटिंग दें" :
-       "काम जारी है"
-      }
-    </Text>
-  </TouchableOpacity>
-)} */}
- {complete !== "Completed" && (
+          {complete !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
@@ -504,7 +457,7 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {item?.status === "Accepted" &&
+          {item?.status != "Completed" &&
             response != "Ongoing" &&
             response !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
@@ -524,7 +477,26 @@ function MachineWork2({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             )}
-          {item?.status === "Booked" && (
+          {/* {item?.status === "Booked" ||
+            (response != "Ongoing" && response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))} */}
+          {/* {item?.status === "Booked" && (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}
@@ -541,7 +513,7 @@ function MachineWork2({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -230,10 +230,6 @@ export default function SahayakForm({ navigation }) {
       errorMessages.femalepayamount = "Please enter your Male Pay";
       valid = false;
     }
-    // if (femalepayamount.trim() === "") {
-    //   errorMessages.femalepayamount = "Please enter your female salery ";
-    //   valid = false;
-    // }
     setErrors(errorMessages);
     return valid;
   };
@@ -243,7 +239,6 @@ export default function SahayakForm({ navigation }) {
       moment(showDate).format("YYYY-MM-DD") +
       "T" +
       moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
-    console.log("date", datetime);
     const params = {
       datetime: datetime,
       // datetime: "2023-03-16 17:05:42.000000",
@@ -377,7 +372,7 @@ export default function SahayakForm({ navigation }) {
                 setTimes(timeConverted(itemValue))
               }
             >
-              <Picker.Item style={{color: time ? "#000" : "#ccc"}}   label={time ? time : "-समय-"}value="" />
+              <Picker.Item style={{color: time ? "#000" : "#ccc"}}     label={time ? time : "-समय-"} value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
@@ -453,7 +448,7 @@ export default function SahayakForm({ navigation }) {
                     setlandType(itemValue)
                   }
                 >
-                  <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label={landType ? landType : "किल्ला/बीघा"} value="" />
+                  <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label="किल्ला/बीघा" value="" />
                   {landTypes.map((item) => (
                     <Picker.Item
                     label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
@@ -492,7 +487,7 @@ export default function SahayakForm({ navigation }) {
                       setMaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item style={{color: maleCounts ? "#000" : "#ccc"}}   label={maleCounts ? maleCounts : "पुरुषों"} value=""  />
+                    <Picker.Item style={{color: maleCounts ? "#000" : "#ccc"}}   label="पुरुषों" value=""  />
                     {maleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -531,7 +526,7 @@ export default function SahayakForm({ navigation }) {
                       setFemaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item style={{color: femaleCounts ? "#000" : "#ccc"}}   label={femaleCounts ? femaleCounts : "महिलाओं"} value=""  />
+                    <Picker.Item style={{color: femaleCounts ? "#000" : "#ccc"}}   label="महिलाओं" value=""  />
                     {femaleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -628,7 +623,7 @@ export default function SahayakForm({ navigation }) {
                 selectedValue={days}
                 onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
               >
-                <Picker.Item style={{color: days ? "#000" : "#ccc"}}   label={days ? days : "दिनों की संख्या"} value="" />
+                <Picker.Item style={{color: days ? "#000" : "#ccc"}}   label="दिनों की संख्या" value="" />
                 {daysCount.map((item) => (
                   <Picker.Item
                     label={item.toString()}
@@ -663,15 +658,7 @@ export default function SahayakForm({ navigation }) {
             }}
             style={styles.loginBtn}
           >
-            {/* <TouchableOpacity
-          onPress={() => {
-            
-           if(validate() {
-            sahayakBooking();
-           })}}
-            // onPress={() => sahayakBooking()}
-            style={styles.loginBtn}
-          > */}
+          
             <Text style={[styles.loginText, { color: "#fff" }]}>
               बुकिंग करें
             </Text>

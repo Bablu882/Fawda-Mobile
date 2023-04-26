@@ -184,7 +184,6 @@ export default function ThekeParKaam_Form({ navigation }) {
         land_area: landArea,
         total_amount_theka: totalAmount,
       };
-      console.log("params::::::", params);
 
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
@@ -195,13 +194,12 @@ export default function ThekeParKaam_Form({ navigation }) {
 
       const data = response?.data;
       if (data?.status === 201) {
-        console.log("form", data);
         Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
-
         navigation.navigate('MyBookingStack',{screen: "MyBooking"});
+      
       } else {
         Toast.show(
-          "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
+          data.error,
           Toast.SORT
         );
       }
@@ -250,11 +248,24 @@ export default function ThekeParKaam_Form({ navigation }) {
       errorMessages.landArea = "Please select your land area";
       valid = false;
     }
-
     if (totalAmount.trim() === "") {
       errorMessages.totalAmount = "Please enter your amount";
       valid = false;
+    } else if (!/^[0-9\s.]+$/.test(totalAmount.trim())) {
+      errorMessages.totalAmount = "Only numbers are allowed";
+      valid = false;
+    } else if (parseFloat(totalAmount.trim()) <= 5) {
+      errorMessages.totalAmount = "Please enter an amount greater than 5";
+      valid = false;
     }
+    
+    // if (totalAmount.trim() === "") {
+    //   errorMessages.totalAmount = "Please enter your amount";
+    //   valid = false;
+    // }else if (totalAmount.trim().length > 5) {
+    //   errorMessages.totalAmount = "Please enter your amount grater than 5";
+    //   valid = false;
+    // }
 
     setErrors(errorMessages);
     return valid;
@@ -347,7 +358,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <Text style={styles.error}>{errors.showDate}</Text>
                 )}
 
-                <View
+<View
                   style={[
                     styles.dropdownGender,
                     styles.justifyContentBetween,
@@ -463,7 +474,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                       >
                         <Picker.Item
                           style={{ color: landType ? "#000" : "#ccc" }}
-                          label={landType ? landType : "किल्ला/बीघा"}
+                          label="किल्ला/बीघा"
                           value=""
                         />
                         {landtypes.map((item) => (
@@ -499,7 +510,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                 वेतन
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ color: "#0099FF", paddingTop: 4 }}>₹ </Text>
+                <Text style={{ color: "#0099FF", }}>₹ </Text>
                 <TextInput
                   ref={textInputRef}
                   style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
@@ -514,29 +525,7 @@ export default function ThekeParKaam_Form({ navigation }) {
               </View>
             </View>
           </TouchableOpacity>
-                {/* <View
-                  style={[
-                    styles.inputView,
-                    styles.flex,
-                    styles.justifyContentBetween,
-                  ]}
-                >
-                  <Text style={{ left: 5, color: "#ccc" }}>वेतन</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={{ color: "#0070C0" }}>₹ </Text>
-                    <TextInput
-                      style={[styles.TextInput, { color: "#0070C0" }]}
-                      placeholder="0.00"
-                      //  style={{color:'#0070C0'}}
-                      placeholderTextColor={"#0070C0"}
-                      keyboardType="numeric"
-                      onChangeText={(totalAmount) =>
-                        handleTotalAmount(totalAmount)
-                      }
-                      value={totalAmount}
-                    />
-                  </View>
-                </View> */}
+               
                 {!!errors.totalAmount && (
                   <Text style={styles.error}>{errors.totalAmount}</Text>
                 )}
