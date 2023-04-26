@@ -225,6 +225,8 @@ export default function MachineWork({ navigation, route }) {
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
+      count_male: 1,
+      count_female:1,
       status: "Rejected",
     };
     try {

@@ -302,6 +302,8 @@ function Theke_MachineForm({ navigation, route }) {
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
+      count_male: 1,
+      count_female:1,
       status: "Rejected",
     };
     try {
@@ -313,7 +315,7 @@ function Theke_MachineForm({ navigation, route }) {
       });
 
       const data = response?.data;
-      navigation.navigate("HomeStack", { screen: "HomePage" });
+      navigation.navigate('HomeStack',{screen: "HomePage"});
       console.log(data, "sds");
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
     } catch (error) {
