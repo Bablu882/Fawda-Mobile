@@ -134,7 +134,7 @@ export default function MachineWork({ navigation, route }) {
       });
       const data = response?.data;
 
-      const ratings = data?.rating;
+      const ratings = data?.data?.rating;
       const ratingColor = "#e6b400";
 
       const ratingList = Array(5)

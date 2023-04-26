@@ -221,6 +221,7 @@ export default function UserRegistration({ navigation, route }) {
       setLocation(coords);
       // console.log("locationlocation",location);
     })();
+  
   }, [location]);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
