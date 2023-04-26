@@ -152,8 +152,9 @@ export default function UserRegistration({ navigation, route }) {
       const data = response?.data;
       if (data?.status == 201) {
         const token = data?.token;
+        console.log(data, 'data')
         dispatch(setToken(token));
-        Toast.show("Registration successful", Toast.SHORT,);
+        Toast.show("Registration successful", Toast.SHORT, Toast.CENTER);
         Toast.show(JSON.stringify(data.otp), Toast.LONG,);
         navigation.replace("Verification", { user_type: data?.user_type, phone });
        
@@ -181,7 +182,6 @@ export default function UserRegistration({ navigation, route }) {
       setState(data);
     } catch (error) {
       console.log("Error:", error);
-      // Toast.show("Error Occurred. Please try again later.", Toast.SORT);
     }
   };
 
@@ -221,7 +221,7 @@ export default function UserRegistration({ navigation, route }) {
       setLocation(coords);
       // console.log("locationlocation",location);
     })();
-  }, []);
+  }, [location]);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>

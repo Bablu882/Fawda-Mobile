@@ -372,7 +372,7 @@ export default function SahayakForm({ navigation }) {
                 setTimes(timeConverted(itemValue))
               }
             >
-              <Picker.Item style={{color: time ? "#000" : "#ccc"}}   label="-समय-" value="" />
+              <Picker.Item style={{color: time ? "#000" : "#ccc"}}     label={time ? time : "-समय-"} value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item

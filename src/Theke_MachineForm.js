@@ -336,6 +336,7 @@ function Theke_MachineForm({ navigation, route }) {
     mybookingdetail().then(() => {
       setRefreshing(false);
     });
+
   }, []);
   return (
     <SafeAreaView style={styles.container}>
@@ -659,6 +660,7 @@ function Theke_MachineForm({ navigation, route }) {
                   {usertype &&
                     (usertype === "Sahayak" || usertype === "MachineMalik") && (
                       <>
+                      
                         <CustomComponent
                           label="किसान से वेतन"
                           value={item?.total_amount_theka}
@@ -837,64 +839,58 @@ function Theke_MachineForm({ navigation, route }) {
 
               <View style={{ width: "100%" }}></View>
             </View>
+            
             <View style={{ marginTop: "auto", padding: 5 }}>
-              {usertype === "Grahak" ||
-                (item.status != "Completed" || (item.status === "Pending" ||"Accepted" )&& (
-                  <>
-                    {thekeperKams != 0 &&
-                      thekeperKams.map((item) => (
-                        <View key={item.booking_id}>
-                          {item.status === "Pending" ||
-                          item.status === "Accepted" ||
-                          item.status != "Completed" ? (
-                            <TouchableOpacity
-                              style={{
-                                backgroundColor: "#D9D9D9",
-                                alignSelf: "center",
-                                paddingHorizontal: 50,
-                                paddingVertical: 10,
-                                borderRadius: 5,
-                              }}
-                              onPress={() => {
-                                cancel();
-                              }}
-                            >
-                              <Text
-                                style={[styles.loginText, { color: "#fff" }]}
-                              >
-                                रद्द करें
-                              </Text>
-                            </TouchableOpacity>
-                          ) : null}
-                        </View>
-                      ))}
-                    {thekeparpending?.map((item) => (
-                      <View key={item.booking_id}>
-                        {item.status === "Pending" ||
-                        item.status === "Accepted" ? (
-                          <TouchableOpacity
-                            style={{
-                              backgroundColor: "#D9D9D9",
-                              alignSelf: "center",
-                              paddingHorizontal: 50,
-                              paddingVertical: 10,
-                              borderRadius: 5,
-                            }}
-                            onPress={() => {
-                              cancel();
-                            }}
-                          >
-                            <Text style={[styles.loginText, { color: "#fff" }]}>
-                              रद्द करें
-                            </Text>
-                          </TouchableOpacity>
-                        ) : null}
-                      </View>
-                    ))}
-                  </>
+              {usertype &&
+                usertype === "Grahak" &&
+                // Render the list of "cancel" buttons if usertype is "Grahak"
+                thekeparpending.map((item) => (
+                  <View>
+                    {item.status == "Pending" && (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: "#D9D9D9",
+                          alignSelf: "center",
+                          paddingHorizontal: 50,
+                          paddingVertical: 10,
+                          borderRadius: 5,
+                        }}
+                        onPress={() => {
+                          cancel();
+                        }}
+                      >
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          रद्द करें
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+                 {thekeperKams != 0 && thekeperKams?.map((item) => (
+                  
+                  <View>
+                    {item.status == "Pending" || item.status === "Accepted" && (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: "#D9D9D9",
+                          alignSelf: "center",
+                          paddingHorizontal: 50,
+                          paddingVertical: 10,
+                          borderRadius: 5,
+                        }}
+                        onPress={() => {
+                          cancel();
+                        }}
+                      >
+                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                          रद्द करें
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 ))}
             </View>
-
+           
           
           </View>
           {/* {!isLoading && (

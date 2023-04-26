@@ -196,6 +196,7 @@ export default function ThekeParKaam_Form({ navigation }) {
       if (data?.status === 201) {
         Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
         navigation.navigate('MyBookingStack',{screen: "MyBooking"});
+      
       } else {
         Toast.show(
           data.error,
@@ -357,7 +358,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <Text style={styles.error}>{errors.showDate}</Text>
                 )}
 
-                <View
+<View
                   style={[
                     styles.dropdownGender,
                     styles.justifyContentBetween,
@@ -374,7 +375,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                   >
                     <Picker.Item
                       style={{ color: time ? "#000" : "#ccc" }}
-                      label="-समय-"
+                      label={time ? time : "-समय-"}
                       value=""
                     />
                     {timings.map((item, index) => {
