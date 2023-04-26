@@ -320,7 +320,7 @@ function Theke_MachineForm({ navigation, route }) {
       });
 
       const data = response?.data;
-      navigation.navigate("HomeStack", { screen: "HomePage" });
+      navigation.navigate('HomeStack',{screen: "HomePage"});
       console.log(data, "sds");
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
     } catch (error) {
@@ -343,7 +343,6 @@ function Theke_MachineForm({ navigation, route }) {
     mybookingdetail().then(() => {
       setRefreshing(false);
     });
-
   }, []);
   return (
     <SafeAreaView style={styles.container}>
@@ -732,7 +731,6 @@ function Theke_MachineForm({ navigation, route }) {
                   {usertype &&
                     (usertype === "Sahayak" || usertype === "MachineMalik") && (
                       <>
-                      
                         <CustomComponent
                           label="किसान से वेतन"
                           value={item?.total_amount_theka}
@@ -767,7 +765,6 @@ function Theke_MachineForm({ navigation, route }) {
                       ) : (
                         thekeperKam.map((item) => (
                           <View key={item.id}>
-                           
                             <>
                               {item.status === "Accepted" ? (
                                 <>
@@ -911,7 +908,7 @@ function Theke_MachineForm({ navigation, route }) {
 
               <View style={{ width: "100%" }}></View>
             </View>
-            
+
             <View style={{ marginTop: "auto", padding: 5 }}>
               {usertype &&
                 usertype === "Grahak" &&
@@ -938,32 +935,31 @@ function Theke_MachineForm({ navigation, route }) {
                     )}
                   </View>
                 ))}
-                 {thekeperKams != 0 && thekeperKams?.map((item) => (
-                  
+              {thekeperKams != 0 &&
+                thekeperKams?.map((item) => (
                   <View>
-                    {item.status == "Pending" || item.status === "Accepted" && (
-                      <TouchableOpacity
-                        style={{
-                          backgroundColor: "#D9D9D9",
-                          alignSelf: "center",
-                          paddingHorizontal: 50,
-                          paddingVertical: 10,
-                          borderRadius: 5,
-                        }}
-                        onPress={() => {
-                          cancel();
-                        }}
-                      >
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
-                          रद्द करें
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                    {item.status == "Pending" ||
+                      (item.status === "Accepted" && (
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "#D9D9D9",
+                            alignSelf: "center",
+                            paddingHorizontal: 50,
+                            paddingVertical: 10,
+                            borderRadius: 5,
+                          }}
+                          onPress={() => {
+                            cancel();
+                          }}
+                        >
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            रद्द करें
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
                   </View>
                 ))}
             </View>
-           
-          
           </View>
           {/* {!isLoading && (
         
