@@ -42,7 +42,6 @@ function MachineWork2({ navigation, route }) {
       rating: ratings,
       comment: comments,
     };
-    console.log("fjfjf", params);
 
     service
       .post("/api/rating/create/", params, {
@@ -55,7 +54,7 @@ function MachineWork2({ navigation, route }) {
         let data = res?.data;
         if (data?.status === 201) {
           navigation.replace("Thankyou");
-          console.log("fjfjf", data);
+          
         } else {
           console.log("error message");
         }

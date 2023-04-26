@@ -219,7 +219,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      const ratings = data?.rating;
+      const ratings = data?.data?.rating;
       const ratingColor = "#e6b400";
 
       const ratingList = Array(5)
@@ -2580,7 +2580,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               {usertype &&
               usertype === "Grahak" &&
               thekeperKams?.length > 1
-                ?  thekeperKams.map((item) => (
+                ?  thekeperKams?.map((item) => (
                   item.status != "Completed" && (
                     <TouchableOpacity
                     style={{
@@ -2602,7 +2602,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   
                   ))
                 : 
-                  thekeparpending.map((item) => (
+                  thekeparpending?.map((item) => (
                     <TouchableOpacity
                       style={{
                         backgroundColor: "#D9D9D9",

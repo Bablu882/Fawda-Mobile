@@ -158,7 +158,7 @@ function Theke_MachineForm({ navigation, route }) {
     let params = {
       booking_job: item?.booking_id,
     };
-
+     
     try {
       const response = await service.post("/api/get-rating/", params, {
         headers: {
@@ -167,7 +167,15 @@ function Theke_MachineForm({ navigation, route }) {
         },
       });
       const data = response?.data;
-      const ratings = data?.rating;
+      console.log("datadatadatadatadata", response?.data.status);
+      // if ( response?.data.status == 200) {
+      //   setTimeout(() => {
+      //     navigation.navigate("HomeStack", { screen: "HomePage" });
+      //   }, 4000);
+      //   console.log("vjvjvv",response?.data.status);
+      // }
+
+      const ratings = data?.data?.rating;
       const ratingColor = "#e6b400";
 
       const ratingList = Array(5)
@@ -202,9 +210,7 @@ function Theke_MachineForm({ navigation, route }) {
     } catch (error) {
       console.log("Error:", error);
     }
-    // finally {
-    //   setIsLoading(false);
-    // }
+   
   };
 
   // useEffect(() => {
@@ -302,6 +308,7 @@ function Theke_MachineForm({ navigation, route }) {
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
+     
       status: "Rejected",
     };
     try {
@@ -616,6 +623,71 @@ function Theke_MachineForm({ navigation, route }) {
                       <>
                         {[...thekeparpending, ...thekeperKams].map((item) => (
                           <View key={item.id}>
+                            {item?.status === "Completed" ? (
+                              <TouchableOpacity style={styles.BhuktanBtn}>
+                                <Text
+                                  style={[
+                                    styles.loginText,
+                                    { color: "#fff", paddingVertical: 10 },
+                                  ]}
+                                >
+                                  समाप्त
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              // getStatusButton(item?.status, "समाप्त")
+                              <TouchableOpacity
+                                style={[
+                                  styles.BhuktanBtn,
+                                  item?.status === "Pending"
+                                    ? { opacity: 0.5 }
+                                    : {},
+                                ]}
+                                disabled={item?.status === "Pending"}
+                                onPress={() =>
+                                  navigation.navigate("Payment", {
+                                    item,
+                                    fawdafee: item?.fawda_fee,
+                                    totalamount: item?.total_amount,
+                                    useramount: item?.total_amount_theka,
+                                  })
+                                }
+                              >
+                                <Text
+                                  style={[styles.loginText, { color: "#fff" }]}
+                                >
+                                  {item?.status === "Pending"
+                                    ? "भुगतान करें"
+                                    : "भुगतान करें"}
+                                </Text>
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        ))}
+                      </>
+                    )}
+                    {item?.status === "Completed" &&
+                      thekeperKams.map((item) => (
+                        <View key={item.id}>
+                          <TouchableOpacity style={styles.BhuktanBtn}>
+                            <Text
+                              style={[
+                                styles.loginText,
+                                { color: "#fff", paddingVertical: 10 },
+                              ]}
+                            >
+                              समाप्त
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                  </View>
+                  {/* <View style={{ width: "100%" }}>
+                    {(item?.status === "Pending" ||
+                      item?.status === "Accepted") && (
+                      <>
+                        {[...thekeparpending, ...thekeperKams].map((item) => (
+                          <View key={item.id}>
                             <TouchableOpacity
                               style={[
                                 styles.BhuktanBtn,
@@ -645,7 +717,7 @@ function Theke_MachineForm({ navigation, route }) {
                         ))}
                       </>
                     )}
-                  </View>
+                  </View> */}
                 </>
               )}
 

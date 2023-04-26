@@ -25,7 +25,7 @@ export default function Homepage({ navigation, route }) {
   const [isLoading, setIsLoading] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const [sahayak, setSahayak] = useState("");
-  const isfocused = useIsFocused();
+  const isFocused = useIsFocused();
   const [page, setPage] = useState(1);
 
   const [activeButtons, setActiveButtons] = useState(1);
@@ -49,61 +49,65 @@ export default function Homepage({ navigation, route }) {
     setActiveButtons(buttonIndex);
   };
 
-  // const getalljobs = async () => {
-  //   setIsLoading(true); // Show loader while fetching data
-  //   setRefreshing(true);
-  //   try {
-  //     const cacheBuster = new Date().getTime(); // generate a unique timestamp
-  //     const response = await service.get(`/api/nearjob/?cacheBuster=${cacheBuster}`, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         'Authorization': `Bearer ${token}`
-  //       },
-  //     });
-  //     const data = response.data;
-  //     setCurrentUsers(data.results);
-  //     console.log('jdjhff',currentUsers)
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //     setRefreshing(false);
-  //   }
-  // };
-
-  // const onRefresh = useCallback(() => {
-  //   setRefreshing(true);
-  //   fetchJobs().then(() => {
-  //     setRefreshing(false);
-  //   });
-  // }, []);
+  const fetchJobs = async () => {
+    setIsLoading(true); // Show loader while fetching data
+    setRefreshing(true);
+    try {
+      const cacheBuster = new Date().getTime(); // generate a unique timestamp
+      const response = await service.get(`/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`, {
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const data = response.data;
+      setCurrentUsers(data.results);
+      setTotalPages(data.total_pages);
+      console.log('jdjhff',currentUsers)
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+  // const fetchJobs = async () => {
+  //   //     setIsLoading(true); // Show loader while fetching data
+  //   // setRefreshing(true);
+  //     try {
+  //       const cacheBuster = Date.now();
+  //       const response = await service.get(
+  //         `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       const data = response.data;
+  //       setCurrentUsers(data.results);
+  //       setTotalPages(data.total_pages);
+  //   //       setIsLoading(true); // Show loader while fetching data
+  //   // setRefreshing(true);
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchJobs().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
 
   useEffect(() => {
-    const fetchJobs = async () => {
-    //     setIsLoading(true); // Show loader while fetching data
-    // setRefreshing(true);
-      try {
-        const cacheBuster = Date.now();
-        const response = await service.get(
-          `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = response.data;
-        setCurrentUsers(data.results);
-        setTotalPages(data.total_pages);
-    //       setIsLoading(true); // Show loader while fetching data
-    // setRefreshing(true);
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    };
-    fetchJobs();
-  }, [page]);
+  
+    if (isFocused) {
+      fetchJobs();
+    }
+    
+  }, [page, isFocused]);
 
   return (
     <SafeAreaView
@@ -113,19 +117,20 @@ export default function Homepage({ navigation, route }) {
       }}
     >
       <View style={{ padding: 20, marginTop: 25 }}></View>
-      {/* <View>
+      <View>
         {isLoading && <ActivityIndicator size="small" color="#black" />}
-      </View> */}
+      </View>
+      {!isLoading && (
       <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     onRefresh={onRefresh}
-          //     // Myjobs={Myjobs}
-          //   />
-          // }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              // Myjobs={Myjobs}
+            />
+          }
         >
           {usertype === "Sahayak" || usertype === "MachineMalik" ? (
             <>
@@ -431,6 +436,7 @@ export default function Homepage({ navigation, route }) {
             </>
           )}
         </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
