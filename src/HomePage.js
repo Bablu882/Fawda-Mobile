@@ -250,12 +250,22 @@ export default function Homepage({ navigation, route }) {
               </View>
               <View
                 style={{
-                  marginVertical: 20,
+               marginVertical:20,
                   flexDirection: "row",
-                  justifyContent: "flex-end",
-                  marginRight: 10,
+                  justifyContent: "space-between",
+                  marginHorizontal: 10,
                 }}
               >
+                
+                <TouchableOpacity
+                  style={{flex:0.35, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3}}
+                  onPress={() => {
+                    navigation.navigate("HomeStack", { screen: "History" });
+                  }}
+                >
+                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
+                </TouchableOpacity>
+                <View style={{   flexDirection: "row",}}>
                 <TouchableOpacity
                   style={[
                     styles.button,
@@ -290,6 +300,8 @@ export default function Homepage({ navigation, route }) {
                     style={{ lineHeight: 30 }}
                   />
                 </TouchableOpacity>
+                </View>
+     
               </View>
             </>
           ) : (

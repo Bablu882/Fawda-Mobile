@@ -31,6 +31,7 @@ export default function Login({ navigation }) {
     }
   }, []);
 
+  
   const login = async () => {
     setLoading(true);
     const loginData = {
@@ -56,7 +57,7 @@ export default function Login({ navigation }) {
           phone
         });
       } else {
-        Toast.show(JSON.stringify(loginResponse.message), Toast.SHORT);
+        Toast.show(loginResponse.message, Toast.SHORT);
         navigation.replace("Register", { phone });
         console.log("phone:", phone);
       }

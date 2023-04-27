@@ -22,7 +22,7 @@ import {
 import moment from "moment";
 import { useIsFocused } from "@react-navigation/native";
 
-export default function MyBooking({ navigation, route }) {
+export default function History({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const isFocused = useIsFocused();
@@ -61,7 +61,7 @@ export default function MyBooking({ navigation, route }) {
     try {
       const cacheBuster = new Date().getTime(); // generate a unique timestamp
       const response = await service.get(
-        `api/my_booking_details/?cacheBuster=${cacheBuster}`,
+        `api/booking-history-grahak/?cacheBuster=${cacheBuster}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -70,14 +70,14 @@ export default function MyBooking({ navigation, route }) {
         }
       );
       const data = response.data;
-      setSahayakPending(data?.sahayak_pending_booking_details);
-      setSahayakBooking(data?.sahayk_booking_details?.bookings);
+      setSahayakPending(data?.sahayak_job_details);
+      setSahayakBooking(data?.sahayk_booking_details?.bookings_completed);
       setMachineBooking(data?.machine_malik_booking_details);
-      setMachinePending(data?.machine_malik_pending_booking_details);
+      setMachinePending(data?.machine_malik_job_details);
       setIsLoading(false);
       setRefreshing(false);
 
-      console.log("data", data?.sahayk_booking_details?.bookings);
+      console.log("data", data?.sahayak_job_details);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -90,7 +90,7 @@ export default function MyBooking({ navigation, route }) {
       try {
         const cacheBuster = Date.now();
         const response = await service.get(
-          `/api/myjobs/?page=${page}&cacheBuster=${cacheBuster}`,
+          `/api/booking-history-sahayak-machine-malik/?page=${page}&cacheBuster=${cacheBuster}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -99,8 +99,9 @@ export default function MyBooking({ navigation, route }) {
           }
         );
         const data = response.data;
-        setMyjob(data?.data?.results);
-        setTotalPages(data?.data?.total_pages);
+        console.log('data', data)
+        setMyjob(data?.results);
+        setTotalPages(data?.total_pages);
       } catch (error) {
         console.log("Error:", error);
       } finally {
@@ -155,7 +156,7 @@ export default function MyBooking({ navigation, route }) {
             {usertype && usertype === "Grahak" && (
               <>
                 <View
-                  style={{ justifyContent: "center",}}
+                  style={{ justifyContent: "center", alignItems: "center" }}
                 >
                   <View style={{ justifyContent: "center" }}>
                     <Text
@@ -218,7 +219,6 @@ export default function MyBooking({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              
                               {item?.status === "Accepted" ||
                               item?.status === "Completed" ? (
                                 <TouchableOpacity
@@ -356,7 +356,7 @@ export default function MyBooking({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor: "#44A347",
+                              backgroundColor:item?.status === "Pending" ? '#44A347' : '#dc3545',  
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -386,8 +386,7 @@ export default function MyBooking({ navigation, route }) {
                                 }
                               }}
                             >
-                              {item?.status === "Pending" && (
-                                <Text
+                              <Text
                                   style={{
                                     textAlign: "center",
                                     marginTop: 7,
@@ -396,9 +395,9 @@ export default function MyBooking({ navigation, route }) {
                                     fontWeight: "600",
                                   }}
                                 >
-                                  पेंडिंग
+                                {item?.status === "Pending" ? 'पेंडिंग' : 'रद्द'}   
                                 </Text>
-                              )}
+                             
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -432,7 +431,7 @@ export default function MyBooking({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor: "#44A347",
+                              backgroundColor:item?.status === "Pending" ? '#44A347' : '#dc3545', 
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -456,20 +455,18 @@ export default function MyBooking({ navigation, route }) {
                                 }
                               }}
                             >
-                              <Text
-                                style={{
-                                  textAlign: "center",
-                                  marginTop: 7,
-                                  color: "#fff",
-                                  fontSize: 15,
-                                  fontWeight: "600",
-                                }}
-                              >
-                                पेंडिंग
-                              </Text>
-                              {/* {item.status === "Pending" && (
-                               
-                              )} */}
+                           <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                {item?.status === "Pending" ? 'पेंडिंग' : 'रद्द'}   
+                                </Text>
+                         
                             </TouchableOpacity>
                           </View>
                          
@@ -579,29 +576,7 @@ export default function MyBooking({ navigation, route }) {
                       width: "100%",
                       marginTop: 15,
                     }}
-                    
                   />
-                    <View  style={{
-               marginVertical:20,
-                  flexDirection: "row",
-                  justifyContent: 'space-between',
-                  marginHorizontal: 10,
-                }}
-              >
-                <View>
-
-                </View>
-               <View>
-               <TouchableOpacity
-                  style={{flex:0.50, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3, paddingHorizontal:20, paddingVertical:10}}
-                  onPress={() => {
-                    navigation.navigate("HomeStack", { screen: "History" });
-                  }}
-                >
-                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
-                </TouchableOpacity>
-               </View>
-                </View>
                 </View>
               </>
             )}

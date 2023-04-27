@@ -731,6 +731,7 @@ function Theke_MachineForm({ navigation, route }) {
                   {usertype &&
                     (usertype === "Sahayak" || usertype === "MachineMalik") && (
                       <>
+                   
                         <CustomComponent
                           label="किसान से वेतन"
                           value={item?.total_amount_theka}
@@ -739,6 +740,7 @@ function Theke_MachineForm({ navigation, route }) {
                           label="फावड़ा की फीस"
                           value={item?.fawda_fee}
                         />
+                        
                         <CustomComponent
                           label="आपका भुगतान"
                           value={item?.payment_your}
@@ -820,7 +822,7 @@ function Theke_MachineForm({ navigation, route }) {
                                       style={styles.TextInput}
                                       editable={false}
                                       placeholderTextColor="#848484"
-                                      placeholder={item.grahak_name}
+                                      placeholder={item?.grahak_name}
                                     />
                                   </View>
                                   <View
@@ -831,7 +833,7 @@ function Theke_MachineForm({ navigation, route }) {
                                       style={styles.TextInput}
                                       editable={false}
                                       placeholderTextColor="#848484"
-                                      placeholder={item.grahak_phone}
+                                      placeholder={item?.grahak_phone}
                                     />
                                   </View>
                                 </>
