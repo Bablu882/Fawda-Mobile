@@ -2406,8 +2406,9 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     <>
                       <CustomComponent
                         label="किसान से वेतन"
-                        value={item?.total_amount_sahayak}
+                        value={item.total_amount_sahayak}
                       />
+                   
                       <CustomComponent
                         label="फावड़ा की फीस"
                         value={item?.fawda_fee}

@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
 import Service from "../service/index";
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Picker } from "@react-native-picker/picker";
@@ -24,7 +24,7 @@ const { height } = Dimensions.get("window");
 import * as Location from "expo-location";
 
 export default function UserRegistration({ navigation, route }) {
-  const { user } = route?.params??{};
+  const { user } = route?.params ?? {};
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("");
   const [name, setName] = useState("");
@@ -92,10 +92,7 @@ export default function UserRegistration({ navigation, route }) {
       errorMessages.mohalla = "Please enter your mohalla";
       valid = false;
     }
-    // else if (!/^[a-zA-Z0-9\s]+$/.test(mohalla.trim())) {
-    //   errorMessages.mohalla = "Please enter a valid mohalla (alphanumeric characters and spaces only)";
-    //   valid = false;
-    // }
+
     if (selectedState.trim() === "") {
       errorMessages.state = "Please select your state";
       valid = false;
@@ -119,15 +116,6 @@ export default function UserRegistration({ navigation, route }) {
     setErrors({ ...errors, gender: "" });
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
-      // submit form here
-      console.log("Form submitted");
-    } else {
-      console.log("Form has errors");
-    }
-  };
-
   const RegisterServices = async () => {
     try {
       const params = {
@@ -141,7 +129,6 @@ export default function UserRegistration({ navigation, route }) {
         user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
-      
       };
 
       const response = await Service.post("/api/register/", params, {
@@ -152,12 +139,14 @@ export default function UserRegistration({ navigation, route }) {
       const data = response?.data;
       if (data?.status == 201) {
         const token = data?.token;
-        console.log(data, 'data')
+        console.log(data, "data");
         dispatch(setToken(token));
         Toast.show("Registration successful", Toast.SHORT, Toast.CENTER);
-        Toast.show(JSON.stringify(data.otp), Toast.LONG,);
-        navigation.replace("Verification", { user_type: data?.user_type, phone });
-       
+        Toast.show(JSON.stringify(data.otp), Toast.LONG);
+        navigation.replace("Verification", {
+          user_type: data?.user_type,
+          phone,
+        });
       } else if (data?.error) {
         Toast.show(data.error, Toast.SHORT);
       } else {
@@ -221,8 +210,7 @@ export default function UserRegistration({ navigation, route }) {
       setLocation(coords);
       // console.log("locationlocation",location);
     })();
-  
-  }, [location]);
+  }, []);
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -258,8 +246,6 @@ export default function UserRegistration({ navigation, route }) {
           >
             <View style={{ display: "none" }}>
               <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
-              {/* <Text>Longitude: {location.longitude}</Text> */}
-              {console.log("location", location.latitude)}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
               <Text
@@ -376,12 +362,7 @@ export default function UserRegistration({ navigation, route }) {
                     districtapi(itemValue);
                   }}
                 >
-                  <Picker.Item
-                    label="राज्य"
-                    value=""
-                    enabled={false}
-                  
-                  />
+                  <Picker.Item label="राज्य" value="" enabled={false} />
                   {state?.map((state) => (
                     <Picker.Item
                       key={state.id}
@@ -394,21 +375,16 @@ export default function UserRegistration({ navigation, route }) {
                   <Text style={styles.error}>{errors.state}</Text>
                 )}
               </View>
-              <View style={[styles.DoubleView,]}>
+              <View style={[styles.DoubleView]}>
                 <Text style={styles.label}>जिला</Text>
                 <Picker
-                style={{width:'100%'}}
+                  style={{ width: "100%" }}
                   selectedValue={selectedDistrict}
                   onValueChange={(itemValue, itemIndex) =>
                     setSelectedDistrict(itemValue)
                   }
                 >
-                   <Picker.Item
-                    label="जिला"
-                    value=""
-                    enabled={false}
-                   
-                  />
+                  <Picker.Item label="जिला" value="" enabled={false} />
                   {district?.map((district, index) => (
                     <Picker.Item
                       key={index}
@@ -420,7 +396,6 @@ export default function UserRegistration({ navigation, route }) {
                 {!!errors.district && (
                   <Text style={styles.error}>{errors.district}</Text>
                 )}
-               
               </View>
             </View>
 
