@@ -32,7 +32,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [comments, setComment] = useState("");
   const [response, setResponse] = useState(null);
   const [complete, setCompleted] = useState(null);
-  const [bookings, setBookings] = useState([]);
+  const [bookingss, setBookings] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
 
   const [thekeperKams, setThekeperKams] = useState([]);
@@ -128,7 +128,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
     };
-    console.log(params);
+    console.log(params, "params");
+
     service
       .post("/api/booking_completed/", params, {
         headers: {
@@ -172,8 +173,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
     }
   };
 
-  // const items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"];
-  // const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
@@ -183,7 +182,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       sahayak_job_number: item?.job_number,
     };
     console.log("jfjgjg", params);
-
+   
     try {
       const response = await service.post(`api/refresh-my-booking/`, params, {
         headers: {
@@ -193,8 +192,13 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
       const data = response?.data;
       console.log("datadata", data);
-      setBookings(data?.sahayk_booking_details?.bookings);
-      console.log("data?.sahayk_booking_details?.bookings", thekeperKams);
+      if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
+        setBookings(data?.sahayk_booking_details?.bookings);
+      }
+      console.log(
+        "data?.sahayk_booking_details?.bookings",
+        response?.data?.sahayk_booking_details?.bookings.length
+      );
     } catch (error) {
       console.log("Error:", error);
     }
@@ -209,9 +213,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   };
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
-      <View style={{ padding: 20, marginTop: 25 }}>
-       
-      </View>
+      <View style={{ padding: 20, marginTop: 25 }}></View>
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
           {item?.job_type === "individuals_sahayak" ? "सहायक" : ""}
@@ -300,7 +302,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </Text>
             </View>
           </View>
-         
+
           <View
             style={{
               display: "flex",
@@ -314,15 +316,14 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             {[...Array(parseInt(item?.count_male)).keys()].map((index) => (
               <View
                 style={{
-                      paddingHorizontal: 5,
-                    borderColor: "#0070C0",
-                    // borderRadius: 7,
-                    borderWidth: 0.4,
-                    paddingVertical: 10,
-                    maxWidth: "33.33%",
-                    width: "100%",
-                    marginBottom: 5,
-               
+                  paddingHorizontal: 5,
+                  borderColor: "#0070C0",
+                  // borderRadius: 7,
+                  borderWidth: 0.4,
+                  paddingVertical: 10,
+                  maxWidth: "33.33%",
+                  width: "100%",
+                  marginBottom: 5,
                 }}
                 key={index}
               >
@@ -336,7 +337,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             ))}
             {[...Array(parseInt(item?.count_female)).keys()].map((index) => (
               <View
-                style={ {
+                style={{
                   paddingHorizontal: 5,
                   borderColor: "#0070C0",
                   // borderRadius: 7,
@@ -419,11 +420,11 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {item.status === "Booked"
+                  {item?.status === "Booked"
                     ? "बुक"
-                    : item.status === "Accepted"
+                    : item?.status === "Accepted"
                     ? "बुक"
-                    : item.status === "Ongoing"
+                    : item?.status === "Ongoing"
                     ? "जारी है"
                     : ""}
 
@@ -432,17 +433,15 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               )}
             </View>
           </View>
-
           {complete !== "Completed" && (
             <>
-              <View style={[styles.inputView,{ flex: 1, width: "100%", justifyContent:'center' }]}>
-                <View
-                  style={{
-                   
-                  }}
-                >
-                  {/* <Text></Text> */}
-
+              <View
+                style={[
+                  styles.inputView,
+                  { flex: 1, width: "100%", justifyContent: "center" },
+                ]}
+              >
+                <View style={{}}>
                   <Picker
                     selectedValue={selectedBooking}
                     style={{ width: "100%" }}
@@ -450,12 +449,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                       handleBookingSelect(itemValue)
                     }
                   >
-                     <Picker.Item
-                   
-                        label='सहायकों के मोबाइल नंबर '
-                        value=''
-                      />
-                    {bookings.slice(0, 5).map((booking, index) => (
+                    <Picker.Item label="सहायकों के मोबाइल नंबर " value="" />
+                    {bookingss?.map((booking, index) => (
                       <Picker.Item
                         key={booking.booking_id}
                         label={`${index + 1}`}
@@ -475,10 +470,12 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     style={{ flex: 1 }}
                     onPress={() => setModalVisible(false)}
                   >
-                  
                     <View style={[styles.modalContainer, styles.modalRight]}>
-                    <TouchableOpacity   onPress={() => setModalVisible(false)}>
-                        <Text style={{textAlign:'right', marginBottom:10}}>  <Icon name="close" size={20} color="#000" /></Text>
+                      <TouchableOpacity onPress={() => setModalVisible(false)}>
+                        <Text style={{ textAlign: "right", marginBottom: 10 }}>
+                          {" "}
+                          <Icon name="close" size={20} color="#000" />
+                        </Text>
                       </TouchableOpacity>
                       <View
                         style={{
@@ -633,7 +630,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-
           {item?.status != "Completed" &&
             response != "Ongoing" &&
             response !== "Completed" && (
@@ -654,7 +650,6 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             )}
-
         </View>
       </ScrollView>
 

@@ -225,10 +225,10 @@ export default function MachineWork({ navigation, route }) {
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
-      count_male: 1,
-      count_female:1,
       status: "Rejected",
     };
+    console.log('Rejected', params)
+
     try {
       const response = await service.post("/api/rejected/", params, {
         headers: {
@@ -238,14 +238,36 @@ export default function MachineWork({ navigation, route }) {
       });
 
       const data = response?.data;
-      navigation.replace("HomePage");
-
+      navigation.navigate('HomeStack',{screen: "HomePage"});
+      console.log(data, "sds");
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
     }
   };
+  const RejectedPayment = async () => {
+    let params = {
+      booking_id: JSON.stringify(item?.booking_id),
+      status: "Rejected-After-Payment",
+    };
+    console.log('Rejected', params)
 
+    try {
+      const response = await service.post("/api/rejected/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = response?.data;
+      navigation.navigate('HomeStack',{screen: "HomePage"});
+      console.log(data, "sds");
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
   const mybookingdetail = async () => {
     setIsLoading(true); // set isLoading to true when the function starts
     setRefreshing(true);
@@ -802,33 +824,58 @@ export default function MachineWork({ navigation, route }) {
                                   )}
                                 </>
 
-                                {item.status === "Accepted" ||
-                                  (item.status === "Booked" && (
-                                    <View>
-                                      <TouchableOpacity
-                                        style={{
-                                          backgroundColor: "#D9D9D9",
-                                          alignSelf: "center",
-                                          paddingHorizontal: 50,
-                                          paddingVertical: 10,
-                                          borderRadius: 5,
-                                          marginTop:10
-                                        }}
-                                        onPress={() => {
-                                          Rejected();
-                                        }}
-                                      >
-                                        <Text
-                                          style={[
-                                            styles.loginText,
-                                            { color: "#fff" },
-                                          ]}
-                                        >
-                                          रद्द करें
-                                        </Text>
-                                      </TouchableOpacity>
-                                    </View>
-                                  ))}
+                                {item.status === "Accepted" && (
+                                <View>
+                                  <TouchableOpacity
+                                    style={{
+                                      backgroundColor: "#D9D9D9",
+                                      alignSelf: "center",
+                                      paddingHorizontal: 50,
+                                      paddingVertical: 10,
+                                      borderRadius: 5,
+                                      marginTop: 10,
+                                    }}
+                                    onPress={() => {
+                                      Rejected();
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      रद्द करें
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              )}
+                                  {item.status === "Booked" && (
+                                <View>
+                                  <TouchableOpacity
+                                    style={{
+                                      backgroundColor: "#D9D9D9",
+                                      alignSelf: "center",
+                                      paddingHorizontal: 50,
+                                      paddingVertical: 10,
+                                      borderRadius: 5,
+                                      marginTop: 10,
+                                    }}
+                                    onPress={() => {
+                                      RejectedPayment();
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      रद्द करें
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              )}
                               </View>
                             ))
                           )}
