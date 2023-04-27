@@ -130,7 +130,6 @@ export default function UserRegistration({ navigation, route }) {
         latitude: location.latitude,
         longitude: location.longitude,
       };
-
       const response = await Service.post("/api/register/", params, {
         headers: {
           "Content-Type": "application/json",

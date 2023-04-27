@@ -218,6 +218,7 @@ export default function MyBooking({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
+                              
                               {item?.status === "Accepted" ||
                               item?.status === "Completed" ? (
                                 <TouchableOpacity

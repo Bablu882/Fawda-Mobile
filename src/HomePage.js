@@ -256,6 +256,7 @@ export default function Homepage({ navigation, route }) {
                   marginHorizontal: 10,
                 }}
               >
+                
                 <TouchableOpacity
                   style={{flex:0.35, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3}}
                   onPress={() => {

@@ -740,6 +740,7 @@ function Theke_MachineForm({ navigation, route }) {
                           label="फावड़ा की फीस"
                           value={item?.fawda_fee}
                         />
+                        
                         <CustomComponent
                           label="आपका भुगतान"
                           value={item?.payment_your}

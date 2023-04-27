@@ -466,9 +466,7 @@ export default function History({ navigation, route }) {
                                 >
                                 {item?.status === "Pending" ? 'पेंडिंग' : 'रद्द'}   
                                 </Text>
-                              {/* {item.status === "Pending" && (
-                               
-                              )} */}
+                         
                             </TouchableOpacity>
                           </View>
                          
