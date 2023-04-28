@@ -27,7 +27,7 @@ export default function History({ navigation, route }) {
   console.log("usrrjfjf", usertype);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
- 
+
   const token = useSelector(selectToken);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,13 +71,13 @@ export default function History({ navigation, route }) {
       );
       const data = response.data;
       setSahayakPending(data?.sahayak_job_details);
-      setSahayakBooking(data?.sahayk_booking_details?.bookings_completed);
+      setSahayakBooking(data?.sahayk_booking_details);
       setMachineBooking(data?.machine_malik_booking_details);
       setMachinePending(data?.machine_malik_job_details);
       setIsLoading(false);
       setRefreshing(false);
 
-      console.log("data", data?.sahayak_job_details);
+      console.log("data", sahaykBooking[4]?.bookings_cancelled_after_payment);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -99,7 +99,7 @@ export default function History({ navigation, route }) {
           }
         );
         const data = response.data;
-        console.log('data', data)
+        console.log("data", data);
         setMyjob(data?.results);
         setTotalPages(data?.total_pages);
       } catch (error) {
@@ -112,7 +112,6 @@ export default function History({ navigation, route }) {
     if (isFocused) {
       Myjobs();
     }
-   
   }, [page, isFocused]);
 
   const onRefresh = useCallback(() => {
@@ -138,15 +137,11 @@ export default function History({ navigation, route }) {
       </View>
       {isLoading && <ActivityIndicator size="small" color="#black" />}
       {!isLoading && (
-      <ScrollView
+        <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-            
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
           {/* {usertype && usertype === "Grahak" && (
@@ -166,7 +161,7 @@ export default function History({ navigation, route }) {
                         fontWeight: "600",
                       }}
                     >
-                      मेरी बुकिंग
+                      पुरानी बुकिंग
                     </Text>
                   </View>
 
@@ -179,9 +174,9 @@ export default function History({ navigation, route }) {
                     }}
                   />
                   <>
-                    {sahaykBooking?.length > 0 &&
-                      sahaykBooking.map((sahayak, index) =>
-                        sahayak.sahayaks.map((item, index) => (
+                    {sahaykBooking[0]?.bookings_completed?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
                           <View
                             style={{
                               display: "flex",
@@ -278,7 +273,7 @@ export default function History({ navigation, route }) {
                                         "Mybooking_Sahayak2",
                                         {
                                           item,
-                                          
+
                                           id: item?.job_id,
                                           totalamount: sahayak.total_amount,
                                           fawdafee: sahayak?.fawda_fee,
@@ -319,13 +314,234 @@ export default function History({ navigation, route }) {
                                       : item?.status === "Completed"
                                       ? "समाप्त"
                                       : null}
+                                    {item.status}
                                   </Text>
                                 </TouchableOpacity>
                               ) : null}
                             </View>
                           </View>
                         ))
-                      )}
+                    )}
+                    {sahaykBooking[1]?.bookings_rejected?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[2]?.bookings_rejected_after_payment?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[3]?.bookings_cancelled?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[4]?.bookings_cancelled_after_payment?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text style={{ color: "black" }}>
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
 
                     {sahayakPending?.length > 0 &&
                       sahayakPending?.map((item, index) => (
@@ -356,7 +572,10 @@ export default function History({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor:item?.status === "Pending" ? '#44A347' : '#dc3545',  
+                              backgroundColor:
+                                item?.status === "Pending"
+                                  ? "#44A347"
+                                  : "#dc3545",
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -370,8 +589,8 @@ export default function History({ navigation, route }) {
                                   navigation.navigate("MyBook_SahayakForm", {
                                     id: item?.id,
                                     item,
-                                   bookingid: item.booking_id,
-                                    jobtype: item?.job_type
+                                    bookingid: item.booking_id,
+                                    jobtype: item?.job_type,
                                   });
                                 } else if (
                                   item.job_type === "theke_pe_kam" &&
@@ -380,24 +599,25 @@ export default function History({ navigation, route }) {
                                   navigation.navigate("Theke_MachineForm", {
                                     id: item?.id,
                                     item,
-                               
-                                    jobtype: item?.job_type
+
+                                    jobtype: item?.job_type,
                                   });
                                 }
                               }}
                             >
                               <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                {item?.status === "Pending" ? 'पेंडिंग' : 'रद्द'}   
-                                </Text>
-                             
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {item?.status === "Pending"
+                                  ? "पेंडिंग"
+                                  : "रद्द"}
+                              </Text>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -431,7 +651,10 @@ export default function History({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor:item?.status === "Pending" ? '#44A347' : '#dc3545', 
+                              backgroundColor:
+                                item?.status === "Pending"
+                                  ? "#44A347"
+                                  : "#dc3545",
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -445,8 +668,8 @@ export default function History({ navigation, route }) {
                                   navigation.navigate("MachineWork", {
                                     id: item?.id,
                                     item,
-                                   
-                                    jobtype: item?.job_type
+
+                                    jobtype: item?.job_type,
                                   });
                                 } else {
                                   console.log(
@@ -455,21 +678,21 @@ export default function History({ navigation, route }) {
                                 }
                               }}
                             >
-                           <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                {item?.status === "Pending" ? 'पेंडिंग' : 'रद्द'}   
-                                </Text>
-                         
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {item?.status === "Pending"
+                                  ? "पेंडिंग"
+                                  : "रद्द"}
+                              </Text>
                             </TouchableOpacity>
                           </View>
-                         
                         </View>
                       ))}
                     {machineBooking?.map((item, index) => (
@@ -510,8 +733,8 @@ export default function History({ navigation, route }) {
                                 navigation.navigate("MachineWork", {
                                   id: item?.job_id,
                                   item,
-                                 
-                                  jobtype: item?.job_type
+
+                                  jobtype: item?.job_type,
                                   // fawdafee: item?.fawda_fee,
                                   // totalamount: item?.total_amount,
                                 });
@@ -563,7 +786,6 @@ export default function History({ navigation, route }) {
                               </Text>
                             </TouchableOpacity>
                           ) : null}
-                         
                         </View>
                       </View>
                     ))}
@@ -594,7 +816,7 @@ export default function History({ navigation, route }) {
                           fontWeight: "600",
                         }}
                       >
-                        मेरे काम
+                        पुरानी काम
                       </Text>
                     </View>
 
@@ -636,7 +858,7 @@ export default function History({ navigation, route }) {
                               style={{
                                 width: "30%",
                                 height: 33,
-                                backgroundColor: "#0099FF",
+                                backgroundColor: item.status === "Rejected-After-Payment" || "Rejected" ?"#dc3545" : "#0099FF",
                                 marginRight: 20,
                                 marginTop: 10,
                               }}
@@ -680,6 +902,10 @@ export default function History({ navigation, route }) {
                                     ? "बुक "
                                     : item?.status === "Ongoing"
                                     ? "जारी है"
+                                    : item.status === "Rejected"
+                                    ? "रद्द"
+                                    : item.status === "Rejected-After-Payment"
+                                    ? "रद्द "
                                     : "समाप्त"}
                                 </Text>
                               </TouchableOpacity>
@@ -702,7 +928,6 @@ export default function History({ navigation, route }) {
                       marginVertical: 20,
                     }}
                   >
-                  
                     <TouchableOpacity
                       style={[
                         styles.button,
@@ -722,7 +947,7 @@ export default function History({ navigation, route }) {
 
                     <TouchableOpacity
                       style={[
-                        {marginLeft:10},
+                        { marginLeft: 10 },
                         styles.button,
                         activeButton === 2 && styles.activeButton,
                       ]}
@@ -753,12 +978,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-  width:30,
-  height:30,
-  textAlign: "center",
-  borderRadius:20,
-  alignItems: "center",
-  backgroundColor:'#ccc'
+    width: 30,
+    height: 30,
+    textAlign: "center",
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#ccc",
   },
   activeButton: {
     backgroundColor: "#0099FF",

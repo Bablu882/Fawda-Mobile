@@ -38,7 +38,7 @@ export default function HomeStack () {
         {/* <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} /> */}
         <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
         {/* <Stack.Screen name="Payment" component={Payment} /> */}
-        <Stack.Screen name="History" component={History} /> 
+   
         {/* <Stack.Screen name="Mybooking_Sahayak2" component={Mybooking_Sahayak2} /> */}
         <Stack.Screen name="MachineWork" component={MachineWork} />
 

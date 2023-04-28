@@ -305,12 +305,37 @@ function Theke_MachineForm({ navigation, route }) {
       console.log("Error:", error);
     }
   };
+  
   const Rejected = async () => {
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
-     
       status: "Rejected",
     };
+    console.log('Rejected', params)
+
+    try {
+      const response = await service.post("/api/rejected/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = response?.data;
+      navigation.navigate('HomeStack',{screen: "HomePage"});
+      console.log(data, "sds");
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  const RejectedPayment = async () => {
+    let params = {
+      booking_id: JSON.stringify(item?.booking_id),
+      status: "Rejected-After-Payment",
+    };
+    console.log('Rejected', params)
+
     try {
       const response = await service.post("/api/rejected/", params, {
         headers: {
@@ -873,8 +898,7 @@ function Theke_MachineForm({ navigation, route }) {
                                 </View>
                               )}
                             </>
-                            {item.status === "Accepted" ||
-                              (item.status === "Booked" && (
+                            {item.status === "Accepted" && (
                                 <View>
                                   <TouchableOpacity
                                     style={{
@@ -899,7 +923,33 @@ function Theke_MachineForm({ navigation, route }) {
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
-                              ))}
+                              )}
+                                  {item.status === "Booked" && (
+                                <View>
+                                  <TouchableOpacity
+                                    style={{
+                                      backgroundColor: "#D9D9D9",
+                                      alignSelf: "center",
+                                      paddingHorizontal: 50,
+                                      paddingVertical: 10,
+                                      borderRadius: 5,
+                                      marginTop: 10,
+                                    }}
+                                    onPress={() => {
+                                      RejectedPayment();
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        { color: "#fff" },
+                                      ]}
+                                    >
+                                      रद्द करें
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              )}
                           </View>
                         ))
                       )}

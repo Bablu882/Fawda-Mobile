@@ -10,16 +10,25 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import Toast from 'react-native-root-toast';
+import Toast from "react-native-root-toast";
 
 import Icon from "react-native-vector-icons/AntDesign";
 import { selectToken } from "../slices/authSlice";
 
 export default function Payment({ route, navigation }) {
   const token = useSelector(selectToken);
-  const { totalamount, fawdafee, useramount, item } = route.params ?? {};
+  const { totalamount, fawdafee, useramount, item, countprice, acceptmale, acceptfemale,fawdafees, totalamounts } =
+    route.params ?? {};
 
-  console.log("payment page",  item);
+  console.log(
+    "payment page",
+    totalamount,
+    fawdafees,
+    useramount,
+    item,
+    countprice,
+    acceptmale, acceptfemale ,totalamounts
+  );
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
   const [upiId, setUpiId] = useState("");
@@ -44,28 +53,30 @@ export default function Payment({ route, navigation }) {
 
       const data = response.data;
       if (item.job_type === "individuals_sahayak") {
-        navigation.navigate("Mybooking_Sahayak2", {
+        navigation.replace("Mybooking_Sahayak2", {
           data: item.booking_id,
           payment_status: data.payment_status,
           item,
           amount: amount,
-          useramount: useramount
+          useramount: countprice,
+          male_count: acceptmale,
+          female_count: acceptfemale,
         });
       } else if (item.job_type === "theke_pe_kam") {
-        navigation.navigate("Theke_MachineForm2", {
+        navigation.replace("Theke_MachineForm2", {
           data: data.booking_id,
           payment_status: data.payment_status,
           item,
           amount: amount,
-          useramount: useramount
+          useramount: useramount,
         });
       } else if (item.job_type === "machine_malik") {
-        navigation.navigate("MachineWork2", {
+        navigation.replace("MachineWork2", {
           data: data.booking_id,
           payment_status: data.payment_status,
           item,
           amount: amount,
-          useramount: useramount
+          useramount: useramount,
         });
       }
 
@@ -80,9 +91,9 @@ export default function Payment({ route, navigation }) {
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View>
@@ -105,7 +116,7 @@ export default function Payment({ route, navigation }) {
                   borderWidth: 1,
                   width: "90%",
                   paddingHorizontal: 10,
-                  height: 'auto',
+                  height: "auto",
                   borderColor: "#0099FF",
                   marginTop: 30,
                   borderWidth: 0.6,
@@ -125,15 +136,27 @@ export default function Payment({ route, navigation }) {
                 {item?.job_type === "theke_pe_kam" ||
                 item?.job_type === "individuals_sahayak" ? (
                   <View style={styles.flex}>
-                    <Text>{item?.job_type === "theke_pe_kam" ?  "ठेकेदार को वेतन" : "सहायक या सहायकों को वेतन "}  </Text>
+                    <Text>
+                      {item?.job_type === "theke_pe_kam"
+                        ? "ठेकेदार को वेतन"
+                        : "सहायक या सहायकों को वेतन "}{" "}
+                    </Text>
 
-                    <Text>₹{useramount}</Text>
+                    {item.job_type === "theke_pe_kam" ? (
+                      <Text>₹{useramount}</Text>
+                    ) : (
+                      <Text>₹{countprice}</Text>
+                    )}
                   </View>
                 ) : (
                   <View style={styles.flex}>
                     <Text>मशीन मालिक को वेतन</Text>
 
-                    <Text>₹{useramount}</Text>
+                    {item.job_type === "theke_pe_kam" ? (
+                      <Text>₹{useramount}</Text>
+                    ) : (
+                      <Text>₹{totalamount}</Text>
+                    )}
                   </View>
                 )}
 
@@ -150,7 +173,12 @@ export default function Payment({ route, navigation }) {
 
                 <View style={styles.flex}>
                   <Text>फावड़ा की फीस</Text>
-                  <Text style={{ color: "#0099FF" }}>₹{fawdafee}</Text>
+                  {/* <Text style={{ color: "#0099FF" }}>₹{[fawdafee,fawdafees]}</Text> */}
+                  {item.job_type === "theke_pe_kam" ? (
+                      <Text>₹{fawdafee}</Text>
+                    ) : (
+                      <Text>₹{fawdafees}</Text>
+                    )}
                 </View>
 
                 <View style={styles.flex}>
