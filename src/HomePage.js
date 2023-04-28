@@ -257,14 +257,7 @@ export default function Homepage({ navigation, route }) {
                 }}
               >
                 
-                <TouchableOpacity
-                  style={{flex:0.35, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3}}
-                  onPress={() => {
-                    navigation.navigate("HomeStack", { screen: "History" });
-                  }}
-                >
-                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
-                </TouchableOpacity>
+           
                 <View style={{   flexDirection: "row",}}>
                 <TouchableOpacity
                   style={[

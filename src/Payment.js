@@ -17,16 +17,17 @@ import { selectToken } from "../slices/authSlice";
 
 export default function Payment({ route, navigation }) {
   const token = useSelector(selectToken);
-  const { totalamount, fawdafee, useramount, item, countprice } =
+  const { totalamount, fawdafee, useramount, item, countprice, acceptmale, acceptfemale,fawdafees, totalamounts } =
     route.params ?? {};
 
   console.log(
     "payment page",
     totalamount,
-    fawdafee,
+    fawdafees,
     useramount,
     item,
-    countprice
+    countprice,
+    acceptmale, acceptfemale ,totalamounts
   );
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
@@ -58,6 +59,8 @@ export default function Payment({ route, navigation }) {
           item,
           amount: amount,
           useramount: countprice,
+          male_count: acceptmale,
+          female_count: acceptfemale,
         });
       } else if (item.job_type === "theke_pe_kam") {
         navigation.replace("Theke_MachineForm2", {
@@ -88,9 +91,9 @@ export default function Payment({ route, navigation }) {
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View>
@@ -149,7 +152,11 @@ export default function Payment({ route, navigation }) {
                   <View style={styles.flex}>
                     <Text>मशीन मालिक को वेतन</Text>
 
-                    <Text>₹{useramount}</Text>
+                    {item.job_type === "theke_pe_kam" ? (
+                      <Text>₹{useramount}</Text>
+                    ) : (
+                      <Text>₹{totalamount}</Text>
+                    )}
                   </View>
                 )}
 
@@ -166,7 +173,12 @@ export default function Payment({ route, navigation }) {
 
                 <View style={styles.flex}>
                   <Text>फावड़ा की फीस</Text>
-                  <Text style={{ color: "#0099FF" }}>₹{fawdafee}</Text>
+                  {/* <Text style={{ color: "#0099FF" }}>₹{[fawdafee,fawdafees]}</Text> */}
+                  {item.job_type === "theke_pe_kam" ? (
+                      <Text>₹{fawdafee}</Text>
+                    ) : (
+                      <Text>₹{fawdafees}</Text>
+                    )}
                 </View>
 
                 <View style={styles.flex}>

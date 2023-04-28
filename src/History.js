@@ -161,7 +161,7 @@ export default function History({ navigation, route }) {
                         fontWeight: "600",
                       }}
                     >
-                      मेरी बुकिंग
+                      पुरानी बुकिंग
                     </Text>
                   </View>
 
@@ -314,6 +314,7 @@ export default function History({ navigation, route }) {
                                       : item?.status === "Completed"
                                       ? "समाप्त"
                                       : null}
+                                    {item.status}
                                   </Text>
                                 </TouchableOpacity>
                               ) : null}
@@ -321,7 +322,7 @@ export default function History({ navigation, route }) {
                           </View>
                         ))
                     )}
-                     {sahaykBooking[1]?.bookings_rejected?.map(
+                    {sahaykBooking[1]?.bookings_rejected?.map(
                       (sahayak, index) =>
                         sahayak?.sahayaks?.map((item, index) => (
                           <View
@@ -361,17 +362,22 @@ export default function History({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              <Text style={{      textAlign: "center",
+                              <Text
+                                style={{
+                                  textAlign: "center",
                                   marginTop: 7,
                                   color: "#fff",
                                   fontSize: 15,
-                                  fontWeight: "600",}}>रद्द</Text>
-                            
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
                             </View>
                           </View>
                         ))
                     )}
-                        {sahaykBooking[2]?.bookings_rejected_after_payment?.map(
+                    {sahaykBooking[2]?.bookings_rejected_after_payment?.map(
                       (sahayak, index) =>
                         sahayak?.sahayaks?.map((item, index) => (
                           <View
@@ -411,12 +417,17 @@ export default function History({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              <Text style={{      textAlign: "center",
+                              <Text
+                                style={{
+                                  textAlign: "center",
                                   marginTop: 7,
                                   color: "#fff",
                                   fontSize: 15,
-                                  fontWeight: "600",}}>रद्द</Text>
-                            
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
                             </View>
                           </View>
                         ))
@@ -461,12 +472,17 @@ export default function History({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              <Text style={{      textAlign: "center",
+                              <Text
+                                style={{
+                                  textAlign: "center",
                                   marginTop: 7,
                                   color: "#fff",
                                   fontSize: 15,
-                                  fontWeight: "600",}}>रद्द</Text>
-                            
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
                             </View>
                           </View>
                         ))
@@ -511,12 +527,17 @@ export default function History({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              <Text style={{      textAlign: "center",
+                              <Text
+                                style={{
+                                  textAlign: "center",
                                   marginTop: 7,
                                   color: "#fff",
                                   fontSize: 15,
-                                  fontWeight: "600",}}>रद्द</Text>
-                            
+                                  fontWeight: "600",
+                                }}
+                              >
+                                रद्द
+                              </Text>
                             </View>
                           </View>
                         ))
@@ -795,7 +816,7 @@ export default function History({ navigation, route }) {
                           fontWeight: "600",
                         }}
                       >
-                        मेरे काम
+                        पुरानी काम
                       </Text>
                     </View>
 
@@ -837,7 +858,7 @@ export default function History({ navigation, route }) {
                               style={{
                                 width: "30%",
                                 height: 33,
-                                backgroundColor: "#0099FF",
+                                backgroundColor: item.status === "Rejected-After-Payment" || "Rejected" ?"#dc3545" : "#0099FF",
                                 marginRight: 20,
                                 marginTop: 10,
                               }}
@@ -881,6 +902,10 @@ export default function History({ navigation, route }) {
                                     ? "बुक "
                                     : item?.status === "Ongoing"
                                     ? "जारी है"
+                                    : item.status === "Rejected"
+                                    ? "रद्द"
+                                    : item.status === "Rejected-After-Payment"
+                                    ? "रद्द "
                                     : "समाप्त"}
                                 </Text>
                               </TouchableOpacity>

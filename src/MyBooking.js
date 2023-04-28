@@ -77,7 +77,7 @@ export default function MyBooking({ navigation, route }) {
       setIsLoading(false);
       setRefreshing(false);
 
-      console.log("data", data?.sahayk_booking_details?.bookings);
+      console.log("data::::::::", data?.sahayk_booking_details?.bookings);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -595,7 +595,7 @@ export default function MyBooking({ navigation, route }) {
                <TouchableOpacity
                   style={{flex:0.50, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3, paddingHorizontal:20, paddingVertical:10}}
                   onPress={() => {
-                    navigation.navigate("HomeStack", { screen: "History" });
+                    navigation.navigate("MyBookingStack", { screen: "History" });
                   }}
                 >
                 <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
@@ -721,13 +721,21 @@ export default function MyBooking({ navigation, route }) {
                   </View>
                   <View
                     style={{
+                      marginVertical:20,
                       flexDirection: "row",
-                      justifyContent: "flex-end",
-                      marginRight: 20,
-                      marginVertical: 20,
+                      justifyContent: "space-between",
+                      marginHorizontal: 10,
                     }}
                   >
-                  
+                       <TouchableOpacity
+                  style={{flex:0.35, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3}}
+                  onPress={() => {
+                    navigation.navigate("MyBookingStack", { screen: "History" });
+                  }}
+                >
+                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
+                </TouchableOpacity>
+                <View style={{   flexDirection: "row",}}>
                     <TouchableOpacity
                       style={[
                         styles.button,
@@ -762,6 +770,7 @@ export default function MyBooking({ navigation, route }) {
                         style={{ lineHeight: 30 }}
                       />
                     </TouchableOpacity>
+                    </View>
                   </View>
                 </>
               )}

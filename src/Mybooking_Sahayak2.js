@@ -25,8 +25,8 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  const { data, payment_status, amount, item, useramount } = route.params ?? {};
-
+  const { data, payment_status, amount, item, useramount ,male_count, female_count} = route.params ?? {};
+console.log('+++++pluss++++', item,male_count, female_count)
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
@@ -313,7 +313,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               flexWrap: "wrap",
             }}
           >
-            {[...Array(parseInt(item?.count_male)).keys()].map((index) => (
+            {[...Array(male_count).keys()].map((index) => (
               <View
                 style={{
                   paddingHorizontal: 5,
@@ -335,7 +335,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                 />
               </View>
             ))}
-            {[...Array(parseInt(item?.count_female)).keys()].map((index) => (
+            {[...Array(female_count).keys()].map((index) => (
               <View
                 style={{
                   paddingHorizontal: 5,
@@ -505,7 +505,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                                 >
                                   सहायक
                                 </Text>
-                                <Text style={styles.TextInput}>
+                                <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_name}
                                 </Text>
                               </View>
@@ -528,7 +528,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                                 >
                                   गाँव
                                 </Text>
-                                <Text style={styles.TextInput}>
+                                <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_village}
                                 </Text>
                               </View>
@@ -551,7 +551,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                                 >
                                   मोबाइल नंबर
                                 </Text>
-                                <Text style={styles.TextInput}>
+                                <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_mobile_no}
                                 </Text>
                               </View>

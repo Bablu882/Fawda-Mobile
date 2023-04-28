@@ -140,7 +140,7 @@ export default function UserRegistration({ navigation, route }) {
         const token = data?.token;
         console.log(data, "data");
         dispatch(setToken(token));
-        Toast.show("Registration successful", Toast.SHORT, Toast.CENTER);
+        // Toast.show("Registration successful", Toast.SHORT, Toast.CENTER);
         Toast.show(JSON.stringify(data.otp), Toast.LONG);
         navigation.replace("Verification", {
           user_type: data?.user_type,
