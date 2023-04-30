@@ -159,6 +159,7 @@ export default function History({ navigation, route }) {
                         textAlign: "center",
                         fontSize: 30,
                         fontWeight: "600",
+                        fontFamily:'Devanagari-bold',
                       }}
                     >
                       पुरानी बुकिंग
@@ -192,6 +193,7 @@ export default function History({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -201,7 +203,7 @@ export default function History({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -252,6 +254,7 @@ export default function History({ navigation, route }) {
                                       marginTop: 7,
                                       color: "#fff",
                                       fontSize: 15,
+                                      fontFamily:'Devanagari-bold',
                                       fontWeight: "600",
                                     }}
                                   >
@@ -305,6 +308,7 @@ export default function History({ navigation, route }) {
                                       color: "#fff",
                                       fontSize: 15,
                                       fontWeight: "600",
+                                      fontFamily:'Devanagari-bold',
                                     }}
                                   >
                                     {item?.status === "Ongoing"
@@ -349,7 +353,7 @@ export default function History({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -369,6 +373,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 रद्द
@@ -395,6 +400,7 @@ export default function History({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -404,7 +410,7 @@ export default function History({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -424,6 +430,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 रद्द
@@ -450,6 +457,7 @@ export default function History({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -459,7 +467,7 @@ export default function History({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -479,6 +487,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 रद्द
@@ -505,6 +514,7 @@ export default function History({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -514,7 +524,7 @@ export default function History({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -534,6 +544,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 रद्द
@@ -564,7 +575,7 @@ export default function History({ navigation, route }) {
                                 ? "ठेके पर काम"
                                 : ""}
                             </Text>
-                            <Text style={{ color: "black" }}>
+                            <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
@@ -611,6 +622,7 @@ export default function History({ navigation, route }) {
                                   marginTop: 7,
                                   color: "#fff",
                                   fontSize: 15,
+                                  fontFamily:'Devanagari-bold',
                                   fontWeight: "600",
                                 }}
                               >
@@ -636,12 +648,12 @@ export default function History({ navigation, route }) {
                           }}
                         >
                           <View style={{ marginLeft: 30 }}>
-                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                            <Text style={{ fontWeight: "600", fontSize: 18 , fontFamily:'Devanagari-bold',}}>
                               {item.job_type === "machine_malik"
                                 ? " मशीनरी"
                                 : ""}
                             </Text>
-                            <Text style={{ color: "black" }}>
+                            <Text style={{ color: "black", fontFamily:'Devanagari-regular', }}>
                               {/* {moment(item?.datetime).format('L')}
                            { console.log('djdjddj', item?.datetime)} */}
                               {moment.utc(item?.datetime).format("L")}
@@ -685,6 +697,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item?.status === "Pending"
@@ -708,7 +721,7 @@ export default function History({ navigation, route }) {
                         }}
                       >
                         <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                          <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
                             {item.job_type === "machine_malik"
                               ? " मशीनरी"
                               : "मशीनरी"}
@@ -724,6 +737,7 @@ export default function History({ navigation, route }) {
                             backgroundColor: "#0099FF",
                             marginRight: 20,
                             marginTop: 10,
+                            
                           }}
                         >
                           {item.status === "Accepted" ||
@@ -747,6 +761,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.status === "Accepted"
@@ -774,6 +789,7 @@ export default function History({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.status === "Ongoing"
@@ -814,6 +830,7 @@ export default function History({ navigation, route }) {
                           textAlign: "center",
                           fontSize: 30,
                           fontWeight: "600",
+                          fontFamily:'Devanagari-bold',
                         }}
                       >
                         पुरानी काम
@@ -841,7 +858,7 @@ export default function History({ navigation, route }) {
                             }}
                           >
                             <View style={{ marginLeft: 30 }}>
-                              <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
                                 {item.job_type === "individuals_sahayak"
                                   ? "सहायक  "
                                   : item.job_type === "theke_pe_kam"
@@ -850,7 +867,7 @@ export default function History({ navigation, route }) {
                                   ? " मशीनरी"
                                   : null}
                               </Text>
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -893,6 +910,7 @@ export default function History({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 15,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-bold',
                                   }}
                                 >
                                   {/* विवरण देखे */}

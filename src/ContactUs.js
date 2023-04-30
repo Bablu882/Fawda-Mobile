@@ -139,7 +139,7 @@ export default function ContactUs({ navigation, route }) {
         <View>
           <View style={{ justifyContent: "center" }}>
             <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" , fontFamily:'Devanagari-bold',}}
             >
               संपर्क करें
             </Text>
@@ -196,13 +196,13 @@ export default function ContactUs({ navigation, route }) {
                   elevation: 7,
                 }}
               >
-                <Text style={{ color: "#fff", fontSize: 16 }}>कॉल करें </Text>
+                <Text style={{ color: "#fff", fontSize: 16 ,fontFamily:'Devanagari-bold',}}>कॉल करें </Text>
               </TouchableOpacity>
             </View>
 
             <View style={{ justifyContent: "center", marginTop: 20 }}>
               <Text
-                style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+                style={{ textAlign: "center", fontSize: 30, fontWeight: "600",fontFamily:'Devanagari-bold', }}
               >
                 रजिस्ट्रेशन
               </Text>
@@ -297,7 +297,7 @@ export default function ContactUs({ navigation, route }) {
             </View>
             <View style={{ paddingTop: 30 }}>
               <View style={styles.flexbetween}>
-                <Text>हमारे बारे में </Text>
+              <Text style={{fontFamily:'Devanagari-bold',}}>हमारे बारे में </Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("about_us", {
@@ -309,7 +309,7 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-                <Text>नियम और शर्तें </Text>
+                <Text style={{fontFamily:'Devanagari-bold',}}>नियम और शर्तें </Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("terms", {
@@ -321,7 +321,7 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-                <Text>प्राइवेसी नीति</Text>
+              <Text style={{fontFamily:'Devanagari-bold',}}>प्राइवेसी नीति</Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("privacy", {
@@ -333,7 +333,7 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-                <Text>वरजन</Text>
+              <Text style={{fontFamily:'Devanagari-bold',}}>वरजन</Text>
                 <TouchableOpacity
                 // onPress={() => navigation.navigate("version" , {
                 //   terms : Data,
@@ -342,9 +342,7 @@ export default function ContactUs({ navigation, route }) {
                   <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
-              <View></View>
-              <View></View>
-              <View></View>
+             
             </View>
             <TouchableOpacity
               onPress={() => {
@@ -375,6 +373,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -10,
     left: 30,
+    fontFamily:'Devanagari-bold',
+    paddingHorizontal:10,
 
     textAlign: "center",
     backgroundColor: "#fff",
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   TextInput: {
     height: 50,
     padding: 10,
-
+    fontFamily:'Devanagari-regular',
     // fontFamily: "Poppin-Light",
   },
 
@@ -414,28 +414,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
 
-  MaleCheckView: {
-    borderColor: "#0099FF",
-    borderRadius: 7,
-    borderBottomRightRadius: 0,
-    borderTopRightRadius: 0,
-    width: "50%",
-    height: 48,
-    marginTop: 30,
-    borderWidth: 1,
-  },
-
-  FemalecheckView: {
-    borderColor: "#0099FF",
-    borderRadius: 7,
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    width: "50%",
-    height: 48,
-    marginTop: 30,
-    borderWidth: 1,
-  },
-
   loginBtn: {
     width: "100%",
 
@@ -448,6 +426,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#fff",
     fontSize: 18,
+    fontFamily:'Devanagari-bold',
   },
   error: {
     color: "red",

@@ -20,38 +20,12 @@ import Toast from "react-native-root-toast";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-
-const CustomComponent = ({ label, value }) => {
-  return (
-    <View
-      style={[
-        styles.inputView,
-        styles.inputbox,
-        { flexDirection: "row", flex: 1, position: "relative" },
-      ]}
-    >
-      <TextInput
-        style={[styles.TextInput, { width: "100%" }]}
-        placeholder={label}
-        editable={false}
-        placeholderTextColor={"#000"}
-      />
-      <Text
-        style={{ color: "#0070C0", position: "absolute", right: 10, top: 10 }}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-};
+import CustomComponent from '../Component/CustomComponent'
 
 export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
-  const [bookingstate, setBookingState] = useState(item?.status);
   const token = useSelector(selectToken);
-
   const [ratingList, setRatingList] = useState([]);
-
   const [isLoading, setIsLoading] = useState(false);
   const { id, item, fawdafee, bookingid } = route.params;
   // console.log(item, 'fjfjfjj')
@@ -357,6 +331,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             color: "#fff",
             fontSize: 10,
             fontWeight: "600",
+            fontFamily:'Devanagari-bold'
           }}
         >
           {label}
@@ -483,108 +458,6 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     }
   };
 
-  // const mybookingdetail = async () => {
-  //   setIsLoading(true); // set isLoading to true when the function starts
-  //   setRefreshing(true);
-  //   let params = {
-  //     sahayak_job_id: JSON.stringify(id),
-  //     sahayak_job_number: item?.job_number,
-  //   };
-  //   console.log("fjfjfjfjff", params);
-  //   try {
-  //     const cacheBuster = new Date().getTime();
-  //     const response = await service.post(
-  //       `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
-  //       params,
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     const data = response?.data;
-  //     console.log("+++,,,,", response?.data?.sahayk_booking_details?.bookings);
-  //     if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
-  //       const acceptedJobs =
-  //         response?.data?.sahayk_booking_details?.bookings.map(
-  //           (job) => parseInt(job.count_female) + parseInt(job.count_male)
-  //         );
-  //       const acceptedmale =
-  //         response?.data?.sahayk_booking_details?.bookings.map((job) =>
-  //           Number(job.count_male)
-  //         );
-
-  //       const acceptedfemale =
-  //         response?.data?.sahayk_booking_details?.bookings.map((job) =>
-  //           Number(job.count_female)
-  //         );
-  //       alert(acceptedmale);
-  //       setAcceptFemale(acceptedfemale);
-  //       setAcceptMale(acceptedmale);
-  //       // const acceptedFemaleCOunt = acceptedfemale.reduce(function (a, b) {
-  //       //   return a + b;
-  //       // }, 0);
-
-  //       const totalacceptedcount = acceptedmale.map(
-  //         (item, index) => item + acceptedfemale[index]
-  //       );
-
-  //       console.log(acceptedfemale, acceptedmale, "AcceptedFemaleCOunt");
-  //       const totalAcceptedJobs = totalacceptedcount?.reduce(
-  //         (accumulator, currentValue) => accumulator + currentValue,
-  //         0
-  //       );
-  //       const totalAcceptedJob = totalacceptedcounts?.reduce(
-  //         (accumulator, currentValue) => accumulator + currentValue,
-  //         0
-  //       );
-
-  //       const countprice = response?.data?.sahayk_booking_details?.bookings.map(
-  //         (item) => Number(item?.total_amount_sahayak)
-  //       );
-  //       const Totalprice = countprice.reduce(
-  //         (accumulator, currentValue) => accumulator + currentValue,
-  //         0
-  //       );
-  //       const acceptedStatusLength =
-  //         response?.data?.sahayk_booking_details?.bookings.filter(
-  //           (job) => job.status === "Accepted"
-  //         );
-  //       setAcceptedStatus(acceptedStatusLength.length);
-  //       setCountPrice(Totalprice);
-  //       setCountAcceptedJobs(totalAcceptedJobs);
-  //       // alert(totalAcceptedJobs);
-
-  //     }
-  //     // setPendingStatus
-
-  //     const pendingmale = response?.data?.sahayak_pending_booking_details?.map(
-  //       (job) => Number(job?.count_male)
-  //     );
-  //     const pendingfemale =
-  //       response?.data?.sahayak_pending_booking_details?.map((job) =>
-  //         Number(job?.count_female)
-  //       );
-  //     // const totalpendingjobs = pendingdata.reduce(
-  //     //   (accumulator, currentValue) => accumulator + currentValue,
-  //     //   0
-  //     // );
-  //     setPendingFemale(pendingfemale);
-  //     setPendingMale(pendingmale);
-
-  //     //  setCountAcceptedJobs(acceptedJobs);
-  //     setThekeperKamPending(data?.sahayak_pending_booking_details);
-  //     console.log("-----", data);
-  //     setThekeperKams(data?.sahayk_booking_details?.bookings);
-  //     //console.log("ffjjff", data);
-  //     setIsLoading(false);
-  //     setRefreshing(false);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-
   const myjobs = async () => {
     let params = {
       booking_id: JSON.stringify(item.booking_id),
@@ -639,7 +512,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
         </TouchableOpacity>
       </View>
       <View style={{ justifyContent: "center" }}>
-        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
+        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600", fontFamily:'Devanagari-bold' }}>
           {item?.job_type === "individuals_sahayak" && "सहायक का काम "}
         </Text>
       </View>
@@ -660,6 +533,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               alignItems: "center",
               marginTop: 20,
               marginHorizontal: 10,
+              fontFamily:'Devanagari-regular'
             }}
           >
             <View
@@ -740,7 +614,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                 ]}
               >
                 <TextInput
-                  style={styles.TextInput}
+                  style={[styles.TextInput]}
                   placeholder="एक पुरुष का वेतन"
                   editable={false}
                   placeholderTextColor={"#000"}
@@ -908,33 +782,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     )}
                   </View>
 
-                  {/* <Text
-                    style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}
-                  >
-                    {item.status === "Pending" &&
-                      thekeparpending.map((item) => (
-                        <View key={item.id}>
-                          <Text> ₹ {item.total_amount_sahayak}</Text>
-                        </View>
-                      ))}
-
-                    {thekeperKams != 0
-                      ? thekeperKams.map((item) => (
-                          <View key={item.id}>
-                            {item.status === "Accepted" ||
-                              (item.status === "Completed" && (
-                                <Text> ₹ {item.total_amount_sahayak}</Text>
-                              ))}
-                          </View>
-                        ))
-                      : thekeparpending.map((item) => (
-                          <View key={item.id}>
-                            {item.status != "Pending" && (
-                              <Text> ₹ {item.total_amount_sahayak}</Text>
-                            )}
-                          </View>
-                        ))}
-                  </Text> */}
+               
                 </View>
               </View>
             ) : (
@@ -986,6 +834,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 maxWidth: "33.33%",
                                 width: "100%",
                                 marginBottom: 5,
+                                fontFamily:'Devanagari-regular'
                               },
                             ]}
                             key={index}
@@ -1015,6 +864,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     marginTop: 5,
                                     color: "#fff",
                                     fontSize: 12,
+                                    fontFamily:'Devanagari-bold',
                                     fontWeight: "600",
                                   }}
                                 >
@@ -1072,6 +922,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 12,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-bold'
                                   }}
                                 >
                                   {item?.status === "Pending"
@@ -1095,10 +946,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     }}
                   >
                     <View>
-                      {/* {console.log("acceptmale", acceptmale)}
-                      {console.log("acceptfemale", acceptfemale)}
-                      {console.log("pendingfemales", pendingfemales)}
-                      {console.log("pendingmale", pendingmale)} */}
+                     
                       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                        
                     
@@ -1143,6 +991,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 12,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-bold'
                                   }}
                                 >
                                   स्वीकार
@@ -1192,6 +1041,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 12,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-bold'
                                   }}
                                 >
                                   स्वीकार
@@ -1203,399 +1053,13 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                        
                       </View>
                     </View>
-                    {/* {acceptmale?.map(
-                        (item, index) => (
-                          <View
-                            style={[
-                              styles.flex,
-                              styles.justifyContentBetween,
-                              {
-                                paddingHorizontal: 5,
-                                borderColor: "#0070C0",
-                                // borderRadius: 7,
-                                borderWidth: 0.4,
-                                paddingVertical: 10,
-                                maxWidth: "33.33%",
-                                width: "100%",
-                                marginBottom: 5,
-                              },
-                            ]}
-                            // key={index}
-                          >
-                            <TextInput
-                              style={styles.CheckTextInput}
-                              placeholder="पुरषो"
-                              editable={false}
-                              placeholderTextColor={"#000"}
-                              name={`Male${index + 1}`}
-                            />
-                            <View
-                              style={{
-                                height: 25,
-                                paddingHorizontal: 5,
-                                backgroundColor:'#0099FF',
-                                marginLeft: 5,
-                              }}
-                            >
-                              <TouchableOpacity>
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 5,
-                                    color: "#fff",
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                 स्वीकार
-                                 
-                                </Text>
-                              </TouchableOpacity>
-                            </View>
-                          </View>
-                        )
-                      )} */}
+                   
                     <>
-                      {/* <View>
-                        {acceptmale &&
-                          Array.from({ length: acceptmale }, (_, index) => (
-                            <View key={index}>
-                              <View
-                                style={[
-                                  styles.flex,
-                                  styles.justifyContentBetween,
-                                  {
-                                    paddingHorizontal: 5,
-                                    borderColor: "#0070C0",
-                                    // borderRadius: 7,
-                                    borderWidth: 0.4,
-                                    paddingVertical: 10,
-                                    maxWidth: "33.33%",
-                                    width: "100%",
-                                    marginBottom: 5,
-                                  },
-                                ]}
-                                // key={index}
-                              >
-                                <TextInput
-                                  style={styles.CheckTextInput}
-                                  placeholder="पुरषो"
-                                  editable={false}
-                                  placeholderTextColor={"#000"}
-                                  name={`Male${index + 1}`}
-                                />
-                                <View
-                                  style={{
-                                    height: 25,
-                                    paddingHorizontal: 5,
-                                    backgroundColor: "#0099FF",
-                                    marginLeft: 5,
-                                  }}
-                                >
-                                  <TouchableOpacity>
-                                    <Text
-                                      style={{
-                                        textAlign: "center",
-                                        marginTop: 5,
-                                        color: "#fff",
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      स्वीकार
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
-                           
-                            </View>
-                          ))}
-                        {acceptfemale &&
-                          Array.from({ length: acceptfemale }, (_, index) => (
-                            <View key={index}>
-                              <View
-                                style={[
-                                  styles.flex,
-                                  styles.justifyContentBetween,
-                                  {
-                                    paddingHorizontal: 5,
-                                    borderColor: "#0070C0",
-                                    // borderRadius: 7,
-                                    borderWidth: 0.4,
-                                    paddingVertical: 10,
-                                    maxWidth: "33.33%",
-                                    width: "100%",
-                                    marginBottom: 5,
-                                  },
-                                ]}
-                                // key={index}
-                              >
-                                <TextInput
-                                  style={styles.CheckTextInput}
-                                  placeholder="पुरषो"
-                                  editable={false}
-                                  placeholderTextColor={"#000"}
-                                  name={`Male${index + 1}`}
-                                />
-                                <View
-                                  style={{
-                                    height: 25,
-                                    paddingHorizontal: 5,
-                                    backgroundColor: "#0099FF",
-                                    marginLeft: 5,
-                                  }}
-                                >
-                                  <TouchableOpacity>
-                                    <Text
-                                      style={{
-                                        textAlign: "center",
-                                        marginTop: 5,
-                                        color: "#fff",
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      स्वीकार
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
-                            
-                            </View>
-                          ))}
-                      </View>
-                      <View>
-                        {pendingfemales &&
-                          Array.from({ length: pendingfemales }, (_, index) => (
-                            <View key={index}>
-                              <View
-                                style={[
-                                  styles.flex,
-                                  styles.justifyContentBetween,
-                                  {
-                                    paddingHorizontal: 5,
-                                    borderColor: "#0070C0",
-                                    // borderRadius: 7,
-                                    borderWidth: 0.4,
-                                    paddingVertical: 10,
-                                    maxWidth: "33.33%",
-                                    width: "100%",
-                                    marginBottom: 5,
-                                  },
-                                ]}
-                                // key={index}
-                              >
-                                <TextInput
-                                  style={styles.CheckTextInput}
-                                  placeholder="पुरषो"
-                                  editable={false}
-                                  placeholderTextColor={"#000"}
-                                  name={`Male${index + 1}`}
-                                />
-                                <View
-                                  style={{
-                                    height: 25,
-                                    paddingHorizontal: 5,
-                                    backgroundColor: "#0099FF",
-                                    marginLeft: 5,
-                                  }}
-                                >
-                                  <TouchableOpacity>
-                                    <Text
-                                      style={{
-                                        textAlign: "center",
-                                        marginTop: 5,
-                                        color: "#fff",
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      स्वीकार
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
-                          
-                            </View>
-                          ))}
-                        {pendingmale &&
-                          Array.from({ length: pendingmale }, (_, index) => (
-                            <View key={index}>
-                              <View
-                                style={[
-                                  styles.flex,
-                                  styles.justifyContentBetween,
-                                  {
-                                    paddingHorizontal: 5,
-                                    borderColor: "#0070C0",
-                                    // borderRadius: 7,
-                                    borderWidth: 0.4,
-                                    paddingVertical: 10,
-                                    maxWidth: "33.33%",
-                                    width: "100%",
-                                    marginBottom: 5,
-                                  },
-                                ]}
-                                // key={index}
-                              >
-                                <TextInput
-                                  style={styles.CheckTextInput}
-                                  placeholder="पुरषो"
-                                  editable={false}
-                                  placeholderTextColor={"#000"}
-                                  name={`Male${index + 1}`}
-                                />
-                                <View
-                                  style={{
-                                    height: 25,
-                                    paddingHorizontal: 5,
-                                    backgroundColor: "#0099FF",
-                                    marginLeft: 5,
-                                  }}
-                                >
-                                  <TouchableOpacity>
-                                    <Text
-                                      style={{
-                                        textAlign: "center",
-                                        marginTop: 5,
-                                        color: "#fff",
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                      }}
-                                    >
-                                      स्वीकार
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
-                           
-                            </View>
-                          ))}
-                      </View> */}
+                    
                     </>
                   </View>
                 </View>
-              {/* {thekeperKams.length > 0 &&
-                thekeperKams?.map((item, index) => (
-                  <View key={item?.id}>
-                    {item.status === "Accepted" && (
-                      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                        {[...Array(parseInt(item?.count_male)).keys()].map(
-                          (index) => (
-                            <View
-                              style={[
-                                styles.flex,
-                                styles.justifyContentBetween,
-                                {
-                                  paddingHorizontal: 5,
-                                  borderColor: "#0070C0",
-                                  // borderRadius: 7,
-                                  borderWidth: 0.4,
-                                  paddingVertical: 10,
-                                  maxWidth: "33.33%",
-                                  width: "100%",
-                                  marginBottom: 5,
-                                },
-                              ]}
-                              key={index}
-                            >
-                              <TextInput
-                                style={styles.CheckTextInput}
-                                placeholder="पुरषो"
-                                editable={false}
-                                placeholderTextColor={"#000"}
-                                name={`Male${index + 1}`}
-                              />
-                              <View
-                                style={{
-                                  height: 25,
-                                  paddingHorizontal: 5,
-                                  backgroundColor:
-                                    item.status === "Pending"
-                                      ? "#44A347"
-                                      : "#0099FF",
-                                  marginLeft: 5,
-                                }}
-                              >
-                                <TouchableOpacity>
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 5,
-                                      color: "#fff",
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    {item?.status === "Pending"
-                                      ? "पेंडिंग"
-                                      : "स्वीकार"}
-                                    {console.log("fjfjfjfjfjf", item?.status)}
-                                  </Text>
-                                </TouchableOpacity>
-                              </View>
-                            </View>
-                          )
-                        )}
-                        {[...Array(parseInt(item?.count_female)).keys()].map(
-                          (index) => (
-                            <View
-                              style={[
-                                styles.flex,
-                                {
-                                  paddingHorizontal: 5,
-                                  borderColor: "#0070C0",
-                                  // borderRadius: 7,
-                                  borderWidth: 0.4,
-                                  paddingVertical: 10,
-                                  maxWidth: "33.33%",
-                                  width: "100%",
-                                  marginBottom: 5,
-                                },
-                              ]}
-                              key={index}
-                            >
-                              <TextInput
-                                style={{ ...styles.CheckTextInput }}
-                                placeholder="महिला"
-                                editable={false}
-                                placeholderTextColor={"#101010"}
-                                name={`Female${index + 1}`}
-                              />
-                              <View
-                                style={{
-                                  height: 25,
-                                  paddingHorizontal: 5,
-                                  backgroundColor:
-                                    item.status === "Pending"
-                                      ? "#44A347"
-                                      : "#0099FF",
-                                  marginLeft: 5,
-                                }}
-                              >
-                                <TouchableOpacity>
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 5,
-                                      color: "#fff",
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    {item?.status === "Pending"
-                                      ? "पेंडिंग"
-                                      : "स्वीकार"}
-                                  </Text>
-                                </TouchableOpacity>
-                              </View>
-                            </View>
-                          )
-                        )}
-                      </View>
-                    )}
-                  </View>
-                ))} */}
+          
             </View>
             <>
               {item.status != "Pending" &&
@@ -1782,6 +1246,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     marginTop: 5,
                                     color: "#fff",
                                     fontSize: 9,
+                                    fontFamily:'Devanagari-bold',
                                     fontWeight: "600",
                                   }}
                                 >
@@ -1793,68 +1258,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                         )
                       )}
 
-                      {/* {[...Array(parseInt(item?.count_female)).keys()].map(
-                        (index) => (
-                          <View
-                            style={[
-                              styles.flex,
-                              styles.justifyContentBetween,
-                              {
-                                paddingHorizontal: 5,
-                                borderColor: "#0070C0",
-                                // borderRadius: 7,
-                                borderWidth: 0.4,
-                                paddingVertical: 10,
-                              },
-                            ]}
-                            key={index}
-                          >
-                            <TextInput
-                              style={styles.CheckTextInput}
-                              placeholder="महिला"
-                              editable={false}
-                              placeholderTextColor={"#101010"}
-                              name={`Female${index + 1}`}
-                              onChangeText={(text) => {
-                                const updatedStatus = { ...checkboxStatus };
-                                updatedStatus[index] = text;
-                                setCheckboxStatus(updatedStatus);
-                              }}
-                            />
-                            <View
-                              style={{
-                                paddingBottom: 5,
-                                paddingHorizontal: 3,
-                                backgroundColor:
-                                  checkboxStatus[index] === "स्वीकृत"
-                                    ? "#0099FF"
-                                    : "#44A347",
-                                marginLeft: 5,
-                              }}
-                            >
-                              <TouchableOpacity
-                                onPress={() => handleCheckboxChange(index)}
-                                disabled={checkboxStatus[index] === "लंबित"}
-                              >
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 5,
-                                    color: "#fff",
-                                    fontSize: 9,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  {checkboxStatus[index] === "स्वीकृत"
-                                    ? "स्वीकृत"
-                                    : "लंबित"}
-                                 
-                                </Text>
-                              </TouchableOpacity>
-                            </View>
-                          </View>
-                        )
-                      )} */}
+                 
                     </>
                     <>
                       {[...Array(parseInt(item?.count_male)).keys()].map(
@@ -1907,6 +1311,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 9,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-regular'
                                   }}
                                 >
                                   {maleStatuses[index] || item?.status}
@@ -2235,7 +1640,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                   <Text
                                     style={[
                                       styles.loginText,
-                                      { color: "#fff" },
+                                      { color: "#fff" ,  fontFamily:'Devanagari-regular'},
                                     ]}
                                   >
                                     समाप्त
@@ -2268,7 +1673,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 }}
                               >
                                 <Text
-                                  style={[styles.loginText, { color: "#fff" }]}
+                                  style={[styles.loginText, { color: "#fff",   fontFamily:'Devanagari-bold' }]}
                                 >
                                   रद्द करें
                                 </Text>
@@ -2291,7 +1696,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 }}
                               >
                                 <Text
-                                  style={[styles.loginText, { color: "#fff" }]}
+                                  style={[styles.loginText, { color: "#fff",  fontFamily:'Devanagari-bold' }]}
                                 >
                                   रद्द करें
                                 </Text>
@@ -2442,6 +1847,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10,
     backgroundColor: "#0099FF",
+    fontFamily:'Devanagari-bold'
   },
 
   VerifyText: {
@@ -2463,6 +1869,7 @@ const styles = StyleSheet.create({
   TextInput: {
     // height: 50,
     padding: 10,
+    fontFamily:'Devanagari-regular'
 
     // fontFamily: "Poppin-Light"
   },
@@ -2470,6 +1877,7 @@ const styles = StyleSheet.create({
   CheckTextInput: {
     textAlign: "center",
     marginTop: 0,
+    fontFamily:'Devanagari-regular'
   },
 
   TaxView: {
@@ -2568,13 +1976,15 @@ const styles = StyleSheet.create({
   },
   TextWhite: {
     color: "#fff",
+    fontFamily:'Devanagari-bold'
   },
   label: {
     position: "absolute",
     top: -10,
     left: 30,
     marginHorizontal: 5,
-
+    paddingHorizontal:10,
+    fontFamily:'Devanagari-bold',
     textAlign: "center",
     backgroundColor: "#fff",
   },
@@ -2586,6 +1996,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
+    fontFamily:'Devanagari-regular',
   },
   pending: {
     textAlign: "center",
@@ -2595,5 +2006,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
+   fontFamily:'Devanagari-regular'
   },
 });

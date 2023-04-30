@@ -19,7 +19,7 @@ export default function Refer() {
         />
 
         <View style={{ alignItems: "center" }}>
-          <Text style={{ fontSize: 28, fontWeight: "600", color: "#000" }}>
+          <Text style={{ fontSize: 28, fontWeight: "600", color: "#000", fontFamily:'Devanagari-bold', }}>
           जल्दी ही आ रहा है
           </Text>
         </View>

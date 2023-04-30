@@ -19,30 +19,7 @@ import { selectToken, selectUserType } from "../slices/authSlice";
 import Toast from "react-native-simple-toast";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-const CustomComponent = ({ label, value }) => {
-  return (
-    <View
-      style={[
-        styles.inputView,
-        styles.inputbox,
-        {
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "center",
-          flex: 1,
-        },
-      ]}
-    >
-      <TextInput
-        style={[styles.TextInput, { width: "100%", left: 10 }]}
-        placeholder={label}
-        editable={false}
-        placeholderTextColor={"#000"}
-      />
-      <Text style={{ marginTop: 5, right: 20, color: "#0070C0" }}>{value}</Text>
-    </View>
-  );
-};
+
 
 export default function MachineWork({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState([]);
@@ -935,47 +912,8 @@ export default function MachineWork({ navigation, route }) {
                   </View>
                 ))}
             </View>
-            {/* <View style={{ marginTop: "auto", padding: 5 }}>
-            {usertype === "Sahayak" || usertype === "MachineMalik" ? (
-              (item?.status === "Accepted" || item?.status === "Booked") && (
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
-                  onPress={() => {
-                    Rejected();
-                  }}
-                >
-                  <Text style={[styles.loginText, { color: "#fff" }]}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
-              )
-            ) : (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#D9D9D9",
-                  alignSelf: "center",
-                  paddingHorizontal: 50,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                }}
-                onPress={() => {
-                  cancel();
-                }}
-              >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
-                  रद्द करें
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View> */}
+      
           </View>
-          {/* )} */}
         </ScrollView>
       )}
       {/* <BottomTab/> */}

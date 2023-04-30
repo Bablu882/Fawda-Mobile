@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import Toast from "react-native-root-toast";
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
+  const ReviewInput = useRef(null);
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
@@ -45,6 +46,11 @@ function Theke_MachineForm2({ navigation, route }) {
   const [numbers, setNumber] = useState(0);
 
   const number = [1, 2, 3, 4];
+   const handlereviewbutton = () => {
+    ReviewInput.current.focus();
+   }
+
+
 
   //   const RatingApi = async () => {
   //     let params = {
@@ -250,7 +256,7 @@ function Theke_MachineForm2({ navigation, route }) {
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
           <View style={{ alignItems: "center", flex: 1, marginHorizontal:10 }}>
             <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" ,  fontFamily:'Devanagari-bold',}}
             >
               {item.job_type === "individuals_sahayak"
                 ? "सहायक के काम "
@@ -308,7 +314,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   placeholderTextColor={"#000"}
                 />
                 <Text
-                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}
+                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF",  fontFamily:'Devanagari-regular', }}
                 >
                   {item?.land_area}
                   {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
@@ -328,7 +334,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   placeholderTextColor={"#000"}
                 />
                 <Text
-                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}
+                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF",  fontFamily:'Devanagari-regular', }}
                 >
                   ₹ {useramount}
                 </Text>
@@ -365,6 +371,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       color: "#fff",
                       fontSize: 15,
                       fontWeight: "600",
+                      fontFamily:'Devanagari-bold',
                     }}
                   >
                     {response === "Booked"
@@ -385,6 +392,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       color: "#fff",
                       fontSize: 15,
                       fontWeight: "600",
+                      fontFamily:'Devanagari-bold',
                     }}
                   >
                     {item.status === "Booked"
@@ -416,14 +424,15 @@ function Theke_MachineForm2({ navigation, route }) {
                 }}
               >
                 <View style={{ marginBottom: 10 }}>
-                  <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                  <Text style={{ textAlign: "center", fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
                   <View style={{ display: "flex", flexDirection: "row" }}>
                     {[...Array(5).keys()].map(renderButton)}
                   </View>
                 </View>
-                <Text>कोई सुझाव</Text>
+                <Text style={{ fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
                 <View style={{ width: "100%" }}>
-                  <TextInput
+                  <TouchableOpacity
+                  onPress={handlereviewbutton}
                     style={{
                       height: 100,
                       borderWidth: 1,
@@ -431,11 +440,16 @@ function Theke_MachineForm2({ navigation, route }) {
                       width: "100%",
                       marginTop: 20,
                       borderColor: "#0099FF",
-                    }}
+                    }}>
+
+                
+                  <TextInput
+                   
                     onChangeText={setComment}
                     value={comments}
-                    //
+                    ref={ReviewInput}
                   />
+                    </TouchableOpacity>
                 </View>
               
               </View>
@@ -450,6 +464,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       width: "15%",
                       textAlign: "center",
                       backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
                     }}
                   >
                     ठेकेदार
@@ -472,6 +487,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       width: "10%",
                       textAlign: "center",
                       backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
                     }}
                   >
                     गाँव
@@ -489,6 +505,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       width: "25%",
                       textAlign: "center",
                       backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
                     }}
                   >
                     मोबाइल नंबर
@@ -522,7 +539,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 }
                 disabled={isLoading}
               >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
+                <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
                   {complete && complete["booking-status"] === "Ongoing"
                     ? "रेटिंग दें जारी है"
                     : complete && complete["booking-status"] === "Completed"
@@ -539,7 +556,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 style={styles.BhuktanBtn}
                 onPress={() => RatingApi()}
               >
-                <Text style={[styles.loginText, { color: "#fff" }]}>
+                <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
                   समाप्त
                 </Text>
               </TouchableOpacity>
@@ -559,7 +576,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       borderRadius: 5,
                     }}
                   >
-                    <Text style={{ textAlign: "center", color: "#fff" }}>
+                    <Text style={{ textAlign: "center", color: "#fff",  fontFamily:'Devanagari-bold', }}>
                       रद्द करें
                     </Text>
                   </TouchableOpacity>
@@ -592,6 +609,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily:'Devanagari-regular',
     //   flexDirection:"column",
   },
 
@@ -619,6 +637,7 @@ const styles = StyleSheet.create({
   TextInput: {
     padding: 10,
     color: "#000",
+    fontFamily:'Devanagari-regular',
   },
 
   TaxView: {

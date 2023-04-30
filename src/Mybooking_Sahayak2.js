@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -22,7 +22,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-
+  const ReviewInput = useRef(null);
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const { data, payment_status, amount, item, useramount ,male_count, female_count} = route.params ?? {};
@@ -37,6 +37,12 @@ console.log('+++++pluss++++', item,male_count, female_count)
 
   const [thekeperKams, setThekeperKams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+
+
+   const handlebutton = () => {
+    ReviewInput.current.focus();
+   }
 
   const RatingApi = () => {
     let params = {
@@ -215,8 +221,8 @@ console.log('+++++pluss++++', item,male_count, female_count)
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}></View>
       <View style={{ justifyContent: "center" }}>
-        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
-          {item?.job_type === "individuals_sahayak" ? "सहायक" : ""}
+        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600"  ,fontFamily:'Devanagari-bold',}}>
+          {item?.job_type === "individuals_sahayak" && "सहायक"}
         </Text>
       </View>
       <ScrollView>
@@ -278,7 +284,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                 editable={false}
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginRight: 8, color: "#0099FF" }}>
+              <Text style={{ marginRight: 8, color: "#0099FF" ,   fontFamily:'Devanagari-regular',}}>
                 {item?.land_area}
                 {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
               </Text>
@@ -398,6 +404,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: "600",
+                    fontFamily:'Devanagari-bold',
                   }}
                 >
                   {response === "Booked"
@@ -418,6 +425,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: "600",
+                    fontFamily:'Devanagari-bold',
                   }}
                 >
                   {item?.status === "Booked"
@@ -473,7 +481,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                     <View style={[styles.modalContainer, styles.modalRight]}>
                       <TouchableOpacity onPress={() => setModalVisible(false)}>
                         <Text style={{ textAlign: "right", marginBottom: 10 }}>
-                          {" "}
+                       
                           <Icon name="close" size={20} color="#000" />
                         </Text>
                       </TouchableOpacity>
@@ -493,15 +501,8 @@ console.log('+++++pluss++++', item,male_count, female_count)
                                   { position: "relative" },
                                 ]}
                               >
-                                <Text
-                                  style={{
-                                    position: "absolute",
-                                    top: -10,
-                                    left: 30,
-                                    width: "auto",
-                                    textAlign: "center",
-                                    backgroundColor: "#fff",
-                                  }}
+                                 <Text
+                                  style={styles.sahaykdetails}
                                 >
                                   सहायक
                                 </Text>
@@ -516,15 +517,8 @@ console.log('+++++pluss++++', item,male_count, female_count)
                                   { position: "relative" },
                                 ]}
                               >
-                                <Text
-                                  style={{
-                                    position: "absolute",
-                                    top: -10,
-                                    left: 30,
-                                    width: "auto",
-                                    textAlign: "center",
-                                    backgroundColor: "#fff",
-                                  }}
+                             <Text
+                                  style={styles.sahaykdetails}
                                 >
                                   गाँव
                                 </Text>
@@ -540,14 +534,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                                 ]}
                               >
                                 <Text
-                                  style={{
-                                    position: "absolute",
-                                    top: -10,
-                                    left: 30,
-                                    width: "auto",
-                                    textAlign: "center",
-                                    backgroundColor: "#fff",
-                                  }}
+                                  style={styles.sahaykdetails}
                                 >
                                   मोबाइल नंबर
                                 </Text>
@@ -577,15 +564,15 @@ console.log('+++++pluss++++', item,male_count, female_count)
               }}
             >
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                <Text style={{ textAlign: "center",fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
               </View>
-              <Text>कोई सुझाव</Text>
-              <TextInput
-                onChangeText={setComment}
-                value={comments}
+              <Text style={{fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
+              <TouchableOpacity
+              onPress={handlebutton}
+               
                 style={{
                   height: 100,
                   borderWidth: 1,
@@ -594,7 +581,14 @@ console.log('+++++pluss++++', item,male_count, female_count)
                   marginTop: 20,
                   borderColor: "#0099FF",
                 }}
-              />
+              >
+                <TextInput
+                  onChangeText={setComment}
+                  value={comments}
+                 
+                  ref={ReviewInput}
+                />
+              </TouchableOpacity>
             </View>
           )}
           {complete !== "Completed" && (
@@ -626,7 +620,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
             >
-              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
+              <Text style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}>समाप्त</Text>
             </TouchableOpacity>
           )}
 
@@ -644,7 +638,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                     borderRadius: 5,
                   }}
                 >
-                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                  <Text style={{ textAlign: "center", color: "#fff", fontFamily:'Devanagari-bold', }}>
                     रद्द करें
                   </Text>
                 </TouchableOpacity>
@@ -667,7 +661,16 @@ const styles = StyleSheet.create({
     //   margin:20,
     //   padding:20
   },
-
+sahaykdetails: {
+  position: "absolute",
+  top: -10,
+  left: 30,
+  width: "auto",
+  textAlign: "center",
+  backgroundColor: "#fff",
+  fontFamily:'Devanagari-bold',
+  paddingHorizontal:10
+},
   sahayak: {
     width: "40%",
     // flexDirection:"column",
@@ -760,6 +763,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily:'Devanagari-bold',
     //   flexDirection:"column",
   },
 
@@ -802,7 +806,7 @@ const styles = StyleSheet.create({
   TextInput: {
     // height: 50,
     padding: 10,
-
+    fontFamily:'Devanagari-regular',
     // fontFamily: "Poppin-Light"
   },
 
