@@ -33,16 +33,16 @@ export default function BottomTab() {
       <Tab.Screen
         name="HomeStack"
         component={HomeStack}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            if (isLoggedIn == true) {
-              navigation.replace("HomePage", usertype);
-            } else {
-              navigation.navigate("Login", usertype);
-            }
-          },
-        })}
+        // listeners={({ navigation, route }) => ({
+        //   tabPress: (e) => {
+        //     e.preventDefault();
+        //     if (isLoggedIn == true) {
+        //       navigation.nav("HomePage", usertype);
+        //     } else {
+        //       navigation.navigate("Login", usertype);
+        //     }
+        //   },
+        // })}
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>

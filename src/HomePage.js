@@ -15,7 +15,10 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import service from "../service";
+import { useNavigation } from '@react-navigation/native';
+
 import moment from "moment";
 
 export default function Homepage({ navigation, route }) {
@@ -65,7 +68,8 @@ export default function Homepage({ navigation, route }) {
       setTotalPages(data.total_pages);
       console.log('jdjhff',currentUsers)
     } catch (error) {
-      console.log("Error:", error);
+      console.log("Error:", error.status);
+     
     } finally {
       setIsLoading(false);
       setRefreshing(false);
