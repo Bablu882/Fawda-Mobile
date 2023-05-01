@@ -75,16 +75,26 @@ export default function ThekeParKaam_Form({ navigation }) {
   ];
 
   const checkIfTimeEnabled = (timeSelect) => {
-    let currentDate = new Date();
-    let time = currentDate.getHours();
+    let currentDateTime = moment();
+   
+    let currentDate = currentDateTime.format('YYYY-MM-DD')
+    console.log(currentDate)
+    console.log(showDate)
+    if(currentDate === showDate) {
+      let time = parseInt(currentDateTime.format('H'));
 
-    let enabledTime = time + 3;
-
-    if (timeSelect < time + 3) {
-      return true;
-    } else {
-      return false;
+      let enabledTime = time + 3;
+  
+      
+      if (timeSelect > time + 3) {
+        return true;
+      } else {
+        return false;
+      }
+    }else{
+      return true
     }
+    
   };
 
   const timeConverted = (item) => {
