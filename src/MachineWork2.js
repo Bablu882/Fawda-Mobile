@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
+  const ReviewInput = useRef(null);
   const token = useSelector(selectToken);
   const { data, payment_status, amount, item, useramount } = route.params ?? {};
   console.log("fjkfkfkff", amount, item, useramount);
@@ -35,6 +36,11 @@ function MachineWork2({ navigation, route }) {
 
   const number = [1, 2, 3, 4];
 
+
+
+  const handleReviewbutton = ()  => {
+    ReviewInput.current.focus()
+  }
   const RatingApi = () => {
     let params = {
       job_id: JSON.stringify(item?.job_id),
@@ -171,7 +177,7 @@ function MachineWork2({ navigation, route }) {
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: "center", flex: 1, marginHorizontal: 10 }}>
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600", fontFamily:'Devanagari-bold', }}
           >
             {item.job_type === "machine_malik"
               ? " मशीन का काम "
@@ -332,15 +338,8 @@ function MachineWork2({ navigation, route }) {
           ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "25%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+              <Text
+                  style={styles.sahayakDetails}
                 >
                   मशीन मालिक
                 </Text>
@@ -350,14 +349,7 @@ function MachineWork2({ navigation, route }) {
 
               <View style={[styles.inputView, { position: "relative" }]}>
                 <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "10%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+                  style={styles.sahayakDetails}
                 >
                   गाँव
                 </Text>
@@ -368,15 +360,8 @@ function MachineWork2({ navigation, route }) {
               </View>
 
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "25%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+              <Text
+                  style={styles.sahayakDetails}
                 >
                   मोबाइल नंबर
                 </Text>
@@ -399,26 +384,29 @@ function MachineWork2({ navigation, route }) {
               }}
             >
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                <Text style={{ textAlign: "center", fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
               </View>
-              <Text>कोई सुझाव</Text>
+              <Text style={{ fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
               <View style={{ width: "100%" }}>
-                <TextInput
-                  style={{
-                    height: 100,
+                <TouchableOpacity onPress={handleReviewbutton}
+                 style={{  height: 100,
                     borderWidth: 1,
                     borderRadius: 10,
                     width: "100%",
                     marginTop: 20,
-                    borderColor: "#0099FF",
-                  }}
+                    borderColor: "#0099FF",}}>
+
+              
+                <TextInput
+                ref={ReviewInput}
                   onChangeText={setComment}
                   value={comments}
-                  //
+                
                 />
+                  </TouchableOpacity>
               </View>
             </View>
           )}
@@ -435,7 +423,7 @@ function MachineWork2({ navigation, route }) {
               }
               disabled={isLoading}
             >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
+              <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
                 {complete && complete["booking-status"] === "Ongoing"
                   ? "रेटिंग दें जारी है"
                   : complete && complete["booking-status"] === "Completed"
@@ -470,7 +458,7 @@ function MachineWork2({ navigation, route }) {
                     borderRadius: 5,
                   }}
                 >
-                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                  <Text style={{ textAlign: "center", color: "#fff", fontFamily:'Devanagari-bold', }}>
                     रद्द करें
                   </Text>
                 </TouchableOpacity>
@@ -551,7 +539,15 @@ const styles = StyleSheet.create({
     borderColor: "#505050",
     // backgroundColor: "#44A347",
   },
-
+sahayakDetails:{
+  position: "absolute",
+  top: -10,
+  left: 30,
+  width: "25%",
+  textAlign: "center",
+  backgroundColor: "#fff",
+  fontFamily:'Devanagari-bold',
+},
   machine: {
     width: "40%",
     flexDirection: "row",
@@ -602,6 +598,7 @@ const styles = StyleSheet.create({
 
   TextInput: {
     padding: 10,
+    fontFamily:'Devanagari-bold',
 
     // fontFamily: "Poppin-Light",
   },

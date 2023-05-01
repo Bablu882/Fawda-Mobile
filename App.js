@@ -52,7 +52,9 @@ const Stack = createNativeStackNavigator();
 export default function App() {
 
  const [fontsLoaded] = useFonts({
-    // "Poppin-Light": require("./assets/font/Devanagari.ttf"),
+
+     "Devanagari-regular": require("./assets/font/Halant-Regular.ttf"),
+     "Devanagari-bold": require("./assets/font/Halant-SemiBold.ttf"),
     });
     
     if (!fontsLoaded) {

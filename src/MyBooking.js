@@ -163,6 +163,7 @@ export default function MyBooking({ navigation, route }) {
                         textAlign: "center",
                         fontSize: 30,
                         fontWeight: "600",
+                        fontFamily:'Devanagari-bold',
                       }}
                     >
                       मेरी बुकिंग
@@ -196,6 +197,7 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -205,7 +207,7 @@ export default function MyBooking({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -258,6 +260,7 @@ export default function MyBooking({ navigation, route }) {
                                       color: "#fff",
                                       fontSize: 15,
                                       fontWeight: "600",
+                                      fontFamily:'Devanagari-bold',
                                     }}
                                   >
                                     {item?.status === "Accepted"
@@ -310,6 +313,7 @@ export default function MyBooking({ navigation, route }) {
                                       color: "#fff",
                                       fontSize: 15,
                                       fontWeight: "600",
+                                      fontFamily:'Devanagari-bold',
                                     }}
                                   >
                                     {item?.status === "Ongoing"
@@ -348,7 +352,7 @@ export default function MyBooking({ navigation, route }) {
                                 ? "ठेके पर काम"
                                 : ""}
                             </Text>
-                            <Text style={{ color: "black" }}>
+                            <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
@@ -394,6 +398,7 @@ export default function MyBooking({ navigation, route }) {
                                     color: "#fff",
                                     fontSize: 15,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-bold',
                                   }}
                                 >
                                   पेंडिंग
@@ -417,14 +422,10 @@ export default function MyBooking({ navigation, route }) {
                           }}
                         >
                           <View style={{ marginLeft: 30 }}>
-                            <Text style={{ fontWeight: "600", fontSize: 18 }}>
-                              {item.job_type === "machine_malik"
-                                ? " मशीनरी"
-                                : ""}
+                            <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
+                              {item.job_type === "machine_malik" && " मशीनरी"}
                             </Text>
-                            <Text style={{ color: "black" }}>
-                              {/* {moment(item?.datetime).format('L')}
-                           { console.log('djdjddj', item?.datetime)} */}
+                            <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
@@ -463,6 +464,7 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 पेंडिंग
@@ -488,12 +490,11 @@ export default function MyBooking({ navigation, route }) {
                         }}
                       >
                         <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                          <Text style={{ fontWeight: "600", fontSize: 18 , fontFamily:'Devanagari-bold',}}>
                             {item.job_type === "machine_malik"
-                              ? " मशीनरी"
-                              : "मशीनरी"}
+                              && " मशीनरी"}
                           </Text>
-                          <Text style={{ color: "black" }}>
+                          <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                             {moment.utc(item?.datetime).format("L")}
                           </Text>
                         </View>
@@ -527,6 +528,7 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.status === "Accepted"
@@ -554,6 +556,7 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
+                                  fontFamily:'Devanagari-bold',
                                 }}
                               >
                                 {item.status === "Ongoing"
@@ -598,7 +601,7 @@ export default function MyBooking({ navigation, route }) {
                     navigation.navigate("MyBookingStack", { screen: "History" });
                   }}
                 >
-                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
+                <Text style={{color:'#fff', lineHeight:20, fontFamily:'Devanagari-bold',}}>पुरानी बुकिंग</Text>
                 </TouchableOpacity>
                </View>
                 </View>
@@ -617,6 +620,7 @@ export default function MyBooking({ navigation, route }) {
                           textAlign: "center",
                           fontSize: 30,
                           fontWeight: "600",
+                          fontFamily:'Devanagari-bold',
                         }}
                       >
                         मेरे काम
@@ -644,7 +648,7 @@ export default function MyBooking({ navigation, route }) {
                             }}
                           >
                             <View style={{ marginLeft: 30 }}>
-                              <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                              <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
                                 {item.job_type === "individuals_sahayak"
                                   ? "सहायक  "
                                   : item.job_type === "theke_pe_kam"
@@ -653,7 +657,7 @@ export default function MyBooking({ navigation, route }) {
                                   ? " मशीनरी"
                                   : null}
                               </Text>
-                              <Text style={{ color: "black" }}>
+                              <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -695,6 +699,7 @@ export default function MyBooking({ navigation, route }) {
                                     marginTop: 7,
                                     color: "#fff",
                                     fontSize: 15,
+                                    fontFamily:'Devanagari-bold',
                                     fontWeight: "600",
                                   }}
                                 >

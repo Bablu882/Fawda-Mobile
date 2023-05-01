@@ -20,31 +20,30 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
-import { setTime } from "../slices/SahayakBookingSlice";
-
-const CustomComponent = ({ label, value }) => {
-  return (
-    <View
-      style={[
-        styles.inputView,
-        styles.inputbox,
-        {
-          flexDirection: "row",
-          justifyContent: "space-around",
-          paddingHorizontal: 10,
-        },
-      ]}
-    >
-      <TextInput
-        style={[styles.TextInput, { width: "100%" }]}
-        placeholder={label}
-        editable={false}
-        placeholderTextColor={"#000"}
-      />
-      <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
-    </View>
-  );
-};
+import CustomComponent from '../Component/CustomComponent'
+// const CustomComponent = ({ label, value }) => {
+//   return (
+//     <View
+//       style={[
+//         styles.inputView,
+//         styles.inputbox,
+//         {
+//           flexDirection: "row",
+//           justifyContent: "space-around",
+//           paddingHorizontal: 10,
+//         },
+//       ]}
+//     >
+//       <TextInput
+//         style={[styles.TextInput, { width: "100%" }]}
+//         placeholder={label}
+//         editable={false}
+//         placeholderTextColor={"#000"}
+//       />
+//       <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
+//     </View>
+//   );
+// };
 
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
@@ -113,6 +112,7 @@ function Theke_MachineForm({ navigation, route }) {
             lineHeight: 30,
             color: "#fff",
             fontSize: 15,
+            fontFamily:'Devanagari-bold',
             fontWeight: "600",
           }}
         >
@@ -397,11 +397,10 @@ function Theke_MachineForm({ navigation, route }) {
               }}
             >
               <Text
-                style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+                style={{ textAlign: "center", fontSize: 30, fontWeight: "600",  fontFamily:'Devanagari-bold' }}
               >
                 {item?.job_type === "theke_pe_kam"
-                  ? "ठेके पर काम"
-                  : "ठेके पर काम"}
+                  && "ठेके पर काम"}
               </Text>
               <View
                 style={[
@@ -497,7 +496,7 @@ function Theke_MachineForm({ navigation, route }) {
                         editable={false}
                         placeholder="भूमि क्षेत्र "
                       />
-                      <Text style={{ right: 10, color: "#0070C0" }}>
+                      <Text style={{ right: 10, color: "#0070C0",fontFamily:'Devanagari-regular', }}>
                         {item?.land_area}
                         {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
                       </Text>
@@ -524,7 +523,7 @@ function Theke_MachineForm({ navigation, route }) {
                             onChangeText={(amount) => setAmount(amount)}
                             value={amount}
                             keyboardType="numeric"
-                            style={{ paddingRight: 10 }}
+                            style={{ paddingRight: 10 ,fontFamily:'Devanagari-regular',}}
                             defaultValue={item?.total_amount_theka}
                           />
                         </>
@@ -541,6 +540,7 @@ function Theke_MachineForm({ navigation, route }) {
                               marginTop: 13,
                               marginRight: 8,
                               color: "#0099FF",
+                              fontFamily:'Devanagari-regular',
                             }}
                           >
                             ₹ {totalamount}
@@ -574,7 +574,7 @@ function Theke_MachineForm({ navigation, route }) {
                                 }}
                               >
                                 <Text
-                                  style={[styles.TextWhite, { fontSize: 12 }]}
+                                  style={[styles.TextWhite, { fontSize: 12,fontFamily:'Devanagari-bold', }]}
                                 >
                                   वेतन बदलें
                                 </Text>
@@ -588,7 +588,7 @@ function Theke_MachineForm({ navigation, route }) {
                                 }}
                               >
                                 <Text
-                                  style={[styles.TextWhite, { fontSize: 12 }]}
+                                  style={[styles.TextWhite, { fontSize: 12,fontFamily:'Devanagari-bold', }]}
                                 >
                                   कन्फर्म
                                 </Text>
@@ -678,7 +678,7 @@ function Theke_MachineForm({ navigation, route }) {
                                 }
                               >
                                 <Text
-                                  style={[styles.loginText, { color: "#fff" }]}
+                                  style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}
                                 >
                                   {item?.status === "Pending"
                                     ? "भुगतान करें"
@@ -697,7 +697,7 @@ function Theke_MachineForm({ navigation, route }) {
                             <Text
                               style={[
                                 styles.loginText,
-                                { color: "#fff", paddingVertical: 10 },
+                                { color: "#fff", paddingVertical: 10,fontFamily:'Devanagari-bold', },
                               ]}
                             >
                               समाप्त
@@ -785,7 +785,7 @@ function Theke_MachineForm({ navigation, route }) {
                           style={styles.BhuktanBtn}
                           onPress={() => accptThekha()}
                         >
-                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                          <Text style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}>
                             काम स्वीकार करें
                           </Text>
                         </TouchableOpacity>
@@ -802,7 +802,7 @@ function Theke_MachineForm({ navigation, route }) {
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff" },
+                                        { color: "#fff",fontFamily:'Devanagari-bold', },
                                       ]}
                                     >
                                       {item?.status === "Accepted"
@@ -825,7 +825,7 @@ function Theke_MachineForm({ navigation, route }) {
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff" },
+                                        { color: "#fff",fontFamily:'Devanagari-bold', },
                                       ]}
                                     >
                                       {item?.status === "Accepted"
@@ -881,7 +881,7 @@ function Theke_MachineForm({ navigation, route }) {
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff" },
+                                        { color: "#fff", },
                                       ]}
                                     >
                                       समाप्त
@@ -1038,41 +1038,12 @@ const styles = StyleSheet.create({
     //   padding:20
   },
 
-  sahayak: {
-    width: "40%",
-    // flexDirection:"column",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
-
-  machine: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    // borderWidth:1,
-    borderRadius: 10,
-    // borderColor:"#505050"
-    backgroundColor: "#44A347",
-  },
+  
 
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily:'Devanagari-regular',
     //   flexDirection:"column",
   },
 
@@ -1113,23 +1084,11 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
+    fontFamily:'Devanagari-regular',
     padding: 10,
   },
 
-  CheckTextInput: {
-    textAlign: "center",
-    marginTop: 10,
-  },
-
-  TaxView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    // borderBottomRightRadius: 7,
-    width: "40%",
-    height: 48,
-    marginTop: 20,
-    borderWidth: 1,
-  },
+  
 
   BhumiView: {
     borderColor: "#0070C0",
@@ -1142,26 +1101,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  DoubleView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    // borderBottomRightRadius: 7,
-    width: "42%",
-    height: 48,
-    marginTop: 10,
-    borderWidth: 1,
-  },
 
-  FemalecheckView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    width: "40%",
-    height: 48,
-    marginTop: 30,
-    borderWidth: 1,
-  },
   flex: {
     display: "flex",
     flexDirection: "row",
@@ -1174,17 +1114,21 @@ const styles = StyleSheet.create({
   },
   TextWhite: {
     color: "#fff",
+    fontFamily:'Devanagari-bold'
   },
   salaryAmount: {
     marginTop: 13,
     marginRight: 8,
     color: "#0099FF",
+    fontFamily:'Devanagari-regular'
   },
   label: {
     position: "absolute",
     top: -10,
     left: 30,
     marginHorizontal: 5,
+    paddingHorizontal:10,
+    fontFamily:'Devanagari-bold',
 
     textAlign: "center",
     backgroundColor: "#fff",

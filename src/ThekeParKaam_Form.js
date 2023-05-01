@@ -80,7 +80,7 @@ export default function ThekeParKaam_Form({ navigation }) {
 
     let enabledTime = time + 3;
 
-    if (timeSelect > time + 3) {
+    if (timeSelect < time + 3) {
       return true;
     } else {
       return false;

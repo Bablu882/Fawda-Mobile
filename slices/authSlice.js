@@ -1,34 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    token: null,
-    isLoggedIn: null,
-    usertype: "",
-}
+  token: null,
+  isLoggedIn: null,
+  usertype: "",
+};
 
 export const authSlice = createSlice({
-    name: 'auth',
-    initialState,
-    reducers: {
-        setToken: (state, action) => {
-            state.token = action.payload;
-            state.isLoggedIn = true
-          
-       
-        },
-        setIsLoading: (state, action) => {
-            state.loading = action.payload
-        },
-        setUserType: (state, action) => {
-            state.usertype = action.payload;
-            console.log('userdata form setUserType ', action)
-        },
-       
-      //  clearAuth: state => initialState
-    }
+  name: "auth",
+  initialState,
+  reducers: {
+    setToken: (state, action) => {
+      state.token = action.payload;
+      state.isLoggedIn = true;
+    },
+    setIsLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setUserType: (state, action) => {
+      state.usertype = action.payload;
+      console.log("userdata form setUserType ", action);
+    },
+
+    clearAuth: (state) => initialState,
+  },
 });
 
-export const { setToken, setUserType, clearAuth, setIsLoading } = authSlice.actions;
+export const { setToken, setUserType, clearAuth, setIsLoading } =
+  authSlice.actions;
 
 export const selectToken = (state) => state.auth.token;
 export const selectUserType = (state) => state.auth.usertype;

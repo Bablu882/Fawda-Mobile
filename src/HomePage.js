@@ -314,13 +314,13 @@ export default function Homepage({ navigation, route }) {
 
                 <View style={{ alignItems: "center" }}>
                   <Text
-                    style={{ fontSize: 28, fontWeight: "600", color: "#000" }}
+                    style={{ fontSize: 28, fontWeight: "600", color: "#000" , fontFamily:'Devanagari-regular'}}
                   >
                     कौनसी सेवा चाहिए
                   </Text>
                 </View>
 
-                <View style={styles.OptionButton1}>
+                <View style={styles.OptionButton}>
                   <TouchableOpacity
                     style={[
                       styles.machine,
@@ -334,6 +334,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -342,6 +343,7 @@ export default function Homepage({ navigation, route }) {
                     </Text>
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -363,6 +365,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "मशीन" ? { color: "#fff" } : null,
                       ]}
@@ -375,7 +378,7 @@ export default function Homepage({ navigation, route }) {
                   <View style={styles.OptionButton}>
                     <TouchableOpacity
                       style={[
-                        styles.theke,
+                        styles.machine,
                         sahayak === "ठेके पर काम"
                           ? {
                               backgroundColor: "#44A347",
@@ -389,6 +392,7 @@ export default function Homepage({ navigation, route }) {
                     >
                       <Text
                         style={[
+                          {fontFamily:'Devanagari-regular'},
                           styles.loginText,
                           sahayak === "ठेके पर काम" ? { color: "#fff" } : null,
                         ]}
@@ -400,7 +404,8 @@ export default function Homepage({ navigation, route }) {
 
                     <TouchableOpacity
                       style={[
-                        styles.theke,
+                        {fontFamily:'Devanagari-regular'},
+                        styles.machine,
                         sahayak === "सहायक"
                           ? {
                               backgroundColor: "#44A347",
@@ -452,6 +457,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    fontFamily:'Devanagari-regular'
   },
   left: {
     marginLeft: 30,
@@ -466,6 +472,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 18,
+    fontFamily:'Devanagari-regular'
   },
   date: {
     color: "black",
@@ -478,6 +485,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 15,
+    fontFamily:'Devanagari-regular'
   },
   bookingButton: {
     width: "30%",
@@ -492,30 +500,33 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
+    fontFamily:'Devanagari-regular'
   },
   OptionButton: {
     // flex:1,
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-evenly",
+    fontFamily:'Devanagari-regular'
     // margin:20,
     //   padding:20
   },
 
-  OptionButton1: {
-    // flex:1,
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-evenly",
-    // margin:20,
-    // marginRight:20
-    // padding:20
-  },
+  // OptionButton1: {
+  //   // flex:1,
+  //   flexDirection: "row",
+  //   width: "100%",
+  //   justifyContent: "space-evenly",
+  //   // margin:20,
+  //   // marginRight:20
+  //   // padding:20
+  // },
   bookingLeft: {
     marginLeft: 30,
   },
   bookingTitle: {
     fontWeight: "600",
+    fontFamily:'Devanagari-bold',
     fontSize: 18,
     // color:"#000"
   },
@@ -541,8 +552,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 7,
     borderBottomRightRadius: 7,
     width: "65%",
+   
     height: 45,
     borderWidth: 1,
+    fontFamily:'Devanagari-regular'
   },
 
   TextInput: {
@@ -559,21 +572,21 @@ const styles = StyleSheet.create({
 
 
   },
-  sahayak: {
-    width: "35%",
-    flexDirection: "column",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    // borderWidth:1,
-    borderRadius: 10,
-    // borderColor:"#505050",
-    backgroundColor: "#44A347",
-  },
+  // sahayak: {
+  //   width: "35%",
+  //   flexDirection: "column",
+  //   // borderRadius: 7,
+  //   color: "#505050",
+  //   height: 50,
+  //   alignItems: "center",
+  //   //   justifyContent:"",
+  //   justifyContent: "center",
+  //   marginTop: 30,
+  //   // borderWidth:1,
+  //   borderRadius: 10,
+  //   // borderColor:"#505050",
+  //   backgroundColor: "#44A347",
+  // },
 
   machine: {
     width: "35%",
@@ -591,37 +604,21 @@ const styles = StyleSheet.create({
     // backgroundColor: "#44A347",
   },
 
-  machine1: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
-
-  theke: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
+  // theke: {
+  //   width: "40%",
+  //   flexDirection: "row",
+  //   // borderRadius: 7,
+  //   color: "#505050",
+  //   height: 50,
+  //   alignItems: "center",
+  //   //   justifyContent:"",
+  //   justifyContent: "center",
+  //   marginTop: 30,
+  //   borderWidth: 1,
+  //   borderRadius: 10,
+  //   borderColor: "#505050",
+  //   // backgroundColor: "#44A347",
+  // },
 
   loginText: {
     color: "#000",
