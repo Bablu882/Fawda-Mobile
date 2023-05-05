@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation.navigate("HomePage" );
+      navigation.navigate("HomeStack", { screen: "HomePage" });
     }
   }, [isLoggedIn]);
 
