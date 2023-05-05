@@ -139,9 +139,14 @@ export default function SahayakForm({ navigation }) {
     setDate(currentDate);
     setShowDate(showDate);
     console.log("fkdfk", showDate);
-    if (isTimeSelected == true) {
-      console.log("ShowTime", showTime);
-      setShowTime(showTime);
+    let currentDateTime = moment();
+    let currentDay = currentDateTime.format('YYYY-MM-DD');
+    if(currentDay === showDate) { 
+      let time = parseInt(currentDateTime.format('H'));
+      console.log('timetimetime',time)
+
+      let enabledTime = time + 3;
+      setTimes('');
     }
   };
 
@@ -224,18 +229,23 @@ export default function SahayakForm({ navigation }) {
       errorMessages.landArea = "Please select your land area";
       valid = false;
     }
-    // if (malepayamount > 0) {
-    //   errorMessages.malepayamount = "Please enter your Male salery ";
-    //   valid = false;
-    // }
-    if (!malepayamount || malepayamount.trim() === "") {
-      errorMessages.malepayamount = "Please enter your Male Pay";
+    if (malepayamount > 0) {
+      errorMessages.malepayamount = "Please enter your Male salery ";
       valid = false;
     }
-    if (!femalepayamount || femalepayamount.trim() === "") {
-      errorMessages.femalepayamount = "Please enter your Male Pay";
+    if (femaleCounts && !femalepayamount) {
+      errorMessages.femalepayamount = "Please enter your Female Pay";
       valid = false;
     }
+    if (maleCounts && !malepayamount) {
+      errorMessages.malepayamount = "Please enter the Male Pay amount";
+      valid = false;
+    }
+    if (maleCounts == "0" || femaleCounts == "0") {
+      errorMessages.maleCounts = "Please enter the Male Pay amount";
+      errorMessages.femaleCounts = "Please enter the Female Pay amount";
+    }
+    
     setErrors(errorMessages);
     return valid;
   };
@@ -251,14 +261,14 @@ export default function SahayakForm({ navigation }) {
       description: description,
       land_area: landArea,
       land_type: landType,
-      count_male: maleCounts,
-      count_female: femaleCounts,
-      pay_amount_male: malepayamount,
-      pay_amount_female: femalepayamount,
+      count_male: maleCounts || '0',
+      count_female: femaleCounts || '0',
+      pay_amount_male: malepayamount || '0',
+      pay_amount_female: femalepayamount || '0',
       num_days: days,
     };
 
-    console.log("params::", params);
+    console.log("paramsparams::", params);
 
     try {
       const response = await service.post("/api/post_individuals/", params, {
@@ -269,6 +279,7 @@ export default function SahayakForm({ navigation }) {
       });
 
       const data = response?.data;
+      console.log('datadata',data)
       if (data?.status === 201) {
         console.log("form", data);
         Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
@@ -609,7 +620,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
               </View>
               {!!errors.femalepayamount && (
-                <Text style={styles.error}>{errors.malepayamount}</Text>
+                <Text style={styles.error}>{errors.femalepayamount}</Text>
               )}
             </View>
           </View>
@@ -658,9 +669,10 @@ export default function SahayakForm({ navigation }) {
           </View>
           <TouchableOpacity
             onPress={() => {
-              if (validate()) {
-                sahayakBooking();
-              }
+              validate(),sahayakBooking();
+              // if (validate()) {
+              
+              // }
             }}
             style={styles.loginBtn}
           >

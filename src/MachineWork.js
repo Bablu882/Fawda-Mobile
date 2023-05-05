@@ -11,12 +11,12 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import Icon from "react-native-vector-icons/AntDesign";
-import BottomTab from "../Component/BottomTab";
+import Icon from "react-native-vector-icons/AntDesign";;
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import Toast from "react-native-simple-toast";
+import CustomComponent from '../Component/CustomComponent'
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 

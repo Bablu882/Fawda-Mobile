@@ -10,6 +10,7 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
+import { BackHandler } from 'react-native';
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
@@ -113,7 +114,20 @@ export default function MyBooking({ navigation, route }) {
     }
    
   }, [page, isFocused]);
-
+  useEffect(() => {
+    const backAction = () => {
+    navigation.goBack();
+    return true;
+    };
+    
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    
+    return () => backHandler.remove();
+    }, []);
+    
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     // Myjobs().then(() => {
@@ -131,7 +145,7 @@ export default function MyBooking({ navigation, route }) {
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() =>    navigation.navigate('HomePage')}>
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>

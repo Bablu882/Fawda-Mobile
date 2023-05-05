@@ -17,7 +17,9 @@ import Homepage from "../src/HomePage";
 import MyBookingStack from "./MyBookingStack";
 import History from "../src/History";
 
-
+const goToMyBookingStack = () => {
+  navigation.navigate('MyBookingStack');
+};
 export default function HomeStack () {
     const Stack = createNativeStackNavigator();
     return(
@@ -29,16 +31,13 @@ export default function HomeStack () {
         >
           
         <Stack.Screen name="HomePage" component={Homepage} />
-        <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} />
         <Stack.Screen name="MyBooking" component={MyBookingStack} /> 
         <Stack.Screen name="SahayakForm" component={SahayakForm} />
+        <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} />
         <Stack.Screen name="MachineBooking" component={MachineBooking} />
         <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
         {/* <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} /> */}
         <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
-        {/* <Stack.Screen name="Payment" component={Payment} /> */}
-   
-        {/* <Stack.Screen name="Mybooking_Sahayak2" component={Mybooking_Sahayak2} /> */}
         <Stack.Screen name="MachineWork" component={MachineWork} />
 
           

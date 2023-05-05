@@ -196,7 +196,6 @@ function Theke_MachineForm2({ navigation, route }) {
       status: "Cancelled-After-Payment",
     };
     console.log("fjffjfjf", params);
-
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -204,43 +203,12 @@ function Theke_MachineForm2({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
+
       const data = response?.data;
       // setStatus(data.status);
       navigation.navigate("HomeStack", { screen: "HomePage" });
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-  const mybookingdetail = async () => {
-    setIsLoading(true); // set isLoading to true when the function starts
-    setRefreshing(true);
-    let params = {
-      sahayak_job_id: JSON.stringify(id),
-      sahayak_job_number: item?.job_number,
-    };
-    console.log("jfjgjg", params);
-
-    try {
-      const cacheBuster = new Date().getTime();
-      const response = await service.post(
-        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
-        params,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = response?.data;
-      setThekeperKams(data?.booking_theke_pe_kam);
-
-      console.log("thekeparpending", data?.sahayak_pending_booking_details);
-      setIsLoading(false);
-      setRefreshing(false);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -352,6 +320,7 @@ function Theke_MachineForm2({ navigation, route }) {
                 style={styles.TextInput}
                 placeholder="काम की स्थिति"
                 placeholderTextColor={"#000"}
+                editable={false}
               />
               <View
                 style={{
@@ -403,7 +372,7 @@ function Theke_MachineForm2({ navigation, route }) {
                       ? "जारी है"
                       : ""}
 
-                    {console.log("")}
+                 
                   </Text>
                 )}
              

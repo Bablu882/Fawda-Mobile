@@ -50,7 +50,7 @@ function Theke_MachineForm({ navigation, route }) {
   const token = useSelector(selectToken);
   const { id, item, totalamount, fawdafee, useramount, jobtype } =
     route?.params ?? {};
-
+console.log('itemitem',item)
   const [ratingList, setRatingList] = useState([]);
   const [bookingstate, setBookingState] = useState();
 
@@ -462,6 +462,7 @@ function Theke_MachineForm({ navigation, route }) {
                     <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
                       {item?.land_area}
                       {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                      {console.log('gggg',item?.land_area)}
                     </Text>
                   </View>
                 )}
@@ -499,6 +500,8 @@ function Theke_MachineForm({ navigation, route }) {
                       <Text style={{ right: 10, color: "#0070C0",fontFamily:'Devanagari-regular', }}>
                         {item?.land_area}
                         {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+
+                   
                       </Text>
                     </View>
                     <View

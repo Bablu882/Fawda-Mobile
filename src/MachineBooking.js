@@ -14,6 +14,7 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import service from "../service";
 import moment from "moment";
+import { BackHandler } from 'react-native';
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-root-toast";
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
@@ -71,7 +72,13 @@ export default function MachineBooking({ navigation }) {
     const showTime = moment(selectedDate).format("H:mm");
     setDate(currentDate);
     setShowDate(showDate);
-  
+    let currentDateTime = moment();
+    let currentDay = currentDateTime.format('YYYY-MM-DD');
+    if(currentDay === showDate) { 
+      let time = parseInt(currentDateTime.format('H'));
+      console.log('timetimetime',time)
+      setTimes('');
+    }
   };
   const onChanges = (event, selectedDate) => {
    
@@ -101,7 +108,19 @@ export default function MachineBooking({ navigation }) {
     isTimeSelected = false;
     showMode("date");
   };
-
+  useEffect(() => {
+    const backAction = () => {
+    navigation.goBack();
+    return true;
+    };
+    
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    
+    return () => backHandler.remove();
+    }, []);
   // const formattedDate = date instanceof Date ? date.toLocaleDateString() : "";
 
   const handleTimeChange = (value) => {

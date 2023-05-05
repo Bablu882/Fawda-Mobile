@@ -26,7 +26,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const { data, payment_status, amount, item, useramount ,male_count, female_count} = route.params ?? {};
-console.log('+++++pluss++++', item,male_count, female_count)
+console.log('+++++pluss++++', item, male_count, female_count)
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
@@ -157,11 +157,12 @@ console.log('+++++pluss++++', item,male_count, female_count)
 
   const cancel = async () => {
     let params = {
-      job_id: JSON.stringify(item?.job_id),
+      job_id: item?.job_id,
       job_number: item?.job_number,
       // booking_id: item?.booking_id,
       status: "Cancelled-After-Payment",
     };
+    console.log("fjffjfjf", params);
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -171,7 +172,8 @@ console.log('+++++pluss++++', item,male_count, female_count)
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage");
+      navigation.navigate("HomeStack", { screen: "HomePage" });
+      console.log("fjfjf", data);
       // setStatus(data.status);
       Toast.show("Job रद्द कर दी गई है", Toast.LONG);
     } catch (error) {
@@ -336,6 +338,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
                 <TextInput
                   style={styles.CheckTextInput}
                   placeholder="पुरषो"
+                  editable ={false}
                   placeholderTextColor={"#000"}
                   name={`Male${index + 1}`}
                 />
@@ -357,6 +360,7 @@ console.log('+++++pluss++++', item,male_count, female_count)
               >
                 <TextInput
                   style={styles.CheckTextInput}
+                  editable={false}
                   placeholder="महिला"
                   placeholderTextColor={"#101010"}
                   name={`Female${index + 1}`}
