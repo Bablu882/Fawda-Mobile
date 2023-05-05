@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { selectToken } from "../slices/authSlice";
+import { BackHandler } from 'react-native';
 const { height } = Dimensions.get("window");
 import {
   setDate,
@@ -96,7 +97,21 @@ export default function ThekeParKaam_Form({ navigation }) {
     }
     
   };
-
+  useEffect(() => {
+    const backAction = () => {
+    navigation.goBack();
+    return true;
+    };
+    
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    
+    return () => backHandler.remove();
+    }, []);
+    
+    
   const timeConverted = (item) => {
     if (item > 12) {
       item = item - 12;
@@ -120,6 +135,19 @@ export default function ThekeParKaam_Form({ navigation }) {
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     setDate(currentDate);
     setShowDate(showDate);
+
+    let currentDateTime = moment();
+   
+    let currentDay = currentDateTime.format('YYYY-MM-DD');
+    if(currentDay === showDate) { 
+      let time = parseInt(currentDateTime.format('H'));
+      console.log('timetimetime',time)
+
+      let enabledTime = time + 3;
+      setTimes('');
+    }
+
+
   };
 
   const showMode = (currentMode) => {

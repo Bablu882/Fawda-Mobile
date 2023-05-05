@@ -56,6 +56,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [countprice, setCountPrice] = useState();
   const [fawdafees, setFawdafees] = useState();
   const [totalamount, setTotalAmount] = useState();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const textInputRef = useRef(null);
   const handleClick = () => {
     setEdit(true);
@@ -129,6 +130,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       updatedStatus[index] = "Accepted";
     }
     setCheckboxStatus(updatedStatus);
+    setIsButtonDisabled(false);
     // Call countAccepted function to update count
     const acceptedCount = countAccepted();
     setAcceptedCount(acceptedCount);
@@ -152,6 +154,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       updatedMaleStatuses[index] = "Accepted";
     }
     setMaleStatuses(updatedMaleStatuses);
+    setIsButtonDisabled(false);
     // Call malecount function to update count
     const maleCount = malecount();
     setMaleCount(maleCount);
@@ -166,6 +169,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     });
     return count;
   };
+
+
 
   function handleFemaleAccepted() {
     const totalfemale = countAccepted();
@@ -1204,9 +1209,12 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               styles.flex,
                               styles.justifyContentBetween,
                               {
-                                paddingHorizontal: 5,
+                                paddingHorizontal: 3,
                                 borderColor: "#0070C0",
-                                // borderRadius: 7,
+                                paddingVertical: 10,
+                                maxWidth: "33.33%",
+                                width: "100%",
+                                marginBottom: 5,
                                 borderWidth: 0.4,
                                 paddingVertical: 10,
                               },
@@ -1245,12 +1253,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     textAlign: "center",
                                     marginTop: 5,
                                     color: "#fff",
-                                    fontSize: 9,
-                                    fontFamily:'Devanagari-bold',
+                                    fontSize: 11,
+                                    paddingHorizontal:10,
                                     fontWeight: "600",
+                                    fontFamily:'Devanagari-regular'
                                   }}
                                 >
-                                  {checkboxStatus[index] || item?.status}
+                                  {checkboxStatus[index] === "Accepted" ? 'स्वीकार' : 'पेंडिंग'}
+                               
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -1266,11 +1276,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           <View
                             style={[
                               styles.flex,
-                              // styles.justifyContentBetween,
+                               styles.justifyContentBetween,
                               {
                                 paddingHorizontal: 3,
                                 borderColor: "#0070C0",
-                                // borderRadius: 7,
+                                paddingVertical: 10,
+                                maxWidth: "33.33%",
+                                width: "100%",
+                                marginBottom: 5,
                                 borderWidth: 0.4,
                                 paddingVertical: 10,
                               },
@@ -1309,12 +1322,14 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     textAlign: "center",
                                     marginTop: 5,
                                     color: "#fff",
-                                    fontSize: 9,
+                                    fontSize: 11,
+                                    paddingHorizontal:10,
                                     fontWeight: "600",
                                     fontFamily:'Devanagari-regular'
                                   }}
                                 >
-                                  {maleStatuses[index] || item?.status}
+                                  {maleStatuses[index] === 'Accepted' ? 'स्वीकार' : 'पेंडिंग'}
+                                  {/* jhjjhr */}
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -1542,9 +1557,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     {item?.status === "Pending" ? (
                       <TouchableOpacity
                         style={styles.BhuktanBtn}
+                        disabled={isButtonDisabled}
                         onPress={() => acceptSahayak()}
                       >
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
+                        <Text style={[styles.loginText, { color: "#fff", }]}>
                           काम स्वीकार करें
                         </Text>
                       </TouchableOpacity>

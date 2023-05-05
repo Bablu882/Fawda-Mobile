@@ -85,6 +85,7 @@ export default function BottomTab() {
             name="MyBookingStack"
             component={MyBookingStack}
             options={{
+              
               tabBarIcon: ({ focused, color, size }) => (
                 <View style={{ alignItems: "center" }}>
                   <Image
