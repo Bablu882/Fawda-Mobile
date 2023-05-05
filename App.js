@@ -52,38 +52,6 @@ import * as Device from 'expo-device';
 let persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 
-// This function can be defined outside the App component
-// async function registerForPushNotificationsAsync() {
-//   let token;
-//   if (Constants.isDevice) {
-//     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-//     let finalStatus = existingStatus;
-//     if (existingStatus !== 'granted') {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       finalStatus = status;
-//     }
-//     if (finalStatus !== 'granted') {
-//       alert('Failed to get push token for push notification!');
-//       return;
-//     }
-//     token = (await Notifications.getExpoPushTokenAsync()).data;
-//     console.log(token);
-//   } else {
-//     alert('Must use a physical device for push notifications');
-//   }
-
-//   if (Platform.OS === 'android') {
-//     Notifications.setNotificationChannelAsync('default', {
-//       name: 'default',
-//       importance: Notifications.AndroidImportance.MAX,
-//       vibrationPattern: [0, 250, 250, 250],
-//       lightColor: '#FF231F7C',
-//     });
-//   }
-
-//   return token;
-// }
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -107,6 +75,7 @@ async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === 'android') {
+    alert('here registerForPushNotificationsAsync in android')
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
@@ -126,8 +95,9 @@ async function registerForPushNotificationsAsync() {
       alert('Failed to get push token for push notification!');
       return;
     }
+    alert(finalStatus);
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
+    console.log("here is token =>",token);
   } else {
     alert('Must use physical device for Push Notifications');
   }
