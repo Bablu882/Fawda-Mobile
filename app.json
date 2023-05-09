@@ -17,7 +17,13 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "in.fawda.app"
+      "package": "in.fawda.app",
+      "googleServicesFile": "./google-services.json"
+    },
+    "notification": {
+      "icon": "./assets/image/Fawda-logo-notification.png",
+      "color": "#FF5733",
+      "iosDisplayInForeground": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "52604732065",
+    "project_id": "fawda-app",
+    "storage_bucket": "fawda-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52604732065:android:5ab54ec5e07a5ebed826e0",
+        "android_client_info": {
+          "package_name": "in.fawda.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "52604732065-b58j2eratngmem2h074s5djed20hovhc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD293H-S9p3JmI1BCv85CDeAr6pxNiOOBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "52604732065-b58j2eratngmem2h074s5djed20hovhc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
