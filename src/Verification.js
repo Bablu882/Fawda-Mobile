@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Service from "../service/index";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import { useDispatch, useSelector } from "react-redux";
 import { selectToken, setUserType } from "../slices/authSlice";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
@@ -52,12 +53,12 @@ export default function Verification({ navigation, route }) {
         navigation.replace("HomePage");
       } else {
         // Show error message
-        Toast.show(verifyData?.error || "Unknown error", Toast.SHORT);
+        Toast.show(verifyData?.otp, Toast.SHORT);
       }
     } catch (error) {
       console.log(error);
       // Show error message
-      Toast.show("Error verifying OTP", Toast.SHORT);
+      Toast.show(JSON.stringify(error.message), Toast.SHORT);
     }
   };
 
@@ -133,11 +134,14 @@ export default function Verification({ navigation, route }) {
             // styles.TextInput,
              styles.inputView,
              styles.textInputContainer ,
-            //{ width: "100%", marginHorizontal: "auto", textAlign: "center",borderWidth:1, paddingHorizontal:100, paddingVertical:5},
+
           ]}
           placeholder="ओटीपी डालें"
           placeholderTextColor={"#848484"}
           secureTextEntry={true}
+          keyboardType="numeric"
+          
+          maxLength={6}
           onChangeText={(text) => setOtp(text, "otp")}
         />
       </View>

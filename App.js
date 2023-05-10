@@ -23,13 +23,11 @@ import SplashScreen from "./src/SplashScreen";
 import { useFonts } from "expo-font";
 import Verification from "./src/Verification";
 import Register from "./src/Register";
-import Homepage from "./src/HomePage";
 // import SahayakBooking from "./src/SahayakBooking";
 import BottomTab from "./Component/BottomTab";
 import ThekeParKaam_Form from "./src/ThekeParKaam_Form";
 import SahayakForm from "./src/SahayakForm";
 import MachineBooking from "./src/MachineBooking";
-import MyBooking from "./src/MyBooking";
 import Theke_MachineForm from "./src/Theke_MachineForm";
 import MyBook_SahayakForm from "./src/MyBook_SahayakForm";
 import Theke_k_Kaam from "./src/Theke_k_Kaam";
@@ -45,6 +43,12 @@ import { About_us } from "./src/AboutUs";
 import { Privacy_policy } from "./src/PrivacyPolicy";
 import Thankyou from "./src/Thankyou";
 import { navigationRef } from './service/NavigationService';
+<<<<<<< HEAD
+=======
+import HomeStack from "./navigations/HomeStack";
+
+
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
@@ -75,7 +79,11 @@ async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === 'android') {
+<<<<<<< HEAD
     alert('here registerForPushNotificationsAsync in android')
+=======
+    //alert('here registerForPushNotificationsAsync in android')
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
@@ -92,6 +100,7 @@ async function registerForPushNotificationsAsync() {
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
+<<<<<<< HEAD
       alert('Failed to get push token for push notification!');
       return;
     }
@@ -100,6 +109,16 @@ async function registerForPushNotificationsAsync() {
     console.log("here is token =>",token);
   } else {
     alert('Must use physical device for Push Notifications');
+=======
+      console.log('Failed to get push token for push notification!');
+      return;
+    }
+    console.log(finalStatus);
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("here is token =>",token);
+  } else {
+    console.log('Must use physical device for Push Notifications');
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
   }
 
   return token;
@@ -124,14 +143,24 @@ export default function App() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
   const [fontsLoaded] = useFonts({
+<<<<<<< HEAD
     // "Poppin-Light": require("./assets/font/Devanagari.ttf"),
+=======
+   
+    "Devanagari-regular": require("./assets/font/Halant-Regular.ttf"),
+    "Devanagari-bold": require("./assets/font/Halant-SemiBold.ttf"),
+
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
     });
     
     if (!fontsLoaded) {
@@ -147,7 +176,10 @@ export default function App() {
               screenOptions={{
                 headerShown: false,
               }}
+<<<<<<< HEAD
               initialRouteName="Login"
+=======
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
             >
               <Stack.Screen name="SplashScreen" component={SplashScreen} />
               <Stack.Screen name="Login" component={Login}/>
@@ -172,8 +204,11 @@ export default function App() {
               <Stack.Screen name="privacy" component={Privacy_policy} />
               <Stack.Screen name="Thankyou" component={Thankyou} />
               
+<<<<<<< HEAD
 
             
+=======
+>>>>>>> 4b5b11111084cdfecb75c38097bd1938d5b6663b
             </Stack.Navigator>
           </PersistGate>
         </Provider>

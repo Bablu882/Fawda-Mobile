@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -15,56 +15,60 @@ import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
 import { selectToken } from "../slices/authSlice";
 import moment from "moment";
-import Toast from "react-native-simple-toast";
+import Toast from "react-native-root-toast";
+
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
+  const ReviewInput = useRef(null);
   const token = useSelector(selectToken);
-  const [checked, setChecked] = React.useState("first");
-  const [thekeperKam, setThekeperKam] = useState({});
-  const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, data, payment_status);
+  const { data, payment_status, amount, item, useramount } = route.params ?? {};
+  console.log("fjkfkfkff", amount, item, useramount);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  // const bookingid = route?.params?.item;
-  // console.log("bookingid", bookingid);
-  const [colors, setColors] = useState(Array(10).fill("white"));
-  const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [status, setStatus] = useState("");
-
-  //  const [colors, setColors] = useState(Array(10).fill("white"));
+  const [response, setResponse] = useState(null);
+  const [complete, setCompleted] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [numbers, setNumber] = useState(0);
 
   const number = [1, 2, 3, 4];
 
-  const RatingApi = async () => {
+
+
+  const handleReviewbutton = ()  => {
+    ReviewInput.current.focus()
+  }
+  const RatingApi = () => {
     let params = {
-      booking_job: data,
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
       rating: ratings,
       comment: comments,
     };
 
-    try {
-      const response = await service.post("/api/rating/create/", params, {
+    service
+      .post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        if (data?.status === 201) {
+          navigation.replace("Thankyou");
+          
+        } else {
+          console.log("error message");
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
-      const data = response?.data;
-      // setThekeperKam(data.data);
-      navigation.navigate("HomePage")
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
-  // const {  item , status} = route.params;
-  // console.log("fjds", status , item);
 
   const handleClick = (index) => {
     setRating(index + 1);
@@ -84,100 +88,66 @@ function MachineWork2({ navigation, route }) {
     );
   };
 
-  const fetchBookings = async () => {
-    try {
-      const response = await service.get("api/my_booking_details/", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response.data;
-      setThekeperKam(item.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const accptThekha = async () => {
+  const Ongoing = () => {
+    setIsLoading(true);
     let params = {
-      job_id: item.id,
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
     };
-
-    try {
-      const response = await service.post("/api/accept_theka/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setResponse(data["booking-status"]);
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-  useEffect(() => {
-    fetchBookings();
-  }, [0]);
-
-  const onGoing = async () => {
+  const bookingcompleted = () => {
+    setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
     };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setCompleted(data["booking-status"]);
+        setResponse(data["booking-status"]);
 
-  const Completed = async () => {
-    let params = {
-      booking_id: JSON.stringify(item?.booking_id),
-    };
-    console.log("fhsfhdfhdfh", params);
-    try {
-      const response = await service.post("/api/booking_completed/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log(status, "check status");
-     
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
 
   const cancel = async () => {
-    let params = {};
-    if (payment_status === "success") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    }
+    let params = {
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment",
+    };
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -187,9 +157,9 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.replace("HomePage")
+      navigation.navigate("HomeStack", { screen: "HomePage" });
       // setStatus(data.status);
-      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -199,15 +169,15 @@ function MachineWork2({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: "center", flex: 1, marginHorizontal: 10 }}>
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600", fontFamily:'Devanagari-bold', }}
           >
             {item.job_type === "machine_malik"
               ? " मशीन का काम "
@@ -256,19 +226,22 @@ function MachineWork2({ navigation, route }) {
                 { alignItems: "center" },
               ]}
             >
-              <Text style={[styles.label,{marginLeft:10}]}>भूमि क्षेत्र</Text>
+              <Text style={[styles.label, { marginLeft: 10 }]}>
+                भूमि क्षेत्र
+              </Text>
               <TextInput
                 style={styles.TextInput}
                 placeholderTextColor="#848484"
+                editable={false}
                 placeholder=""
               />
               <Text
                 style={{
-                paddingRight:10,
+                  paddingRight: 10,
                   color: "#0099FF",
                 }}
               >
-                {item?.land_area }
+                {item?.land_area}
                 {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
               </Text>
             </View>
@@ -282,11 +255,14 @@ function MachineWork2({ navigation, route }) {
             >
               <TextInput
                 style={styles.TextInput}
+                editable={false}
                 placeholder="वेतन"
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginTop: 13, color: "#0099FF", paddingRight:10 }}>
-                ₹ {item?.total_amount_machine}
+              <Text
+                style={{ marginTop: 13, color: "#0099FF", paddingRight: 10 }}
+              >
+                ₹ {useramount}
               </Text>
             </View>
           </View>
@@ -300,6 +276,7 @@ function MachineWork2({ navigation, route }) {
           >
             <TextInput
               style={styles.TextInput}
+              editable={false}
               placeholder="काम की स्थिति"
               placeholderTextColor={"#000"}
             />
@@ -312,8 +289,7 @@ function MachineWork2({ navigation, route }) {
                 marginTop: 8,
               }}
             >
-            
-              {status === "Ongoing" ? (
+              {response ? (
                 <Text
                   style={{
                     textAlign: "center",
@@ -323,20 +299,15 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  जारी है
-                 
-                </Text>
-              ) : status === "Completed" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  समाप्त
+                  {response === "Booked"
+                    ? "बुक"
+                    : response === "Accepted"
+                    ? "स्वीकार"
+                    : response === "Ongoing"
+                    ? "जारी है"
+                    : response === "Completed"
+                    ? "समाप्त"
+                    : ""}
                 </Text>
               ) : (
                 <Text
@@ -348,28 +319,27 @@ function MachineWork2({ navigation, route }) {
                     fontWeight: "600",
                   }}
                 >
-                  {/* {bookingid?.status} */}
-                  बुक
-                 
+                  {item.status === "Booked"
+                    ? "बुक"
+                    : item.status === "Accepted"
+                    ? "बुक"
+                    : item.status === "Ongoing"
+                    ? "जारी है"
+                    : ""}
+
+                  {console.log("")}
                 </Text>
               )}
             </View>
           </View>
 
-          { status === "Completed" ? (
+          {complete === "Completed" ? (
             ""
           ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "25%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+              <Text
+                  style={styles.sahayakDetails}
                 >
                   मशीन मालिक
                 </Text>
@@ -379,14 +349,7 @@ function MachineWork2({ navigation, route }) {
 
               <View style={[styles.inputView, { position: "relative" }]}>
                 <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "10%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+                  style={styles.sahayakDetails}
                 >
                   गाँव
                 </Text>
@@ -397,15 +360,8 @@ function MachineWork2({ navigation, route }) {
               </View>
 
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "25%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
+              <Text
+                  style={styles.sahayakDetails}
                 >
                   मोबाइल नंबर
                 </Text>
@@ -417,65 +373,117 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-          { status === "Completed" && (
+          {complete === "Completed" && (
             <View
               style={{
                 width: "100%",
                 flexDirection: "column",
-                justifyContent: "center",
+                // justifyContent: "center",
                 alignItems: "center",
                 marginTop: 20,
               }}
             >
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ textAlign: "center" }}>रेटिंग दें </Text>
+                <Text style={{ textAlign: "center", fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
               </View>
-              <Text>कोई सुझाव</Text>
-              <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  width: "100%",
-                  marginTop: 20,
-                  borderColor: "#0099FF",
-                }}
-              >
-                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
+              <Text style={{ fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
+              <View style={{ width: "100%" }}>
+                <TouchableOpacity onPress={handleReviewbutton}
+                 style={{  height: 100,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    width: "100%",
+                    marginTop: 20,
+                    borderColor: "#0099FF",}}>
+
+              
+                <TextInput
+                ref={ReviewInput}
+                  onChangeText={setComment}
+                  value={comments}
+                
+                />
+                  </TouchableOpacity>
               </View>
             </View>
           )}
-          { status === "Ongoing" ? (
+
+          {complete !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => Completed()}
+              onPress={
+                response === "Ongoing" || item?.status === "Ongoing"
+                  ? bookingcompleted
+                  : response === "Completed"
+                  ? () => RatingApi()
+                  : () => Ongoing()
+              }
+              disabled={isLoading}
             >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम पूरा हुआ
+              <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
+                {complete && complete["booking-status"] === "Ongoing"
+                  ? "रेटिंग दें जारी है"
+                  : complete && complete["booking-status"] === "Completed"
+                  ? "रेटिंग दें"
+                  : response === "Ongoing" || item?.status === "Ongoing"
+                  ? "काम पूरा हुआ"
+                  : "काम शुरू करें"}
               </Text>
             </TouchableOpacity>
-          ) : status === "Completed" ? (
+          )}
+
+          {complete === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => RatingApi()}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => onGoing()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम शुरू करें
-              </Text>
-            </TouchableOpacity>
           )}
 
-          { status === "Completed" ? (
+          {item?.status != "Completed" &&
+            response != "Ongoing" &&
+            response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff", fontFamily:'Devanagari-bold', }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          {/* {item?.status === "Booked" ||
+            (response != "Ongoing" && response !== "Completed" && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                <TouchableOpacity
+                  onPress={() => cancel()}
+                  style={{
+                    backgroundColor: "#D9D9D9",
+                    alignSelf: "center",
+                    paddingHorizontal: 50,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ textAlign: "center", color: "#fff" }}>
+                    रद्द करें
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))} */}
+          {/* {item?.status === "Booked" && (
             <View style={{ marginTop: "auto", padding: 5 }}>
               <TouchableOpacity
                 onPress={() => cancel()}
@@ -492,7 +500,7 @@ function MachineWork2({ navigation, route }) {
                 </Text>
               </TouchableOpacity>
             </View>
-          ) : null}
+          )} */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -531,7 +539,15 @@ const styles = StyleSheet.create({
     borderColor: "#505050",
     // backgroundColor: "#44A347",
   },
-
+sahayakDetails:{
+  position: "absolute",
+  top: -10,
+  left: 30,
+  width: "25%",
+  textAlign: "center",
+  backgroundColor: "#fff",
+  fontFamily:'Devanagari-bold',
+},
   machine: {
     width: "40%",
     flexDirection: "row",
@@ -554,7 +570,6 @@ const styles = StyleSheet.create({
     //   flexDirection:"column",
   },
 
-
   BhuktanBtn: {
     width: "100%",
     borderRadius: 7,
@@ -574,7 +589,7 @@ const styles = StyleSheet.create({
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
-   
+
     width: "100%",
     height: 48,
     marginTop: 15,
@@ -583,8 +598,9 @@ const styles = StyleSheet.create({
 
   TextInput: {
     padding: 10,
+    fontFamily:'Devanagari-bold',
 
-    fontFamily: "Poppin-Light",
+    // fontFamily: "Poppin-Light",
   },
   TaxView: {
     borderColor: "#0070C0",

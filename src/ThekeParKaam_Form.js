@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { selectToken } from "../slices/authSlice";
+import { BackHandler } from 'react-native';
 const { height } = Dimensions.get("window");
 import {
   setDate,
@@ -39,7 +40,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   const token = useSelector(selectToken);
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
-
+  const textInputRef = useRef(null);
   const [time, setTimes] = useState("");
   const [description, setDescriptions] = useState("");
   const [landType, setLandTypes] = useState("");
@@ -58,7 +59,6 @@ export default function ThekeParKaam_Form({ navigation }) {
     totalAmount: "",
   });
 
-  
   var isTimeSelected = false;
   const pickerRef = useRef();
   function open() {
@@ -76,18 +76,42 @@ export default function ThekeParKaam_Form({ navigation }) {
   ];
 
   const checkIfTimeEnabled = (timeSelect) => {
-    let currentDate = new Date();
-    let time = currentDate.getHours();
+    let currentDateTime = moment();
+   
+    let currentDate = currentDateTime.format('YYYY-MM-DD')
+    console.log(currentDate)
+    console.log(showDate)
+    if(currentDate === showDate) {
+      let time = parseInt(currentDateTime.format('H'));
 
-    let enabledTime = time + 3;
-
-    if (timeSelect > time + 3) {
-      return true;
-    } else {
-      return false;
+      let enabledTime = time + 3;
+  
+      
+      if (timeSelect > time + 3) {
+        return true;
+      } else {
+        return false;
+      }
+    }else{
+      return true
     }
+    
   };
-
+  useEffect(() => {
+    const backAction = () => {
+    navigation.goBack();
+    return true;
+    };
+    
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    
+    return () => backHandler.remove();
+    }, []);
+    
+    
   const timeConverted = (item) => {
     if (item > 12) {
       item = item - 12;
@@ -111,6 +135,19 @@ export default function ThekeParKaam_Form({ navigation }) {
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     setDate(currentDate);
     setShowDate(showDate);
+
+    let currentDateTime = moment();
+   
+    let currentDay = currentDateTime.format('YYYY-MM-DD');
+    if(currentDay === showDate) { 
+      let time = parseInt(currentDateTime.format('H'));
+      console.log('timetimetime',time)
+
+      let enabledTime = time + 3;
+      setTimes('');
+    }
+
+
   };
 
   const showMode = (currentMode) => {
@@ -174,11 +211,6 @@ export default function ThekeParKaam_Form({ navigation }) {
   };
   const handleBooking = async () => {
     try {
-      //   const datetime =
-      //   moment(showDate).format("YYYY-MM-DD") +
-      //   " " +
-      //   moment(time, "h:mm A").format('HH:mm:ss.SSSSSS')
-      //  ;
       const datetime =
         moment(showDate).format("YYYY-MM-DD") +
         "T" +
@@ -190,26 +222,31 @@ export default function ThekeParKaam_Form({ navigation }) {
         land_area: landArea,
         total_amount_theka: totalAmount,
       };
-      console.log("params::::::", params);
+
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = response?.data;
-      console.log("form", data);
-      Toast.show("Job Posted Successfully!", Toast.SORT);
-
-      navigation.replace("MyBooking");
+      if (data?.status === 201) {
+        Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
+        navigation.navigate('MyBookingStack',{screen: "MyBooking"});
+      
+      } else {
+        Toast.show(
+          data.error,
+          Toast.SORT
+        );
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   // validate fields start
- 
 
   const validate = () => {
     let valid = true;
@@ -234,8 +271,9 @@ export default function ThekeParKaam_Form({ navigation }) {
     if (description.trim() === "") {
       errorMessages.description = "Please enter your description";
       valid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
-      errorMessages.description = "Please enter a valid description (letters only)";
+    } else if (!/^[a-zA-Z\s.]+$/.test(description.trim())) {
+      errorMessages.description =
+        "Please enter a valid description (letters only)";
       valid = false;
     }
 
@@ -248,18 +286,29 @@ export default function ThekeParKaam_Form({ navigation }) {
       errorMessages.landArea = "Please select your land area";
       valid = false;
     }
-
     if (totalAmount.trim() === "") {
       errorMessages.totalAmount = "Please enter your amount";
       valid = false;
+    } else if (!/^[0-9\s.]+$/.test(totalAmount.trim())) {
+      errorMessages.totalAmount = "Only numbers are allowed";
+      valid = false;
+    } else if (parseFloat(totalAmount.trim()) <= 5) {
+      errorMessages.totalAmount = "Please enter an amount greater than 5";
+      valid = false;
     }
+    
+    // if (totalAmount.trim() === "") {
+    //   errorMessages.totalAmount = "Please enter your amount";
+    //   valid = false;
+    // }else if (totalAmount.trim().length > 5) {
+    //   errorMessages.totalAmount = "Please enter your amount grater than 5";
+    //   valid = false;
+    // }
 
     setErrors(errorMessages);
     return valid;
   };
 
-
-  
   // end validation
   return (
     <SafeAreaView style={styles.container}>
@@ -275,7 +324,7 @@ export default function ThekeParKaam_Form({ navigation }) {
         >
           <KeyboardAvoidingView
             behavior="padding"
-            style={{ height: height * 0.9 }}
+            style={{ height: height * 0.8 }}
           >
             <>
               <View>
@@ -347,25 +396,26 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <Text style={styles.error}>{errors.showDate}</Text>
                 )}
 
-                <View
+<View
                   style={[
                     styles.dropdownGender,
                     styles.justifyContentBetween,
                     styles.flex,
                   ]}
                 >
-                  <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-                    {time ? time : "-समय-"}
-                  </Text>
                   <Picker
                     ref={pickerRef}
                     selectedValue={time}
-                    style={{ width: 40 }}
+                    style={{ width: "100%" }}
                     onValueChange={(itemValue, itemIndex) =>
                       setTimes(timeConverted(itemValue))
                     }
                   >
-                    <Picker.Item enabled={false} label="-समय-" value="" />
+                    <Picker.Item
+                      style={{ color: time ? "#000" : "#ccc" }}
+                      label={time ? time : "-समय-"}
+                      value=""
+                    />
                     {timings.map((item, index) => {
                       return (
                         <Picker.Item
@@ -414,11 +464,11 @@ export default function ThekeParKaam_Form({ navigation }) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <View style={{ maxWidth:'50%',width:'100%'}}>
+                  <View style={{ maxWidth: "50%", width: "100%" }}>
                     <View
                       style={[
-                        styles.inputView,{width:'100%'}
-                        ,
+                        styles.inputView,
+                        { width: "100%" },
                         { marginRight: 10 },
                         // styles.flex,
                         // styles.justifyContentBetween,
@@ -440,7 +490,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                     )}
                   </View>
 
-                  <View style={{maxWidth:'50%', width:'100%'}}>
+                  <View style={{ maxWidth: "50%", width: "100%" }}>
                     <View
                       style={[
                         styles.inputView,
@@ -452,23 +502,22 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
-                      <Text
-                        style={{ color: landType ? "#000" : "#ccc", left: 5 }}
-                      >
-                        {landType ? landType : "किल्ला/बीघा"}
-                      </Text>
                       <Picker
-                        style={{ width: 20 }}
+                        style={{ width: "100%" }}
                         ref={pickerRef}
                         selectedValue={landType}
                         onValueChange={(itemValue, itemIndex) =>
                           setLandTypes(itemValue)
                         }
                       >
-                        <Picker.Item label="किल्ला/बीघा" value="" />
+                        <Picker.Item
+                          style={{ color: landType ? "#000" : "#ccc" }}
+                          label="किल्ला/बीघा"
+                          value=""
+                        />
                         {landtypes.map((item) => (
                           <Picker.Item
-                            label={item.name}
+                            label={item.name === "Bigha" ? "बीघा" : "किल्ला"}
                             value={item.name}
                             key={item.id}
                           />
@@ -480,30 +529,41 @@ export default function ThekeParKaam_Form({ navigation }) {
                     )}
                   </View>
                 </View>
-
-                <View
-                  style={[
-                    styles.inputView,
-                    styles.flex,
-                    styles.justifyContentBetween,
-                  ]}
-                >
-                  <Text style={{ left: 5, color: "#ccc" }}>वेतन</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={{ color: "#0070C0" }}>₹ </Text>
-                    <TextInput
-                      style={[styles.TextInput, { color: "#0070C0" }]}
-                      placeholder="0.00"
-                      //  style={{color:'#0070C0'}}
-                      placeholderTextColor={"#0070C0"}
-                      keyboardType="numeric"
-                      onChangeText={(totalAmount) =>
-                        handleTotalAmount(totalAmount)
-                      }
-                      value={totalAmount}
-                    />
-                  </View>
-                </View>
+                <TouchableOpacity
+            onPress={() => {
+              textInputRef.current.focus();
+            }}
+          >
+            <View
+              style={[
+                styles.inputView,
+                {
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
+              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
+                वेतन
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={{ color: "#0099FF", }}>₹ </Text>
+                <TextInput
+                  ref={textInputRef}
+                  style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
+                  keyboardType="numeric"
+                  placeholderTextColor={"#0099FF"}
+                  value={totalAmount}
+                  placeholder="0.00"
+                  onChangeText={(totalAmount) =>
+                    handleTotalAmount(totalAmount)
+                  }
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+               
                 {!!errors.totalAmount && (
                   <Text style={styles.error}>{errors.totalAmount}</Text>
                 )}
@@ -582,7 +642,6 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     fontSize: 13,
-   
   },
 
   loginBtn: {

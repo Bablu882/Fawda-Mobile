@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Service from "../service/index";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-root-toast';
+
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, setToken } from "../slices/authSlice";
 import { useIsFocused } from "@react-navigation/native";
@@ -26,10 +27,11 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation.navigate("HomePage");
+      navigation.navigate("HomeStack", { screen: "HomePage" });
     }
-  }, []);
+  }, [isLoggedIn]);
 
+  
   const login = async () => {
     setLoading(true);
     const loginData = {
@@ -55,13 +57,13 @@ export default function Login({ navigation }) {
           phone
         });
       } else {
-        Toast.show("User is not Registered", Toast.SHORT);
+        Toast.show(loginResponse.message, Toast.SHORT);
         navigation.replace("Register", { phone });
         console.log("phone:", phone);
       }
     } catch (error) {
       console.log(error);
-      Toast.show("Invalid Credentials", Toast.SHORT);
+      Toast.show(JSON.stringify(error.message), Toast.SHORT);
     } finally {
       setLoading(false);
     }

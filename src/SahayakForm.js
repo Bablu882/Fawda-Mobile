@@ -13,8 +13,10 @@ import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
 import { useIsFocused } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import Toast from "react-native-root-toast";
+import Toast from 'react-native-root-toast';
+
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+
 import moment from "moment";
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import {
@@ -83,9 +85,12 @@ export default function SahayakForm({ navigation }) {
   ];
 
   const checkIfTimeEnabled = (timeSelect) => {
-    let currentDate = new Date();
-    let time = currentDate.getHours();
+    let currentDateTime = moment();
+    let currentDate = currentDateTime.format('YYYY-MM-DD');
+    if (currentDate === showDate) {
+      let time = parseInt(currentDateTime.format('H'));
 
+      
     let enabledTime = time + 3;
 
     if (timeSelect > time + 3) {
@@ -93,6 +98,9 @@ export default function SahayakForm({ navigation }) {
     } else {
       return false;
     }
+  }else{
+    return true
+  }
   };
 
   const timeConverted = (item) => {
@@ -131,9 +139,14 @@ export default function SahayakForm({ navigation }) {
     setDate(currentDate);
     setShowDate(showDate);
     console.log("fkdfk", showDate);
-    if (isTimeSelected == true) {
-      console.log("ShowTime", showTime);
-      setShowTime(showTime);
+    let currentDateTime = moment();
+    let currentDay = currentDateTime.format('YYYY-MM-DD');
+    if(currentDay === showDate) { 
+      let time = parseInt(currentDateTime.format('H'));
+      console.log('timetimetime',time)
+
+      let enabledTime = time + 3;
+      setTimes('');
     }
   };
 
@@ -183,7 +196,7 @@ export default function SahayakForm({ navigation }) {
     if (description.trim() === "") {
       errorMessages.description = "Please enter your description";
       valid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
+    } else if (!/^[a-zA-Z\s.]+$/.test(description.trim())) {
       errorMessages.description =
         "Please enter a valid description (letters only)";
       valid = false;
@@ -216,22 +229,23 @@ export default function SahayakForm({ navigation }) {
       errorMessages.landArea = "Please select your land area";
       valid = false;
     }
-    // if (malepayamount > 0) {
-    //   errorMessages.malepayamount = "Please enter your Male salery ";
-    //   valid = false;
-    // }
-    if (!malepayamount || malepayamount.trim() === "") {
-      errorMessages.malepayamount = "Please enter your Male Pay";
+    if (malepayamount > 0) {
+      errorMessages.malepayamount = "Please enter your Male salery ";
       valid = false;
     }
-    if (!femalepayamount || femalepayamount.trim() === "") {
-      errorMessages.femalepayamount = "Please enter your Male Pay";
+    if (femaleCounts && !femalepayamount) {
+      errorMessages.femalepayamount = "Please enter your Female Pay";
       valid = false;
     }
-    // if (femalepayamount.trim() === "") {
-    //   errorMessages.femalepayamount = "Please enter your female salery ";
-    //   valid = false;
-    // }
+    if (maleCounts && !malepayamount) {
+      errorMessages.malepayamount = "Please enter the Male Pay amount";
+      valid = false;
+    }
+    if (maleCounts == "0" || femaleCounts == "0") {
+      errorMessages.maleCounts = "Please enter the Male Pay amount";
+      errorMessages.femaleCounts = "Please enter the Female Pay amount";
+    }
+    
     setErrors(errorMessages);
     return valid;
   };
@@ -241,21 +255,20 @@ export default function SahayakForm({ navigation }) {
       moment(showDate).format("YYYY-MM-DD") +
       "T" +
       moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
-    console.log("date", datetime);
     const params = {
       datetime: datetime,
       // datetime: "2023-03-16 17:05:42.000000",
       description: description,
       land_area: landArea,
       land_type: landType,
-      count_male: maleCounts,
-      count_female: femaleCounts,
-      pay_amount_male: malepayamount,
-      pay_amount_female: femalepayamount,
+      count_male: maleCounts || '0',
+      count_female: femaleCounts || '0',
+      pay_amount_male: malepayamount || '0',
+      pay_amount_female: femalepayamount || '0',
       num_days: days,
     };
 
-    console.log("params::", params);
+    console.log("paramsparams::", params);
 
     try {
       const response = await service.post("/api/post_individuals/", params, {
@@ -265,10 +278,19 @@ export default function SahayakForm({ navigation }) {
         },
       });
 
-      const { data } = response;
-      Toast.show("Job Posted Successfully!", Toast.SORT);
-      console.log("data::", data);
-      navigation.replace("MyBooking");
+      const data = response?.data;
+      console.log('datadata',data)
+      if (data?.status === 201) {
+        console.log("form", data);
+        Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
+
+        navigation.navigate('MyBookingStack',{  screen: 'MyBooking'});
+      } else {
+        Toast.show(
+          "जॉब फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
+          Toast.SORT
+        );
+      }
     } catch (error) {
       console.log("Error:", error);
       Toast.show("Error Occurred. Please try again later.", Toast.SORT);
@@ -358,18 +380,16 @@ export default function SahayakForm({ navigation }) {
               { width: "100%" },
             ]}
           >
-            <Text style={{ color: time ? "#000" : "#ccc", left: 5 }}>
-              {time ? time : "-समय-"}
-            </Text>
+           
             <Picker
               ref={pickerRef}
               selectedValue={time}
-              style={{ width: 40 }}
+              style={{ width: '100%' }}
               onValueChange={(itemValue, itemIndex) =>
                 setTimes(timeConverted(itemValue))
               }
             >
-              <Picker.Item enabled={false} label="-समय-" value="" />
+              <Picker.Item style={{color: time ? "#000" : "#ccc"}}     label={time ? time : "-समय-"} value="" />
               {timings.map((item, index) => {
                 return (
                   <Picker.Item
@@ -436,21 +456,19 @@ export default function SahayakForm({ navigation }) {
                   styles.justifyContentBetween,
                 ]}
               >
-                <Text style={{ color: landType ? "#000" : "#ccc", left: 5 }}>
-                  {landType ? landType : "किल्ला/बीघा"}
-                </Text>
+                
                 <Picker
-                  style={{ width: 20 }}
+                  style={{ width: '100%' }}
                   ref={pickerRef}
                   selectedValue={landType}
                   onValueChange={(itemValue, itemIndex) =>
                     setlandType(itemValue)
                   }
                 >
-                  <Picker.Item label="किल्ला/बीघा" value="" />
+                  <Picker.Item style={{color: landType ? "#000" : "#ccc"}} label="किल्ला/बीघा" value="" />
                   {landTypes.map((item) => (
                     <Picker.Item
-                      label={item.name}
+                    label={item.name === "Bigha" ? 'बीघा' : 'किल्ला'}
                       value={item.name}
                       key={item.id}
                     />
@@ -476,19 +494,17 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-                <Text style={{ color: maleCounts ? "#000" : "#ccc", left: 5 }}>
-                  {maleCounts ? maleCounts : "पुरुषों"}
-                </Text>
+               
                 <View style={{ flexDirection: "row" }}>
                   <Picker
-                    style={{ width: 20, paddingTop: 16 }}
+                    style={{ width: '100%', paddingTop: 16 }}
                     ref={pickerRef}
                     selectedValue={maleCounts}
                     onValueChange={(itemValue, itemIndex) =>
                       setMaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    <Picker.Item style={{color: maleCounts ? "#000" : "#ccc"}}   label="पुरुषों" value=""  />
                     {maleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -516,22 +532,18 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
-                <Text
-                  style={{ color: femaleCounts ? "#000" : "#ccc", left: 5 }}
-                >
-                  {femaleCounts ? femaleCounts : "महिलाओं"}
-                </Text>
+                
 
                 <View style={{ flexDirection: "row" }}>
                   <Picker
-                    style={{ width: 20, paddingTop: 16 }}
+                    style={{ width: '100%', paddingTop: 16 }}
                     ref={pickerRef}
                     selectedValue={femaleCounts}
                     onValueChange={(itemValue, itemIndex) =>
                       setFemaleCounts(itemValue)
                     }
                   >
-                    <Picker.Item label="1-5" value="1-5" enabled={false} />
+                    <Picker.Item style={{color: femaleCounts ? "#000" : "#ccc"}}   label="महिलाओं" value=""  />
                     {femaleCount.map((item) => (
                       <Picker.Item
                         label={item.toString()}
@@ -608,7 +620,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
               </View>
               {!!errors.femalepayamount && (
-                <Text style={styles.error}>{errors.malepayamount}</Text>
+                <Text style={styles.error}>{errors.femalepayamount}</Text>
               )}
             </View>
           </View>
@@ -620,21 +632,15 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
-            <Text style={{ paddingLeft: 10, color: "#ccc" }}>
-              दिनों की संख्या
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={{ color: "#0099FF", marginTop: 14, right: 10 }}>
-                {days}
-              </Text>
-
-              <Picker
-                style={{ width: 40, paddingTop: 16 }}
+          
+            
+          <Picker
+                style={{ width: '100%', paddingTop: 16 }}
                 ref={pickerRef}
                 selectedValue={days}
                 onValueChange={(itemValue, itemIndex) => setDays(itemValue)}
               >
-                <Picker.Item label="1-5" value="1-5" enabled={false} />
+                <Picker.Item style={{color: days ? "#000" : "#ccc"}}   label="दिनों की संख्या" value="" />
                 {daysCount.map((item) => (
                   <Picker.Item
                     label={item.toString()}
@@ -643,7 +649,6 @@ export default function SahayakForm({ navigation }) {
                   />
                 ))}
               </Picker>
-            </View>
           </View>
           {!!errors.days && <Text style={styles.error}>{errors.days}</Text>}
 
@@ -664,21 +669,14 @@ export default function SahayakForm({ navigation }) {
           </View>
           <TouchableOpacity
             onPress={() => {
-              if (validate()) {
-                sahayakBooking();
-              }
+              validate(),sahayakBooking();
+              // if (validate()) {
+              
+              // }
             }}
             style={styles.loginBtn}
           >
-            {/* <TouchableOpacity
-          onPress={() => {
-            
-           if(validate() {
-            sahayakBooking();
-           })}}
-            // onPress={() => sahayakBooking()}
-            style={styles.loginBtn}
-          > */}
+          
             <Text style={[styles.loginText, { color: "#fff" }]}>
               बुकिंग करें
             </Text>

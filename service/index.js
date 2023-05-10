@@ -7,9 +7,6 @@ import { navigate } from './NavigationService';
 // import { DevSettings } from 'react-native';
 
 
-// const navigation = useNavigation();
-
-
 class Service {
   baseUrl = 'https://fawda.demoserver.in/';
  
@@ -36,55 +33,20 @@ class Service {
     return number.toFixed(2);
   };
 
-  // customIosFilterValue = filterValue => {
-  //   let finalString = 'Filter';
-  //   switch (filterValue) {
-  //     case 'BEST_SELLING':
-  //       finalString = 'Best Selling';
-  //       break;
-
-  //     case 'RELEVANCE':
-  //       finalString = 'Featured';
-  //       break;
-  //     case 'CREATED_AT':
-  //       finalString = 'Newest';
-  //       break;
-  //     case 'PRICE1':
-  //       finalString = 'Price,low to high';
-  //       break;
-  //     case 'PRICE':
-  //       finalString = 'Price,high to low';
-  //       break;
-  //     default:
-  //       finalString = 'Filter';
-  //   }
-  //   return finalString;
-  // };
-
   handleSuccess(response) {
     return response;
   }
 
-  handleError = error => {
+  handleError = async error => {
     console.log("Error object:", error);
     console.log("Error message:", error.message);
-  console.log("Error status:", error.status);
+    console.log("Error status:", error.status);
     switch (error.response.status) {
       case 401:
-        //Toast.show(error.toString(), Toast.LONG);
-        // Toast.show("here i am ", Toast.LONG);
         console.log("hsdfdsfdsfdsfdsfsdf");
-        AsyncStorage.clear()
-        .then(() => {
-          console.log('AsyncStorage successfully cleared.');
-          // navigation.navigate('Login');
-          // DevSettings.reload();
-          navigate('Login');
-
-        })
-        .catch((err) => {
-          console.log('Error clearing AsyncStorage: ', err);
-        });
+        await AsyncStorage.clear();
+        console.log('AsyncStorage successfully cleared.');
+        navigate('Login');
         break;
       case 404:
         Toast.show(error.toString(), Toast.LONG);
@@ -92,18 +54,17 @@ class Service {
       case 500:
         Toast.show(error.toString(), Toast.LONG);
         break;
-
       default:
       // Toast.show(error.toString(), Toast.LONG);
     }
     return Promise.reject(error.response);
   };
 
-  get(path, params = {}) {
+  async get(path, params = {}) {
     return this.service.get(path, {...params});
   }
 
-  patch(path, payload, callback) {
+  async patch(path, payload, callback) {
     return this.service
       .request({
         method: 'PATCH',
@@ -114,7 +75,7 @@ class Service {
       .then(response => callback(response.data, response.status));
   }
 
-  post(path, payload, config = {}) {
+  async post(path, payload, config = {}) {
     return this.service.request({
       method: 'POST',
       url: path,
@@ -131,7 +92,7 @@ class Service {
     });
   }
 
-  put(path, payload, config = {}) {
+  async put(path, payload, config = {}) {
     return this.service.request({
       method: 'PUT',
       url: path,
@@ -140,11 +101,13 @@ class Service {
       ...config,
     });
   }
+
   customConsole = obj => {
     if (debug) {
       console.log('console log=>', obj);
     }
   };
 }
+
 
 export default new Service();

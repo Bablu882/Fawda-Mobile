@@ -10,7 +10,6 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-import { BackHandler } from 'react-native';
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
@@ -23,12 +22,12 @@ import {
 import moment from "moment";
 import { useIsFocused } from "@react-navigation/native";
 
-export default function MyBooking({ navigation, route }) {
+export default function History({ navigation, route }) {
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
- 
+
   const token = useSelector(selectToken);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +61,7 @@ export default function MyBooking({ navigation, route }) {
     try {
       const cacheBuster = new Date().getTime(); // generate a unique timestamp
       const response = await service.get(
-        `api/my_booking_details/?cacheBuster=${cacheBuster}`,
+        `api/booking-history-grahak/?cacheBuster=${cacheBuster}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -71,14 +70,14 @@ export default function MyBooking({ navigation, route }) {
         }
       );
       const data = response.data;
-      setSahayakPending(data?.sahayak_pending_booking_details);
-      setSahayakBooking(data?.sahayk_booking_details?.bookings);
+      setSahayakPending(data?.sahayak_job_details);
+      setSahayakBooking(data?.sahayk_booking_details);
       setMachineBooking(data?.machine_malik_booking_details);
-      setMachinePending(data?.machine_malik_pending_booking_details);
+      setMachinePending(data?.machine_malik_job_details);
       setIsLoading(false);
       setRefreshing(false);
 
-      console.log("data::::::::", data?.sahayk_booking_details?.bookings);
+      console.log("data", sahaykBooking[4]?.bookings_cancelled_after_payment);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -91,7 +90,7 @@ export default function MyBooking({ navigation, route }) {
       try {
         const cacheBuster = Date.now();
         const response = await service.get(
-          `/api/myjobs/?page=${page}&cacheBuster=${cacheBuster}`,
+          `/api/booking-history-sahayak-machine-malik/?page=${page}&cacheBuster=${cacheBuster}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -100,8 +99,9 @@ export default function MyBooking({ navigation, route }) {
           }
         );
         const data = response.data;
-        setMyjob(data?.data?.results);
-        setTotalPages(data?.data?.total_pages);
+        console.log("data", data);
+        setMyjob(data?.results);
+        setTotalPages(data?.total_pages);
       } catch (error) {
         console.log("Error:", error);
       } finally {
@@ -112,22 +112,8 @@ export default function MyBooking({ navigation, route }) {
     if (isFocused) {
       Myjobs();
     }
-   
   }, [page, isFocused]);
-  useEffect(() => {
-    const backAction = () => {
-    navigation.goBack();
-    return true;
-    };
-    
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
-    
-    return () => backHandler.remove();
-    }, []);
-    
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     // Myjobs().then(() => {
@@ -142,24 +128,30 @@ export default function MyBooking({ navigation, route }) {
       booking();
     }
   }, [isFocused]);
+
+  function getJobStatusColor(status) {
+    switch (status) {
+      case "Rejected-After-Payment":
+      case "Rejected":
+        return "#dc3545";
+      default:
+        return "#0099FF";
+    }
+  }
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() =>    navigation.navigate('HomePage')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
       {isLoading && <ActivityIndicator size="small" color="#black" />}
       {!isLoading && (
-      <ScrollView
+        <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-            
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
           {/* {usertype && usertype === "Grahak" && (
@@ -169,7 +161,7 @@ export default function MyBooking({ navigation, route }) {
             {usertype && usertype === "Grahak" && (
               <>
                 <View
-                  style={{ justifyContent: "center",}}
+                  style={{ justifyContent: "center", alignItems: "center" }}
                 >
                   <View style={{ justifyContent: "center" }}>
                     <Text
@@ -177,10 +169,10 @@ export default function MyBooking({ navigation, route }) {
                         textAlign: "center",
                         fontSize: 30,
                         fontWeight: "600",
-                        fontFamily:'Devanagari-bold',
+                        fontFamily: "Devanagari-bold",
                       }}
                     >
-                      मेरी बुकिंग
+                      पुरानी बुकिंग
                     </Text>
                   </View>
 
@@ -193,9 +185,9 @@ export default function MyBooking({ navigation, route }) {
                     }}
                   />
                   <>
-                    {sahaykBooking?.length > 0 &&
-                      sahaykBooking.map((sahayak, index) =>
-                        sahayak.sahayaks.map((item, index) => (
+                    {sahaykBooking[0]?.bookings_completed?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
                           <View
                             style={{
                               display: "flex",
@@ -211,7 +203,7 @@ export default function MyBooking({ navigation, route }) {
                                   fontWeight: "600",
                                   fontSize: 18,
                                   color: "#000",
-                                  fontFamily:'Devanagari-bold',
+                                  fontFamily: "Devanagari-bold",
                                 }}
                               >
                                 {item.job_type === "individuals_sahayak"
@@ -221,7 +213,12 @@ export default function MyBooking({ navigation, route }) {
                                   : ""}
                               </Text>
 
-                              <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
@@ -234,7 +231,6 @@ export default function MyBooking({ navigation, route }) {
                                 marginTop: 10,
                               }}
                             >
-                              
                               {item?.status === "Accepted" ||
                               item?.status === "Completed" ? (
                                 <TouchableOpacity
@@ -273,8 +269,8 @@ export default function MyBooking({ navigation, route }) {
                                       marginTop: 7,
                                       color: "#fff",
                                       fontSize: 15,
+                                      fontFamily: "Devanagari-bold",
                                       fontWeight: "600",
-                                      fontFamily:'Devanagari-bold',
                                     }}
                                   >
                                     {item?.status === "Accepted"
@@ -295,7 +291,7 @@ export default function MyBooking({ navigation, route }) {
                                         "Mybooking_Sahayak2",
                                         {
                                           item,
-                                          
+
                                           id: item?.job_id,
                                           totalamount: sahayak.total_amount,
                                           fawdafee: sahayak?.fawda_fee,
@@ -327,7 +323,7 @@ export default function MyBooking({ navigation, route }) {
                                       color: "#fff",
                                       fontSize: 15,
                                       fontWeight: "600",
-                                      fontFamily:'Devanagari-bold',
+                                      fontFamily: "Devanagari-bold",
                                     }}
                                   >
                                     {item?.status === "Ongoing"
@@ -337,13 +333,261 @@ export default function MyBooking({ navigation, route }) {
                                       : item?.status === "Completed"
                                       ? "समाप्त"
                                       : null}
+                                    {item.status}
                                   </Text>
                                 </TouchableOpacity>
                               ) : null}
                             </View>
                           </View>
                         ))
-                      )}
+                    )}
+                    {sahaykBooking[1]?.bookings_rejected?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[2]?.bookings_rejected_after_payment?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[3]?.bookings_cancelled?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
+                    {sahaykBooking[4]?.bookings_cancelled_after_payment?.map(
+                      (sahayak, index) =>
+                        sahayak?.sahayaks?.map((item, index) => (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 50,
+                            }}
+                          >
+                            <View style={{ marginLeft: 30 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                {item.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : item.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment.utc(item?.datetime).format("L")}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: "30%",
+                                height: 33,
+                                backgroundColor: "#dc3545",
+                                marginRight: 20,
+                                marginTop: 10,
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontWeight: "600",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                रद्द
+                              </Text>
+                            </View>
+                          </View>
+                        ))
+                    )}
 
                     {sahayakPending?.length > 0 &&
                       sahayakPending?.map((item, index) => (
@@ -366,7 +610,12 @@ export default function MyBooking({ navigation, route }) {
                                 ? "ठेके पर काम"
                                 : ""}
                             </Text>
-                            <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
+                            <Text
+                              style={{
+                                color: "black",
+                                fontFamily: "Devanagari-regular",
+                              }}
+                            >
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
@@ -374,7 +623,10 @@ export default function MyBooking({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor: "#44A347",
+                              backgroundColor:
+                                item?.status === "Pending"
+                                  ? "#44A347"
+                                  : "#dc3545",
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -388,8 +640,8 @@ export default function MyBooking({ navigation, route }) {
                                   navigation.navigate("MyBook_SahayakForm", {
                                     id: item?.id,
                                     item,
-                                   bookingid: item.booking_id,
-                                    jobtype: item?.job_type
+                                    bookingid: item.booking_id,
+                                    jobtype: item?.job_type,
                                   });
                                 } else if (
                                   item.job_type === "theke_pe_kam" &&
@@ -398,26 +650,26 @@ export default function MyBooking({ navigation, route }) {
                                   navigation.navigate("Theke_MachineForm", {
                                     id: item?.id,
                                     item,
-                               
-                                    jobtype: item?.job_type
+
+                                    jobtype: item?.job_type,
                                   });
                                 }
                               }}
                             >
-                              {item?.status === "Pending" && (
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                    fontFamily:'Devanagari-bold',
-                                  }}
-                                >
-                                  पेंडिंग
-                                </Text>
-                              )}
+                              <Text
+                                style={{
+                                  textAlign: "center",
+                                  marginTop: 7,
+                                  color: "#fff",
+                                  fontSize: 15,
+                                  fontFamily: "Devanagari-bold",
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {item?.status === "Pending"
+                                  ? "पेंडिंग"
+                                  : "रद्द"}
+                              </Text>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -436,10 +688,25 @@ export default function MyBooking({ navigation, route }) {
                           }}
                         >
                           <View style={{ marginLeft: 30 }}>
-                            <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
-                              {item.job_type === "machine_malik" && " मशीनरी"}
+                            <Text
+                              style={{
+                                fontWeight: "600",
+                                fontSize: 18,
+                                fontFamily: "Devanagari-bold",
+                              }}
+                            >
+                              {item.job_type === "machine_malik"
+                                ? " मशीनरी"
+                                : ""}
                             </Text>
-                            <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
+                            <Text
+                              style={{
+                                color: "black",
+                                fontFamily: "Devanagari-regular",
+                              }}
+                            >
+                              {/* {moment(item?.datetime).format('L')}
+                           { console.log('djdjddj', item?.datetime)} */}
                               {moment.utc(item?.datetime).format("L")}
                             </Text>
                           </View>
@@ -447,7 +714,10 @@ export default function MyBooking({ navigation, route }) {
                             style={{
                               width: "30%",
                               height: 33,
-                              backgroundColor: "#44A347",
+                              backgroundColor:
+                                item?.status === "Pending"
+                                  ? "#44A347"
+                                  : "#dc3545",
                               marginRight: 20,
                               marginTop: 10,
                             }}
@@ -461,8 +731,8 @@ export default function MyBooking({ navigation, route }) {
                                   navigation.navigate("MachineWork", {
                                     id: item?.id,
                                     item,
-                                   
-                                    jobtype: item?.job_type
+
+                                    jobtype: item?.job_type,
                                   });
                                 } else {
                                   console.log(
@@ -478,17 +748,15 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
-                                  fontFamily:'Devanagari-bold',
+                                  fontFamily: "Devanagari-bold",
                                 }}
                               >
-                                पेंडिंग
+                                {item?.status === "Pending"
+                                  ? "पेंडिंग"
+                                  : "रद्द"}
                               </Text>
-                              {/* {item.status === "Pending" && (
-                               
-                              )} */}
                             </TouchableOpacity>
                           </View>
-                         
                         </View>
                       ))}
                     {machineBooking?.map((item, index) => (
@@ -504,11 +772,18 @@ export default function MyBooking({ navigation, route }) {
                         }}
                       >
                         <View style={{ marginLeft: 30 }}>
-                          <Text style={{ fontWeight: "600", fontSize: 18 , fontFamily:'Devanagari-bold',}}>
+                          <Text
+                            style={{
+                              fontWeight: "600",
+                              fontSize: 18,
+                              fontFamily: "Devanagari-bold",
+                            }}
+                          >
                             {item.job_type === "machine_malik"
-                              && " मशीनरी"}
+                              ? " मशीनरी"
+                              : "मशीनरी"}
                           </Text>
-                          <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
+                          <Text style={{ color: "black" }}>
                             {moment.utc(item?.datetime).format("L")}
                           </Text>
                         </View>
@@ -528,8 +803,8 @@ export default function MyBooking({ navigation, route }) {
                                 navigation.navigate("MachineWork", {
                                   id: item?.job_id,
                                   item,
-                                 
-                                  jobtype: item?.job_type
+
+                                  jobtype: item?.job_type,
                                   // fawdafee: item?.fawda_fee,
                                   // totalamount: item?.total_amount,
                                 });
@@ -542,7 +817,7 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
-                                  fontFamily:'Devanagari-bold',
+                                  fontFamily: "Devanagari-bold",
                                 }}
                               >
                                 {item.status === "Accepted"
@@ -570,7 +845,7 @@ export default function MyBooking({ navigation, route }) {
                                   color: "#fff",
                                   fontSize: 15,
                                   fontWeight: "600",
-                                  fontFamily:'Devanagari-bold',
+                                  fontFamily: "Devanagari-bold",
                                 }}
                               >
                                 {item.status === "Ongoing"
@@ -583,7 +858,6 @@ export default function MyBooking({ navigation, route }) {
                               </Text>
                             </TouchableOpacity>
                           ) : null}
-                         
                         </View>
                       </View>
                     ))}
@@ -596,29 +870,7 @@ export default function MyBooking({ navigation, route }) {
                       width: "100%",
                       marginTop: 15,
                     }}
-                    
                   />
-                    <View  style={{
-               marginVertical:20,
-                  flexDirection: "row",
-                  justifyContent: 'space-between',
-                  marginHorizontal: 10,
-                }}
-              >
-                <View>
-
-                </View>
-               <View>
-               <TouchableOpacity
-                  style={{flex:0.50, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3, paddingHorizontal:20, paddingVertical:10}}
-                  onPress={() => {
-                    navigation.navigate("MyBookingStack", { screen: "History" });
-                  }}
-                >
-                <Text style={{color:'#fff', lineHeight:20, fontFamily:'Devanagari-bold',}}>पुरानी बुकिंग</Text>
-                </TouchableOpacity>
-               </View>
-                </View>
                 </View>
               </>
             )}
@@ -634,10 +886,10 @@ export default function MyBooking({ navigation, route }) {
                           textAlign: "center",
                           fontSize: 30,
                           fontWeight: "600",
-                          fontFamily:'Devanagari-bold',
+                          fontFamily: "Devanagari-bold",
                         }}
                       >
-                        मेरे काम
+                        पुरानी काम
                       </Text>
                     </View>
 
@@ -662,7 +914,13 @@ export default function MyBooking({ navigation, route }) {
                             }}
                           >
                             <View style={{ marginLeft: 30 }}>
-                              <Text style={{ fontWeight: "600", fontSize: 18, fontFamily:'Devanagari-bold', }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
                                 {item.job_type === "individuals_sahayak"
                                   ? "सहायक  "
                                   : item.job_type === "theke_pe_kam"
@@ -671,41 +929,83 @@ export default function MyBooking({ navigation, route }) {
                                   ? " मशीनरी"
                                   : null}
                               </Text>
-                              <Text style={{ color: "black",  fontFamily:'Devanagari-regular', }}>
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
                                 {moment.utc(item?.datetime).format("L")}
                               </Text>
                             </View>
                             <View
-                              style={{
-                                width: "30%",
-                                height: 33,
-                                backgroundColor: "#0099FF",
-                                marginRight: 20,
-                                marginTop: 10,
-                              }}
+                              style={[
+                                styles.jobStatusButton,
+                                {
+                                  backgroundColor: getJobStatusColor(
+                                    item.status
+                                  ),
+                                },
+                              ]}
                             >
-                              <TouchableOpacity
-                                onPress={() => {
-                                  if (item.job_type === "individuals_sahayak") {
-                                    navigation.navigate("MyBook_SahayakForm", {
-                                      id: item.id,
-                                      item,
-                                      usertype,
-                                    });
-                                  } else if (item.job_type === "theke_pe_kam") {
-                                    navigation.navigate("Theke_MachineForm", {
-                                      id: item.id,
-                                      item,
-                                      usertype,
-                                    });
-                                  } else {
-                                    navigation.navigate("MachineWork", {
-                                      id: item.id,
-                                      item,
-                                      usertype,
-                                    });
-                                  }
-                                }}
+                              {item.status === "Completed" || "Accepted" || "Booked" ? (
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    if (
+                                      item.job_type === "individuals_sahayak"
+                                    ) {
+                                      navigation.navigate(
+                                        "MyBook_SahayakForm",
+                                        {
+                                          id: item.id,
+                                          item,
+                                          usertype,
+                                        }
+                                      );
+                                    } else if (
+                                      item.job_type === "theke_pe_kam"
+                                    ) {
+                                      navigation.navigate("Theke_MachineForm", {
+                                        id: item.id,
+                                        item,
+                                        usertype,
+                                      });
+                                    } else {
+                                      navigation.navigate("MachineWork", {
+                                        id: item.id,
+                                        item,
+                                        usertype,
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      textAlign: "center",
+                                      marginTop: 7,
+                                      color: "#fff",
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                      fontFamily: "Devanagari-bold",
+                                    }}
+                                  >
+                                    {/* विवरण देखे */}
+                                    {item?.status === "Accepted"
+                                      ? "स्वीकृत "
+                                      : item?.status === "Booked"
+                                      ? "बुक "
+                                      : item?.status === "Ongoing"
+                                      ? "जारी है"
+                                      : item.status === "Rejected"
+                                      ? "रद्द"
+                                      : item.status === "Rejected-After-Payment"
+                                      ? "रद्द "
+                                      : "समाप्त"}
+                                  </Text>
+                                </TouchableOpacity>
+                              ): (
+                                <TouchableOpacity
+                              
                               >
                                 <Text
                                   style={{
@@ -713,20 +1013,15 @@ export default function MyBooking({ navigation, route }) {
                                     marginTop: 7,
                                     color: "#fff",
                                     fontSize: 15,
-                                    fontFamily:'Devanagari-bold',
                                     fontWeight: "600",
+                                    fontFamily: "Devanagari-bold",
                                   }}
                                 >
                                   {/* विवरण देखे */}
-                                  {item?.status === "Accepted"
-                                    ? "स्वीकृत "
-                                    : item?.status === "Booked"
-                                    ? "बुक "
-                                    : item?.status === "Ongoing"
-                                    ? "जारी है"
-                                    : "समाप्त"}
+                                  रद्द
                                 </Text>
                               </TouchableOpacity>
+                              )}
                             </View>
                           </View>
                         ))}
@@ -740,21 +1035,12 @@ export default function MyBooking({ navigation, route }) {
                   </View>
                   <View
                     style={{
-                      marginVertical:20,
                       flexDirection: "row",
-                      justifyContent: "space-between",
-                      marginHorizontal: 10,
+                      justifyContent: "flex-end",
+                      marginRight: 20,
+                      marginVertical: 20,
                     }}
                   >
-                       <TouchableOpacity
-                  style={{flex:0.35, alignItems:'center', backgroundColor:'#0099FF', justifyContent:'center', borderRadius:3}}
-                  onPress={() => {
-                    navigation.navigate("MyBookingStack", { screen: "History" });
-                  }}
-                >
-                <Text style={{color:'#fff', lineHeight:20}}>पुरानी बुकिंग</Text>
-                </TouchableOpacity>
-                <View style={{   flexDirection: "row",}}>
                     <TouchableOpacity
                       style={[
                         styles.button,
@@ -774,7 +1060,7 @@ export default function MyBooking({ navigation, route }) {
 
                     <TouchableOpacity
                       style={[
-                        {marginLeft:10},
+                        { marginLeft: 10 },
                         styles.button,
                         activeButton === 2 && styles.activeButton,
                       ]}
@@ -789,7 +1075,6 @@ export default function MyBooking({ navigation, route }) {
                         style={{ lineHeight: 30 }}
                       />
                     </TouchableOpacity>
-                    </View>
                   </View>
                 </>
               )}
@@ -806,14 +1091,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-  width:30,
-  height:30,
-  textAlign: "center",
-  borderRadius:20,
-  alignItems: "center",
-  backgroundColor:'#ccc'
+    width: 30,
+    height: 30,
+    textAlign: "center",
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#ccc",
   },
   activeButton: {
     backgroundColor: "#0099FF",
+  },
+  jobStatusButton: {
+    width: "30%",
+    height: 33,
+
+    marginRight: 20,
+    marginTop: 10,
   },
 });

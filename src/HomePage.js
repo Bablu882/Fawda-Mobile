@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,10 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import service from "../service";
+import { useNavigation } from '@react-navigation/native';
+
 import moment from "moment";
 
 export default function Homepage({ navigation, route }) {
@@ -25,45 +28,90 @@ export default function Homepage({ navigation, route }) {
   const [isLoading, setIsLoading] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const [sahayak, setSahayak] = useState("");
-  const isfocused = useIsFocused();
+  const isFocused = useIsFocused();
+  const [page, setPage] = useState(1);
+
+  const [activeButtons, setActiveButtons] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const usertype = useSelector(selectUserType);
   console.log("usrrjfjf", usertype);
 
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+  const handlePress = (buttonIndex) => {
+    setActiveButtons(buttonIndex);
+  };
 
-  const getalljobs = async () => {
+  const fetchJobs = async () => {
     setIsLoading(true); // Show loader while fetching data
     setRefreshing(true);
     try {
       const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(`/api/nearjob/?cacheBuster=${cacheBuster}`, {
+      const response = await service.get(`/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`, {
         headers: {
           "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`
         },
       });
       const data = response.data;
-      setCurrentUsers(data);
+      setCurrentUsers(data.results);
+      setTotalPages(data.total_pages);
+      console.log('jdjhff',currentUsers)
     } catch (error) {
-      console.log("Error:", error);
+      console.log("Error:", error.status);
+     
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
       setRefreshing(false);
     }
   };
-
-
+  // const fetchJobs = async () => {
+  //   //     setIsLoading(true); // Show loader while fetching data
+  //   // setRefreshing(true);
+  //     try {
+  //       const cacheBuster = Date.now();
+  //       const response = await service.get(
+  //         `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       const data = response.data;
+  //       setCurrentUsers(data.results);
+  //       setTotalPages(data.total_pages);
+  //   //       setIsLoading(true); // Show loader while fetching data
+  //   // setRefreshing(true);
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   };
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getalljobs().then(() => {
+    fetchJobs().then(() => {
       setRefreshing(false);
     });
   }, []);
 
   useEffect(() => {
-    getalljobs();
-  }, [0]);
+  
+    if (isFocused) {
+      fetchJobs();
+    }
+    
+  }, [page, isFocused]);
 
   return (
     <SafeAreaView
@@ -77,16 +125,16 @@ export default function Homepage({ navigation, route }) {
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       {!isLoading && (
-        <ScrollView 
-        horizontal={false} 
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            // Myjobs={Myjobs}
-          />
-        }
+      <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              // Myjobs={Myjobs}
+            />
+          }
         >
           {usertype === "Sahayak" || usertype === "MachineMalik" ? (
             <>
@@ -126,7 +174,8 @@ export default function Homepage({ navigation, route }) {
                 {currentUsers?.length > 0 && (
                   <>
                     {currentUsers.map((item, index) => (
-                      <View key={index} style={styles.booking}>
+                      <View key={index}  >
+                        <View style={[styles.booking,{paddingVertical:15,}]}>
                         <View style={styles.bookingLeft}>
                           {item.job_type === "individuals_sahayak" ||
                           item.job_type === "theke_pe_kam" ? (
@@ -186,7 +235,8 @@ export default function Homepage({ navigation, route }) {
                             विवरण देखे
                           </Text>
                         </TouchableOpacity>
-                        
+                        </View>
+                       
                       </View>
                     ))}
                     <View style={styles.line} />
@@ -201,6 +251,54 @@ export default function Homepage({ navigation, route }) {
                     marginTop: 15,
                   }}
                 />
+              </View>
+              <View
+                style={{
+               marginVertical:20,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginHorizontal: 10,
+                }}
+              >
+                
+           
+                <View style={{   flexDirection: "row",}}>
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    activeButtons === 1 && styles.activeButton,
+                  ]}
+                  onPress={() => {
+                    handlePress(1), handlePrevPage();
+                  }}
+                >
+                  <Icon
+                    name="left"
+                    size={20}
+                    color={"#fff"}
+                    style={{ lineHeight: 30 }}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    {marginLeft:10},
+                    styles.button,
+                    activeButtons === 2 && styles.activeButton,
+                  ]}
+                  onPress={() => {
+                    handlePress(2), handleNextPage();
+                  }}
+                >
+                  <Icon
+                    name="right"
+                    size={20}
+                    color={"#fff"}
+                    style={{ lineHeight: 30 }}
+                  />
+                </TouchableOpacity>
+                </View>
+     
               </View>
             </>
           ) : (
@@ -220,13 +318,13 @@ export default function Homepage({ navigation, route }) {
 
                 <View style={{ alignItems: "center" }}>
                   <Text
-                    style={{ fontSize: 28, fontWeight: "600", color: "#000" }}
+                    style={{ fontSize: 28, fontWeight: "600", color: "#000" , fontFamily:'Devanagari-regular'}}
                   >
                     कौनसी सेवा चाहिए
                   </Text>
                 </View>
 
-                <View style={styles.OptionButton1}>
+                <View style={styles.OptionButton}>
                   <TouchableOpacity
                     style={[
                       styles.machine,
@@ -240,6 +338,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -248,6 +347,7 @@ export default function Homepage({ navigation, route }) {
                     </Text>
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -269,6 +369,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
+                        {fontFamily:'Devanagari-regular'},
                         styles.loginText,
                         activeButton === "मशीन" ? { color: "#fff" } : null,
                       ]}
@@ -281,7 +382,7 @@ export default function Homepage({ navigation, route }) {
                   <View style={styles.OptionButton}>
                     <TouchableOpacity
                       style={[
-                        styles.theke,
+                        styles.machine,
                         sahayak === "ठेके पर काम"
                           ? {
                               backgroundColor: "#44A347",
@@ -295,6 +396,7 @@ export default function Homepage({ navigation, route }) {
                     >
                       <Text
                         style={[
+                          {fontFamily:'Devanagari-regular'},
                           styles.loginText,
                           sahayak === "ठेके पर काम" ? { color: "#fff" } : null,
                         ]}
@@ -306,7 +408,8 @@ export default function Homepage({ navigation, route }) {
 
                     <TouchableOpacity
                       style={[
-                        styles.theke,
+                        {fontFamily:'Devanagari-regular'},
+                        styles.machine,
                         sahayak === "सहायक"
                           ? {
                               backgroundColor: "#44A347",
@@ -358,6 +461,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    fontFamily:'Devanagari-regular'
   },
   left: {
     marginLeft: 30,
@@ -372,6 +476,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 18,
+    fontFamily:'Devanagari-regular'
   },
   date: {
     color: "black",
@@ -384,6 +489,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 15,
+    fontFamily:'Devanagari-regular'
   },
   bookingButton: {
     width: "30%",
@@ -398,30 +504,33 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
+    fontFamily:'Devanagari-regular'
   },
   OptionButton: {
     // flex:1,
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-evenly",
+    fontFamily:'Devanagari-regular'
     // margin:20,
     //   padding:20
   },
 
-  OptionButton1: {
-    // flex:1,
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-evenly",
-    // margin:20,
-    // marginRight:20
-    // padding:20
-  },
+  // OptionButton1: {
+  //   // flex:1,
+  //   flexDirection: "row",
+  //   width: "100%",
+  //   justifyContent: "space-evenly",
+  //   // margin:20,
+  //   // marginRight:20
+  //   // padding:20
+  // },
   bookingLeft: {
     marginLeft: 30,
   },
   bookingTitle: {
     fontWeight: "600",
+    fontFamily:'Devanagari-bold',
     fontSize: 18,
     // color:"#000"
   },
@@ -447,8 +556,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 7,
     borderBottomRightRadius: 7,
     width: "65%",
+   
     height: 45,
     borderWidth: 1,
+    fontFamily:'Devanagari-regular'
   },
 
   TextInput: {
@@ -462,23 +573,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-    marginTop: 50,
+
+
   },
-  sahayak: {
-    width: "35%",
-    flexDirection: "column",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    // borderWidth:1,
-    borderRadius: 10,
-    // borderColor:"#505050",
-    backgroundColor: "#44A347",
-  },
+  // sahayak: {
+  //   width: "35%",
+  //   flexDirection: "column",
+  //   // borderRadius: 7,
+  //   color: "#505050",
+  //   height: 50,
+  //   alignItems: "center",
+  //   //   justifyContent:"",
+  //   justifyContent: "center",
+  //   marginTop: 30,
+  //   // borderWidth:1,
+  //   borderRadius: 10,
+  //   // borderColor:"#505050",
+  //   backgroundColor: "#44A347",
+  // },
 
   machine: {
     width: "35%",
@@ -496,37 +608,21 @@ const styles = StyleSheet.create({
     // backgroundColor: "#44A347",
   },
 
-  machine1: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
-
-  theke: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
+  // theke: {
+  //   width: "40%",
+  //   flexDirection: "row",
+  //   // borderRadius: 7,
+  //   color: "#505050",
+  //   height: 50,
+  //   alignItems: "center",
+  //   //   justifyContent:"",
+  //   justifyContent: "center",
+  //   marginTop: 30,
+  //   borderWidth: 1,
+  //   borderRadius: 10,
+  //   borderColor: "#505050",
+  //   // backgroundColor: "#44A347",
+  // },
 
   loginText: {
     color: "#000",
@@ -546,5 +642,16 @@ const styles = StyleSheet.create({
 
   VerifyText: {
     color: "#fff",
+  },
+  button: {
+    width: 30,
+    height: 30,
+    textAlign: "center",
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#ccc",
+  },
+  activeButton: {
+    backgroundColor: "#0099FF",
   },
 });

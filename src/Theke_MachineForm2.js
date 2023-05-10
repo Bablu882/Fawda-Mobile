@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -17,15 +17,17 @@ import { selectToken } from "../slices/authSlice";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Toast from "react-native-simple-toast";
+import Toast from "react-native-root-toast";
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();
+  const ReviewInput = useRef(null);
   const token = useSelector(selectToken);
   const [checked, setChecked] = React.useState("first");
   const [thekeperKam, setThekeperKam] = useState({});
-  const { item, data, payment_status } = route?.params;
-  console.log("fjkfkfkff", item, );
+  const { data, useramount, amount, item, totalamount, payment_status } =
+    route.params ?? {};
+  console.log("fjkfkfkff", amount, item, totalamount, useramount);
   // const bookingid = route?.params?.item;
   // console.log("bookingid", bookingid);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
@@ -33,37 +35,79 @@ function Theke_MachineForm2({ navigation, route }) {
   const [bookingjob, setBookingJob] = useState("");
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
+
+  const [response, setResponse] = useState(null);
+  const [complete, setCompleted] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [status, setStatus] = useState("");
 
   //  const [colors, setColors] = useState(Array(10).fill("white"));
   const [numbers, setNumber] = useState(0);
 
   const number = [1, 2, 3, 4];
+   const handlereviewbutton = () => {
+    ReviewInput.current.focus();
+   }
 
-  const RatingApi = async () => {
+
+
+  //   const RatingApi = async () => {
+  //     let params = {
+  //       booking_job: JSON.stringify(item?.booking_id),
+  //       rating: ratings,
+  //       comment: comments,
+  //     };
+  // console.log('ndndjd', params)
+  //     try {
+  //       const response = await service.post("/api/rating/create/", params, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       const data = response?.data;
+  //       // setThekeperKam(data.data);
+  // if(data?.status === 200){
+  //   navigation.replace("MyBooking");
+  //       console.log("fjfjf", data);
+  // }
+  //    else{
+  //     console.log('fjfjf')
+  //    }
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   };
+  const RatingApi = () => {
     let params = {
-      booking_job: data,
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
       rating: ratings,
       comment: comments,
     };
+    console.log("fjfjf", params);
 
-    try {
-      const response = await service.post("/api/rating/create/", params, {
+    service
+      .post("/api/rating/create/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        if (data?.status === 201) {
+          navigation.replace("Thankyou");
+          console.log("fjfjf", data);
+        } else {
+          console.log("error message");
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
-      const data = response?.data;
-      // setThekeperKam(data.data);
-
-      navigation.replace("MyBooking");
-      console.log("fjfjf", data.status);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
   // const {  item , status} = route.params;
   // console.log("fjds", status , item);
 
@@ -92,106 +136,66 @@ function Theke_MachineForm2({ navigation, route }) {
 
   const ratingColor = "orange";
 
-  // const fetchBookings = async () => {
-  //   try {
-  //     const response = await service.get("api/my_booking_details/", {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const data = response.data;
-  //     setThekeperKam(item.data);
-  //     console.log("fjfjf", data);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-
-  // const accptThekha = async () => {
-  //   let params = {
-  //     job_id: item.booking_id,
-  //   };
-
-  //   try {
-  //     const response = await service.post("/api/accept_theka/", params, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const data = response?.data;
-  //     setThekeperKam(data.data);
-  //     console.log("fjfjf", data);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchBookings();
-  // }, [0]);
-
-  const onGoing = async () => {
+  const Ongoing = () => {
+    setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
     };
-    console.log("fhsfhdfhdfh", params);
-
-    try {
-      const response = await service.post("/api/booking_ongoing/", params, 
-      // console.log(response);
-      
-      {
+    console.log(params);
+    service
+      .post("/api/booking_ongoing/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setResponse(data["booking-status"]);
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
       });
-      console.log(response, "check status");
-      const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
   };
-
-  const Completed = async () => {
+  const bookingcompleted = () => {
+    setIsLoading(true);
     let params = {
-      booking_id: JSON.stringify(item?.booking_id),
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
     };
-    console.log("fhsfhdfhdfh", params);
- 
-    try {
-      const response = await service.post("/api/booking_completed/", params, {
+    console.log(params);
+    service
+      .post("/api/booking_completed/", params, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      });
-      const data = response?.data;
-      setStatus(data.status);
-      console.log('jdjddjd', data?.status)
-      console.log(status, "check status");
-      // setThekeperKam(data.data);
-      console.log("fjfjf", data);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
+      })
+      .then((res) => {
+        let data = res?.data;
+        setIsLoading(false);
+        setCompleted(data["booking-status"]);
+        setResponse(data["booking-status"]);
 
+        console.log("jdjjdd", data);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log("error", error);
+      });
+  };
   const cancel = async () => {
-    let params = {};
-    if (payment_status === "success") {
-      params = {
-        job_id: item?.id,
-        job_number: item?.job_number,
-        booking_id: item?.booking_id,
-        status: "Cancelled-After-Payment",
-      };
-    }
+    let params = {
+      job_id: item?.job_id,
+      job_number: item?.job_number,
+      // booking_id: item?.booking_id,
+      status: "Cancelled-After-Payment",
+    };
+    console.log("fjffjfjf", params);
     try {
       const response = await service.post("/api/cancel/", params, {
         headers: {
@@ -199,11 +203,11 @@ function Theke_MachineForm2({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(token?.access, "token");
+
       const data = response?.data;
       // setStatus(data.status);
-      navigation.replace("HomePage")
-      Toast.show("Cancelled-After-Payment", Toast.LONG);
+      navigation.navigate("HomeStack", { screen: "HomePage" });
+      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -212,373 +216,344 @@ function Theke_MachineForm2({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={{ padding: 20, marginTop: 35 }}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
-
-      <ScrollView horizontal={false}>
-        <View style={{ alignItems: "center", flex: 1 }}>
-          <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-          >
-            {item.job_type === "individuals_sahayak"
-              ? "सहायक के काम "
-              : item.job_type === "theke_pe_kam"
-              ? "ठेके पर काम"
-              : ""}
-          </Text>
-          <View
-            style={[
-              styles.inputView,
-              styles.flex,
-              styles.justifyContentBetween,
-              {
-                height: 90,
-              },
-            ]}
-          >
-            <Text style={[styles.TextInput]}>{item?.description}</Text>
-            <Image
-              source={require("../assets/image/edit.png")}
-              style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-            />
-          </View>
-
-          <View
-            style={[
-              styles.inputView,
-              styles.flex,
-              styles.justifyContentBetween,
-            ]}
-          >
-            <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("l")}
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+          <View style={{ alignItems: "center", flex: 1, marginHorizontal:10 }}>
+            <Text
+              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" ,  fontFamily:'Devanagari-bold',}}
+            >
+              {item.job_type === "individuals_sahayak"
+                ? "सहायक के काम "
+                : item.job_type === "theke_pe_kam"
+                ? "ठेके पर काम"
+                : ""}
             </Text>
-            <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("LT")}
-            </Text>
-          </View>
-
-          <View
-            style={[styles.flex, styles.justifyContentevenly, { width: "92%" }]}
-          >
             <View
               style={[
-                styles.TaxView,
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+                {
+                  height: 90,
+                },
+              ]}
+            >
+              <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                {item?.description}
+              </Text>
+              <Image
+                source={require("../assets/image/edit.png")}
+                style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
+              />
+            </View>
+
+            <View
+              style={[
+                styles.inputView,
                 styles.flex,
                 styles.justifyContentBetween,
               ]}
             >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="भूमि क्षेत्र "
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-              {item?.land_area}   {item?.land_type == "Bigha"?"बीघा":'किल्ला'}
+              <Text style={styles.TextInput}>
+                {moment.utc(item?.datetime).format("l")}
+              </Text>
+              <Text style={styles.TextInput}>
+                {moment.utc(item?.datetime).format("LT")}
               </Text>
             </View>
-            <View
-              style={[
-                styles.BhumiView,
-                styles.flex,
-                styles.justifyContentBetween,
-              ]}
-            >
-              <TextInput
-                style={styles.TextInput}
-                placeholder="वेतन"
-                placeholderTextColor={"#000"}
-              />
-              <Text style={{ marginTop: 13, marginRight: 8, color: "#0099FF" }}>
-                ₹ {item?.total_amount_theka}
-              </Text>
-            </View>
-          </View>
 
-          <View
-            style={[
-              styles.inputView,
-              styles.flex,
-              styles.justifyContentBetween,
-            ]}
-          >
-            <TextInput
-              style={styles.TextInput}
-              placeholder="काम की स्थिति"
-              placeholderTextColor={"#000"}
-            />
-            <View
-              style={{
-                width: "30%",
-                height: 30,
-                backgroundColor: "#0099FF",
-                marginRight: 10,
-                marginTop: 8,
-              }}
-            >
-              {/* <TouchableOpacity>
-              {thekeperKam && (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {thekeperKam?.status}
-                </Text>
-              )}
-            </TouchableOpacity> */}
-              { status === "Ongoing" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  जारी है
-                 
-                </Text>
-              ) : status === "Completed" ? (
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  समाप्त{" "}
-                </Text>
-              ) : (
-               
-                <Text
-                  style={{
-                    textAlign: "center",
-                    marginTop: 5,
-                    color: "#fff",
-                    fontSize: 15,
-                    fontWeight: "600",
-                  }}
-                >
-                  {item.booking_status === "Booked" ?
-                     "बुक"
-                     :
-                     item.booking_status === "Ongoing" ?
-                     "जारी है"
-                     :
-                     item.booking_status === "Completed" ?
-                     "समाप्त"
-                     :
-                     ""
-                  }
-                  
-                  {console.log("")}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {status === "Completed" ? (
-            ""
-          ) : (
-            <>
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "15%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  ठेकेदार
-                </Text>
-                <Text
-                  style={styles.TextInput}
-
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                >
-                  {item?.thekedar_name}
-                </Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-              </View>
-
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "10%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  गाँव
-                </Text>
-                <Text style={styles.TextInput}>{item?.thekedar_village}</Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-              </View>
-
-              <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={{
-                    position: "absolute",
-                    top: -10,
-                    left: 30,
-                    width: "25%",
-                    textAlign: "center",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  मोबाइल नंबर
-                </Text>
-                <Text
-                  style={styles.TextInput}
-
-                  // onChangeText={(text) => setName(text, "name")}
-                  // defaultValue={email}
-                  // value={name}
-                  //   error={input.name}
-                  //   onFocus={() => handleError(null, "name")}
-                >
-                  {item?.thekedar_mobile_no}
-                </Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
-              </View>
-            </>
-          )}
-          { status === "Completed" && (
-            <View
-              style={{
-                width: "90%",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 20,
-              }}
-            >
-              <View style={{marginBottom:10}}>
-                <Text style={{textAlign:'center'}}>रेटिंग दें </Text>
-                <View style={{ display: "flex", flexDirection: "row" }}>
-                  {[...Array(5).keys()].map(renderButton)}
-                </View>
-              </View>
-              <Text>कोई सुझाव</Text>
+            <View style={[styles.flex, { justifyContent: "space-around" }]}>
               <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  width: "90%",
-                  marginTop: 20,
-                  borderColor: "#0099FF",
-                }}
-              >
-                <TextInput onChangeText={setComment} value={comments} style={{width:"100%"}}/>
-              </View>
-            </View>
-          )}
-          {/* {status.status === "Completed" ? (
-            <>
-              <View
-                style={{ display: "flex", flexDirection: "row", marginTop: 20 }}
-              >
-                {[...Array(5).keys()].map(renderButton)}
-              </View>
-
-              <View
-                style={{
-                  height: 100,
-                  borderWidth: 1,
-                  width: "75%",
-                  marginTop: 20,
-                }}
+                style={[
+                  styles.TaxView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                  { marginRight: 10 },
+                ]}
               >
                 <TextInput
-                  placeholder="comment"
-                  onChangeText={setComment}
-                  value={comments}
+                  style={styles.TextInput}
+                  editable={false}
+                  placeholder="भूमि क्षेत्र "
+                  placeholderTextColor={"#000"}
                 />
-              </View>
-            </>
-          ) : (
-            ""
-          )} */}
-          { status === "Ongoing" ? (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => Completed()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                काम पूरा हुआ
-              </Text>
-            </TouchableOpacity>
-          ) : status === "Completed" ? (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => RatingApi()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.BhuktanBtn}
-              onPress={() => onGoing()}
-            >
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                {item.booking_status === "Ongoing" ?
-                "काम पूरा हुआ"
-                :
-                item.booking_status === "Booked" ?
-                "काम शुरू करें"
-                :
-                item.booking_status === "Completed" ?
-                "समाप्त"
-                :
-                ""
-                }
-                {/* {item.booking_status} */}
-              </Text>
-            </TouchableOpacity>
-          )}
-
-             
-              <View style={{ marginTop: "auto", padding: 5 }}>
-                <TouchableOpacity
-                  onPress={() => cancel()}
-                  style={{
-                    backgroundColor: "#D9D9D9",
-                    alignSelf: "center",
-                    paddingHorizontal: 50,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                  }}
+                <Text
+                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF",  fontFamily:'Devanagari-regular', }}
                 >
-                  <Text style={{ textAlign: "center", color: "#fff" }}>
-                    रद्द करें
-                  </Text>
-                </TouchableOpacity>
+                  {item?.land_area}
+                  {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                </Text>
               </View>
+              <View
+                style={[
+                  styles.BhumiView,
+                  styles.flex,
+                  styles.justifyContentBetween,
+                ]}
+              >
+                <TextInput
+                  style={styles.TextInput}
+                  editable={false}
+                  placeholder="वेतन"
+                  placeholderTextColor={"#000"}
+                />
+                <Text
+                  style={{ marginTop: 13, marginRight: 8, color: "#0099FF",  fontFamily:'Devanagari-regular', }}
+                >
+                  ₹ {useramount}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+              ]}
+            >
+              <TextInput
+                style={styles.TextInput}
+                placeholder="काम की स्थिति"
+                placeholderTextColor={"#000"}
+                editable={false}
+              />
+              <View
+                style={{
+                  width: "30%",
+                  height: 30,
+                  backgroundColor: "#0099FF",
+                  marginRight: 10,
+                  marginTop: 8,
+                }}
+              >
+               
+                {response ? (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      color: "#fff",
+                      fontSize: 15,
+                      fontWeight: "600",
+                      fontFamily:'Devanagari-bold',
+                    }}
+                  >
+                    {response === "Booked"
+                      ? "बुक"
+                      : response === "Accepted"
+                      ? "स्वीकार"
+                      : response === "Ongoing"
+                      ? "जारी है"
+                      : response === "Completed"
+                      ? "समाप्त"
+                      : ""}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 5,
+                      color: "#fff",
+                      fontSize: 15,
+                      fontWeight: "600",
+                      fontFamily:'Devanagari-bold',
+                    }}
+                  >
+                    {item.status === "Booked"
+                      ? "बुक"
+                      : item.status === "Accepted"
+                      ? "बुक"
+                      : item.status === "Ongoing"
+                      ? "जारी है"
+                      : ""}
+
+                 
+                  </Text>
+                )}
              
-        </View>
-      </ScrollView>
+              </View>
+            </View>
+            {/* 
+          {response !=="Completed" && (
+          
+          )} */}
+            {complete === "Completed" ? (
+              <View
+                style={{
+                  width: "90%",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 20,
+                }}
+              >
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={{ textAlign: "center", fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
+                  <View style={{ display: "flex", flexDirection: "row" }}>
+                    {[...Array(5).keys()].map(renderButton)}
+                  </View>
+                </View>
+                <Text style={{ fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
+                <View style={{ width: "100%" }}>
+                  <TouchableOpacity
+                  onPress={handlereviewbutton}
+                    style={{
+                      height: 100,
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      width: "100%",
+                      marginTop: 20,
+                      borderColor: "#0099FF",
+                    }}>
+
+                
+                  <TextInput
+                   
+                    onChangeText={setComment}
+                    value={comments}
+                    ref={ReviewInput}
+                  />
+                    </TouchableOpacity>
+                </View>
+              
+              </View>
+            ) : (
+              <>
+                <View style={[styles.inputView, { position: "relative" }]}>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: 30,
+                      width: "15%",
+                      textAlign: "center",
+                      backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
+                    }}
+                  >
+                    ठेकेदार
+                  </Text>
+                  <Text
+                    style={styles.TextInput}
+
+                  >
+                    {item?.thekedar_name}
+                  </Text>
+                  {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+                </View>
+
+                <View style={[styles.inputView, { position: "relative" }]}>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: 30,
+                      width: "10%",
+                      textAlign: "center",
+                      backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
+                    }}
+                  >
+                    गाँव
+                  </Text>
+                  <Text style={styles.TextInput}>{item?.thekedar_village}</Text>
+                  {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+                </View>
+
+                <View style={[styles.inputView, { position: "relative" }]}>
+                  <Text
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: 30,
+                      width: "25%",
+                      textAlign: "center",
+                      backgroundColor: "#fff",
+                      fontFamily:'Devanagari-bold',
+                    }}
+                  >
+                    मोबाइल नंबर
+                  </Text>
+                  <Text
+                    style={styles.TextInput}
+
+                    // onChangeText={(text) => setName(text, "name")}
+                    // defaultValue={email}
+                    // value={name}
+                    //   error={input.name}
+                    //   onFocus={() => handleError(null, "name")}
+                  >
+                    {item?.thekedar_mobile_no}
+                  </Text>
+                  {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+                </View>
+              </>
+            )}
+           
+
+            {complete !== "Completed" && (
+              <TouchableOpacity
+                style={styles.BhuktanBtn}
+                onPress={
+                  response === "Ongoing" || item?.status === "Ongoing"
+                    ? bookingcompleted
+                    : response === "Completed"
+                    ? () => RatingApi()
+                    : () => Ongoing()
+                }
+                disabled={isLoading}
+              >
+                <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
+                  {complete && complete["booking-status"] === "Ongoing"
+                    ? "रेटिंग दें जारी है"
+                    : complete && complete["booking-status"] === "Completed"
+                    ? "रेटिंग दें"
+                    : response === "Ongoing" || item?.status === "Ongoing"
+                    ? "काम पूरा हुआ"
+                    : "काम शुरू करें "}
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {complete === "Completed" && (
+              <TouchableOpacity
+                style={styles.BhuktanBtn}
+                onPress={() => RatingApi()}
+              >
+                <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
+                  समाप्त
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {item?.status != "Completed" &&
+              response != "Ongoing" &&
+              response !== "Completed" && (
+                <View style={{ marginTop: "auto", padding: 5 }}>
+                  <TouchableOpacity
+                    onPress={() => cancel()}
+                    style={{
+                      backgroundColor: "#D9D9D9",
+                      alignSelf: "center",
+                      paddingHorizontal: 50,
+                      paddingVertical: 10,
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ textAlign: "center", color: "#fff",  fontFamily:'Devanagari-bold', }}>
+                      रद्द करें
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+          
+          </View>
+        </ScrollView>
     </SafeAreaView>
   );
 }
@@ -600,75 +575,29 @@ const styles = StyleSheet.create({
     //   padding:20
   },
 
-  sahayak: {
-    width: "40%",
-    // flexDirection:"column",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#505050",
-    // backgroundColor: "#44A347",
-  },
-
-  machine: {
-    width: "40%",
-    flexDirection: "row",
-    // borderRadius: 7,
-    color: "#505050",
-    height: 50,
-    alignItems: "center",
-    //   justifyContent:"",
-    justifyContent: "center",
-    marginTop: 30,
-    // borderWidth:1,
-    borderRadius: 10,
-    // borderColor:"#505050"
-    backgroundColor: "#44A347",
-  },
-
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily:'Devanagari-regular',
     //   flexDirection:"column",
   },
 
-  loginBtn: {
-    width: "85%",
-    borderRadius: 7,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-    backgroundColor: "#0099FF",
-  },
-
   BhuktanBtn: {
-    width: "85%",
+    width: "100%",
     borderRadius: 7,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-    backgroundColor: "#0099FF",
-  },
-
-  VerifyText: {
     color: "#fff",
-    fontWeight: "600",
-    fontSize: 18,
+    backgroundColor: "#0099FF",
   },
 
   inputView: {
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "80%",
+    width: "100%",
     height: 48,
     marginTop: 15,
     borderWidth: 1,
@@ -677,19 +606,14 @@ const styles = StyleSheet.create({
   TextInput: {
     padding: 10,
     color: "#000",
-    fontFamily: "Poppin-Light",
-  },
-
-  CheckTextInput: {
-    textAlign: "center",
-    marginTop: 10,
+    fontFamily:'Devanagari-regular',
   },
 
   TaxView: {
     borderColor: "#0070C0",
     borderRadius: 7,
     // borderBottomRightRadius: 7,
-    width: "40%",
+    width: "50%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
@@ -700,32 +624,12 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     // borderBottomRightRadius: 0,
     // borderTopRightRadius:0,
-    width: "40%",
+    width: "45%",
     height: 48,
     marginTop: 20,
     borderWidth: 1,
   },
 
-  DoubleView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    // borderBottomRightRadius: 7,
-    width: "42%",
-    height: 48,
-    marginTop: 10,
-    borderWidth: 1,
-  },
-
-  FemalecheckView: {
-    borderColor: "#0070C0",
-    borderRadius: 7,
-    borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 0,
-    width: "40%",
-    height: 48,
-    marginTop: 30,
-    borderWidth: 1,
-  },
   flex: {
     display: "flex",
     flexDirection: "row",

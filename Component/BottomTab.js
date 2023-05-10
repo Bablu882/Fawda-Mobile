@@ -2,15 +2,13 @@ import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Homepage from "../src/HomePage";
-import SahayakBooking from "../src/SahayakBooking";
-
-import Profile from "../src/Profile";
 import Refer from "../src/Refer";
 import MyBookingStack from "../navigations/MyBookingStack";
 import { selectIsLoggedIn, selectUserType } from "../slices/authSlice";
 import { useSelector } from "react-redux";
 import ContactUs from "../src/ContactUs";
 import Thankyou from "../src/Thankyou";
+import HomeStack from "../navigations/HomeStack";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
@@ -33,18 +31,18 @@ export default function BottomTab() {
       })}
     >
       <Tab.Screen
-        name="HomePage"
-        component={Homepage}
-        listeners={({ navigation, route }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            if (isLoggedIn == true) {
-              navigation.replace("HomePage", usertype);
-            } else {
-              navigation.navigate("Login", usertype);
-            }
-          },
-        })}
+        name="HomeStack"
+        component={HomeStack}
+        // listeners={({ navigation, route }) => ({
+        //   tabPress: (e) => {
+        //     e.preventDefault();
+        //     if (isLoggedIn == true) {
+        //       navigation.nav("HomePage", usertype);
+        //     } else {
+        //       navigation.navigate("Login", usertype);
+        //     }
+        //   },
+        // })}
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
@@ -86,6 +84,7 @@ export default function BottomTab() {
             name="MyBookingStack"
             component={MyBookingStack}
             options={{
+              
               tabBarIcon: ({ focused, color, size }) => (
                 <View style={{ alignItems: "center" }}>
                   <Image
@@ -284,7 +283,7 @@ export default function BottomTab() {
       /> */}
       <Tab.Screen
         name="ContactUs"
-        component={ContactUs}
+      component={ContactUs}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
