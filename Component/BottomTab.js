@@ -46,13 +46,12 @@ export default function BottomTab() {
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
-                            <Image
+              <Image
                 source={
                   focused
                     ? require("../assets/image/home.png")
                     : require("../assets/image/homeicon.png")
                 }
-              
                 style={{
                   width: 20,
                   height: 20,
@@ -70,7 +69,7 @@ export default function BottomTab() {
               <Text
                 style={{
                   fontSize: 12,
-                  color: '#000',
+                  color: "#000",
                 }}
               >
                 होम
@@ -93,7 +92,7 @@ export default function BottomTab() {
                       //require("../assets/image/open-book.png")
                       focused
                         ? require("../assets/image/open-book.png")
-                         : require("../assets/image/booking.png")
+                        : require("../assets/image/booking.png")
                     }
                     style={{
                       width: 20,
@@ -112,7 +111,7 @@ export default function BottomTab() {
                   <Text
                     style={{
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                     }}
                   >
                     बुकिंग्स
@@ -135,7 +134,7 @@ export default function BottomTab() {
                       // require("../assets/image/open-book.png")
                       focused
                         ? require("../assets/image/jobs-active.png")
-                         : require("../assets/image/myjobs.png")
+                        : require("../assets/image/myjobs.png")
                     }
                     style={{
                       width: 20,
@@ -154,7 +153,7 @@ export default function BottomTab() {
                   <Text
                     style={{
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                     }}
                   >
                     नौकरियां
@@ -215,7 +214,7 @@ export default function BottomTab() {
                   // require("../assets/image/refer.png")
                   focused
                     ? require("../assets/image/refer.png")
-                     : require("../assets/image/refer-active.png")
+                    : require("../assets/image/refer-active.png")
                 }
                 style={{
                   width: 20,
@@ -243,7 +242,7 @@ export default function BottomTab() {
           ),
         }}
       />
-  {/* <Tab.Screen
+      {/* <Tab.Screen
         name="Thankyou"
         component={Thankyou}
         options={{
@@ -290,10 +289,10 @@ export default function BottomTab() {
             <View style={{ alignItems: "center" }}>
               <Image
                 source={
-                 // require("../assets/image/call.png")
+                  // require("../assets/image/call.png")
                   focused
                     ? require("../assets/image/call.png")
-                     : require("../assets/image/contact.png")
+                    : require("../assets/image/contact.png")
                 }
                 style={{
                   width: 20,
