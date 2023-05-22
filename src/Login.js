@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Linking
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Service from "../service/index";
@@ -171,6 +172,7 @@ export default function Login({ navigation }) {
           flexDirection: "row",
           width: "70%",
           marginBottom: 20,
+          alignItems:'center'
         }}
       >
         <View
@@ -188,10 +190,29 @@ export default function Login({ navigation }) {
             resizeMode="contain"
           />
         </View>
-        <Text style={{ textAlign: "center" }}>
+        {/* <Text style={{ textAlign: "center" }}>
           अगर आप आगे बढ़ते है आप हमारी नियम और शर्तों और प्राइवेसी नीति से सहमत
           हैं
-        </Text>
+        </Text> */}
+        <View style={{ textAlign: 'center', alignItems:'center',flexDirection:'row', flexWrap:'wrap', justifyContent:'center' }}>
+  <Text>अगर आप आगे बढ़ते हैं, तो आप हमारी </Text>
+  <View>
+    <TouchableOpacity onPress={() => Linking.openURL('https://fawda.in/privacy-policy')}>
+      <Text style={{ color: 'green', textDecorationLine: 'underline'}}>
+        नियम और शर्तों 
+      </Text>
+    </TouchableOpacity>
+  </View>
+  <Text> और </Text>
+  <View>
+    <TouchableOpacity onPress={() => Linking.openURL('https://fawda.in/privacy-policy/terms-and-conditions')}>
+      <Text style={{ color: 'green', textDecorationLine: 'underline', }}>
+        प्राइवेसी नीति
+      </Text>
+    </TouchableOpacity>
+  </View>
+  <Text> से सहमत हैं</Text>
+</View>
       </View>
     </View>
   );
