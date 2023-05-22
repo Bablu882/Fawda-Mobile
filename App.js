@@ -75,7 +75,6 @@ async function registerForPushNotificationsAsync() {
   let token;
 
   if (Platform.OS === "android") {
-    alert("here registerForPushNotificationsAsync in android");
     //alert('here registerForPushNotificationsAsync in android')
     await Notifications.setNotificationChannelAsync("default", {
       name: "default",
