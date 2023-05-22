@@ -205,7 +205,7 @@ export default function Login({ navigation }) {
   </View>
   <Text> और </Text>
   <View>
-    <TouchableOpacity onPress={() => Linking.openURL('https://fawda.in/privacy-policy/terms-and-conditions')}>
+    <TouchableOpacity onPress={() => Linking.openURL('https://fawda.in/terms-and-conditions')}>
       <Text style={{ color: 'green', textDecorationLine: 'underline', }}>
         प्राइवेसी नीति
       </Text>
