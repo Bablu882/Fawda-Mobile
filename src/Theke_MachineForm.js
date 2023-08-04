@@ -28,7 +28,7 @@ function Theke_MachineForm({ navigation, route }) {
   const { id, item, totalamount, fawdafee, useramount, jobtype } =
     route?.params ?? {};
   const itemStatus = item?.status;
-  // console.log("JobData", item, "amount", useramount);
+  // console.log("JobData", item);
   const [ratingList, setRatingList] = useState([]);
   const [bookingstate, setBookingState] = useState();
 
@@ -675,7 +675,11 @@ function Theke_MachineForm({ navigation, route }) {
                     />
                     <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
                       {item?.land_area}
-                      {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
+                      {item?.land_type == "Bigha"
+                        ? " बीघा"
+                        : item?.land_type == "Killa"
+                        ? " किल्ला"
+                        : " "}
                     </Text>
                   </View>
                 )}
@@ -715,7 +719,11 @@ function Theke_MachineForm({ navigation, route }) {
                         }}
                       >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
+                        {item?.land_type == "Bigha"
+                          ? " बीघा"
+                          : item?.land_type == "Killa"
+                          ? " किल्ला"
+                          : " "}
                       </Text>
                     </View>
                     <View

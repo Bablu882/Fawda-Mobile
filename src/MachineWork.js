@@ -32,7 +32,7 @@ export default function MachineWork({ navigation, route }) {
   const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   const { id, item, fawdafee, totalamount } = route.params ?? {};
-  console.log("jobdata", item);
+  // console.log("jobdata", item);
   const itemStatus = item?.status;
   const [amount, setAmount] = useState(0 || totalamount);
   const [edit, setEdit] = useState(false);
@@ -666,7 +666,11 @@ export default function MachineWork({ navigation, route }) {
                         }}
                       >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
+                        {item?.land_type == "Bigha"
+                          ? " बीघा"
+                          : item?.land_type == "Killa"
+                          ? " किल्ला"
+                          : " "}
                       </Text>
                     </View>
                   )}
@@ -701,7 +705,11 @@ export default function MachineWork({ navigation, route }) {
                         }}
                       >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
+                        {item?.land_type == "Bigha"
+                          ? " बीघा"
+                          : item?.land_type == "Killa"
+                          ? " किल्ला"
+                          : " "}
                       </Text>
                     </View>
                     <View

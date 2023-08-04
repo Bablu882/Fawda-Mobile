@@ -283,7 +283,11 @@ function Theke_MachineForm2({ navigation, route }) {
                 }}
               >
                 {item?.land_area}
-                {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
+                {item?.land_type == "Bigha"
+                  ? " बीघा"
+                  : item?.land_type == "Killa"
+                  ? " किल्ला"
+                  : " "}
               </Text>
             </View>
             <View

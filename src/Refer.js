@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Octicons";
 import Feather from "react-native-vector-icons/Feather";
-// import { setStringAsync } from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
+
 import {
   selectToken,
   selectUserType,
@@ -81,9 +82,10 @@ export default function Refer() {
     }
   };
 
-  // const copyToClipBoard = () => {
-  //   setStringAsync(referalCode);
-  // };
+  const CopyToClipBoard = () => {
+    Clipboard.setStringAsync(referalCode);
+    console.log("Copy to clipboard");
+  };
 
   useEffect(() => {
     checkJobCount();
@@ -232,14 +234,12 @@ export default function Refer() {
                     {referCode || referalCode}
                   </Text>
                 </View>
-                {/* <TouchableOpacity
-                  onPress={() => {
-                    copyToClipBoard();
-                  }}
+                <TouchableOpacity
+                  onPress={CopyToClipBoard}
                   style={[styles.loginBtn]}
                 >
                   <Text style={[styles.loginText]}>कोड कॉपी करें</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </View>
             )}
           </View>

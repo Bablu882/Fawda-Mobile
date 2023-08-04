@@ -160,8 +160,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus();
+              // fetchPaymentHtml();
+              paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -178,8 +178,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -192,8 +192,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         }
       }
@@ -347,8 +347,8 @@ export default function Payment({ route, navigation }) {
               )}
               <View style={styles.flex}>
                 <Text>फावड़ा की फीस</Text>
-                {item.job_type === "theke_pe_kam" ? (
-                  <Text>₹ {fawdafee}</Text>
+                {fawdafee === "0.0" ? (
+                  <Text>पहली बुकिंग मुफ़्त</Text>
                 ) : (
                   <Text>₹ {fawdafee}</Text>
                 )}
