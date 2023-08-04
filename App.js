@@ -10,6 +10,7 @@ import {
   Button,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootSiblingParent } from "react-native-root-siblings";
 import store from "./store";
 import { Provider } from "react-redux";
@@ -44,10 +45,11 @@ import { Privacy_policy } from "./src/PrivacyPolicy";
 import Thankyou from "./src/Thankyou";
 import { navigationRef } from "./service/NavigationService";
 import HomeStack from "./navigations/HomeStack";
-
+import ThankyouPayment from "./src/ThankyouPayment";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
+import Homepage from "./src/HomePage";
 
 let persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
@@ -59,17 +61,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-async function schedulePushNotification() {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "You've got mail! 📬",
-      body: "Here is the notification body",
-      data: { data: "goes here" },
-    },
-    trigger: { seconds: 2 },
-  });
-}
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -112,7 +103,6 @@ export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  // Call the function inside a useEffect within the App component
   useEffect(() => {
     //registerForPushNotificationsAsync().then(token => console.log(token));
     registerForPushNotificationsAsync().then((token) =>
@@ -126,7 +116,10 @@ export default function App() {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
+        console.log(response.notification.request.content);
+        const { data } = response.notification.request.content;
+        console.log("notification Data ", data);
+        // const { key } = data;
       });
 
     return () => {
@@ -156,57 +149,47 @@ export default function App() {
               screenOptions={{
                 headerShown: false,
               }}
-             
             >
               <Stack.Screen name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen name="Login" component={Login}/>
-          <Stack.Screen name="Verification" component={Verification} /> 
-          <Stack.Screen name="Register" component={Register} /> 
-          <Stack.Screen name="UserRegistration" component={UserRegistration} />
-          <Stack.Screen name="HomePage" component={BottomTab} />
-          <Stack.Screen name="BottomTab" component={BottomTab} />
-          <Stack.Screen name="HomeStack" component={HomeStack} />
-          <Stack.Screen name="MyBookingStack" component={MyBookingStack} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Verification" component={Verification} />
+              <Stack.Screen name="Register" component={Register} />
+              <Stack.Screen
+                name="UserRegistration"
+                component={UserRegistration}
+              />
+              <Stack.Screen name="HomePage" component={Homepage} />
+              <Stack.Screen name="BottomTab" component={BottomTab} />
+              <Stack.Screen name="HomeStack" component={HomeStack} />
+              <Stack.Screen name="MyBookingStack" component={MyBookingStack} />
 
-          <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} />
-        
-          <Stack.Screen name="MachineBooking" component={MachineBooking} />
-          <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
-          <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
-          {/* <Stack.Screen name="MachineWork2" component={MachineWork2} /> */}
-          <Stack.Screen name="ContactUs" component={ContactUs} />
-          <Stack.Screen name="terms" component={Terms_Condition} />
-          <Stack.Screen name="about_us" component={About_us} />
-          <Stack.Screen name="privacy" component={Privacy_policy} />
-          <Stack.Screen name="Thankyou" component={Thankyou} />
+              <Stack.Screen
+                name="Theke_MachineForm2"
+                component={Theke_MachineForm2}
+              />
+
+              <Stack.Screen name="MachineBooking" component={MachineBooking} />
+              <Stack.Screen
+                name="Theke_MachineForm"
+                component={Theke_MachineForm}
+              />
+              <Stack.Screen name="Theke_k_Kaam" component={Theke_k_Kaam} />
+              {/* <Stack.Screen name="MachineWork2" component={MachineWork2} /> */}
+              <Stack.Screen name="ContactUs" component={ContactUs} />
+              <Stack.Screen name="terms" component={Terms_Condition} />
+              <Stack.Screen name="about_us" component={About_us} />
+              <Stack.Screen name="privacy" component={Privacy_policy} />
+              <Stack.Screen name="Thankyou" component={Thankyou} />
+              <Stack.Screen
+                name="ThankyouPayment"
+                component={ThankyouPayment}
+              />
             </Stack.Navigator>
           </PersistGate>
         </Provider>
       </NavigationContainer>
     </RootSiblingParent>
   );
-
-  //   return(
-  //     <View
-  //     style={{
-  //       flex: 1,
-  //       alignItems: 'center',
-  //       justifyContent: 'space-around',
-  //     }}>
-  //     <Text>Your expo push token: {expoPushToken}</Text>
-  //     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-  //       <Text>Title: {notification && notification.request.content.title} </Text>
-  //       <Text>Body: {notification && notification.request.content.body}</Text>
-  //       <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
-  //     </View>
-  //     <Button
-  //       title="Press to schedule a notification"
-  //       onPress={async () => {
-  //         await schedulePushNotification();
-  //       }}
-  //     />
-  //   </View>
-  // );
 }
 const styles = StyleSheet.create({
   container: {

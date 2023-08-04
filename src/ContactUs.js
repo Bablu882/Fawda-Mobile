@@ -8,17 +8,23 @@ import {
   TextInput,
   ScrollView,
   Button,
+  Alert,
   //   RadioButton
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
+import {
+  selectIsLoggedIn,
+  selectToken,
+  setToken,
+  clearAuth,
+} from "../slices/authSlice";
 import Service from "../service/index";
 import * as Linking from "expo-linking";
 
-import Toast from 'react-native-root-toast';
-
+import Toast from "react-native-simple-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // import * as Location from "expo-location";
 
@@ -30,6 +36,8 @@ export default function ContactUs({ navigation, route }) {
   const [state, setState] = useState("");
   const dispatch = useDispatch();
   const [Data, setData] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [appVersion, setAppVersion] = useState(0);
 
   function handleCallPress() {
     const url = `tel:${phoneno}`;
@@ -65,15 +73,12 @@ export default function ContactUs({ navigation, route }) {
       });
 
       const data = response.data;
-      console.log(data, "data response");
+      console.log("Contact Data", data);
       setState(data.user_details);
       setphoneno(data?.client_info?.phone_no);
+      setAppVersion(data?.app_version);
       console.log(phoneno, "checkhone");
-      // setAppVersion(data.app_version);
-      // setPrivacy(data.privacy_policy);
-      // setTermsCondition(data.client_info.terms_condition);
       setData(data);
-      console.log(Data, "terms");
     } catch (error) {
       console.log("error", error);
     }
@@ -83,63 +88,92 @@ export default function ContactUs({ navigation, route }) {
     detailList();
   }, [0]);
 
-
-  const Logout = () => {
-    
-    Service.post("/api/logout/", null, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        let data = res?.data;
-        navigation.replace("Login");
-        console.log("fjfjf", data);
-      })
-      .catch((error) => {
-        console.log("error", error);
+  const Logout = async () => {
+    try {
+      const response = await Service.post("/api/logout/", null, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      const data = response?.data;
+      console.log("logout data", data);
+      dispatch(clearAuth());
+      navigation.replace("Login");
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
 
-  // const Logout = async() => {
-  //   try {
-  //     const response = await Service.post("/api/logout/", {
-  //       headers: {
-  //         "Content-Type" : "application/json",
-  //         'Authorization': `Bearer ${token}`
-  //       }
-  //     });
+  const deactivateAccount = async () => {
+    setLoading(true);
+    try {
+      const response = await Service.post("/api/delete-account/", null, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const deactivateResponse = response.data;
+      const status = deactivateResponse.status;
+      console.log("Deactivate Response", deactivateResponse);
+      if (status === "success") {
+        Toast.show("खाता निष्क्रिय!", Toast.LONG);
+        dispatch(clearAuth());
+        navigation.replace("Login");
+      } else {
+        Toast.show(
+          "सुनिश्चित करें कि कोई भी नौकरी/बुकिंग की स्थिति (बुक्ड) या (जारी है) नहीं हो!",
+          Toast.LONG
+        );
+      }
+    } catch (error) {
+      console.log("deactivate error ", error);
+      Toast.show(
+        "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+        Toast.LONG
+      );
+      console.log("error", JSON.stringify(error.message));
+      // navigation.replace("Login");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  //     const data = response.data;
-  //     console.log(response.data , "data response");
-  //     if(data?.success) {
-  //        navigation.replace("Login")
-  //     }
-  //     // console.log(phoneno, "checkhone");
-  //     // setAppVersion(data.app_version);
-  //     // setPrivacy(data.privacy_policy);
-  //     // setTermsCondition(data.client_info.terms_condition);
-  //     // setData(data)
-  //     // console.log(Data , "terms");
-
-  //   } catch (error) {
-  //     console.log("error" , error);
-  //   }
-  // }
+  const deleteAccount = () => {
+    Alert.alert("खाता हटाएं", "क्या आप अपना खाता हटाना चाहते हैं ?", [
+      {
+        text: "नहीं",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "हाँ",
+        onPress: () => {
+          deactivateAccount();
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View>
           <View style={{ justifyContent: "center" }}>
             <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" , fontFamily:'Devanagari-bold',}}
+              style={{
+                textAlign: "center",
+                fontSize: 30,
+                fontWeight: "600",
+                fontFamily: "Devanagari-bold",
+              }}
             >
               संपर्क करें
             </Text>
@@ -149,11 +183,6 @@ export default function ContactUs({ navigation, route }) {
               marginHorizontal: 13,
             }}
           >
-            {/* <View style={{ display: "none" }}>
-          <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
-         
-          {console.log("location", location.latitude)}
-        </View> */}
             <View
               style={{
                 flexDirection: "row",
@@ -171,15 +200,9 @@ export default function ContactUs({ navigation, route }) {
                   ]}
                   placeholder=""
                   placeholderTextColor={"#848484"}
-                  // onChangeText={(phoneno) => setphoneno(phoneno, "phone")}
-                  // // defaultValue={email}
-                  // value={phoneno}
                 >
                   {phoneno}
                 </Text>
-                {/* {!!errors.phoneno && (
-                  <Text style={styles.error}>{errors.phoneno}</Text>
-                )} */}
               </View>
               <TouchableOpacity
                 onPress={() => {
@@ -196,13 +219,26 @@ export default function ContactUs({ navigation, route }) {
                   elevation: 7,
                 }}
               >
-                <Text style={{ color: "#fff", fontSize: 16 ,fontFamily:'Devanagari-bold',}}>कॉल करें </Text>
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 16,
+                    fontFamily: "Devanagari-bold",
+                  }}
+                >
+                  कॉल करें{" "}
+                </Text>
               </TouchableOpacity>
             </View>
 
             <View style={{ justifyContent: "center", marginTop: 20 }}>
               <Text
-                style={{ textAlign: "center", fontSize: 30, fontWeight: "600",fontFamily:'Devanagari-bold', }}
+                style={{
+                  textAlign: "center",
+                  fontSize: 30,
+                  fontWeight: "600",
+                  fontFamily: "Devanagari-bold",
+                }}
               >
                 रजिस्ट्रेशन
               </Text>
@@ -227,7 +263,6 @@ export default function ContactUs({ navigation, route }) {
               >
                 {state.name}
               </Text>
-              {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
               <Text style={styles.label}>लिंग:</Text>
@@ -238,9 +273,6 @@ export default function ContactUs({ navigation, route }) {
               >
                 {state.gender}
               </Text>
-              {/* {!!errors.phoneno && (
-                <Text style={styles.error}>{errors.phoneno}</Text>
-              )} */}
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>
               <Text style={styles.label}>फ़ोन:</Text>
@@ -251,9 +283,6 @@ export default function ContactUs({ navigation, route }) {
               >
                 {state.phone}
               </Text>
-              {/* {!!errors.phoneno && (
-                <Text style={styles.error}>{errors.phoneno}</Text>
-              )} */}
             </View>
 
             <View style={styles.flex}>
@@ -266,9 +295,6 @@ export default function ContactUs({ navigation, route }) {
                 >
                   {state.mohalla}
                 </Text>
-                {/* {!!errors.mohalla && (
-                  <Text style={styles.error}>{errors.mohalla}</Text>
-                )} */}
               </View>
               <View style={[styles.DoubleView, { position: "relative" }]}>
                 <Text style={styles.label}>गांव</Text>
@@ -279,9 +305,6 @@ export default function ContactUs({ navigation, route }) {
                 >
                   {state.village}
                 </Text>
-                {/* {!!errors.village && (
-                  <Text style={styles.error}>{errors.village}</Text>
-                )} */}
               </View>
             </View>
 
@@ -295,9 +318,21 @@ export default function ContactUs({ navigation, route }) {
                 <Text style={styles.TextInput}>{state.district}</Text>
               </View>
             </View>
+            <View style={[styles.inputView, { position: "relative" }]}>
+              <Text style={styles.label}>पिन कोड :</Text>
+              <Text
+                style={styles.TextInput}
+                placeholder=""
+                placeholderTextColor={"#848484"}
+              >
+                {state.pincode}
+              </Text>
+            </View>
             <View style={{ paddingTop: 30 }}>
               <View style={styles.flexbetween}>
-              <Text style={{fontFamily:'Devanagari-bold',}}>हमारे बारे में </Text>
+                <Text style={{ fontFamily: "Devanagari-bold" }}>
+                  हमारे बारे में{" "}
+                </Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("about_us", {
@@ -309,7 +344,9 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-                <Text style={{fontFamily:'Devanagari-bold',}}>नियम और शर्तें </Text>
+                <Text style={{ fontFamily: "Devanagari-bold" }}>
+                  नियम और शर्तें{" "}
+                </Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("terms", {
@@ -321,7 +358,9 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-              <Text style={{fontFamily:'Devanagari-bold',}}>प्राइवेसी नीति</Text>
+                <Text style={{ fontFamily: "Devanagari-bold" }}>
+                  प्राइवेसी नीति
+                </Text>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("privacy", {
@@ -333,16 +372,23 @@ export default function ContactUs({ navigation, route }) {
                 </TouchableOpacity>
               </View>
               <View style={styles.flexbetween}>
-              <Text style={{fontFamily:'Devanagari-bold',}}>वरजन</Text>
+                <Text style={{ fontFamily: "Devanagari-bold" }}>वरजन</Text>
+                <Text style={{ color: "#0099FF", fontSize: 16 }}>
+                  {appVersion}
+                </Text>
+              </View>
+              <View style={styles.flexbetween}>
+                <Text style={{ fontFamily: "Devanagari-bold" }}>
+                  खाता हटाएं
+                </Text>
                 <TouchableOpacity
-                // onPress={() => navigation.navigate("version" , {
-                //   terms : Data,
-                // })}
+                  onPress={() => {
+                    deleteAccount();
+                  }}
                 >
                   <Icon name="right" size={18} color="#0099FF" />
                 </TouchableOpacity>
               </View>
-             
             </View>
             <TouchableOpacity
               onPress={() => {
@@ -373,8 +419,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -10,
     left: 30,
-    fontFamily:'Devanagari-bold',
-    paddingHorizontal:10,
+    fontFamily: "Devanagari-bold",
+    paddingHorizontal: 10,
 
     textAlign: "center",
     backgroundColor: "#fff",
@@ -382,7 +428,7 @@ const styles = StyleSheet.create({
   TextInput: {
     height: 50,
     padding: 10,
-    fontFamily:'Devanagari-regular',
+    fontFamily: "Devanagari-regular",
     // fontFamily: "Poppin-Light",
   },
 
@@ -426,7 +472,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#fff",
     fontSize: 18,
-    fontFamily:'Devanagari-bold',
+    fontFamily: "Devanagari-bold",
   },
   error: {
     color: "red",

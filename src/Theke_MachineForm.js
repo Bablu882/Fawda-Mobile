@@ -13,44 +13,22 @@ import {
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
 
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
-import CustomComponent from '../Component/CustomComponent'
-// const CustomComponent = ({ label, value }) => {
-//   return (
-//     <View
-//       style={[
-//         styles.inputView,
-//         styles.inputbox,
-//         {
-//           flexDirection: "row",
-//           justifyContent: "space-around",
-//           paddingHorizontal: 10,
-//         },
-//       ]}
-//     >
-//       <TextInput
-//         style={[styles.TextInput, { width: "100%" }]}
-//         placeholder={label}
-//         editable={false}
-//         placeholderTextColor={"#000"}
-//       />
-//       <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
-//     </View>
-//   );
-// };
+import CustomComponent from "../Component/CustomComponent";
 
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { id, item, totalamount, fawdafee, useramount, jobtype } =
     route?.params ?? {};
-console.log('itemitem',item)
+  const itemStatus = item?.status;
+  // console.log("JobData", item, "amount", useramount);
   const [ratingList, setRatingList] = useState([]);
   const [bookingstate, setBookingState] = useState();
 
@@ -62,10 +40,18 @@ console.log('itemitem',item)
   const [thekeperKam, setThekeperKam] = useState([]);
   const [thekeperKams, setThekeperKams] = useState([]);
   const [thekeparpending, setThekeperKamPending] = useState([]);
-  const [amount, setAmount] = useState({});
+  const [amount, setAmount] = useState(0 || item?.total_amount_theka);
   const [edit, setEdit] = useState(false);
   const [editable, setEditable] = useState(false);
   const [status, setStatus] = useState("");
+  const [statusAccept, setStatusAccept] = useState("");
+  const [statusPending, setStatusPending] = useState("");
+  const [jobsData, setJobsData] = useState([]);
+  const [thekeParAmount, setThekeParAmount] = useState(
+    0 || item?.total_amount_theka
+  );
+  const [fawdaFees, setFawdafees] = useState(0 || item?.fawda_fee);
+  const [paymentYour, setPaymentYour] = useState(0 || item?.payment_your);
 
   const textInputRef = useRef(null);
   const handleClick = () => {
@@ -73,7 +59,7 @@ console.log('itemitem',item)
   };
 
   const accptThekha = async () => {
-    //setIsLoading(true);
+    setIsLoading(true);
     let params = {
       job_id: item?.id,
     };
@@ -89,13 +75,15 @@ console.log('itemitem',item)
       if (data?.status === 200) {
         console.log("aaaa", data);
         setThekeperKam(data?.data);
-        Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
+        Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
         navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
-        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
+        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.LONG);
       }
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   function getStatusButton(status, label) {
@@ -112,7 +100,7 @@ console.log('itemitem',item)
             lineHeight: 30,
             color: "#fff",
             fontSize: 15,
-            fontFamily:'Devanagari-bold',
+            fontFamily: "Devanagari-bold",
             fontWeight: "600",
           }}
         >
@@ -140,6 +128,7 @@ console.log('itemitem',item)
 
       const data = response?.data;
       if (data?.status === 200) {
+        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
         Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
       } else {
         Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
@@ -158,7 +147,7 @@ console.log('itemitem',item)
     let params = {
       booking_job: item?.booking_id,
     };
-     
+
     try {
       const response = await service.post("/api/get-rating/", params, {
         headers: {
@@ -167,13 +156,7 @@ console.log('itemitem',item)
         },
       });
       const data = response?.data;
-      console.log("datadatadatadatadata", response?.data.status);
-      // if ( response?.data.status == 200) {
-      //   setTimeout(() => {
-      //     navigation.navigate("HomeStack", { screen: "HomePage" });
-      //   }, 4000);
-      //   console.log("vjvjvv",response?.data.status);
-      // }
+      console.log("data", response?.data.status);
 
       const ratings = data?.data?.rating;
       const ratingColor = "#e6b400";
@@ -210,7 +193,6 @@ console.log('itemitem',item)
     } catch (error) {
       console.log("Error:", error);
     }
-   
   };
 
   // useEffect(() => {
@@ -220,9 +202,11 @@ console.log('itemitem',item)
   useEffect(() => {
     mybookingdetail();
     myjobs();
+    RatingApi();
   }, []);
 
   const cancel = async () => {
+    setIsLoading(true);
     let params = {
       job_id: JSON.stringify(id),
       job_number: item?.job_number,
@@ -240,14 +224,205 @@ console.log('itemitem',item)
       });
       const data = response?.data;
       // setStatus(data.status);
-      navigation.navigate("HomeStack", { screen: "HomePage" });
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      navigation.replace("HomeStack", { screen: "BottomTab" });
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
 
       console.log("cancel api data ", data);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const fetchJobData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await service.get(`/api/nearjob/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data?.results;
+      // console.log("dayaaaaaa", data);
+      setJobsData(data);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+  useEffect(() => {
+    if (usertype && usertype !== "Grahak") {
+      jobsData.forEach((jobData, index) => {
+        if (id === jobData.id) {
+          // setAmountMale(jobData.pay_amount_male);
+          // setAmountFemale(jobData.pay_amount_female);
+          setThekeParAmount(jobData.total_amount_theka);
+          setFawdafees(jobData.fawda_fee);
+          setPaymentYour(jobData.payment_your);
+        }
+      });
+    }
+  }, [jobsData]);
+
+  const checkPayment = async () => {
+    setIsLoading(true);
+    try {
+      const response = await service.get(`/api/nearjob/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data?.results;
+      console.log("dayaaaaaa", data);
+
+      if (usertype && usertype !== "Grahak") {
+        const matchingJobData = data.find((jobData) => jobData.id === item?.id);
+        console.log("matchingJobData:", matchingJobData);
+
+        if (matchingJobData) {
+          const totalAmount = matchingJobData.total_amount_theka;
+          if (thekeParAmount !== totalAmount) {
+            Toast.show(
+              "इस कार्य के लिए भुगतान बदल दिया गया है! कृपया स्क्रीन को रिफ़्रेश करें!",
+              Toast.LONG
+            );
+          } else {
+            console.log("Payment OK");
+            accptThekha();
+          }
+        } else {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show("यह नौकरी ग्राहक द्वारा रद्द कर दी गई है", Toast.LONG);
+        }
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const myStatusBooked = async () => {
+    setIsLoading(true);
+    let params = {
+      booking_id: JSON.stringify(item.booking_id),
+    };
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-myjobs/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      if (data[0]?.status === "Booked") {
+        Toast.show(
+          "यह बुकिंग ग्राहक द्वारा बुक की गई है। कृपया रिफ़्रेश करें!",
+          Toast.LONG
+        );
+      } else {
+        Rejected();
+      }
+      console.log("status", status);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkStatus = async () => {
+    setIsLoading(true);
+    let params = {
+      sahayak_job_id: JSON.stringify(id),
+      sahayak_job_number: item?.job_number,
+    };
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      if (usertype && usertype === "Grahak") {
+        console.log("datatesting", data?.sahayak_pending_booking_details[0]);
+        const statusCheck =
+          data?.sahayak_pending_booking_details[0]?.status || "";
+        const accept_data = data?.booking_theke_pe_kam[0] || {};
+        if (statusCheck === "Pending") {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
+        } else {
+          navigation.replace("Payment", {
+            item: accept_data,
+            fawdafee: accept_data?.fawda_fee,
+            totalamount: accept_data?.total_amount,
+            useramount: accept_data?.total_amount_theka,
+            id: accept_data?.job_id,
+          });
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const checkSahayakStatus = async () => {
+    setIsLoading(true);
+    let params = {
+      sahayak_job_id: JSON.stringify(id),
+      sahayak_job_number: item?.job_number,
+    };
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+
+      if (usertype && usertype === "Grahak") {
+        const statusCheck = data?.booking_theke_pe_kam[0]?.status || "";
+        if (statusCheck === "Accepted") {
+          Toast.show(
+            "यह बुकिंग सहायक द्वारा स्वीकार कर ली गई है। कृपया स्क्रीन को रिफ्रेश करें।",
+            Toast.LONG
+          );
+        } else {
+          Edit();
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
   const mybookingdetail = async () => {
     setIsLoading(true); // set isLoading to true when the function starts
     setRefreshing(true);
@@ -272,8 +447,19 @@ console.log('itemitem',item)
       const data = response?.data;
       setThekeperKams(data?.booking_theke_pe_kam);
       setThekeperKamPending(data?.sahayak_pending_booking_details);
-      console.log("thekeparbooking", data?.booking_theke_pe_kam);
-      console.log("thekeparpending", data?.sahayak_pending_booking_details);
+      if (usertype && usertype === "Grahak") {
+        setStatusAccept(data?.booking_theke_pe_kam[0]?.status || "");
+        setStatusPending(
+          data?.sahayak_pending_booking_details[0]?.status || ""
+        );
+        if (statusPending === "Pending") {
+          setAmount(
+            data?.sahayak_pending_booking_details[0]?.total_amount_theka
+          );
+        } else {
+          setAmount(data?.booking_theke_pe_kam[0]?.total_amount_theka);
+        }
+      }
       setIsLoading(false);
       setRefreshing(false);
     } catch (error) {
@@ -282,6 +468,8 @@ console.log('itemitem',item)
   };
 
   const myjobs = async () => {
+    setIsLoading(true);
+    setRefreshing(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
@@ -300,18 +488,31 @@ console.log('itemitem',item)
       );
       const data = response?.data;
       setThekeperKam(data);
+      setStatus(data[0]?.status);
+      if (
+        data[0]?.status === "Cancelled" ||
+        data[0]?.status === "Cancelled-After-Payment"
+      ) {
+        navigation.replace("HomeStack", { screen: "BottomTab" });
+        Toast.show("यह नौकरी ग्राहक द्वारा रद्द कर दी गई है!", Toast.LONG);
+      }
+      console.log("status", status);
       console.log("myjobsdata", data);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
     }
   };
-  
+
   const Rejected = async () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected",
     };
-    console.log('Rejected', params)
+    console.log("Rejected", params);
 
     try {
       const response = await service.post("/api/rejected/", params, {
@@ -322,19 +523,22 @@ console.log('itemitem',item)
       });
 
       const data = response?.data;
-      navigation.navigate('HomeStack',{screen: "HomePage"});
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       console.log(data, "sds");
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const RejectedPayment = async () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected-After-Payment",
     };
-    console.log('Rejected', params)
+    console.log("Rejected", params);
 
     try {
       const response = await service.post("/api/rejected/", params, {
@@ -345,18 +549,16 @@ console.log('itemitem',item)
       });
 
       const data = response?.data;
-      navigation.navigate('HomeStack',{screen: "HomePage"});
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       console.log(data, "sds");
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  useEffect(() => {
-    // mybookingdetail();
-    //myjobs();
-    RatingApi();
-  }, []);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     myjobs().then(() => {
@@ -368,6 +570,12 @@ console.log('itemitem',item)
     mybookingdetail().then(() => {
       setRefreshing(false);
     });
+    fetchJobData().then(() => {
+      setRefreshing(false);
+    });
+    // checkStatus().then(() => {
+    //   setRefreshing(false);
+    // });
   }, []);
   return (
     <SafeAreaView style={styles.container}>
@@ -397,10 +605,14 @@ console.log('itemitem',item)
               }}
             >
               <Text
-                style={{ textAlign: "center", fontSize: 30, fontWeight: "600",  fontFamily:'Devanagari-bold' }}
+                style={{
+                  textAlign: "center",
+                  fontSize: 30,
+                  fontWeight: "600",
+                  fontFamily: "Devanagari-bold",
+                }}
               >
-                {item?.job_type === "theke_pe_kam"
-                  && "ठेके पर काम"}
+                {item?.job_type === "theke_pe_kam" && "ठेके पर काम"}
               </Text>
               <View
                 style={[
@@ -425,8 +637,10 @@ console.log('itemitem',item)
                 (usertype === "Sahayak" || usertype === "MachineMalik") && (
                   <View style={[styles.inputView, { height: 40 }]}>
                     <Text style={styles.label}>गाँव</Text>
-                    <Text style={[styles.TextInput, { color: "#848484" }]}>
-                      {item?.village}
+                    <Text style={[styles.TextInput]}>
+                      {item?.status == "Completed"
+                        ? item?.grahak_village
+                        : item?.village}
                     </Text>
                   </View>
                 )}
@@ -438,10 +652,10 @@ console.log('itemitem',item)
                 ]}
               >
                 <Text style={styles.TextInput}>
-                  {moment.utc(item?.datetime).format("l")}
+                  {moment(item?.datetime).format("DD/MM/YYYY")}
                 </Text>
                 <Text style={styles.TextInput}>
-                  {moment.utc(item?.datetime).format("LT")}
+                  {moment(item?.datetime).format("LT")}
                 </Text>
               </View>
               {usertype &&
@@ -453,7 +667,7 @@ console.log('itemitem',item)
                       { flexDirection: "row", justifyContent: "space-between" },
                     ]}
                   >
-                    <Text style={styles.label}>भूमि क्षेत्र</Text>
+                    <Text style={styles.label}>भूमि क्षेत्र </Text>
                     <TextInput
                       style={styles.TextInput}
                       placeholderTextColor="#848484"
@@ -461,15 +675,11 @@ console.log('itemitem',item)
                     />
                     <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
                       {item?.land_area}
-                      {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
-                      {console.log('gggg',item?.land_area)}
+                      {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
                     </Text>
                   </View>
                 )}
               <View></View>
-              {/* {usertype === "Grahak" && (
-           
-          )} */}
 
               {usertype && usertype === "Grahak" && (
                 <>
@@ -497,11 +707,15 @@ console.log('itemitem',item)
                         editable={false}
                         placeholder="भूमि क्षेत्र "
                       />
-                      <Text style={{ right: 10, color: "#0070C0",fontFamily:'Devanagari-regular', }}>
+                      <Text
+                        style={{
+                          right: 10,
+                          color: "#0099FF",
+                          fontFamily: "Devanagari-regular",
+                        }}
+                      >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
-
-                   
+                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
                       </Text>
                     </View>
                     <View
@@ -526,7 +740,11 @@ console.log('itemitem',item)
                             onChangeText={(amount) => setAmount(amount)}
                             value={amount}
                             keyboardType="numeric"
-                            style={{ paddingRight: 10 ,fontFamily:'Devanagari-regular',}}
+                            style={{
+                              paddingRight: 10,
+                              fontFamily: "Devanagari-regular",
+                              color: "#0099FF",
+                            }}
                             defaultValue={item?.total_amount_theka}
                           />
                         </>
@@ -543,10 +761,10 @@ console.log('itemitem',item)
                               marginTop: 13,
                               marginRight: 8,
                               color: "#0099FF",
-                              fontFamily:'Devanagari-regular',
+                              fontFamily: "Devanagari-regular",
                             }}
                           >
-                            ₹ {totalamount}
+                            ₹ {useramount}
                           </Text>
                         </>
                       )}
@@ -577,13 +795,19 @@ console.log('itemitem',item)
                                 }}
                               >
                                 <Text
-                                  style={[styles.TextWhite, { fontSize: 12,fontFamily:'Devanagari-bold', }]}
+                                  style={[
+                                    styles.TextWhite,
+                                    {
+                                      fontSize: 12,
+                                      fontFamily: "Devanagari-bold",
+                                    },
+                                  ]}
                                 >
                                   वेतन बदलें
                                 </Text>
                               </TouchableOpacity>
                               <TouchableOpacity
-                                onPress={() => Edit()}
+                                onPress={() => checkSahayakStatus()}
                                 style={{
                                   backgroundColor: "#44A347",
                                   paddingHorizontal: 10,
@@ -591,7 +815,13 @@ console.log('itemitem',item)
                                 }}
                               >
                                 <Text
-                                  style={[styles.TextWhite, { fontSize: 12,fontFamily:'Devanagari-bold', }]}
+                                  style={[
+                                    styles.TextWhite,
+                                    {
+                                      fontSize: 12,
+                                      fontFamily: "Devanagari-bold",
+                                    },
+                                  ]}
                                 >
                                   कन्फर्म
                                 </Text>
@@ -671,17 +901,25 @@ console.log('itemitem',item)
                                     : {},
                                 ]}
                                 disabled={item?.status === "Pending"}
-                                onPress={() =>
-                                  navigation.navigate("Payment", {
-                                    item,
-                                    fawdafee: item?.fawda_fee,
-                                    totalamount: item?.total_amount,
-                                    useramount: item?.total_amount_theka,
-                                  })
-                                }
+                                onPress={() => {
+                                  // navigation.replace("Payment", {
+                                  //   item,
+                                  //   fawdafee: item?.fawda_fee,
+                                  //   totalamount: item?.total_amount,
+                                  //   useramount: item?.total_amount_theka,
+                                  //   id: id,
+                                  // });
+                                  checkStatus();
+                                }}
                               >
                                 <Text
-                                  style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}
+                                  style={[
+                                    styles.loginText,
+                                    {
+                                      color: "#fff",
+                                      fontFamily: "Devanagari-bold",
+                                    },
+                                  ]}
                                 >
                                   {item?.status === "Pending"
                                     ? "भुगतान करें"
@@ -700,7 +938,11 @@ console.log('itemitem',item)
                             <Text
                               style={[
                                 styles.loginText,
-                                { color: "#fff", paddingVertical: 10,fontFamily:'Devanagari-bold', },
+                                {
+                                  color: "#fff",
+                                  paddingVertical: 10,
+                                  fontFamily: "Devanagari-bold",
+                                },
                               ]}
                             >
                               समाप्त
@@ -759,19 +1001,18 @@ console.log('itemitem',item)
                   {usertype &&
                     (usertype === "Sahayak" || usertype === "MachineMalik") && (
                       <>
-                   
                         <CustomComponent
                           label="किसान से वेतन"
-                          value={item?.total_amount_theka}
+                          value={thekeParAmount}
                         />
                         <CustomComponent
                           label="फावड़ा की फीस"
-                          value={item?.fawda_fee}
+                          value={fawdaFees}
                         />
-                        
+
                         <CustomComponent
                           label="आपका भुगतान"
-                          value={item?.payment_your}
+                          value={paymentYour}
                         />
                       </>
                     )}
@@ -786,9 +1027,18 @@ console.log('itemitem',item)
                       {item?.status === "Pending" ? (
                         <TouchableOpacity
                           style={styles.BhuktanBtn}
-                          onPress={() => accptThekha()}
+                          onPress={() => {
+                            if (!isLoading) {
+                              checkPayment();
+                            }
+                          }}
                         >
-                          <Text style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}>
+                          <Text
+                            style={[
+                              styles.loginText,
+                              { color: "#fff", fontFamily: "Devanagari-bold" },
+                            ]}
+                          >
                             काम स्वीकार करें
                           </Text>
                         </TouchableOpacity>
@@ -805,7 +1055,10 @@ console.log('itemitem',item)
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff",fontFamily:'Devanagari-bold', },
+                                        {
+                                          color: "#fff",
+                                          fontFamily: "Devanagari-bold",
+                                        },
                                       ]}
                                     >
                                       {item?.status === "Accepted"
@@ -828,7 +1081,10 @@ console.log('itemitem',item)
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff",fontFamily:'Devanagari-bold', },
+                                        {
+                                          color: "#fff",
+                                          fontFamily: "Devanagari-bold",
+                                        },
                                       ]}
                                     >
                                       {item?.status === "Accepted"
@@ -849,7 +1105,7 @@ console.log('itemitem',item)
                                     <TextInput
                                       style={styles.TextInput}
                                       editable={false}
-                                      placeholderTextColor="#848484"
+                                      placeholderTextColor="#000000"
                                       placeholder={item?.grahak_name}
                                     />
                                   </View>
@@ -860,7 +1116,7 @@ console.log('itemitem',item)
                                     <TextInput
                                       style={styles.TextInput}
                                       editable={false}
-                                      placeholderTextColor="#848484"
+                                      placeholderTextColor="#000000"
                                       placeholder={item?.grahak_phone}
                                     />
                                   </View>
@@ -880,11 +1136,18 @@ console.log('itemitem',item)
                                       styles.BhuktanBtn,
                                       { width: "95%", marginBottom: 10 },
                                     ]}
+                                    onPress={() => {
+                                      if (itemStatus !== "Completed") {
+                                        navigation.replace("HomeStack", {
+                                          screen: "BottomTab",
+                                        });
+                                      }
+                                    }}
                                   >
                                     <Text
                                       style={[
                                         styles.loginText,
-                                        { color: "#fff", },
+                                        { color: "#fff" },
                                       ]}
                                     >
                                       समाप्त
@@ -902,6 +1165,28 @@ console.log('itemitem',item)
                               )}
                             </>
                             {item.status === "Accepted" && (
+                              <View style={{ marginTop: "auto", padding: 5 }}>
+                                <View
+                                  style={[
+                                    styles.inputView,
+                                    styles.flex,
+                                    styles.justifyContentBetween,
+                                    {
+                                      height: 90,
+                                    },
+                                  ]}
+                                >
+                                  <Text style={styles.label}>टिप्पणी</Text>
+                                  <Text
+                                    style={[
+                                      styles.TextInput,
+                                      { maxWidth: "98%" },
+                                    ]}
+                                  >
+                                    कृपया किसान द्वारा बुकिंग की पुष्टि करने की
+                                    प्रतीक्षा करें!
+                                  </Text>
+                                </View>
                                 <View>
                                   <TouchableOpacity
                                     style={{
@@ -913,7 +1198,9 @@ console.log('itemitem',item)
                                       marginTop: 10,
                                     }}
                                     onPress={() => {
-                                      Rejected();
+                                      if (!isLoading) {
+                                        myStatusBooked();
+                                      }
                                     }}
                                   >
                                     <Text
@@ -926,8 +1213,33 @@ console.log('itemitem',item)
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
-                              )}
-                                  {item.status === "Booked" && (
+                              </View>
+                            )}
+                            {item.status === "Booked" && (
+                              <View>
+                                <View style={{ marginTop: "auto", padding: 5 }}>
+                                  <View
+                                    style={[
+                                      styles.inputView,
+                                      styles.flex,
+                                      styles.justifyContentBetween,
+                                      {
+                                        height: 90,
+                                      },
+                                    ]}
+                                  >
+                                    <Text style={styles.label}>टिप्पणी</Text>
+                                    <Text
+                                      style={[
+                                        styles.TextInput,
+                                        { maxWidth: "98%" },
+                                      ]}
+                                    >
+                                      कृपया ऊपर दिए गए नंबर पर संपर्क करें और
+                                      कृपया नौकरी के लिए समय पर पहुंचें!
+                                    </Text>
+                                  </View>
+                                </View>
                                 <View>
                                   <TouchableOpacity
                                     style={{
@@ -939,7 +1251,9 @@ console.log('itemitem',item)
                                       marginTop: 10,
                                     }}
                                     onPress={() => {
-                                      RejectedPayment();
+                                      if (!isLoading) {
+                                        RejectedPayment();
+                                      }
                                     }}
                                   >
                                     <Text
@@ -952,7 +1266,8 @@ console.log('itemitem',item)
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
-                              )}
+                              </View>
+                            )}
                           </View>
                         ))
                       )}
@@ -962,6 +1277,38 @@ console.log('itemitem',item)
               </View>
 
               <View style={{ width: "100%" }}></View>
+            </View>
+
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype &&
+                usertype === "Grahak" &&
+                item.status !== "Completed" && (
+                  <>
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        {
+                          height: 90,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.label}>टिप्पणी</Text>
+                      {statusPending === "Pending" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          काम स्वीकृत होने की प्रतीक्षा करें ! स्वीकृत होने पर
+                          आपको भुगतान के लिए सूचित किया जाएगा
+                        </Text>
+                      )}
+                      {statusAccept === "Accepted" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          बुकिंग कन्फर्म करने के लिए कृपा भुगतान करें!
+                        </Text>
+                      )}
+                    </View>
+                  </>
+                )}
             </View>
 
             <View style={{ marginTop: "auto", padding: 5 }}>
@@ -980,7 +1327,9 @@ console.log('itemitem',item)
                           borderRadius: 5,
                         }}
                         onPress={() => {
-                          cancel();
+                          if (!isLoading) {
+                            cancel();
+                          }
                         }}
                       >
                         <Text style={[styles.loginText, { color: "#fff" }]}>
@@ -1004,7 +1353,9 @@ console.log('itemitem',item)
                             borderRadius: 5,
                           }}
                           onPress={() => {
-                            cancel();
+                            if (!isLoading) {
+                              cancel();
+                            }
                           }}
                         >
                           <Text style={[styles.loginText, { color: "#fff" }]}>
@@ -1014,6 +1365,31 @@ console.log('itemitem',item)
                       ))}
                   </View>
                 ))}
+            </View>
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype &&
+                (usertype === "Sahayak" || usertype === "MachineMalik") &&
+                status === "Completed" &&
+                itemStatus !== "Completed" && (
+                  <>
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        {
+                          height: 90,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.label}>टिप्पणी</Text>
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
+                        {"\n"}कृपया आगे बढ़ने के लिए "समाप्त" पर क्लिक करें!
+                      </Text>
+                    </View>
+                  </>
+                )}
             </View>
           </View>
           {/* {!isLoading && (
@@ -1041,12 +1417,16 @@ const styles = StyleSheet.create({
     //   padding:20
   },
 
-  
-
   loginText: {
     color: "#000",
     fontSize: 16,
-    fontFamily:'Devanagari-regular',
+    fontFamily: "Devanagari-regular",
+    //   flexDirection:"column",
+  },
+  TestText: {
+    color: "#D3D3D3",
+    fontSize: 16,
+    fontFamily: "Devanagari-regular",
     //   flexDirection:"column",
   },
 
@@ -1087,11 +1467,9 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
-    fontFamily:'Devanagari-regular',
+    fontFamily: "Devanagari-regular",
     padding: 10,
   },
-
-  
 
   BhumiView: {
     borderColor: "#0070C0",
@@ -1103,7 +1481,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderWidth: 1,
   },
-
 
   flex: {
     display: "flex",
@@ -1117,21 +1494,21 @@ const styles = StyleSheet.create({
   },
   TextWhite: {
     color: "#fff",
-    fontFamily:'Devanagari-bold'
+    fontFamily: "Devanagari-bold",
   },
   salaryAmount: {
     marginTop: 13,
     marginRight: 8,
     color: "#0099FF",
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
   label: {
     position: "absolute",
     top: -10,
     left: 30,
     marginHorizontal: 5,
-    paddingHorizontal:10,
-    fontFamily:'Devanagari-bold',
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
 
     textAlign: "center",
     backgroundColor: "#fff",

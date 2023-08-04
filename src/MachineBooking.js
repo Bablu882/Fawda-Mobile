@@ -8,15 +8,16 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import service from "../service";
 import moment from "moment";
-import { BackHandler } from 'react-native';
+import { BackHandler } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
 import { selectIsLoggedIn, setToken, selectToken } from "../slices/authSlice";
 import {
   setDate,
@@ -30,6 +31,7 @@ import {
 } from "../slices/SahayakBookingSlice";
 export default function MachineBooking({ navigation }) {
   const token = useSelector(selectToken);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedWorkType, setSelectedWorkType] = useState("");
   const [workType, setWorkType] = useState([]);
   const [selectedMachines, setSelectedMachines] = useState("");
@@ -73,17 +75,15 @@ export default function MachineBooking({ navigation }) {
     setDate(currentDate);
     setShowDate(showDate);
     let currentDateTime = moment();
-    let currentDay = currentDateTime.format('YYYY-MM-DD');
-    if(currentDay === showDate) { 
-      let time = parseInt(currentDateTime.format('H'));
-      console.log('timetimetime',time)
-      setTimes('');
+    let currentDay = currentDateTime.format("YYYY-MM-DD");
+    if (currentDay === showDate) {
+      let time = parseInt(currentDateTime.format("H"));
+      console.log("timetimetime", time);
+      setTimes("");
     }
   };
   const onChanges = (event, selectedDate) => {
-   
     setDate(selectedDate);
- 
   };
 
   const showMode = (currentMode) => {
@@ -110,23 +110,23 @@ export default function MachineBooking({ navigation }) {
   };
   useEffect(() => {
     const backAction = () => {
-    navigation.goBack();
-    return true;
+      navigation.goBack();
+      return true;
     };
-    
+
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     );
-    
+
     return () => backHandler.remove();
-    }, []);
+  }, []);
   // const formattedDate = date instanceof Date ? date.toLocaleDateString() : "";
 
   const handleTimeChange = (value) => {
     setTimes(value);
 
-    dispatch(setTime(value));
+    // dispatch(setTime(value));
   };
   const timings = [
     4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
@@ -136,31 +136,32 @@ export default function MachineBooking({ navigation }) {
   const checkIfTimeEnabled = (timeSelect) => {
     let currentDateTime = moment();
 
-    let currentDate = currentDateTime.format('YYYY-MM-DD');
-    if(currentDate === showDate) {
+    let currentDate = currentDateTime.format("YYYY-MM-DD");
+    if (currentDate === showDate) {
+      let time = parseInt(currentDateTime.format("H"));
+      let enabledTime = time + 3;
 
-   
-    let time = parseInt(currentDateTime.format('H'));
-    let enabledTime = time + 3;
-
-    // console.log("current", time, timeSelect, enabledTime);
-    if (timeSelect > time + 3) {
-      return true;
+      // console.log("current", time, timeSelect, enabledTime);
+      if (timeSelect > time + 3) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      return true;
     }
-  } else {
-    return true;
-    
-  }
   };
 
   const timeConverted = (item) => {
-    if (item > 12) {
+    if (item < 24 && item > 12) {
       item = item - 12;
-      return (item = item + " PM");
-    } else {
-      // console.log("tomesss", item);
+      return item + " PM";
+    } else if (item === 12) {
+      return item + " PM";
+    } else if (item < 12) {
+      return item + " AM";
+    } else if (item === 24) {
+      item = item - 12;
       return item + " AM";
     }
   };
@@ -197,25 +198,27 @@ export default function MachineBooking({ navigation }) {
   ];
 
   const machinaryBooking = (val) => {
-    let params = {
-      work_type: val,
-    };
-   
-    
-    service
-      .post("/api/machine_detail/", params, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setMachiness(res?.data);
-        // console.log("kkk====>", machiness.map((item) => item));
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-      });
+    if (val !== "") {
+      let params = {
+        work_type: val,
+      };
+
+      service
+        .post("/api/machine_detail/", params, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          console.log("response", res.data);
+          setMachiness(res?.data);
+          // console.log("kkk====>", machiness.map((item) => item));
+        })
+        .catch((error) => {
+          console.log("Error:", error);
+        });
+    }
   };
   const workTypes = () => {
     service
@@ -226,18 +229,26 @@ export default function MachineBooking({ navigation }) {
       })
       .then((res) => {
         setWorkType(res.data);
-       
       })
       .catch((error) => {
         console.log("Error:", error);
       });
   };
- 
+
   const Booking = async () => {
-    // const datetime =
-    //   moment(showDate).format("YYYY-MM-DD") +
-    //   " " +
-    //   moment(time, "h:mm A").format("HH:mm:ss.SSSSSS");
+    setIsLoading(true);
+    let landtype = "";
+    let landarea = "";
+    if (landType === "") {
+      landtype = "None";
+    } else {
+      landtype = landType;
+    }
+    if (landArea === "") {
+      landarea = "0";
+    } else {
+      landarea = landArea;
+    }
     const datetime = `${moment(showDate).format("YYYY-MM-DD")} ${moment(
       time,
       "h:mm A"
@@ -247,8 +258,8 @@ export default function MachineBooking({ navigation }) {
       work_type: selectedWorkType,
       machine: selectedMachines,
       others: other,
-      land_type: landType,
-      land_area: landArea,
+      land_type: landtype,
+      land_area: landarea,
       total_amount_machine: totalAmount,
     };
     service
@@ -259,24 +270,27 @@ export default function MachineBooking({ navigation }) {
         },
       })
       .then(({ data }) => {
-      
         if (data?.status === 201) {
-          Toast.show("कार्य सफलतापूर्वक पोस्ट किया गया!", Toast.SORT);
+          // Toast.show("कार्य सफलतापूर्वक पोस्ट किया गया!", Toast.LONG);
+          console.log("MachineBookingData", data);
 
-          navigation.navigate("MyBookingStack", {screen: 'MyBooking'});
+          navigation.navigate("MyBookingStack", { screen: "MyBooking" });
         } else {
           Toast.show(
-            "कार्य फिर से पोस्ट करें, पोस्ट अभी तक नहीं हुई है।",
-            Toast.SORT
+            "यह नौकरी पहले ही पोस्ट की जा चुकी है! कृपया नौकरी का विवरण बदलें",
+            Toast.LONG
           );
         }
       })
       .catch((error) => {
         console.log("Error:", error);
         Toast.show(
-          error.response.data.message || "An error occurred!",
-          Toast.SORT
+          "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+          Toast.LONG
         );
+      })
+      .finally(() => {
+        setIsLoading(false); // Set isLoading to false regardless of success or error
       });
   };
 
@@ -285,7 +299,6 @@ export default function MachineBooking({ navigation }) {
     let errorMessages = {
       showDate: "",
       time: "",
-
       landType: "",
       landArea: "",
       totalAmount: "",
@@ -294,57 +307,50 @@ export default function MachineBooking({ navigation }) {
     };
 
     if (showDate === "") {
-      errorMessages.showDate = "Please enter valid date";
+      errorMessages.showDate = "कृपया कोई मान्य दिनांक दर्ज करें!";
       valid = false;
     }
 
     if (time === "") {
-      errorMessages.time = "Please select valid time";
-      valid = false;
-    }
-    // if (description.trim() === "") {
-    //   errorMessages.description = "Please enter your description";
-    //   valid = false;
-    // } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
-    //   errorMessages.description =
-    //     "Please enter a valid description (letters only)";
-    //   valid = false;
-    // }
-
-    if (landType.trim() === "") {
-      errorMessages.landType = "Please enter your land type";
+      errorMessages.time = "कृपया एक वैध समय चुनें!";
       valid = false;
     }
 
-    if (landArea.trim() === "") {
-      errorMessages.landArea = "Please select your land area";
-      valid = false;
-    }
-    // if (!selectedWorkType) {
-    //   errorMessages.workType = "Please select a work type";
+    // if (landType.trim() === "") {
+    //   errorMessages.landType = "कृपया भूमि का प्रकार चुनें!";
     //   valid = false;
     // }
+
+    if (landArea.trim() !== "") {
+      if (!/^[0-9]+$/.test(landArea)) {
+        errorMessages.landArea = "कृपया एक वैध भूमि क्षेत्र दर्ज करें!";
+        valid = false;
+      } else if (parseFloat(landArea.trim()) > 100) {
+        errorMessages.landArea = "कृपया 100 से कम भूमि क्षेत्र दर्ज करें!";
+        valid = false;
+      }
+    }
+
     if (selectedWorkType.trim() === "") {
-      errorMessages.workType = "Please select your work Type";
+      errorMessages.workType = "कृपया कार्य प्रकार का चयन करें!";
       valid = false;
     }
 
     if (selectedMachines.trim() === "") {
-      errorMessages.machiness = "Please select your Machines";
+      errorMessages.machiness = "कृपया मशीनें चुनें!";
       valid = false;
     }
 
     if (totalAmount.trim() === "") {
-      errorMessages.totalAmount = "Please enter your amount";
+      errorMessages.totalAmount = "कृपया भुगतान राशि दर्ज करें!";
       valid = false;
-    } else if (!/^[0-9\s.]+$/.test(totalAmount.trim())) {
-      errorMessages.totalAmount = "Only numbers are allowed";
+    } else if (!/^\d+$/.test(totalAmount.trim())) {
+      errorMessages.totalAmount = "केवल संख्याओं की अनुमति है!";
       valid = false;
     } else if (parseFloat(totalAmount.trim()) <= 5) {
-      errorMessages.totalAmount = "Please enter an amount greater than 5";
+      errorMessages.totalAmount = "कृपया 5 से अधिक भुगतान राशि दर्ज करें!";
       valid = false;
     }
-
 
     setErrors(errorMessages);
     return valid;
@@ -361,9 +367,12 @@ export default function MachineBooking({ navigation }) {
       style={{ backgroundColor: "#fff", flex: 1, paddingBottom: 20 }}
     >
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+      </View>
+      <View>
+        {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       <View style={{ justifyContent: "center", marginBottom: 24 }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
@@ -418,11 +427,6 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
-            {/* <Text
-              style={{ color: selectedMachines ? "#000" : "#ccc", left: 5 }}
-            >
-              {selectedMachines ? selectedMachines : "-Select Machine-"}
-            </Text> */}
             <Picker
               style={{ width: "100%" }}
               selectedValue={selectedMachines}
@@ -432,7 +436,7 @@ export default function MachineBooking({ navigation }) {
             >
               <Picker.Item
                 style={{ color: selectedMachines ? "#000" : "#ccc" }}
-                label="-Select Machine-"
+                label="-मशीन का चयन करें-"
                 value=""
               />
               {machiness.map((item) => (
@@ -448,7 +452,7 @@ export default function MachineBooking({ navigation }) {
             <Text style={styles.error}>{errors.machiness}</Text>
           )}
 
-          <View style={[styles.dropdownGender,{display:'none'}]}>
+          <View style={[styles.dropdownGender, { display: "none" }]}>
             <TextInput
               value={other}
               onChangeText={(other) => setOther(other)}
@@ -511,13 +515,11 @@ export default function MachineBooking({ navigation }) {
               ref={pickerRef}
               selectedValue={time}
               style={{ width: "100%" }}
-              onValueChange={(itemValue, itemIndex) =>
-                setTimes(timeConverted(itemValue))
-              }
+              onValueChange={handleTimeChange}
             >
               <Picker.Item
                 style={{ color: time ? "#000" : "#ccc" }}
-                label={time ? time : "-समय-"}
+                label={time ? timeConverted(time) : "-समय-"}
                 value=""
               />
               {timings.map((item, index) => {
@@ -530,7 +532,7 @@ export default function MachineBooking({ navigation }) {
                       fontSize: 14,
                     }}
                     label={timeConverted(item)}
-                    value={item}
+                    value={item.toString()}
                     enabled={checkIfTimeEnabled(item)}
                   />
                 );
@@ -563,8 +565,8 @@ export default function MachineBooking({ navigation }) {
                   value={landArea}
                 />
               </View>
-              {!!errors.landType && (
-                <Text style={styles.error}>{errors.landType}</Text>
+              {!!errors.landArea && (
+                <Text style={styles.error}>{errors.landArea}</Text>
               )}
             </View>
             <View style={{ maxWidth: "48%", width: "100%" }}>
@@ -673,11 +675,13 @@ export default function MachineBooking({ navigation }) {
           )}
           <TouchableOpacity
             onPress={() => {
-              if (validate()) {
-                Booking();
+              if (!isLoading) {
+                if (validate()) {
+                  Booking();
+                }
               }
             }}
-            style={styles.loginBtn}
+            style={!isLoading ? styles.loginBtn : styles.disableBtn}
           >
             {/* <TouchableOpacity onPress={() => Booking()} style={styles.loginBtn}> */}
             <Text style={[styles.loginText, { color: "#fff" }]}>
@@ -768,6 +772,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 30,
     backgroundColor: "#0099FF",
+  },
+  disableBtn: {
+    width: "100%",
+    borderRadius: 7,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 30,
+    backgroundColor: "#D3D3D3",
   },
   error: {
     color: "red",

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 
-export default function Thankyou({ navigation }) {
+export default function ThankyouPayment({ navigation }) {
   return (
     <SafeAreaView style={{ backgroundColor: "#D8EEFD", flex: 1 }}>
       <View style={styles.container}>
@@ -26,14 +26,12 @@ export default function Thankyou({ navigation }) {
           >
             <View style={{ alignItems: "center" }}>
               <Text style={{ fontSize: 45 }}>धन्यवाद!</Text>
-              <Text style={{ fontSize: 14 }}>
-                आपका सुझाव हमारे लिए महत्त्वपूर्ण है
-              </Text>
+              <Text style={{ fontSize: 14 }}>आपका भुगतान सफल रहा !!</Text>
             </View>
             <View style={{ paddingTop: 30 }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.replace("HomeStack", { screen: "BottomTab" });
+                  navigation.navigate("MyBookingStack", { screen: "MyBooking" });
                 }}
                 style={{
                   width: "100%",

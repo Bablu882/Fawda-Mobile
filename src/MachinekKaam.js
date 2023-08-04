@@ -9,9 +9,9 @@ export default function MachinekKaam ({navigation}) {
         <>
         <SafeAreaView  style={{backgroundColor:'#fff', flex:1 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <View style={{ justifyContent: "center" }}>

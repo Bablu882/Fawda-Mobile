@@ -1,27 +1,28 @@
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { selectIsLoggedIn, clearAuth, selectToken } from "../slices/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { StyleSheet, Text, View,Image,TextInput,TouchableOpacity } from 'react-native';
-import React, { useState , useEffect} from 'react';
-import { useSelector,useDispatch } from 'react-redux';
-import {selectIsLoggedIn ,   clearAuth,
-  selectToken } from '../slices/authSlice';
-  import AsyncStorage from "@react-native-async-storage/async-storage";
-
-
-
-
-export default function Dashboard({navigation}) {
+export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
 
-  const [loading, setloading] = useState('');
-  const token = useSelector(selectToken)
+  const [loading, setloading] = useState("");
+  const token = useSelector(selectToken);
   const isLoggedIn = useSelector(selectIsLoggedIn);
- 
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigation.replace("Home");
     }
-  },[!isLoggedIn]);
+  }, [!isLoggedIn]);
 
   const Logout = async () => {
     await AsyncStorage.clear();
@@ -29,31 +30,28 @@ export default function Dashboard({navigation}) {
     navigation.replace("Home");
   };
 
-
   return (
     <View style={styles.container}>
+      <Text>djcjdffjdfjhf</Text>
+      <Text>Token is: {token}</Text>
 
-<Text>djcjdffjdfjhf</Text>
-<Text>Token is: {token}</Text>
-
-
-
-<TouchableOpacity
-          onPress={() => {
-            Logout();
-          }}
-          style={{  backgroundColor: '#df7f17',
+      <TouchableOpacity
+        onPress={() => {
+          Logout();
+        }}
+        style={{
+          backgroundColor: "#df7f17",
           padding: 10,
           borderRadius: 4,
-          width: '100%',
+          width: "100%",
           maxWidth: 90,
-          alignItems: 'center',
+          alignItems: "center",
           elevation: 4,
-        marginTop:20 }}
-        >
-          
-          <Text style={styles.profileOption}>Log out</Text>
-        </TouchableOpacity>
+          marginTop: 20,
+        }}
+      >
+        <Text style={styles.profileOption}>Log out</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -61,9 +59,9 @@ export default function Dashboard({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputView: {
     borderColor: "lightgreen",
@@ -72,9 +70,9 @@ const styles = StyleSheet.create({
     height: 45,
     marginBottom: 20,
     alignItems: "center",
-    borderWidth:1
+    borderWidth: 1,
   },
-  
+
   TextInput: {
     height: 50,
     flex: 1,
@@ -86,14 +84,13 @@ const styles = StyleSheet.create({
     height: 30,
     marginBottom: 30,
   },
-  loginBtn:
- {
-   width:"80%",
-   borderRadius:25,
-   height:50,
-   alignItems:"center",
-   justifyContent:"center",
-   marginTop:40,
-   backgroundColor:"lightgreen",
- }
+  loginBtn: {
+    width: "80%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    backgroundColor: "lightgreen",
+  },
 });

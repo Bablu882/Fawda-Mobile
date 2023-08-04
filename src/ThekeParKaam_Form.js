@@ -11,6 +11,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import BottomTab from "../Component/BottomTab";
@@ -18,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Service from "../service/index";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { selectToken } from "../slices/authSlice";
-import { BackHandler } from 'react-native';
+import { BackHandler } from "react-native";
 const { height } = Dimensions.get("window");
 import {
   setDate,
@@ -30,7 +31,7 @@ import {
 } from "../slices/SahayakBookingSlice";
 import moment from "moment";
 
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
 
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -38,6 +39,7 @@ import { Picker } from "@react-native-picker/picker";
 export default function ThekeParKaam_Form({ navigation }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const [isLoading, setIsLoading] = useState(false);
   const [date, setDateState] = useState(new Date());
   const [defaultDate, setDefaultDate] = useState(new Date());
   const textInputRef = useRef(null);
@@ -45,6 +47,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   const [description, setDescriptions] = useState("");
   const [landType, setLandTypes] = useState("");
   const [landArea, setLandAreas] = useState("");
+  console.log(landArea, landType);
   const [showDate, setShowDate] = useState("");
   const [totalAmount, setTotalAmounts] = useState("");
   const [selectedDates, setSelectedDates] = useState("");
@@ -77,53 +80,54 @@ export default function ThekeParKaam_Form({ navigation }) {
 
   const checkIfTimeEnabled = (timeSelect) => {
     let currentDateTime = moment();
-   
-    let currentDate = currentDateTime.format('YYYY-MM-DD')
-    console.log(currentDate)
-    console.log(showDate)
-    if(currentDate === showDate) {
-      let time = parseInt(currentDateTime.format('H'));
+
+    let currentDate = currentDateTime.format("YYYY-MM-DD");
+    // console.log(currentDate);
+    // console.log(showDate);
+    if (currentDate === showDate) {
+      let time = parseInt(currentDateTime.format("H"));
 
       let enabledTime = time + 3;
-  
-      
+
       if (timeSelect > time + 3) {
         return true;
       } else {
         return false;
       }
-    }else{
-      return true
+    } else {
+      return true;
     }
-    
   };
   useEffect(() => {
     const backAction = () => {
-    navigation.goBack();
-    return true;
+      navigation.goBack();
+      return true;
     };
-    
+
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     );
-    
+
     return () => backHandler.remove();
-    }, []);
-    
-    
+  }, []);
+
   const timeConverted = (item) => {
-    if (item > 12) {
+    if (item < 24 && item > 12) {
       item = item - 12;
-      return (item = item + " PM");
-    } else {
-      //  console.log("tomesss", item);
+      return item + " PM";
+    } else if (item === 12) {
+      return item + " PM";
+    } else if (item < 12) {
+      return item + " AM";
+    } else if (item === 24) {
+      item = item - 12;
       return item + " AM";
     }
   };
   const handleTimeChange = (value) => {
     setTimes(value);
-    dispatch(setTime(value));
+    // dispatch(setTime(value));
   };
 
   ///---time selection validation
@@ -137,17 +141,15 @@ export default function ThekeParKaam_Form({ navigation }) {
     setShowDate(showDate);
 
     let currentDateTime = moment();
-   
-    let currentDay = currentDateTime.format('YYYY-MM-DD');
-    if(currentDay === showDate) { 
-      let time = parseInt(currentDateTime.format('H'));
-      console.log('timetimetime',time)
+
+    let currentDay = currentDateTime.format("YYYY-MM-DD");
+    if (currentDay === showDate) {
+      let time = parseInt(currentDateTime.format("H"));
+      console.log("timetimetime", time);
 
       let enabledTime = time + 3;
-      setTimes('');
+      setTimes("");
     }
-
-
   };
 
   const showMode = (currentMode) => {
@@ -210,6 +212,19 @@ export default function ThekeParKaam_Form({ navigation }) {
     dispatch(setTotalAmount(value));
   };
   const handleBooking = async () => {
+    setIsLoading(true);
+    let landtype = "";
+    let landarea = "";
+    if (landType === "") {
+      landtype = "None";
+    } else {
+      landtype = landType;
+    }
+    if (landArea === "") {
+      landarea = "0";
+    } else {
+      landarea = landArea;
+    }
     try {
       const datetime =
         moment(showDate).format("YYYY-MM-DD") +
@@ -218,10 +233,12 @@ export default function ThekeParKaam_Form({ navigation }) {
       const params = {
         datetime: datetime,
         description: description,
-        land_type: landType,
-        land_area: landArea,
+        land_type: landtype,
+        land_area: landarea,
         total_amount_theka: totalAmount,
       };
+      console.log("token", token);
+      console.log("params", params);
 
       const response = await Service.post("/api/post_thekepekam/", params, {
         headers: {
@@ -232,17 +249,19 @@ export default function ThekeParKaam_Form({ navigation }) {
 
       const data = response?.data;
       if (data?.status === 201) {
-        Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.SORT);
-        navigation.navigate('MyBookingStack',{screen: "MyBooking"});
-      
+        // Toast.show("नौकरी सफलतापूर्वक पोस्ट हो गई है!", Toast.LONG);
+        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
+        console.log("ThekeDaar job data", data);
       } else {
         Toast.show(
-          data.error,
-          Toast.SORT
+          "यह नौकरी पहले ही पोस्ट की जा चुकी है! कृपया नौकरी का विवरण बदलें",
+          Toast.LONG
         );
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -260,50 +279,47 @@ export default function ThekeParKaam_Form({ navigation }) {
     };
 
     if (showDate === "") {
-      errorMessages.showDate = "Please enter valid date";
+      errorMessages.showDate = "कृपया कोई मान्य दिनांक दर्ज करें!";
       valid = false;
     }
 
     if (time === "") {
-      errorMessages.time = "Please select valid time";
+      errorMessages.time = "कृपया एक वैध समय चुनें!";
       valid = false;
     }
     if (description.trim() === "") {
-      errorMessages.description = "Please enter your description";
+      errorMessages.description = "कृपया विवरण दर्ज करें!";
       valid = false;
-    } else if (!/^[a-zA-Z\s.]+$/.test(description.trim())) {
+    } else if (!/^[^0-9]+$/.test(description.trim())) {
       errorMessages.description =
-        "Please enter a valid description (letters only)";
+        "कृपया एक वैध विवरण दर्ज करें (केवल अक्षरों में लिखें)!";
       valid = false;
     }
 
-    if (landType.trim() === "") {
-      errorMessages.landType = "Please enter your land type";
-      valid = false;
-    }
-
-    if (landArea.trim() === "") {
-      errorMessages.landArea = "Please select your land area";
-      valid = false;
-    }
-    if (totalAmount.trim() === "") {
-      errorMessages.totalAmount = "Please enter your amount";
-      valid = false;
-    } else if (!/^[0-9\s.]+$/.test(totalAmount.trim())) {
-      errorMessages.totalAmount = "Only numbers are allowed";
-      valid = false;
-    } else if (parseFloat(totalAmount.trim()) <= 5) {
-      errorMessages.totalAmount = "Please enter an amount greater than 5";
-      valid = false;
-    }
-    
-    // if (totalAmount.trim() === "") {
-    //   errorMessages.totalAmount = "Please enter your amount";
-    //   valid = false;
-    // }else if (totalAmount.trim().length > 5) {
-    //   errorMessages.totalAmount = "Please enter your amount grater than 5";
+    // if (landType.trim() === "") {
+    //   errorMessages.landType = "कृपया भूमि का प्रकार चुनें!";
     //   valid = false;
     // }
+
+    if (landArea.trim() !== "") {
+      if (!/^[0-9]+$/.test(landArea)) {
+        errorMessages.landArea = "कृपया एक वैध भूमि क्षेत्र दर्ज करें!";
+        valid = false;
+      } else if (parseFloat(landArea.trim()) > 100) {
+        errorMessages.landArea = "कृपया 100 से कम भूमि क्षेत्र दर्ज करें!";
+        valid = false;
+      }
+    }
+    if (totalAmount.trim() === "") {
+      errorMessages.totalAmount = "कृपया भुगतान राशि दर्ज करें!";
+      valid = false;
+    } else if (!/^\d+$/.test(totalAmount.trim())) {
+      errorMessages.totalAmount = "केवल संख्याओं की अनुमति है!";
+      valid = false;
+    } else if (parseFloat(totalAmount.trim()) <= 5) {
+      errorMessages.totalAmount = "कृपया 5 से अधिक भुगतान राशि दर्ज करें!";
+      valid = false;
+    }
 
     setErrors(errorMessages);
     return valid;
@@ -314,9 +330,12 @@ export default function ThekeParKaam_Form({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={{ marginHorizontal: 20 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+        </View>
+        <View>
+          {isLoading && <ActivityIndicator size="small" color="#black" />}
         </View>
         <KeyboardAwareScrollView
           enableAutomaticScroll={true}
@@ -396,7 +415,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <Text style={styles.error}>{errors.showDate}</Text>
                 )}
 
-<View
+                <View
                   style={[
                     styles.dropdownGender,
                     styles.justifyContentBetween,
@@ -407,13 +426,11 @@ export default function ThekeParKaam_Form({ navigation }) {
                     ref={pickerRef}
                     selectedValue={time}
                     style={{ width: "100%" }}
-                    onValueChange={(itemValue, itemIndex) =>
-                      setTimes(timeConverted(itemValue))
-                    }
+                    onValueChange={handleTimeChange}
                   >
                     <Picker.Item
                       style={{ color: time ? "#000" : "#ccc" }}
-                      label={time ? time : "-समय-"}
+                      label={time ? timeConverted(time) : "-समय-"}
                       value=""
                     />
                     {timings.map((item, index) => {
@@ -425,7 +442,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                             fontSize: 14,
                           }}
                           label={timeConverted(item)}
-                          value={item}
+                          value={item.toString()}
                           enabled={checkIfTimeEnabled(item)}
                         />
                       );
@@ -445,7 +462,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                 >
                   <TextInput
                     style={[styles.TextInput]}
-                    placeholder="काम लिखें १५ शब्दों से कम,नंबर न लिखें "
+                    placeholder="काम लिखें 15 शब्दों से कम,नंबर न लिखें "
                     placeholderTextColor={"#ccc"}
                     onChangeText={(description) =>
                       handleDescriptionChange(description)
@@ -485,8 +502,8 @@ export default function ThekeParKaam_Form({ navigation }) {
                         value={landArea}
                       />
                     </View>
-                    {!!errors.landType && (
-                      <Text style={styles.error}>{errors.landType}</Text>
+                    {!!errors.landArea && (
+                      <Text style={styles.error}>{errors.landArea}</Text>
                     )}
                   </View>
 
@@ -530,51 +547,61 @@ export default function ThekeParKaam_Form({ navigation }) {
                   </View>
                 </View>
                 <TouchableOpacity
-            onPress={() => {
-              textInputRef.current.focus();
-            }}
-          >
-            <View
-              style={[
-                styles.inputView,
-                {
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                },
-              ]}
-            >
-              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
-                वेतन
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ color: "#0099FF", }}>₹ </Text>
-                <TextInput
-                  ref={textInputRef}
-                  style={[styles.TextInput, { right: 10, color: "#0099FF" }]}
-                  keyboardType="numeric"
-                  placeholderTextColor={"#0099FF"}
-                  value={totalAmount}
-                  placeholder="0.00"
-                  onChangeText={(totalAmount) =>
-                    handleTotalAmount(totalAmount)
-                  }
-                />
-              </View>
-            </View>
-          </TouchableOpacity>
-               
-                {!!errors.totalAmount && (
+                  onPress={() => {
+                    textInputRef.current.focus();
+                  }}
+                >
+                  <View
+                    style={[
+                      styles.inputView,
+                      {
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      },
+                    ]}
+                  >
+                    <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
+                      वेतन
+                    </Text>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Text style={{ color: "#0099FF" }}>₹ </Text>
+                      <TextInput
+                        ref={textInputRef}
+                        style={[
+                          styles.TextInput,
+                          { right: 10, color: "#0099FF" },
+                        ]}
+                        keyboardType="numeric"
+                        placeholderTextColor={"#0099FF"}
+                        value={totalAmount}
+                        placeholder="0.00"
+                        onChangeText={(totalAmount) =>
+                          handleTotalAmount(totalAmount)
+                        }
+                      />
+                    </View>
+                  </View>
+                  {!!errors.totalAmount && (
+                    <Text style={styles.error}>{errors.totalAmount}</Text>
+                  )}
+                </TouchableOpacity>
+
+                {/* {!!errors.totalAmount && (
                   <Text style={styles.error}>{errors.totalAmount}</Text>
-                )}
+                )} */}
 
                 <TouchableOpacity
                   onPress={() => {
-                    if (validate()) {
-                      handleBooking();
+                    if (!isLoading) {
+                      if (validate()) {
+                        handleBooking();
+                      }
                     }
                   }}
-                  style={styles.loginBtn}
+                  style={!isLoading ? styles.loginBtn : styles.disableBtn}
                 >
                   <Text style={[styles.loginText, { color: "#fff" }]}>
                     बुकिंग करें
@@ -652,6 +679,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
     backgroundColor: "#0099FF",
+  },
+  disableBtn: {
+    width: "100%",
+    borderRadius: 7,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 30,
+    backgroundColor: "#D3D3D3",
   },
 
   VerifyText: {

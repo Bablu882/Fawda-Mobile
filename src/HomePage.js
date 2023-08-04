@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,18 @@ import {
   SafeAreaView,
   ActivityIndicator,
   RefreshControl,
+  BackHandler,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import service from "../service";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 import moment from "moment";
 
@@ -30,7 +33,7 @@ export default function Homepage({ navigation, route }) {
   const [sahayak, setSahayak] = useState("");
   const isFocused = useIsFocused();
   const [page, setPage] = useState(1);
-
+  const [expotoken, setExpoToken] = useState();
   const [activeButtons, setActiveButtons] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const usertype = useSelector(selectUserType);
@@ -51,53 +54,68 @@ export default function Homepage({ navigation, route }) {
   const handlePress = (buttonIndex) => {
     setActiveButtons(buttonIndex);
   };
+  const registerForPushNotificationsAsync = async () => {
+    if (Device.isDevice) {
+      const etoken = (await Notifications.getExpoPushTokenAsync()).data;
+      setExpoToken(etoken);
+      return etoken;
+    } else {
+      console.log("Must use physical device for Push Notifications");
+      return null;
+    }
+  };
+
+  const fetchExpoToken = async () => {
+    const etoken = await registerForPushNotificationsAsync();
+    if (etoken) {
+      const tokenData = {
+        push_token: etoken,
+      };
+      try {
+        const response = await service.post("/api/expotoken-save/", tokenData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const expoResponse = response.data;
+        console.log("Response exponoti", expoResponse);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("Token not available");
+    }
+  };
+  console.log("expoToken", expotoken);
 
   const fetchJobs = async () => {
     setIsLoading(true); // Show loader while fetching data
     setRefreshing(true);
+    console.log("Beartoken", token);
     try {
-      const cacheBuster = new Date().getTime(); // generate a unique timestamp
-      const response = await service.get(`/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`, {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`
-        },
-      });
+      const cacheBuster = new Date().getTime();
+      // console.log("catchhhhhhh", cacheBuster); // generate a unique timestamp
+      const response = await service.get(
+        `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = response.data;
+      console.log("userData", data);
       setCurrentUsers(data.results);
       setTotalPages(data.total_pages);
-      console.log('jdjhff',currentUsers)
     } catch (error) {
       console.log("Error:", error.status);
-     
     } finally {
       setIsLoading(false);
       setRefreshing(false);
     }
   };
-  // const fetchJobs = async () => {
-  //   //     setIsLoading(true); // Show loader while fetching data
-  //   // setRefreshing(true);
-  //     try {
-  //       const cacheBuster = Date.now();
-  //       const response = await service.get(
-  //         `/api/nearjob/?page=${page}&cacheBuster=${cacheBuster}`,
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       const data = response.data;
-  //       setCurrentUsers(data.results);
-  //       setTotalPages(data.total_pages);
-  //   //       setIsLoading(true); // Show loader while fetching data
-  //   // setRefreshing(true);
-  //     } catch (error) {
-  //       console.log("Error:", error);
-  //     }
-  //   };
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchJobs().then(() => {
@@ -106,12 +124,28 @@ export default function Homepage({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-  
     if (isFocused) {
       fetchJobs();
     }
-    
   }, [page, isFocused]);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
+    fetchExpoToken();
+  }, []);
 
   return (
     <SafeAreaView
@@ -125,7 +159,7 @@ export default function Homepage({ navigation, route }) {
         {isLoading && <ActivityIndicator size="small" color="#black" />}
       </View>
       {!isLoading && (
-      <ScrollView
+        <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -173,72 +207,92 @@ export default function Homepage({ navigation, route }) {
                 />
                 {currentUsers?.length > 0 && (
                   <>
-                    {currentUsers.map((item, index) => (
-                      <View key={index}  >
-                        <View style={[styles.booking,{paddingVertical:15,}]}>
-                        <View style={styles.bookingLeft}>
-                          {item.job_type === "individuals_sahayak" ||
-                          item.job_type === "theke_pe_kam" ? (
-                            <>
-                              <Text style={styles.bookingTitle}>
-                                {
+                    {currentUsers.map((item, index) =>
+                      item.status === "Pending" ? (
+                        <View key={index}>
+                          <View
+                            style={[styles.booking, { paddingVertical: 15 }]}
+                          >
+                            <View style={styles.bookingLeft}>
+                              {item.job_type === "individuals_sahayak" ||
+                              item.job_type === "theke_pe_kam" ? (
+                                <>
                                   <Text style={styles.bookingTitle}>
-                                    {item.job_type === "individuals_sahayak"
-                                      ? "सहायक के  काम "
-                                      : item.job_type === "theke_pe_kam"
-                                      ? "ठेकेदार"
-                                      : ""}
+                                    {
+                                      <Text style={styles.bookingTitle}>
+                                        {item.job_type === "individuals_sahayak"
+                                          ? "सहायक के काम "
+                                          : item.job_type === "theke_pe_kam"
+                                          ? "ठेकेदार"
+                                          : ""}
+                                      </Text>
+                                    }
                                   </Text>
-                                }
-                              </Text>
-                            </>
-                          ) : (
-                            <Text style={styles.bookingTitle}>
-                              {item?.work_type === "Harvesting"
-                                ? "काटना"
-                                : item?.work_type === "Sowing"
-                                ? "बुवाई"
-                                : "भूमि की तैयारी"}
-                            </Text>
-                          )}
-                          {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
+                                </>
+                              ) : (
+                                <Text style={styles.bookingTitle}>
+                                  {item?.work_type === "Harvesting"
+                                    ? "काटना"
+                                    : item?.work_type === "Sowing"
+                                    ? "बुवाई"
+                                    : "भूमि की तैयारी"}
+                                </Text>
+                              )}
+                              {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
 
-                          <Text style={{ color: "black" }}>
-                            {moment.utc(item.datetime).format("l")}
-                          </Text>
+                              <Text style={{ color: "black" }}>
+                                {moment(item?.datetime).format("DD/MM/YYYY")}
+                              </Text>
+                            </View>
+                            <View
+                              style={[
+                                styles.bookingButton,
+                                {
+                                  marginRight:
+                                    item.job_type === "individuals_sahayak"
+                                      ? -60
+                                      : item.work_type === "Sowing"
+                                      ? -60
+                                      : item.job_type === "theke_pe_kam"
+                                      ? -90
+                                      : -60,
+                                },
+                              ]}
+                            >
+                              <Text style={styles.bookingButtonText}>
+                                विवरण देखे
+                              </Text>
+                            </View>
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (item.job_type === "individuals_sahayak") {
+                                  navigation.navigate("MyBook_SahayakForm", {
+                                    id: item.id,
+                                    item,
+                                    usertype,
+                                  });
+                                } else if (item.job_type === "theke_pe_kam") {
+                                  navigation.navigate("Theke_MachineForm", {
+                                    id: item.id,
+                                    item,
+                                    usertype,
+                                  });
+                                } else {
+                                  navigation.navigate("MachineWork", {
+                                    id: item.id,
+                                    item,
+                                    usertype,
+                                  });
+                                }
+                              }}
+                              style={{ marginTop: 15, marginRight: 15 }}
+                            >
+                              <Icon name="right" size={20}></Icon>
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                        <TouchableOpacity
-                          style={styles.bookingButton}
-                          onPress={() => {
-                            if (item.job_type === "individuals_sahayak") {
-                              navigation.navigate("MyBook_SahayakForm", {
-                                id: item.id,
-                                item,
-                                usertype,
-                              });
-                            } else if (item.job_type === "theke_pe_kam") {
-                              navigation.navigate("Theke_MachineForm", {
-                                id: item.id,
-                                item,
-                                usertype,
-                              });
-                            } else {
-                              navigation.navigate("MachineWork", {
-                                id: item.id,
-                                item,
-                                usertype,
-                              });
-                            }
-                          }}
-                        >
-                          <Text style={styles.bookingButtonText}>
-                            विवरण देखे
-                          </Text>
-                        </TouchableOpacity>
-                        </View>
-                       
-                      </View>
-                    ))}
+                      ) : null
+                    )}
                     <View style={styles.line} />
                   </>
                 )}
@@ -254,51 +308,48 @@ export default function Homepage({ navigation, route }) {
               </View>
               <View
                 style={{
-               marginVertical:20,
+                  marginVertical: 20,
                   flexDirection: "row",
                   justifyContent: "space-between",
                   marginHorizontal: 10,
                 }}
               >
-                
-           
-                <View style={{   flexDirection: "row",}}>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    activeButtons === 1 && styles.activeButton,
-                  ]}
-                  onPress={() => {
-                    handlePress(1), handlePrevPage();
-                  }}
-                >
-                  <Icon
-                    name="left"
-                    size={20}
-                    color={"#fff"}
-                    style={{ lineHeight: 30 }}
-                  />
-                </TouchableOpacity>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      activeButtons === 1 && styles.activeButton,
+                    ]}
+                    onPress={() => {
+                      handlePress(1), handlePrevPage();
+                    }}
+                  >
+                    <Icon
+                      name="left"
+                      size={20}
+                      color={"#fff"}
+                      style={{ lineHeight: 30 }}
+                    />
+                  </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={[
-                    {marginLeft:10},
-                    styles.button,
-                    activeButtons === 2 && styles.activeButton,
-                  ]}
-                  onPress={() => {
-                    handlePress(2), handleNextPage();
-                  }}
-                >
-                  <Icon
-                    name="right"
-                    size={20}
-                    color={"#fff"}
-                    style={{ lineHeight: 30 }}
-                  />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      { marginLeft: 10 },
+                      styles.button,
+                      activeButtons === 2 && styles.activeButton,
+                    ]}
+                    onPress={() => {
+                      handlePress(2), handleNextPage();
+                    }}
+                  >
+                    <Icon
+                      name="right"
+                      size={20}
+                      color={"#fff"}
+                      style={{ lineHeight: 30 }}
+                    />
+                  </TouchableOpacity>
                 </View>
-     
               </View>
             </>
           ) : (
@@ -318,7 +369,12 @@ export default function Homepage({ navigation, route }) {
 
                 <View style={{ alignItems: "center" }}>
                   <Text
-                    style={{ fontSize: 28, fontWeight: "600", color: "#000" , fontFamily:'Devanagari-regular'}}
+                    style={{
+                      fontSize: 28,
+                      fontWeight: "600",
+                      color: "#000",
+                      fontFamily: "Devanagari-regular",
+                    }}
                   >
                     कौनसी सेवा चाहिए
                   </Text>
@@ -338,7 +394,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
-                        {fontFamily:'Devanagari-regular'},
+                        { fontFamily: "Devanagari-regular" },
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -347,7 +403,7 @@ export default function Homepage({ navigation, route }) {
                     </Text>
                     <Text
                       style={[
-                        {fontFamily:'Devanagari-regular'},
+                        { fontFamily: "Devanagari-regular" },
                         styles.loginText,
                         activeButton === "सहायक" ? { color: "#fff" } : null,
                       ]}
@@ -369,7 +425,7 @@ export default function Homepage({ navigation, route }) {
                   >
                     <Text
                       style={[
-                        {fontFamily:'Devanagari-regular'},
+                        { fontFamily: "Devanagari-regular" },
                         styles.loginText,
                         activeButton === "मशीन" ? { color: "#fff" } : null,
                       ]}
@@ -396,7 +452,7 @@ export default function Homepage({ navigation, route }) {
                     >
                       <Text
                         style={[
-                          {fontFamily:'Devanagari-regular'},
+                          { fontFamily: "Devanagari-regular" },
                           styles.loginText,
                           sahayak === "ठेके पर काम" ? { color: "#fff" } : null,
                         ]}
@@ -408,7 +464,6 @@ export default function Homepage({ navigation, route }) {
 
                     <TouchableOpacity
                       style={[
-                        {fontFamily:'Devanagari-regular'},
                         styles.machine,
                         sahayak === "सहायक"
                           ? {
@@ -423,6 +478,7 @@ export default function Homepage({ navigation, route }) {
                     >
                       <Text
                         style={[
+                          { fontFamily: "Devanagari-regular" },
                           styles.loginText,
                           sahayak === "सहायक" ? { color: "#fff" } : null,
                         ]}
@@ -461,7 +517,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
   left: {
     marginLeft: 30,
@@ -476,7 +532,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 18,
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
   date: {
     color: "black",
@@ -489,14 +545,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 15,
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
   bookingButton: {
     width: "30%",
     height: 33,
     backgroundColor: "#44A347",
-    marginRight: 20,
+    // marginRight: 20,
     marginTop: 10,
+    // marginRight: -80,
   },
   bookingButtonText: {
     textAlign: "center",
@@ -504,33 +561,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
   OptionButton: {
     // flex:1,
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-evenly",
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
     // margin:20,
     //   padding:20
   },
 
-  // OptionButton1: {
-  //   // flex:1,
-  //   flexDirection: "row",
-  //   width: "100%",
-  //   justifyContent: "space-evenly",
-  //   // margin:20,
-  //   // marginRight:20
-  //   // padding:20
-  // },
   bookingLeft: {
     marginLeft: 30,
   },
   bookingTitle: {
     fontWeight: "600",
-    fontFamily:'Devanagari-bold',
+    fontFamily: "Devanagari-bold",
     fontSize: 18,
     // color:"#000"
   },
@@ -556,10 +604,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 7,
     borderBottomRightRadius: 7,
     width: "65%",
-   
+
     height: 45,
     borderWidth: 1,
-    fontFamily:'Devanagari-regular'
+    fontFamily: "Devanagari-regular",
   },
 
   TextInput: {
@@ -573,24 +621,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
-
-
   },
-  // sahayak: {
-  //   width: "35%",
-  //   flexDirection: "column",
-  //   // borderRadius: 7,
-  //   color: "#505050",
-  //   height: 50,
-  //   alignItems: "center",
-  //   //   justifyContent:"",
-  //   justifyContent: "center",
-  //   marginTop: 30,
-  //   // borderWidth:1,
-  //   borderRadius: 10,
-  //   // borderColor:"#505050",
-  //   backgroundColor: "#44A347",
-  // },
 
   machine: {
     width: "35%",
@@ -607,22 +638,6 @@ const styles = StyleSheet.create({
     borderColor: "#505050",
     // backgroundColor: "#44A347",
   },
-
-  // theke: {
-  //   width: "40%",
-  //   flexDirection: "row",
-  //   // borderRadius: 7,
-  //   color: "#505050",
-  //   height: 50,
-  //   alignItems: "center",
-  //   //   justifyContent:"",
-  //   justifyContent: "center",
-  //   marginTop: 30,
-  //   borderWidth: 1,
-  //   borderRadius: 10,
-  //   borderColor: "#505050",
-  //   // backgroundColor: "#44A347",
-  // },
 
   loginText: {
     color: "#000",

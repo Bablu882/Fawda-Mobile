@@ -8,13 +8,14 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Dimensions,
+  ScrollView,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
 import Service from "../service/index";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Picker } from "@react-native-picker/picker";
@@ -33,10 +34,22 @@ export default function UserRegistration({ navigation, route }) {
   const [village, setVillage] = useState("");
   const [mohalla, setMohalla] = useState("");
   const [state, setState] = useState([]);
+  const [age, setAge] = useState(0);
+  const [pincode, setPincode] = useState(0);
+  const [upiId, setUpiId] = useState("");
+  const [upi, setUpi] = useState("");
+  const [referCode, setReferCode] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [district, setDistrict] = useState([]);
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
+  const [isLocationGranted, setIsLocationGranted] = useState(false);
+  const [permissionAsked, setPermissionAsked] = useState(false);
+
+  const ageArray = Array.from(
+    { length: 70 - 18 + 1 },
+    (_, index) => 18 + index
+  );
 
   const [errors, setErrors] = useState({
     name: "",
@@ -46,6 +59,10 @@ export default function UserRegistration({ navigation, route }) {
     village: "",
     state: "",
     district: "",
+    age: "",
+    pincode: "",
+    upiid: "",
+    refercode: "",
   });
   const dispatch = useDispatch();
 
@@ -67,43 +84,87 @@ export default function UserRegistration({ navigation, route }) {
       village: "",
       state: "",
       district: "",
+      age: "",
+      pincode: "",
+      upiid: "",
+      refercode: "",
     };
+
     if (name.trim() === "") {
-      errorMessages.name = "Please enter your name";
+      errorMessages.name = "कृपया नाम दर्ज करें!";
       valid = false;
     } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
       errorMessages.name =
-        "Please enter a valid name (letters and spaces only)";
+        "कृपया एक वैध नाम दर्ज करें (केवल अक्षर और रिक्त स्थान)!";
       valid = false;
     }
 
     if (gender === "") {
-      errorMessages.gender = "Please select your gender";
+      errorMessages.gender = "कृपया लिंग का चयन करें!";
       valid = false;
     }
+
     if (phone.trim() === "") {
-      errorMessages.phone = "Please enter your phone number";
+      errorMessages.phone = "कृपया फ़ोन नंबर दर्ज करें!";
       valid = false;
     } else if (phone.trim().length < 10) {
-      errorMessages.phone = "Please enter a valid phone number";
+      errorMessages.phone = "एक मान्य फ़ोन नंबर दर्ज करें!";
       valid = false;
     }
+
+    if (pincode.toString().trim() === "") {
+      errorMessages.pincode = "कृपया पिनकोड दर्ज करें!";
+      valid = false;
+    } else if (pincode.toString().trim().length < 6) {
+      errorMessages.pincode = "कृपया एक वैध पिनकोड दर्ज करें!";
+      valid = false;
+    } else if (!/^\d+$/.test(pincode.trim())) {
+      errorMessages.pincode = "केवल संख्याओं की अनुमति है!";
+      valid = false;
+    }
+
+    if (upiId.trim() === "") {
+      errorMessages.upiid = "कृपया यूपीआई आईडी दर्ज करें!";
+      valid = false;
+    } else if (upiId.trim().length > 100) {
+      errorMessages.upiid = "कृपया एक वैध यूपीआई आईडी दर्ज करें!";
+      valid = false;
+    }
+
+    if (age.toString().trim() === "") {
+      errorMessages.age = "कृपया आयु दर्ज करें!";
+      valid = false;
+    } else if (parseInt(age) < 18 || parseInt(age) > 70) {
+      errorMessages.age = "कृपया वैध आयु दर्ज करें (18 से 70 के बीच)!";
+      valid = false;
+    }
+    if (referCode !== "") {
+      if (referCode.trim().length > 6) {
+        errorMessages.refercode = "कृपया एक वैध रेफरकोड दर्ज करें!";
+        valid = false;
+      } else if (!/^(?=.*[a-zA-Z])(?=.*\d).+$/.test(referCode)) {
+        errorMessages.refercode = "कृपया एक वैध रेफरकोड दर्ज करें!";
+        valid = false;
+      }
+    }
+
     if (mohalla.trim() === "") {
-      errorMessages.mohalla = "Please enter your mohalla";
+      errorMessages.mohalla = "कृपया मोहल्ले का नाम दर्ज करें!";
       valid = false;
     }
 
     if (selectedState.trim() === "") {
-      errorMessages.state = "Please select your state";
+      errorMessages.state = "कृपया राज्य का चयन करें!";
       valid = false;
     }
 
     if (selectedDistrict.trim() === "") {
-      errorMessages.district = "Please select your district";
+      errorMessages.district = "कृपया जिला का चयन करें!";
       valid = false;
     }
+
     if (village.trim() === "") {
-      errorMessages.village = "Please enter your village";
+      errorMessages.village = "कृपया गांव का नाम दर्ज करें!";
       valid = false;
     }
 
@@ -116,7 +177,24 @@ export default function UserRegistration({ navigation, route }) {
     setErrors({ ...errors, gender: "" });
   };
 
+  const handleAgeChange = (value) => {
+    setAge(value);
+  };
+
   const RegisterServices = async () => {
+    // if (isLocationGranted) {
+    let upi = "";
+    let refer_code = "";
+    if (user !== "Grahak") {
+      upi = upiId;
+    } else {
+      upi = "None";
+    }
+    if (referCode !== "") {
+      refer_code = referCode;
+    } else {
+      refer_code = "";
+    }
     try {
       const params = {
         name,
@@ -129,7 +207,12 @@ export default function UserRegistration({ navigation, route }) {
         user_type: user,
         latitude: location.latitude,
         longitude: location.longitude,
+        age: age,
+        pincode: pincode,
+        upiid: upi,
+        refer_code: refer_code,
       };
+      console.log("params", params);
       const response = await Service.post("/api/register/", params, {
         headers: {
           "Content-Type": "application/json",
@@ -137,24 +220,53 @@ export default function UserRegistration({ navigation, route }) {
       });
       const data = response?.data;
       if (data?.status == 201) {
-        const token = data?.token;
         console.log(data, "data");
-        dispatch(setToken(token));
-        // Toast.show("Registration successful", Toast.SHORT, Toast.CENTER);
-        Toast.show(JSON.stringify(data.otp), Toast.LONG);
+        // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
         navigation.replace("Verification", {
           user_type: data?.user_type,
           phone,
         });
-      } else if (data?.error) {
-        Toast.show(data.error, Toast.SHORT);
+      } else if (data?.status === 0) {
+        console.log("error", data);
+        Toast.show("अमान्य रेफर कोड", Toast.LONG);
+      } else if (data?.status === 1) {
+        console.log("error", data);
+        Toast.show("रेफर कोड समान यूजर प्रकार का होना चाहिए", Toast.LONG);
+      } else if (data?.status === 2) {
+        console.log("error", data);
+        Toast.show("यह रेफर कोड अपनी उपयोग सीमा तक पहुंच गया है", Toast.LONG);
+      } else if (data?.status === 3) {
+        console.log("error", data);
+        Toast.show(
+          "रेफर कोड का उपयोग एक ही उपयोगकर्ता द्वारा दो बार नहीं किया जा सकता",
+          Toast.LONG
+        );
       } else {
-        Toast.show(data.error, Toast.SHORT);
+        console.log("error", data);
+        Toast.show(
+          "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+          Toast.LONG
+        );
       }
     } catch (error) {
-      console.log(error);
-      Toast.show("User already exists", Toast.SHORT);
+      console.log(error.data);
+      Toast.show(
+        "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+        Toast.LONG
+      );
     }
+    // }
+    // else {
+    //   Toast.show("Location required", Toast.SHORT);
+    //   let { status } = await Location.requestForegroundPermissionsAsync();
+    //   if (status !== "granted") {
+    //     setIsLocationGranted(false);
+    //   } else {
+    //     let { coords } = await Location.getCurrentPositionAsync({});
+    //     setLocation(coords);
+    //     setIsLocationGranted(true);
+    //   }
+    // }
   };
 
   const stateapi = async () => {
@@ -197,19 +309,51 @@ export default function UserRegistration({ navigation, route }) {
       districtapi(selectedState);
     }
   }, []);
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
+        setIsLocationGranted(false);
         return;
+      } else {
+        console.log("Permission to access location was granted");
+        setIsLocationGranted(true);
       }
 
       let { coords } = await Location.getCurrentPositionAsync({});
       setLocation(coords);
-      // console.log("locationlocation",location);
     })();
   }, []);
+
+  // const askPermissionForNotification = async () => {
+  //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   if (status !== "granted") {
+  //     console.log("Permission to access location was denied");
+  //     return false;
+  //   } else {
+  //     console.log("Permission to access location was granted");
+  //     return true;
+  //   }
+  // };
+
+  // const handleNextButtonPress = async () => {
+  //   if (!permissionAsked) {
+  //     const isPermissionGranted = await askPermissionForNotification();
+  //     setPermissionAsked(true);
+  //     if (isPermissionGranted) {
+  //       if (validate()) {
+  //         RegisterServices();
+  //       }
+  //     } else {
+  //       Toast.show("Location required", Toast.LONG);
+  //     }
+  //   } else {
+  //     Toast.show("Location is required", Toast.LONG);
+  //   }
+  // };
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}>
@@ -217,7 +361,6 @@ export default function UserRegistration({ navigation, route }) {
           <Icon name="arrowleft" size={25} />
         </TouchableOpacity>
       </View>
-
       <View style={{ justifyContent: "center" }}>
         <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}>
           {user === "Grahak"
@@ -229,190 +372,274 @@ export default function UserRegistration({ navigation, route }) {
             : null}
         </Text>
       </View>
-      <KeyboardAwareScrollView
-        enableAutomaticScroll={true}
-        showsVerticalScrollIndicator={false}
-      >
-        <KeyboardAvoidingView
-          behavior="padding"
-          style={{ height: height * 0.8 }}
+      <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+        {/* <KeyboardAwareScrollView
+            enableAutomaticScroll={true}
+            showsVerticalScrollIndicator={false}
+          >
+            <KeyboardAvoidingView
+              behavior="padding"
+              style={{ height: height * 0.8 }}
+            > */}
+        <View
+          style={{
+            marginHorizontal: 13,
+            marginTop: 15,
+          }}
         >
+          <View style={{ display: "none" }}>
+            <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
+          </View>
+          <View style={[styles.inputView, { position: "relative" }]}>
+            <Text
+              style={{
+                position: "absolute",
+                top: -10,
+                left: 30,
+                width: "10%",
+                textAlign: "center",
+                backgroundColor: "#fff",
+              }}
+            >
+              नाम:
+            </Text>
+            <TextInput
+              style={styles.TextInput}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+              onChangeText={(text) => setName(text, "name")}
+              // defaultValue={email}
+              value={name}
+              //   error={input.name}
+              //   onFocus={() => handleError(null, "name")}
+            />
+            {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
+          </View>
+          <RadioButton.Group
+            onValueChange={handleGenderSelection}
+            value={gender}
+          >
+            <View style={styles.alignItems}>
+              <View style={[styles.MaleCheckView, { position: "relative" }]}>
+                <Text style={styles.label}>लिंग:</Text>
+                <TouchableOpacity>
+                  <RadioButton.Item
+                    label="पुरुष"
+                    value="Male"
+                    uncheckedColor="transparent"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={[styles.FemalecheckView, { position: "relative" }]}>
+                <TouchableOpacity>
+                  <RadioButton.Item
+                    label="महिला"
+                    value="Female"
+                    uncheckedColor="transparent"
+                  />
+                </TouchableOpacity>
+              </View>
+              {/* </View> */}
+            </View>
+            {!!errors.gender && (
+              <Text style={styles.error}>{errors.gender}</Text>
+            )}
+          </RadioButton.Group>
+          <View style={[styles.inputView, { position: "relative" }]}>
+            <Text style={styles.label}>फ़ोन:</Text>
+            <Text
+              style={[styles.TextInput, { marginTop: 5 }]}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+            >
+              {phone}
+            </Text>
+          </View>
           <View
             style={{
-              marginHorizontal: 13,
+              position: "relative",
+              borderColor: "#0099FF",
+              borderRadius: 7,
+              width: "100%",
+              height: 50,
               marginTop: 30,
+              borderWidth: 1,
             }}
           >
-            <View style={{ display: "none" }}>
-              <Text>Latitude: {JSON.stringify(location.latitude)}</Text>
+            <Text style={styles.label}>आयु:</Text>
+            <Picker
+              style={{ width: "100%", paddingTop: 16 }}
+              ref={pickerRef}
+              selectedValue={age}
+              onValueChange={handleAgeChange}
+            >
+              <Picker.Item label="" value="" />
+              {ageArray.map((value) => (
+                <Picker.Item
+                  label={value.toString()}
+                  value={value}
+                  key={value}
+                />
+              ))}
+            </Picker>
+            {!!errors.age && <Text style={styles.error}>{errors.age}</Text>}
+          </View>
+          <View style={styles.flex}>
+            <View style={[styles.DoubleView, { position: "relative" }]}>
+              <Text style={styles.label}>मोहल्ला:</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholder=""
+                placeholderTextColor={"#848484"}
+                onChangeText={(text) => setMohalla(text)}
+                // defaultValue={email}
+                value={mohalla}
+              />
+              {!!errors.mohalla && (
+                <Text style={styles.error}>{errors.mohalla}</Text>
+              )}
             </View>
-            <View style={[styles.inputView, { position: "relative" }]}>
-              <Text
-                style={{
-                  position: "absolute",
-                  top: -10,
-                  left: 30,
-                  width: "10%",
-                  textAlign: "center",
-                  backgroundColor: "#fff",
+            <View style={[styles.DoubleView, { position: "relative" }]}>
+              <Text style={styles.label}>गांव:</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholder=""
+                placeholderTextColor={"#848484"}
+                onChangeText={(text) => setVillage(text)}
+                // defaultValue={email}
+                value={village}
+              />
+              {!!errors.village && (
+                <Text style={styles.error}>{errors.village}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.flex}>
+            <View style={[styles.DoubleView, { position: "relative" }]}>
+              <Text style={styles.label}>राज्य:</Text>
+              <Picker
+                selectedValue={selectedState}
+                onValueChange={(itemValue, itemIndex) => {
+                  setSelectedState(itemValue);
+                  districtapi(itemValue);
                 }}
               >
-                नाम:
-              </Text>
-              <TextInput
-                style={styles.TextInput}
-                placeholder=""
-                placeholderTextColor={"#848484"}
-                onChangeText={(text) => setName(text, "name")}
-                // defaultValue={email}
-                value={name}
-                //   error={input.name}
-                //   onFocus={() => handleError(null, "name")}
-              />
-              {!!errors.name && <Text style={styles.error}>{errors.name}</Text>}
-            </View>
-            <RadioButton.Group
-              onValueChange={handleGenderSelection}
-              value={gender}
-            >
-              <View style={styles.alignItems}>
-                <View style={[styles.MaleCheckView, { position: "relative" }]}>
-                  <Text style={styles.label}>लिंग:</Text>
-                  <TouchableOpacity>
-                    <RadioButton.Item
-                      label="Male"
-                      value="Male"
-                      uncheckedColor="transparent"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View
-                  style={[styles.FemalecheckView, { position: "relative" }]}
-                >
-                  <TouchableOpacity>
-                    <RadioButton.Item
-                      label="Female"
-                      value="Female"
-                      uncheckedColor="transparent"
-                    />
-                  </TouchableOpacity>
-                </View>
-                {/* </View> */}
-              </View>
-              {!!errors.gender && (
-                <Text style={styles.error}>{errors.gender}</Text>
-              )}
-            </RadioButton.Group>
-            <View style={[styles.inputView, { position: "relative" }]}>
-              <Text style={styles.label}>फ़ोन:</Text>
-              <TextInput
-                style={styles.TextInput}
-                keyboardType="numeric"
-                maxLength={10}
-                placeholder=""
-                placeholderTextColor={"#848484"}
-                onChangeText={(phone) => setphone(phone, "phone")}
-                defaultValue={phone}
-              />
-              {!!errors.phone && (
-                <Text style={styles.error}>{errors.phone}</Text>
+                <Picker.Item label="" value="" enabled={false} />
+                {state?.map((state) => (
+                  <Picker.Item
+                    key={state.id}
+                    label={state.name}
+                    value={state.name}
+                  />
+                ))}
+              </Picker>
+              {!!errors.state && (
+                <Text style={styles.error}>{errors.state}</Text>
               )}
             </View>
-
-            <View style={styles.flex}>
-              <View style={[styles.DoubleView, { position: "relative" }]}>
-                <Text style={styles.label}>मोहल्ला</Text>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  onChangeText={(text) => setMohalla(text)}
-                  // defaultValue={email}
-                  value={mohalla}
-                />
-                {!!errors.mohalla && (
-                  <Text style={styles.error}>{errors.mohalla}</Text>
-                )}
-              </View>
-              <View style={[styles.DoubleView, { position: "relative" }]}>
-                <Text style={styles.label}>गांव</Text>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder=""
-                  placeholderTextColor={"#848484"}
-                  onChangeText={(text) => setVillage(text)}
-                  // defaultValue={email}
-                  value={village}
-                />
-                {!!errors.village && (
-                  <Text style={styles.error}>{errors.village}</Text>
-                )}
-              </View>
-            </View>
-
-            <View style={styles.flex}>
-              <View style={[styles.DoubleView, { position: "relative" }]}>
-                <Text style={styles.label}>राज्य</Text>
-                <Picker
-                  selectedValue={selectedState}
-                  onValueChange={(itemValue, itemIndex) => {
-                    setSelectedState(itemValue);
-                    console.log("jnjdjdjdjd", itemValue);
-                    districtapi(itemValue);
-                  }}
-                >
-                  <Picker.Item label="राज्य" value="" enabled={false} />
-                  {state?.map((state) => (
-                    <Picker.Item
-                      key={state.id}
-                      label={state.name}
-                      value={state.name}
-                    />
-                  ))}
-                </Picker>
-                {!!errors.state && (
-                  <Text style={styles.error}>{errors.state}</Text>
-                )}
-              </View>
-              <View style={[styles.DoubleView]}>
-                <Text style={styles.label}>जिला</Text>
-                <Picker
-                  style={{ width: "100%" }}
-                  selectedValue={selectedDistrict}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedDistrict(itemValue)
-                  }
-                >
-                  <Picker.Item label="जिला" value="" enabled={false} />
-                  {district?.map((district, index) => (
-                    <Picker.Item
-                      key={index}
-                      label={district.district}
-                      value={district.district}
-                    />
-                  ))}
-                </Picker>
-                {!!errors.district && (
-                  <Text style={styles.error}>{errors.district}</Text>
-                )}
-              </View>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => {
-                if (validate()) {
-                  RegisterServices();
-
-                  // navigation.navigate("Home")
+            <View style={[styles.DoubleView]}>
+              <Text style={styles.label}>जिला:</Text>
+              <Picker
+                style={{ width: "100%" }}
+                selectedValue={selectedDistrict}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedDistrict(itemValue)
                 }
-              }}
-              style={styles.loginBtn}
-            >
-              <Text style={styles.loginText}>आगे बढ़ें</Text>
-            </TouchableOpacity>
+              >
+                <Picker.Item label="" value="" enabled={false} />
+                {district?.map((district, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={district.district}
+                    value={district.district}
+                  />
+                ))}
+              </Picker>
+              {!!errors.district && (
+                <Text style={styles.error}>{errors.district}</Text>
+              )}
+            </View>
           </View>
-        </KeyboardAvoidingView>
-      </KeyboardAwareScrollView>
+          <View style={styles.flex}>
+            <View style={[styles.DoubleView, { position: "relative" }]}>
+              <Text style={styles.label}>पिन कोड:</Text>
+              <TextInput
+                style={styles.TextInput}
+                placeholder=""
+                maxLength={6}
+                keyboardType="numeric"
+                placeholderTextColor={"#848484"}
+                onChangeText={(text) => setPincode(text)}
+                value={pincode}
+              />
+              {!!errors.pincode && (
+                <Text style={styles.error}>{errors.pincode}</Text>
+              )}
+            </View>
+          </View>
+          <View
+            style={{
+              position: "relative",
+              borderColor: "#0099FF",
+              borderRadius: 7,
+              width: "100%",
+              height: 50,
+              marginTop: 30,
+              borderWidth: 1,
+            }}
+          >
+            <Text style={styles.label}>Upi Id:</Text>
+            <TextInput
+              style={styles.TextInput}
+              placeholder=""
+              placeholderTextColor={"#848484"}
+              onChangeText={(text) => setUpiId(text)}
+              value={upiId}
+            />
+            {!!errors.upiid && <Text style={styles.error}>{errors.upiid}</Text>}
+          </View>
+          {user !== "MachineMalik" && (
+            <View
+              style={{
+                position: "relative",
+                borderColor: "#0099FF",
+                borderRadius: 7,
+                width: "100%",
+                height: 50,
+                marginTop: 30,
+                borderWidth: 1,
+              }}
+            >
+              <Text style={styles.label}>रेफरल कोड (यदि कोई हो):</Text>
+              <TextInput
+                style={styles.TextInput}
+                maxLength={6}
+                onChangeText={(text) => setReferCode(text)}
+                value={referCode}
+                defaultValue=""
+              />
+              {!!errors.refercode && (
+                <Text style={styles.error}>{errors.refercode}</Text>
+              )}
+            </View>
+          )}
+
+          <TouchableOpacity
+            onPress={() => {
+              if (validate()) {
+                RegisterServices();
+              }
+            }}
+            // onPress={handleNextButtonPress}
+            style={[styles.loginBtn, { marginBottom: 50 }]}
+          >
+            <Text style={styles.loginText}>आगे बढ़ें</Text>
+          </TouchableOpacity>
+        </View>
+        {/* </KeyboardAvoidingView>
+          </KeyboardAwareScrollView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -424,7 +651,7 @@ const styles = StyleSheet.create({
     // borderBottomRightRadius: 7,
     width: "100%",
     height: 48,
-    marginTop: 30,
+    marginTop: 15,
     borderWidth: 1,
   },
   label: {
@@ -498,7 +725,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30,
+    marginTop: 20,
     backgroundColor: "#0099FF",
   },
   loginText: {

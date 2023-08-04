@@ -20,7 +20,7 @@ export default function CustomComponent({ label, value }) {
       editable={false}
       placeholderTextColor={"#000"}
     />
-    <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>{value}</Text>
+    <Text style={{ marginTop: 13, right: 10, color: "#0070C0" }}>{value}</Text>
   </View>
   )
 }

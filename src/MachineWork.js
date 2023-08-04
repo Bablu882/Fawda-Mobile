@@ -11,15 +11,14 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import Icon from "react-native-vector-icons/AntDesign";;
+import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import Toast from "react-native-simple-toast";
-import CustomComponent from '../Component/CustomComponent'
+import CustomComponent from "../Component/CustomComponent";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-
 
 export default function MachineWork({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState([]);
@@ -33,9 +32,21 @@ export default function MachineWork({ navigation, route }) {
   const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   const { id, item, fawdafee, totalamount } = route.params ?? {};
-  const [amount, setAmount] = useState(totalamount);
+  console.log("jobdata", item);
+  const itemStatus = item?.status;
+  const [amount, setAmount] = useState(0 || totalamount);
   const [edit, setEdit] = useState(false);
+  const [status, setStatus] = useState("");
+  const [statusAccept, setStatusAccept] = useState("");
+  const [statusPending, setStatusPending] = useState("");
   const textInputRef = useRef(null);
+  const [jobsData, setJobsData] = useState([]);
+  const [fawdaFees, setFawdafees] = useState(0 || item?.fawda_fee);
+  const [paymentYour, setPaymentYour] = useState(0 || item?.payment_your);
+  const [amountMachine, setAmountMachine] = useState(
+    0 || item?.total_amount_machine
+  );
+  const [paymentCheck, setPaymentCheck] = useState(false);
 
   const onEditPress = () => {
     setEdit(true);
@@ -43,8 +54,8 @@ export default function MachineWork({ navigation, route }) {
   };
 
   const onAcceptPress = async () => {
+    setIsLoading(true);
     try {
-      // setIsLoading(true);
       let params = {
         job_id: JSON.stringify(item?.id),
         amount: amount,
@@ -59,17 +70,207 @@ export default function MachineWork({ navigation, route }) {
       let data = response.data;
       if (response.status === 200) {
         Toast.show("वेतन सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
+        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
         Toast.show("राशि अपडेट नहीं की गई है।", Toast.LONG);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-   
+  };
+
+  const fetchJobData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await service.get(`/api/nearjob/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data?.results;
+      // console.log("dayaaaaaa", data);
+      setJobsData(data);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+  useEffect(() => {
+    if (usertype && usertype !== "Grahak") {
+      jobsData.forEach((jobData, index) => {
+        if (id === jobData.id) {
+          setAmountMachine(jobData.total_amount_machine);
+          setFawdafees(jobData.fawda_fee);
+          setPaymentYour(jobData.payment_your);
+        }
+      });
+    }
+  }, [jobsData]);
+
+  const checkStatus = async () => {
+    setIsLoading(true);
+    let params = {
+      machine_job_id: JSON.stringify(id),
+      machine_job_number: item?.job_number,
+    };
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+
+      if (usertype && usertype === "Grahak") {
+        const statusCheck =
+          data?.machine_malik_pending_booking_details[0]?.status || "";
+        const accept_data = data?.machine_malik_booking_details[0] || {};
+        if (statusCheck === "Pending") {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
+        } else {
+          navigation.replace("Payment", {
+            item: accept_data,
+            fawdafee: accept_data?.fawda_fee,
+            totalamount: accept_data?.total_amount,
+            useramount: accept_data?.total_amount_machine,
+            id: accept_data?.job_id,
+          });
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const checkPayment = async () => {
+    setIsLoading(true);
+    try {
+      const response = await service.get(`/api/nearjob/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data?.results;
+      console.log("dayaaaaaa", data);
+
+      if (usertype && usertype !== "Grahak") {
+        const matchingJobData = data.find((jobData) => jobData.id === item?.id);
+        console.log("matchingJobData:", matchingJobData);
+
+        if (matchingJobData) {
+          console.log("amount", matchingJobData.total_amount_machine);
+          const totalAmount = matchingJobData.total_amount_machine;
+          if (amountMachine !== totalAmount) {
+            Toast.show(
+              "इस कार्य के लिए भुगतान बदल दिया गया है! कृपया स्क्रीन को रिफ़्रेश करें!",
+              Toast.LONG
+            );
+          } else {
+            console.log("Payment OK");
+            accptThekha();
+          }
+        } else {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show("यह नौकरी ग्राहक द्वारा रद्द कर दी गई है", Toast.LONG);
+        }
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkSahayakStatus = async () => {
+    setIsLoading(true);
+    let params = {
+      machine_job_id: JSON.stringify(id),
+      machine_job_number: item?.job_number,
+    };
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+
+      if (usertype && usertype === "Grahak") {
+        const statusCheck =
+          data?.machine_malik_booking_details[0]?.status || "";
+        if (statusCheck === "Accepted") {
+          Toast.show(
+            "यह बुकिंग सहायक द्वारा स्वीकार कर ली गई है। कृपया स्क्रीन को रिफ्रेश करें।",
+            Toast.LONG
+          );
+        } else {
+          onAcceptPress();
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const myStatusBooked = async () => {
+    setIsLoading(true);
+    let params = {
+      booking_id: JSON.stringify(item.booking_id),
+    };
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-myjobs/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+      if (data[0]?.status === "Booked") {
+        Toast.show(
+          "यह बुकिंग ग्राहक द्वारा बुक की गई है। कृपया रिफ़्रेश करें!",
+          Toast.LONG
+        );
+      } else {
+        Rejected();
+      }
+      console.log("status", status);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const accptThekha = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     let params = {
       job_id: item?.id,
     };
@@ -84,20 +285,20 @@ export default function MachineWork({ navigation, route }) {
       const data = response?.data;
       if (data?.status === 200) {
         setThekeperKam(data?.data);
-        Toast.show("काम स्वीकार किया गया है!", Toast.SHORT);
+        Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
         navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
-        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.SHORT);
+        Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.LONG);
       }
-      
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
-    
   };
 
   const RatingApi = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     let params = {
       booking_job: item?.booking_id,
     };
@@ -145,10 +346,9 @@ export default function MachineWork({ navigation, route }) {
       setRatingList(ratingList);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
-    //  finally {
-    //   setIsLoading(false); // Hide loader after fetching data
-    // }
   };
   useEffect(() => {
     RatingApi();
@@ -176,6 +376,7 @@ export default function MachineWork({ navigation, route }) {
     );
   }
   const cancel = async () => {
+    setIsLoading(true);
     let params = {
       job_id: item?.id,
       job_number: item?.job_number,
@@ -192,19 +393,22 @@ export default function MachineWork({ navigation, route }) {
       });
       const data = response?.data;
       // setStatus(data.status);
-      navigation.navigate("HomeStack", { screen: "HomePage" });
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      navigation.replace("HomeStack", { screen: "BottomTab" });
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const Rejected = async () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected",
     };
-    console.log('Rejected', params)
+    console.log("Rejected", params);
 
     try {
       const response = await service.post("/api/rejected/", params, {
@@ -215,19 +419,22 @@ export default function MachineWork({ navigation, route }) {
       });
 
       const data = response?.data;
-      navigation.navigate('HomeStack',{screen: "HomePage"});
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       console.log(data, "sds");
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const RejectedPayment = async () => {
+    setIsLoading(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
       status: "Rejected-After-Payment",
     };
-    console.log('Rejected', params)
+    console.log("Rejected", params);
 
     try {
       const response = await service.post("/api/rejected/", params, {
@@ -238,11 +445,13 @@ export default function MachineWork({ navigation, route }) {
       });
 
       const data = response?.data;
-      navigation.navigate('HomeStack',{screen: "HomePage"});
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       console.log(data, "sds");
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const mybookingdetail = async () => {
@@ -269,6 +478,21 @@ export default function MachineWork({ navigation, route }) {
 
       setThekeperKams(data?.machine_malik_booking_details);
       setThekeperKamPending(data?.machine_malik_pending_booking_details);
+      if (usertype && usertype === "Grahak") {
+        setStatusAccept(data?.machine_malik_booking_details[0]?.status || "");
+        setStatusPending(
+          data?.machine_malik_pending_booking_details[0]?.status || ""
+        );
+        if (statusPending === "Pending") {
+          setAmount(
+            data?.machine_malik_pending_booking_details[0]?.total_amount_machine
+          );
+        } else {
+          setAmount(
+            data?.machine_malik_booking_details[0]?.total_amount_machine
+          );
+        }
+      }
       setIsLoading(false);
       setRefreshing(false);
     } catch (error) {
@@ -277,6 +501,8 @@ export default function MachineWork({ navigation, route }) {
   };
 
   const myjobs = async () => {
+    setIsLoading(true);
+    setRefreshing(true);
     let params = {
       booking_id: JSON.stringify(item?.booking_id),
     };
@@ -295,9 +521,20 @@ export default function MachineWork({ navigation, route }) {
       );
       const data = response?.data;
       setThekeperKam(data);
-    
+      setStatus(data[0]?.status);
+      if (
+        data[0]?.status === "Cancelled" ||
+        data[0]?.status === "Cancelled-After-Payment"
+      ) {
+        navigation.replace("HomeStack", { screen: "BottomTab" });
+        Toast.show("यह नौकरी ग्राहक द्वारा रद्द कर दी गई है!", Toast.LONG);
+      }
+      console.log("status", status);
     } catch (error) {
       console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -317,6 +554,9 @@ export default function MachineWork({ navigation, route }) {
     mybookingdetail().then(() => {
       setRefreshing(false);
     });
+    fetchJobData().then(() => {
+      setRefreshing(false);
+    });
   }, []);
 
   return (
@@ -331,9 +571,9 @@ export default function MachineWork({ navigation, route }) {
         {/* {isLoading && <ActivityIndicator size="small" color="#black" />} */}
       </View>
       <View style={{ padding: 20, marginTop: 25 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrowleft" size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View>
         {isLoading && <ActivityIndicator size="small" color="#black" />}
@@ -375,8 +615,10 @@ export default function MachineWork({ navigation, route }) {
                   (usertype === "Sahayak" || usertype === "MachineMalik") && (
                     <View style={[styles.inputView, { height: 40 }]}>
                       <Text style={styles.label}>गाँव</Text>
-                      <Text style={[styles.TextInput, { color: "#848484" }]}>
-                        {item?.village}
+                      <Text style={[styles.TextInput]}>
+                        {item?.status == "Completed"
+                          ? item?.grahak_village
+                          : item?.village}
                       </Text>
                       {/* <TextInput
                     style={styles.TextInput}
@@ -393,10 +635,10 @@ export default function MachineWork({ navigation, route }) {
                   ]}
                 >
                   <Text style={styles.TextInput}>
-                    {moment.utc(item?.datetime).format("l")}
+                    {moment(item?.datetime).format("DD/MM/YYYY")}
                   </Text>
                   <Text style={styles.TextInput}>
-                    {moment.utc(item?.datetime).format("LT")}
+                    {moment(item?.datetime).format("LT")}
                   </Text>
                 </View>
                 {usertype &&
@@ -420,11 +662,11 @@ export default function MachineWork({ navigation, route }) {
                           top: 10,
                           right: 5,
                           position: "absolute",
-                          color: "#0070C0",
+                          color: "#0099FF",
                         }}
                       >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
                       </Text>
                     </View>
                   )}
@@ -455,11 +697,11 @@ export default function MachineWork({ navigation, route }) {
                           top: 10,
                           right: 5,
                           position: "absolute",
-                          color: "#0070C0",
+                          color: "#0099FF",
                         }}
                       >
                         {item?.land_area}
-                        {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                        {item?.land_type == "Bigha" ? " बीघा" : " किल्ला"}
                       </Text>
                     </View>
                     <View
@@ -473,13 +715,15 @@ export default function MachineWork({ navigation, route }) {
                       <Text style={{ marginLeft: 10 }}>वेतन</Text>
                       {edit ? (
                         <TextInput
-                          style={[styles.TextInput, { marginRight: 10 }]}
-                          placeholder=""
+                          style={[
+                            styles.TextInput,
+                            { marginRight: 10, color: "#0099FF" },
+                          ]}
                           ref={textInputRef}
                           onChangeText={(amount) => setAmount(amount)}
                           value={amount}
                           keyboardType="numeric"
-                          placeholderTextColor={"#000"}
+                          defaultValue={item?.total_amount_machine}
                         />
                       ) : (
                         <View>
@@ -523,7 +767,7 @@ export default function MachineWork({ navigation, route }) {
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => {
-                                onAcceptPress();
+                                checkSahayakStatus();
                               }}
                               style={{
                                 backgroundColor: "#44A347",
@@ -561,15 +805,15 @@ export default function MachineWork({ navigation, route }) {
                         <>
                           <CustomComponent
                             label="किसान से वेतन"
-                            value={item?.total_amount_machine}
+                            value={amountMachine}
                           />
                           <CustomComponent
                             label="फावड़ा की फीस"
-                            value={item?.fawda_fee}
+                            value={fawdaFees}
                           />
                           <CustomComponent
                             label="आपका भुगतान"
-                            value={item?.payment_your}
+                            value={paymentYour}
                           />
                         </>
                       )}
@@ -633,14 +877,7 @@ export default function MachineWork({ navigation, route }) {
                                       : {},
                                   ]}
                                   disabled={item?.status === "Pending"}
-                                  onPress={() =>
-                                    navigation.navigate("Payment", {
-                                      item,
-                                      fawdafee: item?.fawda_fee,
-                                      totalamount: item?.total_amount,
-                                      useramount: item?.total_amount_machine,
-                                    })
-                                  }
+                                  onPress={() => checkStatus()}
                                 >
                                   <Text
                                     style={[
@@ -654,7 +891,7 @@ export default function MachineWork({ navigation, route }) {
                                   </Text>
                                 </TouchableOpacity>
                               )}
-                          </View>
+                            </View>
                           ))}
                         </>
                       )}
@@ -677,7 +914,7 @@ export default function MachineWork({ navigation, route }) {
                           {item?.status === "Pending" ? (
                             <TouchableOpacity
                               style={styles.BhuktanBtn}
-                              onPress={() => accptThekha()}
+                              onPress={() => checkPayment()}
                             >
                               <Text
                                 style={[styles.loginText, { color: "#fff" }]}
@@ -745,7 +982,7 @@ export default function MachineWork({ navigation, route }) {
                                         <TextInput
                                           style={styles.TextInput}
                                           editable={false}
-                                          placeholderTextColor="#848484"
+                                          placeholderTextColor="#000000"
                                           placeholder={item.grahak_name}
                                         />
                                       </View>
@@ -759,7 +996,7 @@ export default function MachineWork({ navigation, route }) {
                                         <TextInput
                                           style={styles.TextInput}
                                           editable={false}
-                                          placeholderTextColor="#848484"
+                                          placeholderTextColor="#000000"
                                           placeholder={item.grahak_phone}
                                         />
                                       </View>
@@ -779,6 +1016,13 @@ export default function MachineWork({ navigation, route }) {
                                           styles.BhuktanBtn,
                                           { width: "95%", marginBottom: 10 },
                                         ]}
+                                        onPress={() => {
+                                          if (itemStatus !== "Completed") {
+                                            navigation.replace("HomeStack", {
+                                              screen: "BottomTab",
+                                            });
+                                          }
+                                        }}
                                       >
                                         <Text
                                           style={[
@@ -802,57 +1046,120 @@ export default function MachineWork({ navigation, route }) {
                                 </>
 
                                 {item.status === "Accepted" && (
-                                <View>
-                                  <TouchableOpacity
-                                    style={{
-                                      backgroundColor: "#D9D9D9",
-                                      alignSelf: "center",
-                                      paddingHorizontal: 50,
-                                      paddingVertical: 10,
-                                      borderRadius: 5,
-                                      marginTop: 10,
-                                    }}
-                                    onPress={() => {
-                                      Rejected();
-                                    }}
-                                  >
-                                    <Text
-                                      style={[
-                                        styles.loginText,
-                                        { color: "#fff" },
-                                      ]}
+                                  <View>
+                                    <View
+                                      style={{ marginTop: "auto", padding: 5 }}
                                     >
-                                      रद्द करें
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              )}
-                                  {item.status === "Booked" && (
-                                <View>
-                                  <TouchableOpacity
-                                    style={{
-                                      backgroundColor: "#D9D9D9",
-                                      alignSelf: "center",
-                                      paddingHorizontal: 50,
-                                      paddingVertical: 10,
-                                      borderRadius: 5,
-                                      marginTop: 10,
-                                    }}
-                                    onPress={() => {
-                                      RejectedPayment();
-                                    }}
-                                  >
-                                    <Text
-                                      style={[
-                                        styles.loginText,
-                                        { color: "#fff" },
-                                      ]}
+                                      <View
+                                        style={[
+                                          styles.inputView,
+                                          styles.flex,
+                                          styles.justifyContentBetween,
+                                          {
+                                            height: 90,
+                                          },
+                                        ]}
+                                      >
+                                        <Text style={styles.label}>
+                                          टिप्पणी
+                                        </Text>
+                                        <Text
+                                          style={[
+                                            styles.TextInput,
+                                            { maxWidth: "98%" },
+                                          ]}
+                                        >
+                                          कृपया किसान द्वारा बुकिंग की पुष्टि
+                                          करने की प्रतीक्षा करें!
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <View>
+                                      <TouchableOpacity
+                                        style={{
+                                          backgroundColor: "#D9D9D9",
+                                          alignSelf: "center",
+                                          paddingHorizontal: 50,
+                                          paddingVertical: 10,
+                                          borderRadius: 5,
+                                          marginTop: 10,
+                                        }}
+                                        onPress={() => {
+                                          if (!isLoading) {
+                                            myStatusBooked();
+                                          }
+                                        }}
+                                      >
+                                        <Text
+                                          style={[
+                                            styles.loginText,
+                                            { color: "#fff" },
+                                          ]}
+                                        >
+                                          रद्द करें
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                )}
+
+                                {item.status === "Booked" && (
+                                  <View>
+                                    <View
+                                      style={{ marginTop: "auto", padding: 5 }}
                                     >
-                                      रद्द करें
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              )}
+                                      <View
+                                        style={[
+                                          styles.inputView,
+                                          styles.flex,
+                                          styles.justifyContentBetween,
+                                          {
+                                            height: 90,
+                                          },
+                                        ]}
+                                      >
+                                        <Text style={styles.label}>
+                                          टिप्पणी
+                                        </Text>
+                                        <Text
+                                          style={[
+                                            styles.TextInput,
+                                            { maxWidth: "98%" },
+                                          ]}
+                                        >
+                                          कृपया ऊपर दिए गए नंबर पर संपर्क करें
+                                          और कृपया नौकरी के लिए समय पर पहुंचें!
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <View>
+                                      <TouchableOpacity
+                                        style={{
+                                          backgroundColor: "#D9D9D9",
+                                          alignSelf: "center",
+                                          paddingHorizontal: 50,
+                                          paddingVertical: 10,
+                                          borderRadius: 5,
+                                          marginTop: 10,
+                                        }}
+                                        onPress={() => {
+                                          if (!isLoading) {
+                                            RejectedPayment();
+                                          }
+                                        }}
+                                      >
+                                        <Text
+                                          style={[
+                                            styles.loginText,
+                                            { color: "#fff" },
+                                          ]}
+                                        >
+                                          रद्द करें
+                                        </Text>
+                                      </TouchableOpacity>
+                                    </View>
+                                  </View>
+                                )}
                               </View>
                             ))
                           )}
@@ -861,6 +1168,37 @@ export default function MachineWork({ navigation, route }) {
                     ))}
                 </View>
               </View>
+            </View>
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype &&
+                usertype === "Grahak" &&
+                item.status !== "Completed" && (
+                  <>
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        {
+                          height: 90,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.label}>टिप्पणी</Text>
+                      {statusPending === "Pending" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          काम स्वीकृत होने की प्रतीक्षा करें ! स्वीकृत होने पर
+                          आपको भुगतान के लिए सूचित किया जाएगा
+                        </Text>
+                      )}
+                      {statusAccept === "Accepted" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          बुकिंग कन्फर्म करने के लिए कृपा भुगतान करें!
+                        </Text>
+                      )}
+                    </View>
+                  </>
+                )}
             </View>
             <View style={{ marginTop: "auto", padding: 5 }}>
               {usertype &&
@@ -878,7 +1216,9 @@ export default function MachineWork({ navigation, route }) {
                           borderRadius: 5,
                         }}
                         onPress={() => {
-                          cancel();
+                          if (!isLoading) {
+                            cancel();
+                          }
                         }}
                       >
                         <Text style={[styles.loginText, { color: "#fff" }]}>
@@ -888,31 +1228,59 @@ export default function MachineWork({ navigation, route }) {
                     )}
                   </View>
                 ))}
-                 {thekeperKams != 0 && thekeperKams?.map((item) => (
-                  
+              {thekeperKams != 0 &&
+                thekeperKams?.map((item) => (
                   <View>
-                    {item.status == "Pending" || item.status === "Accepted" && (
-                      <TouchableOpacity
-                        style={{
-                          backgroundColor: "#D9D9D9",
-                          alignSelf: "center",
-                          paddingHorizontal: 50,
-                          paddingVertical: 10,
-                          borderRadius: 5,
-                        }}
-                        onPress={() => {
-                          cancel();
-                        }}
-                      >
-                        <Text style={[styles.loginText, { color: "#fff" }]}>
-                          रद्द करें
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                    {item.status == "Pending" ||
+                      (item.status === "Accepted" && (
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "#D9D9D9",
+                            alignSelf: "center",
+                            paddingHorizontal: 50,
+                            paddingVertical: 10,
+                            borderRadius: 5,
+                          }}
+                          onPress={() => {
+                            if (!isLoading) {
+                              cancel();
+                            }
+                          }}
+                        >
+                          <Text style={[styles.loginText, { color: "#fff" }]}>
+                            रद्द करें
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
                   </View>
                 ))}
             </View>
-      
+            <View style={{ marginTop: "auto", padding: 5 }}>
+              {usertype &&
+                (usertype === "Sahayak" || usertype === "MachineMalik") &&
+                status === "Completed" &&
+                item.status !== "Completed" && (
+                  <>
+                    <View
+                      style={[
+                        styles.inputView,
+                        styles.flex,
+                        styles.justifyContentBetween,
+                        {
+                          height: 90,
+                        },
+                      ]}
+                    >
+                      <Text style={styles.label}>टिप्पणी</Text>
+
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
+                        {"\n"}कृपया आगे बढ़ने के लिए "समाप्त" पर क्लिक करें!
+                      </Text>
+                    </View>
+                  </>
+                )}
+            </View>
           </View>
         </ScrollView>
       )}
@@ -988,6 +1356,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily: "Devanagari-regular",
     //   flexDirection:"column",
   },
 
@@ -1031,7 +1400,7 @@ const styles = StyleSheet.create({
   TextInput: {
     // height: 50,
     padding: 10,
-
+    fontFamily: "Devanagari-regular",
     // fontFamily: "Poppin-Light"
   },
 
@@ -1139,6 +1508,7 @@ const styles = StyleSheet.create({
     top: -10,
     left: 30,
     marginHorizontal: 5,
+    fontFamily: "Devanagari-bold",
 
     textAlign: "center",
     backgroundColor: "#fff",

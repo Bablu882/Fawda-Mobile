@@ -10,45 +10,46 @@ export function About_us({ route, navigation }) {
   const results = terms?.client_info?.about_us;
   return (
     <>
-     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-        <View>
+      <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <View style={{ paddingTop: 50, paddingLeft: 20 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrowleft" size={25} style={{paddingTop:50, paddingLeft:20}} />
+            <Icon name="arrowleft" size={25} />
           </TouchableOpacity>
         </View>
-        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-          <View
+        {/* <ScrollView horizontal={false} showsVerticalScrollIndicator={false}> */}
+        <View
+          style={{
+            justifyContent: "center",
+            flex: 1,
+            backgroundColor: "#fff",
+          }}
+        >
+          <Image
+            source={require("../assets/image/Fawda-logo.png")}
             style={{
-              justifyContent: "center",
-              flex: 1,
-              backgroundColor: "#fff",
+              width: 120,
+              height: 120,
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
-          >
-            <Image
-              source={require("../assets/image/Fawda-logo.png")}
-              style={{
-                width: 120,
-                height: 120,
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-            />
+          />
 
-            <Text
-              style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
-            >
-             हमारे बारे में
-            </Text>
-          </View>
-          <View
-            style={{
-              paddingHorizontal: 20,
-              paddingTop: 20,
-              backgroundColor: "#fff",
-            }}
+          <Text
+            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
           >
-            {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}
-            {/* <Text style={{fontSize:18, textAlign:"justify"}}>{results}</Text> */}
+            हमारे बारे में
+          </Text>
+        </View>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            paddingTop: 20,
+            backgroundColor: "#fff",
+          }}
+        >
+          {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}
+          {/* <Text style={{fontSize:18, textAlign:"justify"}}>{results}</Text> */}
+          <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
             <WebView
               source={{ html: results }}
               style={{
@@ -61,10 +62,10 @@ export function About_us({ route, navigation }) {
               textZoom={260}
               domStorageEnabled={true}
             />
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
+        {/* </ScrollView> */}
       </View>
-   
     </>
   );
 }

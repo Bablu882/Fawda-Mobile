@@ -1,5 +1,5 @@
 import React from "react";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Verification from "../src/Verification";
 
 import MyBooking from "../src/MyBooking";
@@ -16,34 +16,37 @@ import MachineWork from "../src/MachineWork";
 import MachineWork2 from "../src/MachineWork2";
 import History from "../src/History";
 
-
-export default function MyBookingStack () {
-    const Stack = createNativeStackNavigator();
-    return(
-        <>
-         <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          
+export default function MyBookingStack() {
+  const Stack = createNativeStackNavigator();
+  return (
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         <Stack.Screen name="MyBooking" component={MyBooking} />
         <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} />
         {/* <Stack.Screen name="SahayakForm" component={SahayakForm} /> */}
         {/* <Stack.Screen name="MachineBooking" component={MachineBooking} /> */}
         <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
-        <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} />
-        <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
+        <Stack.Screen
+          name="Theke_MachineForm2"
+          component={Theke_MachineForm2}
+        />
+        <Stack.Screen
+          name="MyBook_SahayakForm"
+          component={MyBook_SahayakForm}
+        />
         <Stack.Screen name="Payment" component={Payment} />
-        <Stack.Screen name="Mybooking_Sahayak2" component={Mybooking_Sahayak2} />
+        <Stack.Screen
+          name="Mybooking_Sahayak2"
+          component={Mybooking_Sahayak2}
+        />
         <Stack.Screen name="MachineWork" component={MachineWork} />
         <Stack.Screen name="MachineWork2" component={MachineWork2} />
-        <Stack.Screen name="History" component={History} /> 
-
-          
-
-         </Stack.Navigator>
-        
-        </>
-    )
+        <Stack.Screen name="History" component={History} />
+      </Stack.Navigator>
+    </>
+  );
 }
