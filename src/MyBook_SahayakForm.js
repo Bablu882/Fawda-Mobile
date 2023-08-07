@@ -593,7 +593,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       sahayak_job_id: JSON.stringify(id),
       sahayak_job_number: item?.job_number,
     };
-    // console.log("fjfjfjfjff", params);
+    console.log("fjfjfjfjff", params);
     try {
       const cacheBuster = new Date().getTime();
       const response = await service.post(
@@ -607,10 +607,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
         }
       );
       const data = response?.data;
-      console.log(
-        "Accepted Items",
-        response?.data?.sahayk_booking_details?.bookings
-      );
+      console.log("Accepted Items", response?.data?.sahayk_booking_details);
 
       if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
         setNumBookings(response?.data?.sahayk_booking_details?.bookings.length);
@@ -659,14 +656,17 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           (accumulator, currentValue) => accumulator + currentValue,
           0
         );
-        const TotalAmount = totalamounts.reduce(
-          (accumulator, currentValue) => accumulator + currentValue,
-          0
-        );
+        console.log(Totalprice);
+        // const TotalAmount = totalamounts.reduce(
+        //   (accumulator, currentValue) => accumulator + currentValue,
+        //   0
+        // );
         const totalfawdafees = fawdafees.reduce(
           (accumulator, currentValue) => accumulator + currentValue,
           0
         );
+        const TotalAmount = Totalprice + totalfawdafees;
+        console.log(totalfawdafees)
         setFawdafees(totalfawdafees);
         setTotalAmount(TotalAmount);
         setCountPrice(Totalprice);
@@ -1712,8 +1712,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               <View style={{ width: "100%" }}>
                                 <TouchableOpacity key={item.id}>
                                   <Text style={styles.accepted}>
-                                    {countAcceptedJobs}
-                                    सहायक स्वीकार करे
+                                    {countAcceptedJobs} सहायक स्वीकार करे
                                   </Text>
                                 </TouchableOpacity>
                               </View>

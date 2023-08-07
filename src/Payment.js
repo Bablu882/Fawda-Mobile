@@ -91,6 +91,7 @@ export default function Payment({ route, navigation }) {
         job_number: item?.job_number,
         amount: amount,
       };
+      console.log(params);
 
       try {
         const response = await service.post(`/api/payment/`, params, {
@@ -160,8 +161,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus();
+              // fetchPaymentHtml();
+              paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -178,8 +179,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -192,8 +193,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         }
       }

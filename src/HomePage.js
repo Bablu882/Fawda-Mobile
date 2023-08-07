@@ -56,9 +56,15 @@ export default function Homepage({ navigation, route }) {
   };
   const registerForPushNotificationsAsync = async () => {
     if (Device.isDevice) {
-      const etoken = (await Notifications.getExpoPushTokenAsync()).data;
-      setExpoToken(etoken);
-      return etoken;
+      const status = await Notifications.getPermissionsAsync();
+      console.log(status.status)
+      if (status.status !== "granted") {
+        console.log("Permission is not granted");
+      } else {
+        const etoken = (await Notifications.getExpoPushTokenAsync()).data;
+        setExpoToken(etoken);
+        return etoken;
+      }
     } else {
       console.log("Must use physical device for Push Notifications");
       return null;
