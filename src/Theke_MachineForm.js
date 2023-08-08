@@ -21,6 +21,7 @@ import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
 import CustomComponent from "../Component/CustomComponent";
+import * as Linking from "expo-linking";
 
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
@@ -56,6 +57,18 @@ function Theke_MachineForm({ navigation, route }) {
   const textInputRef = useRef(null);
   const handleClick = () => {
     textInputRef.current.focus();
+  };
+  const handleCallPress = (phone) => {
+    const url = `tel:${phone}`;
+    Linking.canOpenURL(url)
+      ?.then((supported) => {
+        if (!supported) {
+          console.log("Phone number is not available");
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
   };
 
   const accptThekha = async () => {
@@ -1128,6 +1141,25 @@ function Theke_MachineForm({ navigation, route }) {
                                       placeholder={item?.grahak_phone}
                                     />
                                   </View>
+                                  <View style={[styles.CallBtn]}>
+                                    <TouchableOpacity
+                                      onPress={() =>
+                                        handleCallPress(item?.grahak_phone)
+                                      }
+                                    >
+                                      <Text
+                                        style={[
+                                          styles.loginText,
+                                          {
+                                            color: "#fff",
+                                            fontFamily: "Devanagari-bold",
+                                          },
+                                        ]}
+                                      >
+                                        कॉल करें
+                                      </Text>
+                                    </TouchableOpacity>
+                                  </View>
                                 </>
                               ) : (
                                 <View
@@ -1520,5 +1552,15 @@ const styles = StyleSheet.create({
 
     textAlign: "center",
     backgroundColor: "#fff",
+  },
+  CallBtn: {
+    width: "25%",
+    borderRadius: 7,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    color: "#fff",
+    backgroundColor: "#0099FF",
   },
 });

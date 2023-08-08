@@ -237,11 +237,12 @@ export default function Homepage({ navigation, route }) {
                                 </>
                               ) : (
                                 <Text style={styles.bookingTitle}>
-                                  {item?.work_type === "Harvesting"
+                                  {/* {item?.machine === "Harvesting"
                                     ? "काटना"
                                     : item?.work_type === "Sowing"
                                     ? "बुवाई"
-                                    : "भूमि की तैयारी"}
+                                    : "भूमि की तैयारी"} */}
+                                  {item?.machine}
                                 </Text>
                               )}
                               {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
@@ -257,10 +258,10 @@ export default function Homepage({ navigation, route }) {
                                   marginRight:
                                     item.job_type === "individuals_sahayak"
                                       ? -60
-                                      : item.work_type === "Sowing"
-                                      ? -60
                                       : item.job_type === "theke_pe_kam"
                                       ? -90
+                                      : -item.job_type === "machine_malik"
+                                      ? -110
                                       : -60,
                                 },
                               ]}

@@ -28,6 +28,7 @@ import {
   setTime,
   setTotalAmount,
   setShowingArea,
+  setDescription,
 } from "../slices/SahayakBookingSlice";
 export default function MachineBooking({ navigation }) {
   const token = useSelector(selectToken);
@@ -50,6 +51,7 @@ export default function MachineBooking({ navigation }) {
   const [mode, setMode] = useState("date");
   const [selectedItem, setSelectedItem] = useState("");
   const [other, setOther] = useState("");
+  const [description, setDescriptions] = useState("");
   const [sowing, setSowing] = useState([]);
   const [errors, setErrors] = useState({
     showDate: "",
@@ -64,6 +66,11 @@ export default function MachineBooking({ navigation }) {
   const pickerRef = useRef();
   const textInputRef = useRef(null);
   var isTimeSelected = false;
+
+  const handleDescriptionChange = (value) => {
+    setDescriptions(value);
+    dispatch(setDescription(value));
+  };
 
   const onChange = (event, selectedDate) => {
     setDefaultDate(selectedDate);
@@ -261,6 +268,7 @@ export default function MachineBooking({ navigation }) {
       land_type: landtype,
       land_area: landarea,
       total_amount_machine: totalAmount,
+      description: description,
     };
     service
       .post("/api/post_machine/", params, {
@@ -304,6 +312,7 @@ export default function MachineBooking({ navigation }) {
       totalAmount: "",
       machiness: "",
       workType: "",
+      description: "",
     };
 
     if (showDate === "") {
@@ -313,6 +322,15 @@ export default function MachineBooking({ navigation }) {
 
     if (time === "") {
       errorMessages.time = "कृपया एक वैध समय चुनें!";
+      valid = false;
+    }
+
+    if (description.trim() === "") {
+      errorMessages.description = "कृपया विवरण दर्ज करें!";
+      valid = false;
+    } else if (!/^[^0-9]+$/.test(description.trim())) {
+      errorMessages.description =
+        "कृपया एक वैध विवरण दर्ज करें (केवल अक्षरों में लिखें)!";
       valid = false;
     }
 
@@ -391,6 +409,7 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
+            <Text style={styles.label}>कार्य प्रकार</Text>
             <Picker
               style={{ width: "100%" }}
               selectedValue={selectedWorkType}
@@ -427,6 +446,7 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
+            <Text style={styles.label}>मशीन के प्रकार</Text>
             <Picker
               style={{ width: "100%" }}
               selectedValue={selectedMachines}
@@ -451,6 +471,27 @@ export default function MachineBooking({ navigation }) {
           {!!errors.machiness && (
             <Text style={styles.error}>{errors.machiness}</Text>
           )}
+          <View
+            style={[
+              styles.inputView,
+              styles.flex,
+              styles.justifyContentBetween,
+            ]}
+          >
+            <Text style={styles.label}>काम का विवरण</Text>
+            <TextInput
+              style={[styles.TextInput]}
+              placeholder="काम लिखें 15 शब्दों से कम,नंबर न लिखें "
+              placeholderTextColor={"#ccc"}
+              onChangeText={(description) =>
+                handleDescriptionChange(description)
+              }
+              value={description}
+            />
+          </View>
+          {!!errors.description && (
+            <Text style={styles.error}>{errors.description}</Text>
+          )}
 
           <View style={[styles.dropdownGender, { display: "none" }]}>
             <TextInput
@@ -471,6 +512,7 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
+            <Text style={styles.label}>तारीख़</Text>
             <TouchableOpacity
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
@@ -511,6 +553,7 @@ export default function MachineBooking({ navigation }) {
               },
             ]}
           >
+            <Text style={styles.label}>समय</Text>
             <Picker
               ref={pickerRef}
               selectedValue={time}
@@ -554,6 +597,7 @@ export default function MachineBooking({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>भूमि क्षेत्र</Text>
                 <TextInput
                   style={{ flex: 1, alignItems: "center", paddingLeft: 10 }}
                   placeholder="भूमि क्षेत्र"
@@ -584,6 +628,7 @@ export default function MachineBooking({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>भूमि का प्रकार</Text>
                 <Picker
                   style={{ width: "100%" }}
                   ref={pickerRef}
@@ -630,6 +675,7 @@ export default function MachineBooking({ navigation }) {
                 },
               ]}
             >
+              <Text style={styles.label}>वेतन</Text>
               <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
                 वेतन
               </Text>
@@ -785,5 +831,22 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     fontSize: 13,
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 15,
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
+    textAlign: "center",
+    backgroundColor: "#fff",
+  },
+  flex: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  justifyContentBetween: {
+    justifyContent: "space-between",
   },
 });

@@ -846,7 +846,7 @@ export default function History({ navigation, route }) {
                                   : item.job_type === "theke_pe_kam"
                                   ? "ठेके पर काम"
                                   : item.job_type === "machine_malik"
-                                  ? " मशीनरी"
+                                  ? "मशीनरी"
                                   : null}
                               </Text>
                               <Text
@@ -858,17 +858,92 @@ export default function History({ navigation, route }) {
                                 {moment(item?.datetime).format("DD/MM/YYYY")}
                               </Text>
                             </View>
-                            <View
+                            {/* <View
                               style={[
                                 styles.jobStatusButton,
                                 {
                                   backgroundColor: getJobStatusColor(
                                     item.status
                                   ),
+                                  marginLeft:
+                                    item.job_type === "individuals_sahayak"
+                                      ? 90
+                                      : 105,
                                 },
                               ]}
-                            >
-                              {item.status === "Completed" ? (
+                            > */}
+                            {item.status === "Completed" ? (
+                              <>
+                                <View
+                                  style={[
+                                    styles.jobStatusButton,
+                                    {
+                                      backgroundColor: getJobStatusColor(
+                                        item.status
+                                      ),
+                                      marginLeft:
+                                        item.job_type === "individuals_sahayak"
+                                          ? 105
+                                          : item.job_type === "machine_malik"
+                                          ? 105
+                                          : 90,
+                                    },
+                                  ]}
+                                >
+                                  <View
+                                  // onPress={() => {
+                                  //   if (
+                                  //     item.job_type === "individuals_sahayak"
+                                  //   ) {
+                                  //     navigation.navigate(
+                                  //       "MyBook_SahayakForm",
+                                  //       {
+                                  //         id: item.id,
+                                  //         item,
+                                  //         usertype,
+                                  //       }
+                                  //     );
+                                  //   } else if (
+                                  //     item.job_type === "theke_pe_kam"
+                                  //   ) {
+                                  //     navigation.navigate(
+                                  //       "Theke_MachineForm",
+                                  //       {
+                                  //         id: item.id,
+                                  //         item,
+                                  //         usertype,
+                                  //       }
+                                  //     );
+                                  //   } else {
+                                  //     navigation.navigate("MachineWork", {
+                                  //       id: item.id,
+                                  //       item,
+                                  //       usertype,
+                                  //     });
+                                  //   }
+                                  // }}
+                                  >
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 7,
+                                        color: "#fff",
+                                        fontSize: 15,
+                                        fontWeight: "600",
+                                        fontFamily: "Devanagari-bold",
+                                      }}
+                                    >
+                                      {/* विवरण देखे */}
+                                      {item?.status === "Accepted"
+                                        ? "स्वीकृत "
+                                        : item?.status === "Booked"
+                                        ? "बुक "
+                                        : item?.status === "Completed"
+                                        ? "समाप्त"
+                                        : null}
+                                    </Text>
+                                  </View>
+                                </View>
                                 <TouchableOpacity
                                   onPress={() => {
                                     if (
@@ -898,45 +973,46 @@ export default function History({ navigation, route }) {
                                       });
                                     }
                                   }}
+                                  style={{ marginTop: 15, marginRight: 15 }}
                                 >
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 7,
-                                      color: "#fff",
-                                      fontSize: 15,
-                                      fontWeight: "600",
-                                      fontFamily: "Devanagari-bold",
-                                    }}
-                                  >
-                                    {/* विवरण देखे */}
-                                    {item?.status === "Accepted"
-                                      ? "स्वीकृत "
-                                      : item?.status === "Booked"
-                                      ? "बुक "
-                                      : item?.status === "Completed"
-                                      ? "समाप्त"
-                                      : null}
-                                  </Text>
+                                  <Icon name="right" size={20}></Icon>
                                 </TouchableOpacity>
-                              ) : (
-                                <TouchableOpacity>
-                                  <Text
-                                    style={{
-                                      textAlign: "center",
-                                      marginTop: 7,
-                                      color: "#fff",
-                                      fontSize: 15,
-                                      fontWeight: "600",
-                                      fontFamily: "Devanagari-bold",
-                                    }}
-                                  >
-                                    {/* विवरण देखे */}
-                                    रद्द
-                                  </Text>
-                                </TouchableOpacity>
-                              )}
-                            </View>
+                              </>
+                            ) : (
+                              <>
+                                <View
+                                  style={[
+                                    styles.jobStatusButton,
+                                    {
+                                      backgroundColor: getJobStatusColor(
+                                        item.status
+                                      ),
+                                      marginLeft:
+                                        item.job_type === "individuals_sahayak"
+                                          ? 90
+                                          : 105,
+                                    },
+                                  ]}
+                                >
+                                  <TouchableOpacity>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 7,
+                                        color: "#fff",
+                                        fontSize: 15,
+                                        fontWeight: "600",
+                                        fontFamily: "Devanagari-bold",
+                                      }}
+                                    >
+                                      {/* विवरण देखे */}
+                                      रद्द
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </>
+                            )}
+                            {/* </View> */}
                           </View>
                         ))}
                     </>

@@ -19,6 +19,7 @@ import Toast from "react-native-simple-toast";
 import CustomComponent from "../Component/CustomComponent";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import * as Linking from "expo-linking";
 
 export default function MachineWork({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState([]);
@@ -51,6 +52,18 @@ export default function MachineWork({ navigation, route }) {
   const onEditPress = () => {
     setEdit(true);
     textInputRef?.current?.focus();
+  };
+  const handleCallPress = (phone) => {
+    const url = `tel:${phone}`;
+    Linking.canOpenURL(url)
+      ?.then((supported) => {
+        if (!supported) {
+          console.log("Phone number is not available");
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
   };
 
   const onAcceptPress = async () => {
@@ -1008,6 +1021,25 @@ export default function MachineWork({ navigation, route }) {
                                           placeholder={item.grahak_phone}
                                         />
                                       </View>
+                                      <View style={[styles.CallBtn]}>
+                                        <TouchableOpacity
+                                          onPress={() =>
+                                            handleCallPress(item.grahak_phone)
+                                          }
+                                        >
+                                          <Text
+                                            style={[
+                                              styles.loginText,
+                                              {
+                                                color: "#fff",
+                                                fontFamily: "Devanagari-bold",
+                                              },
+                                            ]}
+                                          >
+                                            कॉल करें
+                                          </Text>
+                                        </TouchableOpacity>
+                                      </View>
                                     </>
                                   ) : (
                                     <View
@@ -1520,5 +1552,14 @@ const styles = StyleSheet.create({
 
     textAlign: "center",
     backgroundColor: "#fff",
+  },
+  CallBtn: {
+    width: "25%",
+    borderRadius: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    color: "#fff",
+    backgroundColor: "#0099FF",
   },
 });

@@ -21,6 +21,7 @@ import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import CustomComponent from "../Component/CustomComponent";
+import * as Linking from "expo-linking";
 
 export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
@@ -67,10 +68,29 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [statusPending, setStatusPending] = useState("");
   const textInputRef = useRef(null);
   const [numBookings, setNumBookings] = useState(0);
+  const [acceptCounSahayak, setAcceptCountSahayak] = useState(false);
+  const [isSahayakAcceptAllow, setIsSahayakAcceptAllow] = useState(true);
   const handleClick = () => {
     setEdit(true);
     setEditMale(true);
     textInputRef.current.focus();
+  };
+  const handleCallPress = (phone) => {
+    const url = `tel:${phone}`;
+    Linking.canOpenURL(url)
+      ?.then((supported) => {
+        if (!supported) {
+          console.log("Phone number is not available");
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
+  };
+
+  const handleCountSahayak = () => {
+    setAcceptCountSahayak(true);
+    setIsSahayakAcceptAllow(false);
   };
 
   const acceptSahayak = async () => {
@@ -666,7 +686,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
           0
         );
         const TotalAmount = Totalprice + totalfawdafees;
-        console.log(totalfawdafees)
+        console.log(totalfawdafees);
         setFawdafees(totalfawdafees);
         setTotalAmount(TotalAmount);
         setCountPrice(Totalprice);
@@ -907,7 +927,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       keyboardType="numeric"
                       ref={textInputRef}
                       onChangeText={(amountMale) => setAmountMale(amountMale)}
-                      value={amountMale}
+                      value={`₹ ${amountMale}`}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_male}
                     />
@@ -944,7 +964,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       onChangeText={(amountFemale) =>
                         setAmountFemale(amountFemale)
                       }
-                      value={amountFemale}
+                      value={`₹ ${amountFemale}`}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_female}
                     />
@@ -1102,11 +1122,12 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                   style={styles.TextInput}
                   placeholder="दिनों की संख्या"
                   placeholderTextColor={"#000"}
+                  editable={false}
                 />
                 <Text
                   style={{ position: "absolute", right: 5, color: "#0099FF" }}
                 >
-                  {item?.num_days}
+                  {item?.num_days}{" "}
                 </Text>
               </View>
             )}
@@ -1681,6 +1702,42 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     <View>
                       {acceptedStatus > 0 ? (
                         <>
+                          {!acceptCounSahayak && (
+                            <View style={{ marginTop: "auto", padding: 5 }}>
+                              {usertype &&
+                                usertype === "Grahak" &&
+                                itemStatus !== "Completed" && (
+                                  <>
+                                    <View
+                                      style={[
+                                        styles.inputView,
+                                        styles.flex,
+                                        styles.justifyContentBetween,
+                                        {
+                                          height: 100,
+                                        },
+                                      ]}
+                                    >
+                                      <Text style={styles.label}>टिप्पणी</Text>
+                                      {statusAccept === "Accepted" && (
+                                        <Text
+                                          style={[
+                                            styles.TextInput,
+                                            { maxWidth: "98%" },
+                                          ]}
+                                        >
+                                          जितने सहायक हैं उतने स्वीकार करें या
+                                          सभी सहायकों के आने की प्रतीक्षा करें!
+                                          फिर आपको भुगतान के लिए सूचित किया
+                                          जाएगा!
+                                        </Text>
+                                      )}
+                                    </View>
+                                  </>
+                                )}
+                            </View>
+                          )}
+
                           <View
                             style={[
                               {
@@ -1710,7 +1767,11 @@ export default function MyBook_SahayakForm({ navigation, route }) {
 
                             <View style={{ marginRight: 10 }}>
                               <View style={{ width: "100%" }}>
-                                <TouchableOpacity key={item.id}>
+                                <TouchableOpacity
+                                  key={item.id}
+                                  onPress={handleCountSahayak}
+                                  disabled={!isSahayakAcceptAllow}
+                                >
                                   <Text style={styles.accepted}>
                                     {countAcceptedJobs} सहायक स्वीकार करे
                                   </Text>
@@ -1718,29 +1779,33 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                               </View>
                             </View>
                           </View>
-                          <TouchableOpacity
-                            style={[styles.BhuktanBtn]}
-                            onPress={() => {
-                              // navigation.replace("Payment", {
-                              //   item,
-                              //   fawdafee: fawdafees,
-                              //   countprice,
-                              //   acceptfemale,
-                              //   acceptmale,
-                              //   totalamount,
-                              //   id: jobId,
-                              // })
-                              checkStatus();
-                            }}
-                          >
-                            <Text style={[styles.loginText, { color: "#fff" }]}>
-                              भुगतान करें
-                            </Text>
-                          </TouchableOpacity>
+                          {acceptCounSahayak ? (
+                            <TouchableOpacity
+                              style={[styles.BhuktanBtn]}
+                              onPress={() => {
+                                // navigation.replace("Payment", {
+                                //   item,
+                                //   fawdafee: fawdafees,
+                                //   countprice,
+                                //   acceptfemale,
+                                //   acceptmale,
+                                //   totalamount,
+                                //   id: jobId,
+                                // })
+                                checkStatus();
+                              }}
+                            >
+                              <Text
+                                style={[styles.loginText, { color: "#fff" }]}
+                              >
+                                भुगतान करें
+                              </Text>
+                            </TouchableOpacity>
+                          ) : null}
                         </>
                       ) : (
                         <>
-                          <View
+                          {/* <View
                             style={[
                               {
                                 borderColor: "#0070C0",
@@ -1776,15 +1841,15 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                 </TouchableOpacity>
                               </View>
                             </View>
-                          </View>
-                          <TouchableOpacity
+                          </View> */}
+                          {/* <TouchableOpacity
                             style={[styles.BhuktanBtn, { opacity: 0.5 }]}
                             disabled={true}
                           >
                             <Text style={[styles.loginText, { color: "#fff" }]}>
                               भुगतान करें
                             </Text>
-                          </TouchableOpacity>
+                          </TouchableOpacity> */}
                         </>
                       )}
                     </View>
@@ -1907,6 +1972,25 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     placeholderTextColor="#000000"
                                     placeholder={item.grahak_phone}
                                   />
+                                </View>
+                                <View style={[styles.CallBtn]}>
+                                  <TouchableOpacity
+                                    onPress={() =>
+                                      handleCallPress(item.grahak_phone)
+                                    }
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.loginText,
+                                        {
+                                          color: "#fff",
+                                          fontFamily: "Devanagari-bold",
+                                        },
+                                      ]}
+                                    >
+                                      कॉल करें
+                                    </Text>
+                                  </TouchableOpacity>
                                 </View>
                               </>
                             ) : (
@@ -2033,7 +2117,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                     ]}
                                   >
                                     कृपया ऊपर दिए गए नंबर पर संपर्क करें और
-                                    कृपया नौकरी के लिए समय पर पहुंचें
+                                    कृपया काम के लिए समय पर पहुंचें
                                   </Text>
                                 </View>
                               </View>
@@ -2078,7 +2162,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
             <View style={{ marginTop: "auto", padding: 5 }}>
               {usertype &&
                 usertype === "Grahak" &&
-                itemStatus !== "Completed" && (
+                itemStatus !== "Completed" &&
+                statusPending === "Pending" && (
                   <>
                     <View
                       style={[
@@ -2097,18 +2182,37 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           आपको सूचित किया जाएगा
                         </Text>
                       )}
-                      {statusAccept === "Accepted" && (
-                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
-                          जितने सहायक हैं उतने स्वीकार करें या सभी सहायकों के
-                          आने की प्रतीक्षा करें! फिर आपको भुगतान के लिए सूचित
-                          किया जाएगा! {"\n"}बुकिंग कन्फर्म करने के लिए कृपा
-                          भुगतान करें!
-                        </Text>
-                      )}
                     </View>
                   </>
                 )}
             </View>
+            {acceptCounSahayak && (
+              <View style={{ marginTop: "auto", padding: 5 }}>
+                {usertype &&
+                  usertype === "Grahak" &&
+                  itemStatus !== "Completed" && (
+                    <>
+                      <View
+                        style={[
+                          styles.inputView,
+                          styles.flex,
+                          styles.justifyContentBetween,
+                          {
+                            height: 90,
+                          },
+                        ]}
+                      >
+                        <Text style={styles.label}>टिप्पणी</Text>
+                        {statusAccept === "Accepted" && (
+                          <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                            बुकिंग कन्फर्म करने के लिए कृपा भुगतान करें!
+                          </Text>
+                        )}
+                      </View>
+                    </>
+                  )}
+              </View>
+            )}
             <View style={{ marginTop: "auto", padding: 5 }}>
               {usertype && usertype === "Grahak" && (
                 <View>
@@ -2449,5 +2553,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     fontFamily: "Devanagari-regular",
+  },
+  CallBtn: {
+    width: "25%",
+    borderRadius: 7,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    color: "#fff",
+    backgroundColor: "#0099FF",
   },
 });

@@ -386,6 +386,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                     styles.justifyContentBetween,
                   ]}
                 >
+                  <Text style={styles.label}>तारीख़</Text>
                   <TouchableOpacity
                     style={{ paddingVertical: 10, paddingHorizontal: 5 }}
                     onPress={showDatepicker}
@@ -422,6 +423,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                     styles.flex,
                   ]}
                 >
+                  <Text style={styles.label}>समय</Text>
                   <Picker
                     ref={pickerRef}
                     selectedValue={time}
@@ -460,6 +462,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                     styles.justifyContentBetween,
                   ]}
                 >
+                  <Text style={styles.label}>काम का विवरण</Text>
                   <TextInput
                     style={[styles.TextInput]}
                     placeholder="काम लिखें 15 शब्दों से कम,नंबर न लिखें "
@@ -491,6 +494,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
+                      <Text style={styles.label}>भूमि क्षेत्र</Text>
                       <TextInput
                         style={[styles.TextInput]}
                         maxLength={2}
@@ -519,6 +523,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
+                      <Text style={styles.label}>भूमि का प्रकार</Text>
                       <Picker
                         style={{ width: "100%" }}
                         ref={pickerRef}
@@ -561,6 +566,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                       },
                     ]}
                   >
+                    <Text style={styles.label}>वेतन</Text>
                     <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
                       वेतन
                     </Text>
@@ -770,6 +776,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 15,
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
+    textAlign: "center",
     backgroundColor: "#fff",
   },
 });

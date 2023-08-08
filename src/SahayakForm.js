@@ -403,6 +403,7 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
+            <Text style={styles.label}>तारीख़</Text>
             <TouchableOpacity
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
@@ -441,6 +442,7 @@ export default function SahayakForm({ navigation }) {
               { width: "100%" },
             ]}
           >
+            <Text style={styles.label}>समय</Text>
             <Picker
               ref={pickerRef}
               selectedValue={time}
@@ -477,6 +479,7 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
+            <Text style={styles.label}>काम का विवरण</Text>
             <TextInput
               style={styles.TextInput}
               placeholder="काम लिखें 15 शब्दों से कम,नंबर न लिखें "
@@ -495,6 +498,7 @@ export default function SahayakForm({ navigation }) {
           >
             <View style={{ maxWidth: "48%", width: "100%" }}>
               <View style={[styles.inputView, { width: "100%" }]}>
+                <Text style={styles.label}>भूमि क्षेत्र</Text>
                 <TextInput
                   style={styles.TextInput}
                   keyboardType="numeric"
@@ -518,6 +522,7 @@ export default function SahayakForm({ navigation }) {
                   styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>भूमि का प्रकार</Text>
                 <Picker
                   style={{ width: "100%" }}
                   ref={pickerRef}
@@ -561,6 +566,7 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>पुरुषों की संख्या</Text>
                 <View style={{ flexDirection: "row" }}>
                   <Picker
                     style={{ width: "100%", paddingTop: 16 }}
@@ -607,6 +613,7 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>महिलाओं की संख्या</Text>
                 <View style={{ flexDirection: "row" }}>
                   <Picker
                     style={{ width: "100%", paddingTop: 16 }}
@@ -661,6 +668,7 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>पुरुष वेतन</Text>
                 <TextInput
                   style={styles.TextInput}
                   keyboardType="numeric"
@@ -689,6 +697,7 @@ export default function SahayakForm({ navigation }) {
                   // styles.justifyContentBetween,
                 ]}
               >
+                <Text style={styles.label}>महिला वेतन</Text>
                 <TextInput
                   style={styles.TextInput}
                   placeholder="एक महिला का वेतन"
@@ -714,6 +723,7 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
+            <Text style={styles.label}>दिनों की संख्या</Text>
             <Picker
               style={{ width: "100%", paddingTop: 16 }}
               ref={pickerRef}
@@ -739,6 +749,7 @@ export default function SahayakForm({ navigation }) {
               styles.justifyContentBetween,
             ]}
           >
+            <Text style={styles.label}>वेतन</Text>
             <TextInput
               style={styles.TextInput}
               placeholder="वेतन "
@@ -904,5 +915,15 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     fontSize: 13,
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 15,
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
+    textAlign: "center",
+    backgroundColor: "#fff",
   },
 });
