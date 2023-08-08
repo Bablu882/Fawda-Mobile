@@ -9,8 +9,10 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   ScrollView,
+  Alert,
 } from "react-native";
 
+import * as Linking from "expo-linking";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn, selectToken, setToken } from "../slices/authSlice";
@@ -182,91 +184,104 @@ export default function UserRegistration({ navigation, route }) {
   };
 
   const RegisterServices = async () => {
-    // if (isLocationGranted) {
-    let upi = "";
-    let refer_code = "";
-    if (user !== "Grahak") {
-      upi = upiId;
-    } else {
-      upi = "None";
-    }
-    if (referCode !== "") {
-      refer_code = referCode;
-    } else {
-      refer_code = "";
-    }
-    try {
-      const params = {
-        name,
-        gender,
-        phone: phone,
-        village,
-        mohalla,
-        state: selectedState,
-        district: selectedDistrict,
-        user_type: user,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        age: age,
-        pincode: pincode,
-        upiid: upi,
-        refer_code: refer_code,
-      };
-      console.log("params", params);
-      const response = await Service.post("/api/register/", params, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = response?.data;
-      if (data?.status == 201) {
-        console.log(data, "data");
-        // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
-        navigation.replace("Verification", {
-          user_type: data?.user_type,
-          phone,
-        });
-      } else if (data?.status === 0) {
-        console.log("error", data);
-        Toast.show("अमान्य रेफर कोड", Toast.LONG);
-      } else if (data?.status === 1) {
-        console.log("error", data);
-        Toast.show("रेफर कोड समान यूजर प्रकार का होना चाहिए", Toast.LONG);
-      } else if (data?.status === 2) {
-        console.log("error", data);
-        Toast.show("यह रेफर कोड अपनी उपयोग सीमा तक पहुंच गया है", Toast.LONG);
-      } else if (data?.status === 3) {
-        console.log("error", data);
-        Toast.show(
-          "रेफर कोड का उपयोग एक ही उपयोगकर्ता द्वारा दो बार नहीं किया जा सकता",
-          Toast.LONG
-        );
+    if (isLocationGranted) {
+      let upi = "";
+      let refer_code = "";
+      if (user !== "Grahak") {
+        upi = upiId;
       } else {
-        console.log("error", data);
+        upi = "None";
+      }
+      if (referCode !== "") {
+        refer_code = referCode;
+      } else {
+        refer_code = "";
+      }
+      try {
+        const params = {
+          name,
+          gender,
+          phone: phone,
+          village,
+          mohalla,
+          state: selectedState,
+          district: selectedDistrict,
+          user_type: user,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          age: age,
+          pincode: pincode,
+          upiid: upi,
+          refer_code: refer_code,
+        };
+        console.log("params", params);
+        const response = await Service.post("/api/register/", params, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = response?.data;
+        if (data?.status == 201) {
+          console.log(data, "data");
+          // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
+          navigation.replace("Verification", {
+            user_type: data?.user_type,
+            phone,
+          });
+        } else if (data?.status === 0) {
+          console.log("error", data);
+          Toast.show("अमान्य रेफर कोड", Toast.LONG);
+        } else if (data?.status === 1) {
+          console.log("error", data);
+          Toast.show("रेफर कोड समान यूजर प्रकार का होना चाहिए", Toast.LONG);
+        } else if (data?.status === 2) {
+          console.log("error", data);
+          Toast.show("यह रेफर कोड अपनी उपयोग सीमा तक पहुंच गया है", Toast.LONG);
+        } else if (data?.status === 3) {
+          console.log("error", data);
+          Toast.show(
+            "रेफर कोड का उपयोग एक ही उपयोगकर्ता द्वारा दो बार नहीं किया जा सकता",
+            Toast.LONG
+          );
+        } else {
+          console.log("error", data);
+          Toast.show(
+            "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+            Toast.LONG
+          );
+        }
+      } catch (error) {
+        console.log(error.data);
         Toast.show(
           "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
           Toast.LONG
         );
       }
-    } catch (error) {
-      console.log(error.data);
-      Toast.show(
-        "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
-        Toast.LONG
-      );
+    } else {
+      // Toast.show("स्थान की अनुमति आवश्यक है!", Toast.LONG);
+      handlePermissionAlert();
     }
-    // }
-    // else {
-    //   Toast.show("Location required", Toast.SHORT);
-    //   let { status } = await Location.requestForegroundPermissionsAsync();
-    //   if (status !== "granted") {
-    //     setIsLocationGranted(false);
-    //   } else {
-    //     let { coords } = await Location.getCurrentPositionAsync({});
-    //     setLocation(coords);
-    //     setIsLocationGranted(true);
-    //   }
-    // }
+  };
+
+  const openAppSettings = async () => {
+    await Linking.openSettings();
+  };
+
+  const handlePermissionAlert = () => {
+    Alert.alert(
+      "अनुमति आवश्यक!",
+      "इस सुविधा के लिए स्थान अनुमति की आवश्यकता है. क्या आप इसे अभी देना चाहेंगे?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: openAppSettings, // Call the function to open app settings
+        },
+      ]
+    );
   };
 
   const stateapi = async () => {
@@ -327,32 +342,24 @@ export default function UserRegistration({ navigation, route }) {
     })();
   }, []);
 
-  // const askPermissionForNotification = async () => {
-  //   let { status } = await Location.requestForegroundPermissionsAsync();
-  //   if (status !== "granted") {
-  //     console.log("Permission to access location was denied");
-  //     return false;
-  //   } else {
-  //     console.log("Permission to access location was granted");
-  //     return true;
-  //   }
-  // };
+  const checkLocationPermission = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permission to access location was denied");
+      setIsLocationGranted(false);
+      handlePermissionAlert();
+      return;
+    } else {
+      setIsLocationGranted(true);
+      console.log("Permission to access location was granted");
+    }
 
-  // const handleNextButtonPress = async () => {
-  //   if (!permissionAsked) {
-  //     const isPermissionGranted = await askPermissionForNotification();
-  //     setPermissionAsked(true);
-  //     if (isPermissionGranted) {
-  //       if (validate()) {
-  //         RegisterServices();
-  //       }
-  //     } else {
-  //       Toast.show("Location required", Toast.LONG);
-  //     }
-  //   } else {
-  //     Toast.show("Location is required", Toast.LONG);
-  //   }
-  // };
+    let { coords } = await Location.getCurrentPositionAsync({});
+    setLocation(coords);
+    if (location.latitude !== "" && location.longitude !== "") {
+      RegisterServices();
+    }
+  };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
@@ -628,7 +635,7 @@ export default function UserRegistration({ navigation, route }) {
           <TouchableOpacity
             onPress={() => {
               if (validate()) {
-                RegisterServices();
+                checkLocationPermission();
               }
             }}
             // onPress={handleNextButtonPress}

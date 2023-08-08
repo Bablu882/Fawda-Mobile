@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Octicons";
 import Feather from "react-native-vector-icons/Feather";
-// import * as Clipboard from 'expo-clipboard'
+import * as Clipboard from "expo-clipboard";
 
 import {
   selectToken,
@@ -82,8 +82,9 @@ export default function Refer() {
     }
   };
 
-  const CopyToClipBoard = () => {
-    // Clipboard.setStringAsync(referalCode);
+  const CopyToClipBoard = async () => {
+    console.log("refer", referalCode);
+    await Clipboard.setStringAsync(referalCode);
     console.log("Copy to clipboard");
   };
 

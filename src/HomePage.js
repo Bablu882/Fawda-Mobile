@@ -57,7 +57,7 @@ export default function Homepage({ navigation, route }) {
   const registerForPushNotificationsAsync = async () => {
     if (Device.isDevice) {
       const status = await Notifications.getPermissionsAsync();
-      console.log(status.status)
+      console.log(status.status);
       if (status.status !== "granted") {
         console.log("Permission is not granted");
       } else {
