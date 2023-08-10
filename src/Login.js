@@ -37,18 +37,18 @@ export default function Login({ navigation }) {
   const [webViewVisible, setWebViewVisible] = useState(false);
 
   useEffect(() => {
-    // checkRootKey();
+    checkRootKey();
     if (isLoggedIn) {
       navigation.replace("HomeStack", { screen: "BottomTab" });
     }
   }, [isLoggedIn]);
 
-  // const checkRootKey = async () => {
-  //   const key = await AsyncStorage.getItem("@storage_Key");
-  //   if (key == null || key == undefined || key == "") {
-  //     dispatch(clearAuth());
-  //   }
-  // };
+  const checkRootKey = async () => {
+    const key = await AsyncStorage.getItem("persist:root");
+    if (key == null || key == undefined || key == "") {
+      dispatch(clearAuth());
+    }
+  };
 
   const login = async () => {
     setLoading(true);

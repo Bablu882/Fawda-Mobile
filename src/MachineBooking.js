@@ -62,6 +62,7 @@ export default function MachineBooking({ navigation }) {
     totalAmount: "",
     machiness: "",
     workType: "",
+    description: "",
   });
   const pickerRef = useRef();
   const textInputRef = useRef(null);
@@ -517,10 +518,10 @@ export default function MachineBooking({ navigation }) {
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
               onPress={showDatepicker}
-              title={showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+              title={showDate ? showDate : " yyyy/mm/dd"}
             >
               <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-                {showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+                {showDate ? showDate : " yyyy/mm/dd"}
               </Text>
             </TouchableOpacity>
 
@@ -562,7 +563,7 @@ export default function MachineBooking({ navigation }) {
             >
               <Picker.Item
                 style={{ color: time ? "#000" : "#ccc" }}
-                label={time ? timeConverted(time) : "-समय-"}
+                label={time ? timeConverted(time) : ""}
                 value=""
               />
               {timings.map((item, index) => {
@@ -600,7 +601,7 @@ export default function MachineBooking({ navigation }) {
                 <Text style={styles.label}>भूमि क्षेत्र</Text>
                 <TextInput
                   style={{ flex: 1, alignItems: "center", paddingLeft: 10 }}
-                  placeholder="भूमि क्षेत्र"
+                  // placeholder="भूमि क्षेत्र"
                   maxLength={2}
                   placeholderTextColor={"#ccc"}
                   keyboardType="numeric"
@@ -676,9 +677,7 @@ export default function MachineBooking({ navigation }) {
               ]}
             >
               <Text style={styles.label}>वेतन</Text>
-              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}>
-                वेतन
-              </Text>
+              <Text style={{ color: "#ccc", marginTop: 14, left: 10 }}></Text>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={{ color: "#0099FF", paddingTop: 4 }}>₹ </Text>
                 <TextInput

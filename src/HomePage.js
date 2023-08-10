@@ -216,86 +216,93 @@ export default function Homepage({ navigation, route }) {
                     {currentUsers.map((item, index) =>
                       item.status === "Pending" ? (
                         <View key={index}>
-                          <View
-                            style={[styles.booking, { paddingVertical: 15 }]}
-                          >
-                            <View style={styles.bookingLeft}>
-                              {item.job_type === "individuals_sahayak" ||
-                              item.job_type === "theke_pe_kam" ? (
-                                <>
+                          <View style={[styles.flex, { paddingVertical: 15 }]}>
+                            <View style={[styles.DoubleView]}>
+                              <View style={styles.bookingLeft}>
+                                {item.job_type === "individuals_sahayak" ||
+                                item.job_type === "theke_pe_kam" ? (
+                                  <>
+                                    <Text style={styles.bookingTitle}>
+                                      {
+                                        <Text style={styles.bookingTitle}>
+                                          {item.job_type ===
+                                          "individuals_sahayak"
+                                            ? "सहायक के काम "
+                                            : item.job_type === "theke_pe_kam"
+                                            ? "ठेकेदार"
+                                            : ""}
+                                        </Text>
+                                      }
+                                    </Text>
+                                  </>
+                                ) : (
                                   <Text style={styles.bookingTitle}>
-                                    {
-                                      <Text style={styles.bookingTitle}>
-                                        {item.job_type === "individuals_sahayak"
-                                          ? "सहायक के काम "
-                                          : item.job_type === "theke_pe_kam"
-                                          ? "ठेकेदार"
-                                          : ""}
-                                      </Text>
-                                    }
-                                  </Text>
-                                </>
-                              ) : (
-                                <Text style={styles.bookingTitle}>
-                                  {/* {item?.machine === "Harvesting"
+                                    {/* {item?.machine === "Harvesting"
                                     ? "काटना"
                                     : item?.work_type === "Sowing"
                                     ? "बुवाई"
                                     : "भूमि की तैयारी"} */}
-                                  {item?.machine}
-                                </Text>
-                              )}
-                              {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
+                                    {item?.machine}
+                                  </Text>
+                                )}
+                                {/* <Text style={styles.bookingTitle}>{item.job_type ==="individuals_sahayak" ? 'सहायक के  काम ': item.job_type ==="individuals_sahayak" ? 'ठेकेदार': item.job_type ==="machine_malik" ? '':''}</Text> */}
 
-                              <Text style={{ color: "black" }}>
-                                {moment(item?.datetime).format("DD/MM/YYYY")}
-                              </Text>
+                                <Text style={{ color: "black" }}>
+                                  {moment(item?.datetime).format("DD/MM/YYYY")}
+                                </Text>
+                              </View>
                             </View>
                             <View
-                              style={[
-                                styles.bookingButton,
-                                {
-                                  marginRight:
-                                    item.job_type === "individuals_sahayak"
-                                      ? -60
-                                      : item.job_type === "theke_pe_kam"
-                                      ? -90
-                                      : -item.job_type === "machine_malik"
-                                      ? -110
-                                      : -60,
-                                },
-                              ]}
+                              style={[styles.DoubleView,]}
                             >
-                              <Text style={styles.bookingButtonText}>
-                                विवरण देखे
-                              </Text>
+                              <View style={{ flexDirection: "row" ,marginLeft: 20}}>
+                                <View
+                                  style={[
+                                    styles.bookingButton,
+                                    {
+                                      marginRight: 10
+                                    },
+                                  ]}
+                                >
+                                  <Text style={styles.bookingButtonText}>
+                                    विवरण देखे
+                                  </Text>
+                                </View>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    if (
+                                      item.job_type === "individuals_sahayak"
+                                    ) {
+                                      navigation.navigate(
+                                        "MyBook_SahayakForm",
+                                        {
+                                          id: item.id,
+                                          item,
+                                          usertype,
+                                        }
+                                      );
+                                    } else if (
+                                      item.job_type === "theke_pe_kam"
+                                    ) {
+                                      navigation.navigate("Theke_MachineForm", {
+                                        id: item.id,
+                                        item,
+                                        usertype,
+                                      });
+                                    } else {
+                                      navigation.navigate("MachineWork", {
+                                        id: item.id,
+                                        item,
+                                        usertype,
+                                      });
+                                    }
+                                  }}
+                                  style={{ marginTop: 15, marginRight: 15 }}
+                                >
+                                  <Icon name="right" size={20}></Icon>
+                                </TouchableOpacity>
+                              </View>
                             </View>
-                            <TouchableOpacity
-                              onPress={() => {
-                                if (item.job_type === "individuals_sahayak") {
-                                  navigation.navigate("MyBook_SahayakForm", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                } else if (item.job_type === "theke_pe_kam") {
-                                  navigation.navigate("Theke_MachineForm", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                } else {
-                                  navigation.navigate("MachineWork", {
-                                    id: item.id,
-                                    item,
-                                    usertype,
-                                  });
-                                }
-                              }}
-                              style={{ marginTop: 15, marginRight: 15 }}
-                            >
-                              <Icon name="right" size={20}></Icon>
-                            </TouchableOpacity>
                           </View>
                         </View>
                       ) : null
@@ -555,12 +562,12 @@ const styles = StyleSheet.create({
     fontFamily: "Devanagari-regular",
   },
   bookingButton: {
-    width: "30%",
+    width: "65%",
     height: 33,
     backgroundColor: "#44A347",
     // marginRight: 20,
     marginTop: 10,
-    // marginRight: -80,
+    // marginRight: 40,
   },
   bookingButtonText: {
     textAlign: "center",
@@ -675,5 +682,19 @@ const styles = StyleSheet.create({
   },
   activeButton: {
     backgroundColor: "#0099FF",
+  },
+  DoubleView: {
+    // borderColor: "#0099FF",
+    // borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "50%",
+    height: 48,
+    marginHorizontal: 10,
+    marginTop: 30,
+    // borderWidth: 1,
+  },
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
 });

@@ -34,6 +34,9 @@ export default function Payment({ route, navigation }) {
   console.log("params", route.params);
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
+  const [fawdaFee, setFawdaFee] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [userAmount, setUserAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [upiId, setUpiId] = useState("");
   const [name, setName] = useState("");
@@ -49,7 +52,7 @@ export default function Payment({ route, navigation }) {
       const params = {
         job_id: JSON.stringify(item?.job_id),
         job_number: item?.job_number,
-        amount: amount,
+        amount: totalAmount,
         upi_id: upiId,
         beneficiary_name: name,
       };
@@ -83,35 +86,64 @@ export default function Payment({ route, navigation }) {
   };
 
   useEffect(() => {
-    const encryptedParams = async () => {
-      setIsLoading(true);
+    // encryptedParams();
+    paymentDetails();
+  }, []);
 
-      let params = {
-        job_id: JSON.stringify(item?.job_id),
-        job_number: item?.job_number,
-        amount: amount,
-      };
-      console.log(params);
-
-      try {
-        const response = await service.post(`/api/payment/`, params, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = response?.data;
-        console.log("encrypted data", data);
-        setPaymentEncryptedParams(data);
-      } catch (error) {
-        console.log("Error:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  const paymentDetails = async () => {
+    setIsLoading(true);
+    let params = {
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
     };
 
-    encryptedParams();
-  }, []);
+    console.log("params", params);
+    try {
+      const response = await service.post("/api/payment-details/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      console.log("Data", data);
+      setFawdaFee(data?.fawda_fee);
+      setUserAmount(data?.user_amount);
+      setTotalAmount(data?.total_amount);
+      setIsLoading(false);
+      encryptedParams(data?.total_amount.toString())
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const encryptedParams = async (Amount) => {
+    setIsLoading(true);
+
+    let params = {
+      job_id: JSON.stringify(item?.job_id),
+      job_number: item?.job_number,
+      amount: Amount,
+    };
+    console.log(params);
+
+    try {
+      const response = await service.post(`/api/payment/`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      console.log("response", response);
+      console.log("encrypted data", data);
+      setPaymentEncryptedParams(data);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const checkStatus = async () => {
     setIsLoading(true);
@@ -161,8 +193,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              // fetchPaymentHtml();
-              paymentStatus();
+              fetchPaymentHtml();
+              // paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -179,8 +211,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            // fetchPaymentHtml();
-            paymentStatus();
+            fetchPaymentHtml();
+            // paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -193,8 +225,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            // fetchPaymentHtml();
-            paymentStatus();
+            fetchPaymentHtml();
+            // paymentStatus();
           }
         }
       }
@@ -328,50 +360,55 @@ export default function Payment({ route, navigation }) {
                       ? "ठेकेदार को वेतन"
                       : "सहायक या सहायकों को वेतन "}{" "}
                   </Text>
+                  <Text>₹{userAmount}</Text>
 
-                  {item.job_type === "theke_pe_kam" ? (
-                    <Text>₹{useramount}</Text>
+                  {/* {item.job_type === "theke_pe_kam" ? (
+                    <Text>₹{userAmount}</Text>
                   ) : (
                     <Text>₹{countprice}</Text>
-                  )}
+                  )} */}
                 </View>
               ) : (
                 <View style={styles.flex}>
                   <Text>मशीन मालिक को वेतन</Text>
 
-                  {item.job_type === "theke_pe_kam" ? (
+                  {/* {item.job_type === "theke_pe_kam" ? (
                     <Text>₹ {useramount}</Text>
                   ) : (
                     <Text>₹ {useramount}</Text>
-                  )}
+                  )} */}
+                  <Text>₹ {userAmount}</Text>
                 </View>
               )}
               <View style={styles.flex}>
                 <Text>फावड़ा की फीस</Text>
-                {fawdafee === "0.0" ? (
+                {fawdaFee === 0 ? (
                   <Text>पहली बुकिंग मुफ़्त</Text>
                 ) : (
-                  <Text>₹ {fawdafee}</Text>
+                  <Text>₹ {fawdaFee}</Text>
                 )}
               </View>
 
               <View style={styles.flex}>
                 <Text>कुल भुगतान</Text>
-                {item.job_type === "theke_pe_kam" ? (
+                {/* {item.job_type === "theke_pe_kam" ? (
                   <Text>₹ {amount}</Text>
                 ) : (
                   <Text>₹ {amount}</Text>
-                )}
+                )} */}
+                <Text>₹ {totalAmount}</Text>
               </View>
             </View>
           </View>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <TouchableOpacity style={styles.BhuktanBtn} onPress={checkStatus}>
-              <Text style={[styles.loginText, { color: "#fff" }]}>
-                अभी भुगतान करें
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {!isLoading && (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <TouchableOpacity style={styles.BhuktanBtn} onPress={checkStatus}>
+                <Text style={[styles.loginText, { color: "#fff" }]}>
+                  अभी भुगतान करें
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>

@@ -46,7 +46,7 @@ export default function UserRegistration({ navigation, route }) {
   const [district, setDistrict] = useState([]);
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
   const [isLocationGranted, setIsLocationGranted] = useState(false);
-  const [permissionAsked, setPermissionAsked] = useState(false);
+  // const [permissionAsked, setPermissionAsked] = useState(false);
 
   const ageArray = Array.from(
     { length: 70 - 18 + 1 },
@@ -339,6 +339,7 @@ export default function UserRegistration({ navigation, route }) {
 
       let { coords } = await Location.getCurrentPositionAsync({});
       setLocation(coords);
+      console.log("location",location);
     })();
   }, []);
 
@@ -352,13 +353,17 @@ export default function UserRegistration({ navigation, route }) {
     } else {
       setIsLocationGranted(true);
       console.log("Permission to access location was granted");
+      let { coords } = await Location.getCurrentPositionAsync({});
+      setLocation(coords);
     }
-
-    let { coords } = await Location.getCurrentPositionAsync({});
-    setLocation(coords);
+    // let { coords } = await Location.getCurrentPositionAsync({});
+    // setLocation(coords);
+    // console.log(coords);
     if (location.latitude !== "" && location.longitude !== "") {
+      setIsLocationGranted(true);
       RegisterServices();
     }
+    // RegisterServices();
   };
 
   return (

@@ -408,10 +408,10 @@ export default function SahayakForm({ navigation }) {
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
               onPress={showDatepicker}
-              title={showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+              title={showDate ? showDate : " yyyy/mm/dd"}
             >
               <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-                {showDate ? showDate : "तारीख़   dd/mm/yyyy"}
+                {showDate ? showDate : " yyyy/mm/dd"}
               </Text>
             </TouchableOpacity>
 
@@ -451,7 +451,7 @@ export default function SahayakForm({ navigation }) {
             >
               <Picker.Item
                 style={{ color: time ? "#000" : "#ccc" }}
-                label={time ? timeConverted(time) : "-समय-"}
+                label={time ? timeConverted(time) : ""}
                 value=""
               />
               {timings.map((item, index) => {
@@ -503,7 +503,7 @@ export default function SahayakForm({ navigation }) {
                   style={styles.TextInput}
                   keyboardType="numeric"
                   maxLength={2}
-                  placeholder="भूमि क्षेत्र"
+                  // placeholder="भूमि क्षेत्र"
                   placeholderTextColor={"#ccc"}
                   value={landArea}
                   onChangeText={(landArea) => handleLandAreaChange(landArea)}
@@ -576,7 +576,7 @@ export default function SahayakForm({ navigation }) {
                   >
                     <Picker.Item
                       style={{ color: maleCounts ? "#000" : "#ccc" }}
-                      label="पुरुषों"
+                      label=""
                       value={0}
                     />
                     {/* {maleCount.map((item) => (
@@ -623,7 +623,7 @@ export default function SahayakForm({ navigation }) {
                   >
                     <Picker.Item
                       style={{ color: femaleCounts ? "#000" : "#ccc" }}
-                      label="महिलाओं"
+                      label=""
                       value={0}
                     />
                     {/* {femaleCount.map((item) => (
@@ -672,7 +672,7 @@ export default function SahayakForm({ navigation }) {
                 <TextInput
                   style={styles.TextInput}
                   keyboardType="numeric"
-                  placeholder="एक पुरुष का वेतन "
+                  // placeholder="एक पुरुष का वेतन "
                   placeholderTextColor={"#ccc"}
                   value={malepayamount}
                   onChangeText={(malepayamount) =>
@@ -700,7 +700,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={styles.label}>महिला वेतन</Text>
                 <TextInput
                   style={styles.TextInput}
-                  placeholder="एक महिला का वेतन"
+                  // placeholder="एक महिला का वेतन"
                   keyboardType="numeric"
                   placeholderTextColor={"#ccc"}
                   value={femalepayamount}
@@ -732,7 +732,7 @@ export default function SahayakForm({ navigation }) {
             >
               <Picker.Item
                 style={{ color: days ? "#000" : "#ccc" }}
-                label="दिनों की संख्या"
+                label=""
                 value=""
               />
               {daysCount.map((item) => (
@@ -752,7 +752,7 @@ export default function SahayakForm({ navigation }) {
             <Text style={styles.label}>वेतन</Text>
             <TextInput
               style={styles.TextInput}
-              placeholder="वेतन "
+              // placeholder="वेतन "
               keyboardType="numeric"
               placeholderTextColor={"#ccc"}
             />

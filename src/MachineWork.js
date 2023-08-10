@@ -33,7 +33,7 @@ export default function MachineWork({ navigation, route }) {
   const [ratingList, setRatingList] = useState([]);
   const usertype = useSelector(selectUserType);
   const { id, item, fawdafee, totalamount } = route.params ?? {};
-  // console.log("jobdata", item);
+  console.log("jobdata", item);
   const itemStatus = item?.status;
   const [amount, setAmount] = useState(0 || totalamount);
   const [edit, setEdit] = useState(false);
@@ -626,20 +626,47 @@ export default function MachineWork({ navigation, route }) {
                 </View>
                 {usertype &&
                   (usertype === "Sahayak" || usertype === "MachineMalik") && (
-                    <View style={[styles.inputView, { height: 40 }]}>
-                      <Text style={styles.label}>गाँव</Text>
-                      <Text style={[styles.TextInput]}>
-                        {item?.status == "Completed"
-                          ? item?.grahak_village
-                          : item?.village}
-                      </Text>
-                      {/* <TextInput
+                    <>
+                      <View
+                        style={[
+                          styles.inputView,
+                          styles.flex,
+                          styles.justifyContentBetween,
+                        ]}
+                      >
+                        <Text style={styles.label}>काम का विवरण</Text>
+                        <Text style={[styles.TextInput]}>
+                          {item?.description}
+                        </Text>
+                      </View>
+
+                      <View style={[styles.inputView, { height: 40 }]}>
+                        <Text style={styles.label}>गाँव</Text>
+                        <Text style={[styles.TextInput]}>
+                          {item?.status == "Completed"
+                            ? item?.grahak_village
+                            : item?.village}
+                        </Text>
+                        {/* <TextInput
                     style={styles.TextInput}
                     placeholderTextColor="#848484"
                     placeholder={item?.village}
                   /> */}
-                    </View>
+                      </View>
+                    </>
                   )}
+                {usertype && usertype === "Grahak" && (
+                  <View
+                    style={[
+                      styles.inputView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                    ]}
+                  >
+                    <Text style={styles.label}>काम का विवरण</Text>
+                    <Text style={[styles.TextInput]}>{item?.description}</Text>
+                  </View>
+                )}
                 <View
                   style={[
                     styles.inputView,

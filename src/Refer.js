@@ -37,6 +37,7 @@ export default function Refer() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  console.log(token);
 
   const checkJobCount = async () => {
     setIsLoading(true);

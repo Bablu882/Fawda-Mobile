@@ -118,8 +118,9 @@ export default function App() {
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log(response.notification.request.content);
         const { data } = response.notification.request.content;
+        const keyData = data.data;
         console.log("notification Data ", data);
-        // const { key } = data;
+        console.log("Key data", keyData);
       });
 
     return () => {

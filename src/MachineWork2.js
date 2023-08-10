@@ -236,6 +236,23 @@ function MachineWork2({ navigation, route }) {
               {moment(item?.datetime).format("LT")}
             </Text>
           </View>
+          {item?.description !== "" && (
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+                {
+                  height: 45,
+                },
+              ]}
+            >
+              <Text style={[styles.label, { marginLeft: 10 }]}>
+                काम का विवरण
+              </Text>
+              <Text style={[styles.TextInput]}>{item?.description}</Text>
+            </View>
+          )}
 
           <View
             style={[
