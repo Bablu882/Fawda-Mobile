@@ -292,6 +292,25 @@ export default function SahayakForm({ navigation }) {
       valid = false;
     }
 
+    if (
+      (femaleCounts !== 0 || femaleCounts.toString().trim() !== "") &&
+      !femalepayamount &&
+      (maleCounts !== 0 || maleCounts.toString().trim() !== "") &&
+      malepayamount
+    ) {
+      errorMessages.femalepayamount = "कृपया महिला वेतन राशि दर्ज करें!";
+      valid = false;
+    }
+    if (
+      (femaleCounts !== 0 || femaleCounts.toString().trim() !== "") &&
+      femalepayamount &&
+      (maleCounts !== 0 || maleCounts.toString().trim() !== "") &&
+      !malepayamount
+    ) {
+      errorMessages.malepayamount = "कृपया पुरुष वेतन राशि दर्ज करें!";
+      valid = false;
+    }
+
     if (maleCounts === 0 && femaleCounts === 0) {
       errorMessages.maleCounts = "कृपया पुरुष की संख्या चुनें!";
       errorMessages.femaleCounts = "कृपया महिला की संख्या चुनें!";
@@ -598,8 +617,8 @@ export default function SahayakForm({ navigation }) {
                     onValueChange={handleMaleCountChange}
                   >
                     <Picker.Item
-                      style={{ color: maleCounts ? "#000" : "#ccc" }}
-                      label=""
+                      style={{ color: "#000" }}
+                      label="0"
                       value={0}
                     />
                     {/* {maleCount.map((item) => (
@@ -645,8 +664,8 @@ export default function SahayakForm({ navigation }) {
                     onValueChange={handleFemaleCountChange}
                   >
                     <Picker.Item
-                      style={{ color: femaleCounts ? "#000" : "#ccc" }}
-                      label=""
+                      style={{ color: "#000" }}
+                      label="0"
                       value={0}
                     />
                     {/* {femaleCount.map((item) => (
@@ -692,11 +711,11 @@ export default function SahayakForm({ navigation }) {
                 ]}
               >
                 <Text style={styles.label}>पुरुष वेतन</Text>
-                <Text style={{ color: "#0099FF", marginLeft: 10 }}>₹</Text>
+                <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
                 <TextInput
-                  style={[styles.TextInput, { marginLeft: -160 }]}
+                  style={[styles.TextInput, { right: 30 }]}
                   keyboardType="numeric"
-                  // placeholder="एक पुरुष का वेतन "
+                  placeholder="एक पुरुष का वेतन "
                   placeholderTextColor={"#ccc"}
                   value={malepayamount}
                   onChangeText={(malepayamount) =>
@@ -721,10 +740,10 @@ export default function SahayakForm({ navigation }) {
                 ]}
               >
                 <Text style={styles.label}>महिला वेतन</Text>
-                <Text style={{ color: "#0099FF", marginLeft: 10 }}>₹</Text>
+                <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
                 <TextInput
-                  style={[styles.TextInput, { marginLeft: -160 }]}
-                  // placeholder="एक महिला का वेतन"
+                  style={[styles.TextInput, { right: 30 }]}
+                  placeholder="एक महिला का वेतन"
                   keyboardType="numeric"
                   placeholderTextColor={"#ccc"}
                   value={femalepayamount}
@@ -773,12 +792,12 @@ export default function SahayakForm({ navigation }) {
             ]}
           >
             <Text style={styles.label}>वेतन</Text>
-            <TextInput
+            <Text
               style={styles.TextInput}
               // placeholder="वेतन "
-              keyboardType="numeric"
-              placeholderTextColor={"#ccc"}
-            />
+              // keyboardType="numeric"
+              // placeholderTextColor={"#ccc"}
+            ></Text>
             <Text style={{ color: "#0099FF", right: 10 }}>₹ {total}</Text>
           </View>
           <TouchableOpacity
