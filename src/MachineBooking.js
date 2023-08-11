@@ -521,10 +521,10 @@ export default function MachineBooking({ navigation }) {
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
               onPress={showDatepicker}
-              title={displayDate ? displayDate : " yyyy/mm/dd"}
+              title={displayDate ? displayDate : " dd/mm/yyyy"}
             >
               <Text style={{ color: displayDate ? "#000" : "#ccc" }}>
-                {displayDate ? displayDate : " yyyy/mm/dd"}
+                {displayDate ? displayDate : " dd/mm/yyyy"}
               </Text>
             </TouchableOpacity>
 

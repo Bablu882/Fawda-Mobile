@@ -393,10 +393,10 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <TouchableOpacity
                     style={{ paddingVertical: 10, paddingHorizontal: 5 }}
                     onPress={showDatepicker}
-                    title={displayDate ? displayDate : " yyyy/mm/dd"}
+                    title={displayDate ? displayDate : " dd/mm/yyyy"}
                   >
                     <Text style={{ color: displayDate ? "#000" : "#ccc" }}>
-                      {displayDate ? displayDate : " yyyy/mm/dd"}
+                      {displayDate ? displayDate : " dd/mm/yyyy"}
                     </Text>
                   </TouchableOpacity>
 

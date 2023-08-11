@@ -755,7 +755,7 @@ function Theke_MachineForm({ navigation, route }) {
                             placeholderTextColor="#000"
                             placeholder="वेतन"
                           />
-                          {/* <Text
+                          <Text
                             style={{
                               color: "#0099FF",
                               marginLeft: 30,
@@ -763,19 +763,19 @@ function Theke_MachineForm({ navigation, route }) {
                             }}
                           >
                             ₹
-                          </Text> */}
+                          </Text>
                           <TextInput
                             editable={edit}
                             ref={textInputRef}
                             onChangeText={(amount) => setAmount(amount)}
-                            value={`₹ ${amount}`}
+                            value={amount}
                             keyboardType="numeric"
                             style={{
                               paddingRight: 10,
                               fontFamily: "Devanagari-regular",
                               color: "#0099FF",
                             }}
-                            // defaultValue={item?.total_amount_theka}
+                            defaultValue={item?.total_amount_theka}
                           />
                         </>
                       ) : (

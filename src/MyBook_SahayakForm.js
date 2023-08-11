@@ -922,12 +922,13 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       editable={false}
                       placeholderTextColor={"#000"}
                     />
+                    <Text style={{ color: "#0099FF" }}>₹ </Text>
                     <TextInput
                       editable={editmale}
                       keyboardType="numeric"
                       ref={textInputRef}
                       onChangeText={(amountMale) => setAmountMale(amountMale)}
-                      value={`₹ ${amountMale}`}
+                      value={amountMale}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_male}
                     />
@@ -957,6 +958,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       editable={false}
                       placeholderTextColor={"#000"}
                     />
+                    <Text style={{ color: "#0099FF" }}>₹ </Text>
                     <TextInput
                       editable={edit}
                       keyboardType="numeric"
@@ -964,7 +966,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       onChangeText={(amountFemale) =>
                         setAmountFemale(amountFemale)
                       }
-                      value={`₹ ${amountFemale}`}
+                      value={amountFemale}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_female}
                     />
@@ -2116,8 +2118,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       { maxWidth: "98%" },
                                     ]}
                                   >
-                                    कृपया ऊपर दिए गए नंबर पर बात करें और
-                                    कृपया काम के लिए समय पर पहुंचें
+                                    कृपया ऊपर दिए गए नंबर पर बात करें और कृपया
+                                    काम के लिए समय पर पहुंचें
                                   </Text>
                                 </View>
                               </View>

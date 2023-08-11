@@ -761,15 +761,6 @@ export default function MachineWork({ navigation, route }) {
                       ]}
                     >
                       <Text style={{ marginLeft: 10 }}>वेतन</Text>
-                      {/* <Text
-                        style={{
-                          color: "#0099FF",
-                          marginLeft: 45, 
-                          // marginTop: 5,
-                        }}
-                      >
-                        ₹
-                      </Text> */}
                       {edit ? (
                         <TextInput
                           style={[
@@ -778,13 +769,13 @@ export default function MachineWork({ navigation, route }) {
                           ]}
                           ref={textInputRef}
                           onChangeText={(amount) => setAmount(amount)}
-                          value={`₹ ${amount}`}
+                          value={amount}
                           keyboardType="numeric"
-                          // defaultValue={item?.total_amount_machine}
+                          defaultValue={item?.total_amount_machine}
                         />
                       ) : (
                         <View>
-                          <Text style={[styles.Text, { marginRight: 10 }]}>
+                          <Text style={[styles.Text, { marginRight: 10, color: "#0099FF" }]}>
                             ₹ {item?.total_amount_machine}
                           </Text>
                         </View>
