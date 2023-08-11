@@ -37,6 +37,7 @@ export function Privacy_policy({ route, navigation }) {
               height: 120,
               marginLeft: "auto",
               marginRight: "auto",
+              marginBottom: "auto",
             }}
           />
 
@@ -51,6 +52,7 @@ export function Privacy_policy({ route, navigation }) {
             paddingHorizontal: 20,
             paddingTop: 20,
             backgroundColor: "#fff",
+            marginTop: "auto",
           }}
         >
           {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}

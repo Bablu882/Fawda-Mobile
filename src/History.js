@@ -987,10 +987,12 @@ export default function History({ navigation, route }) {
                                       backgroundColor: getJobStatusColor(
                                         item.status
                                       ),
-                                      marginLeft:
+                                      marginRight:
                                         item.job_type === "individuals_sahayak"
-                                          ? 90
-                                          : 105,
+                                          ? 45
+                                          : item.job_type === "theke_pe_kam"
+                                          ? 35
+                                          : 45,
                                     },
                                   ]}
                                 >

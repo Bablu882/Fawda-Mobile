@@ -53,6 +53,7 @@ export default function ThekeParKaam_Form({ navigation }) {
   const [selectedDates, setSelectedDates] = useState("");
   const [katayiValue, setKatayiValue] = useState();
   const [mode, setMode] = useState("date");
+  const [displayDate, setDisplayDate] = useState("");
   const [errors, setErrors] = useState({
     showDate: "",
     time: "",
@@ -137,8 +138,10 @@ export default function ThekeParKaam_Form({ navigation }) {
     setDefaultDate(selectedDate);
     const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
+    const displayDates = moment(selectedDate).format("DD/MM/YYYY");
     setDate(currentDate);
     setShowDate(showDate);
+    setDisplayDate(displayDates);
 
     let currentDateTime = moment();
 
@@ -390,10 +393,10 @@ export default function ThekeParKaam_Form({ navigation }) {
                   <TouchableOpacity
                     style={{ paddingVertical: 10, paddingHorizontal: 5 }}
                     onPress={showDatepicker}
-                    title={showDate ? showDate : " yyyy/mm/dd"}
+                    title={displayDate ? displayDate : " yyyy/mm/dd"}
                   >
-                    <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-                      {showDate ? showDate : " yyyy/mm/dd"}
+                    <Text style={{ color: displayDate ? "#000" : "#ccc" }}>
+                      {displayDate ? displayDate : " yyyy/mm/dd"}
                     </Text>
                   </TouchableOpacity>
 

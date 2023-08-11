@@ -88,7 +88,7 @@ function Theke_MachineForm({ navigation, route }) {
       if (data?.status === 200) {
         console.log("aaaa", data);
         setThekeperKam(data?.data);
-        Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
+        // Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
         navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
         Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.LONG);
@@ -686,7 +686,7 @@ function Theke_MachineForm({ navigation, route }) {
                       placeholderTextColor="#848484"
                       placeholder=""
                     />
-                    <Text style={{ marginTop: 5, right: 10, color: "#0070C0" }}>
+                    <Text style={{ marginTop: 15, right: 10, color: "#0070C0" }}>
                       {item?.land_area}
                       {item?.land_type == "Bigha"
                         ? " बीघा"
@@ -755,18 +755,27 @@ function Theke_MachineForm({ navigation, route }) {
                             placeholderTextColor="#000"
                             placeholder="वेतन"
                           />
+                          {/* <Text
+                            style={{
+                              color: "#0099FF",
+                              marginLeft: 30,
+                              marginTop: 12,
+                            }}
+                          >
+                            ₹
+                          </Text> */}
                           <TextInput
                             editable={edit}
                             ref={textInputRef}
                             onChangeText={(amount) => setAmount(amount)}
-                            value={amount}
+                            value={`₹ ${amount}`}
                             keyboardType="numeric"
                             style={{
                               paddingRight: 10,
                               fontFamily: "Devanagari-regular",
                               color: "#0099FF",
                             }}
-                            defaultValue={item?.total_amount_theka}
+                            // defaultValue={item?.total_amount_theka}
                           />
                         </>
                       ) : (
@@ -1223,7 +1232,7 @@ function Theke_MachineForm({ navigation, route }) {
                                       { maxWidth: "98%" },
                                     ]}
                                   >
-                                    कृपया किसान द्वारा बुकिंग की पुष्टि करने की
+                                    कृपया किसान द्वारा बुकिंग को कन्फर्म करने की
                                     प्रतीक्षा करें!
                                   </Text>
                                 </View>
@@ -1275,7 +1284,7 @@ function Theke_MachineForm({ navigation, route }) {
                                         { maxWidth: "98%" },
                                       ]}
                                     >
-                                      कृपया ऊपर दिए गए नंबर पर संपर्क करें और
+                                      कृपया ऊपर दिए गए नंबर पर बात करें और
                                       कृपया नौकरी के लिए समय पर पहुंचें!
                                     </Text>
                                   </View>

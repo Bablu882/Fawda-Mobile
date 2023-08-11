@@ -298,7 +298,7 @@ export default function MachineWork({ navigation, route }) {
       const data = response?.data;
       if (data?.status === 200) {
         setThekeperKam(data?.data);
-        Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
+        // Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
         navigation.navigate("MyBookingStack", { screen: "MyBooking" });
       } else {
         Toast.show("जॉब स्वीकार नहीं हो पा रही है!", Toast.LONG);
@@ -761,6 +761,15 @@ export default function MachineWork({ navigation, route }) {
                       ]}
                     >
                       <Text style={{ marginLeft: 10 }}>वेतन</Text>
+                      {/* <Text
+                        style={{
+                          color: "#0099FF",
+                          marginLeft: 45, 
+                          // marginTop: 5,
+                        }}
+                      >
+                        ₹
+                      </Text> */}
                       {edit ? (
                         <TextInput
                           style={[
@@ -769,14 +778,14 @@ export default function MachineWork({ navigation, route }) {
                           ]}
                           ref={textInputRef}
                           onChangeText={(amount) => setAmount(amount)}
-                          value={amount}
+                          value={`₹ ${amount}`}
                           keyboardType="numeric"
-                          defaultValue={item?.total_amount_machine}
+                          // defaultValue={item?.total_amount_machine}
                         />
                       ) : (
                         <View>
                           <Text style={[styles.Text, { marginRight: 10 }]}>
-                            {item?.total_amount_machine}
+                            ₹ {item?.total_amount_machine}
                           </Text>
                         </View>
                       )}
@@ -1136,7 +1145,7 @@ export default function MachineWork({ navigation, route }) {
                                             { maxWidth: "98%" },
                                           ]}
                                         >
-                                          कृपया किसान द्वारा बुकिंग की पुष्टि
+                                          कृपया किसान द्वारा बुकिंग को कन्फर्म
                                           करने की प्रतीक्षा करें!
                                         </Text>
                                       </View>
@@ -1194,8 +1203,8 @@ export default function MachineWork({ navigation, route }) {
                                             { maxWidth: "98%" },
                                           ]}
                                         >
-                                          कृपया ऊपर दिए गए नंबर पर संपर्क करें
-                                          और कृपया नौकरी के लिए समय पर पहुंचें!
+                                          कृपया ऊपर दिए गए नंबर पर बात करें और
+                                          कृपया नौकरी के लिए समय पर पहुंचें!
                                         </Text>
                                       </View>
                                     </View>

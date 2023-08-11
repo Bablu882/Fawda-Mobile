@@ -57,6 +57,7 @@ export function Terms_Condition({ route, navigation }) {
               height: 120,
               marginLeft: "auto",
               marginRight: "auto",
+              marginBottom: "auto",
             }}
           />
 
@@ -71,6 +72,7 @@ export function Terms_Condition({ route, navigation }) {
             paddingHorizontal: 20,
             paddingTop: 20,
             backgroundColor: "#fff",
+            marginTop: "auto",
           }}
         >
           <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>

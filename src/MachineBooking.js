@@ -53,6 +53,7 @@ export default function MachineBooking({ navigation }) {
   const [other, setOther] = useState("");
   const [description, setDescriptions] = useState("");
   const [sowing, setSowing] = useState([]);
+  const [displayDate , setDisplayDate] = useState("")
   const [errors, setErrors] = useState({
     showDate: "",
     time: "",
@@ -80,8 +81,10 @@ export default function MachineBooking({ navigation }) {
     // const currentTime = moment(selectedDate).format("H:mm");
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
     const showTime = moment(selectedDate).format("H:mm");
+    const dispalyDates = moment(selectedDate).format("DD/MM/YYYY");
     setDate(currentDate);
     setShowDate(showDate);
+    setDisplayDate(dispalyDates);
     let currentDateTime = moment();
     let currentDay = currentDateTime.format("YYYY-MM-DD");
     if (currentDay === showDate) {
@@ -518,10 +521,10 @@ export default function MachineBooking({ navigation }) {
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
               onPress={showDatepicker}
-              title={showDate ? showDate : " yyyy/mm/dd"}
+              title={displayDate ? displayDate : " yyyy/mm/dd"}
             >
-              <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-                {showDate ? showDate : " yyyy/mm/dd"}
+              <Text style={{ color: displayDate ? "#000" : "#ccc" }}>
+                {displayDate ? displayDate : " yyyy/mm/dd"}
               </Text>
             </TouchableOpacity>
 

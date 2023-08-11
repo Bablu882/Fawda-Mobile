@@ -66,17 +66,14 @@ export default function Payment({ route, navigation }) {
 
       const data = response.data;
       if (item.job_type === "individuals_sahayak") {
-        // navigation.replace("HomeStack", { screen: "BottomTab" });
-        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
+        navigation.replace("HomeStack", { screen: "BottomTab" });
       } else if (item.job_type === "theke_pe_kam") {
-        // navigation.replace("HomeStack", { screen: "BottomTab" });
-        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
+        navigation.replace("HomeStack", { screen: "BottomTab" });
       } else if (item.job_type === "machine_malik") {
-        // navigation.replace("HomeStack", { screen: "BottomTab" });
-        navigation.navigate("MyBookingStack", { screen: "MyBooking" });
+        navigation.replace("HomeStack", { screen: "BottomTab" });
       }
 
-      Toast.show("भुगतान सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
+      // Toast.show("भुगतान सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
     } catch (error) {
       console.error("Error: ", error);
       navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -111,7 +108,7 @@ export default function Payment({ route, navigation }) {
       setUserAmount(data?.user_amount);
       setTotalAmount(data?.total_amount);
       setIsLoading(false);
-      encryptedParams(data?.total_amount.toString())
+      encryptedParams(data?.total_amount.toString());
     } catch (error) {
       console.log("error", error);
     }

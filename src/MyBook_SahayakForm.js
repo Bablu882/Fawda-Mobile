@@ -109,7 +109,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
       });
       const data = response?.data;
       navigation.navigate("MyBookingStack", { screen: "MyBooking" });
-      Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
+      // Toast.show("काम स्वीकार किया गया है!", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
     } finally {
@@ -2059,7 +2059,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       { maxWidth: "98%" },
                                     ]}
                                   >
-                                    कृपया किसान द्वारा बुकिंग की पुष्टि करने की
+                                    कृपया किसान द्वारा बुकिंग को कन्फर्म करने की
                                     प्रतीक्षा करें!
                                   </Text>
                                 </View>
@@ -2116,7 +2116,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       { maxWidth: "98%" },
                                     ]}
                                   >
-                                    कृपया ऊपर दिए गए नंबर पर संपर्क करें और
+                                    कृपया ऊपर दिए गए नंबर पर बात करें और
                                     कृपया काम के लिए समय पर पहुंचें
                                   </Text>
                                 </View>

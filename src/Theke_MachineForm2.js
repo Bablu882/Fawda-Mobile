@@ -308,7 +308,7 @@ function Theke_MachineForm2({ navigation, route }) {
                   marginTop: 13,
                   marginRight: 8,
                   color: "#0099FF",
-                  fontFamily: "Devanagari-regular",
+                  // fontFamily: "Devanagari-regular",
                 }}
               >
                 ₹ {useramount}

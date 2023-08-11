@@ -47,6 +47,7 @@ export default function SahayakForm({ navigation }) {
   const [malepayamount, setMalepayamount] = useState(0);
   const [femalepayamount, setFemalepayamount] = useState(0);
   const [description, setDescriptions] = useState("");
+  const [displayDate, setDisplayDate] = useState("");
   const [days, setDays] = useState(0);
   const [time, setTimes] = useState("");
   const [total, setTotal] = useState(0);
@@ -162,10 +163,12 @@ export default function SahayakForm({ navigation }) {
 
     const currentDate = moment(selectedDate).format("YYYY-MM-DD HH:mm");
     const showDate = moment(selectedDate).format("YYYY-MM-DD");
+    const displayDates = moment(selectedDate).format("DD/MM/YYYY");
     const showTime = moment(selectedDate).format("H:mm");
 
     setDate(currentDate);
     setShowDate(showDate);
+    setDisplayDate(displayDates);
     console.log("fkdfk", showDate);
     let currentDateTime = moment();
     let currentDay = currentDateTime.format("YYYY-MM-DD");
@@ -266,6 +269,26 @@ export default function SahayakForm({ navigation }) {
       !malepayamount
     ) {
       errorMessages.malepayamount = "कृपया पुरुष वेतन राशि दर्ज करें!";
+      valid = false;
+    }
+
+    if (
+      (femaleCounts === 0 || femaleCounts.toString().trim() === "") &&
+      femalepayamount &&
+      (maleCounts !== 0 || maleCounts.toString().trim() !== "") &&
+      malepayamount
+    ) {
+      errorMessages.femaleCounts = "कृपया महिला की संख्या चुनें!";
+      valid = false;
+    }
+
+    if (
+      (femaleCounts !== 0 || femaleCounts.toString().trim() !== "") &&
+      femalepayamount &&
+      (maleCounts === 0 || maleCounts.toString().trim() === "") &&
+      malepayamount
+    ) {
+      errorMessages.maleCounts = "कृपया पुरुष की संख्या चुनें!";
       valid = false;
     }
 
@@ -408,10 +431,10 @@ export default function SahayakForm({ navigation }) {
               style={{ paddingVertical: 10, paddingHorizontal: 5 }}
               color="black"
               onPress={showDatepicker}
-              title={showDate ? showDate : " yyyy/mm/dd"}
+              title={displayDate ? displayDate : " yyyy/mm/dd"}
             >
-              <Text style={{ color: showDate ? "#000" : "#ccc" }}>
-                {showDate ? showDate : " yyyy/mm/dd"}
+              <Text style={{ color: displayDate ? "#000" : "#ccc" }}>
+                {displayDate ? displayDate : " yyyy/mm/dd"}
               </Text>
             </TouchableOpacity>
 
@@ -669,8 +692,9 @@ export default function SahayakForm({ navigation }) {
                 ]}
               >
                 <Text style={styles.label}>पुरुष वेतन</Text>
+                <Text style={{ color: "#0099FF", marginLeft: 10 }}>₹</Text>
                 <TextInput
-                  style={styles.TextInput}
+                  style={[styles.TextInput, { marginLeft: -160 }]}
                   keyboardType="numeric"
                   // placeholder="एक पुरुष का वेतन "
                   placeholderTextColor={"#ccc"}
@@ -679,7 +703,6 @@ export default function SahayakForm({ navigation }) {
                     setMalepayamount(malepayamount)
                   }
                 />
-                <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
               </View>
               {!!errors.malepayamount && (
                 <Text style={styles.error}>{errors.malepayamount}</Text>
@@ -698,8 +721,9 @@ export default function SahayakForm({ navigation }) {
                 ]}
               >
                 <Text style={styles.label}>महिला वेतन</Text>
+                <Text style={{ color: "#0099FF", marginLeft: 10 }}>₹</Text>
                 <TextInput
-                  style={styles.TextInput}
+                  style={[styles.TextInput, { marginLeft: -160 }]}
                   // placeholder="एक महिला का वेतन"
                   keyboardType="numeric"
                   placeholderTextColor={"#ccc"}
@@ -708,7 +732,6 @@ export default function SahayakForm({ navigation }) {
                     setFemalepayamount(femalepayamount)
                   }
                 />
-                <Text style={{ color: "#0099FF", right: 10 }}>₹</Text>
               </View>
               {!!errors.femalepayamount && (
                 <Text style={styles.error}>{errors.femalepayamount}</Text>

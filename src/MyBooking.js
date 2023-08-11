@@ -1133,7 +1133,7 @@ export default function MyBooking({ navigation, route }) {
                       }}
                     >
                       <Text style={{ color: "#fff", lineHeight: 20 }}>
-                        पुरानी बुकिंग
+                      पुराने काम
                       </Text>
                     </TouchableOpacity>
                     {/* <View style={{ flexDirection: "row" }}>

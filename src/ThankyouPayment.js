@@ -31,7 +31,7 @@ export default function ThankyouPayment({ navigation }) {
             <View style={{ paddingTop: 30 }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("MyBookingStack", { screen: "MyBooking" });
+                  navigation.replace("HomeStack", { screen: "BottomTab" });
                 }}
                 style={{
                   width: "100%",
