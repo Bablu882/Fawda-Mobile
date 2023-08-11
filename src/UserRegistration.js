@@ -184,7 +184,7 @@ export default function UserRegistration({ navigation, route }) {
   };
 
   const RegisterServices = async () => {
-    if (isLocationGranted) {
+    // if (isLocationGranted) {
       let upi = "";
       let refer_code = "";
       if (user !== "Grahak") {
@@ -257,10 +257,10 @@ export default function UserRegistration({ navigation, route }) {
           Toast.LONG
         );
       }
-    } else {
-      // Toast.show("स्थान की अनुमति आवश्यक है!", Toast.LONG);
-      handlePermissionAlert();
-    }
+    // } else {
+    //   // Toast.show("स्थान की अनुमति आवश्यक है!", Toast.LONG);
+    //   handlePermissionAlert();
+    // }
   };
 
   const openAppSettings = async () => {
