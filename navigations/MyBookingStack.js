@@ -15,6 +15,7 @@ import Theke_MachineForm2 from "../src/Theke_MachineForm2";
 import MachineWork from "../src/MachineWork";
 import MachineWork2 from "../src/MachineWork2";
 import History from "../src/History";
+import ThankyouPayment from "../src/ThankyouPayment";
 
 export default function MyBookingStack() {
   const Stack = createNativeStackNavigator();
@@ -46,6 +47,7 @@ export default function MyBookingStack() {
         <Stack.Screen name="MachineWork" component={MachineWork} />
         <Stack.Screen name="MachineWork2" component={MachineWork2} />
         <Stack.Screen name="History" component={History} />
+        <Stack.Screen name="ThankYouPayment" component={ThankyouPayment} />
       </Stack.Navigator>
     </>
   );

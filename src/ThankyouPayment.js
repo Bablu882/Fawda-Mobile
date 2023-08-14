@@ -31,7 +31,10 @@ export default function ThankyouPayment({ navigation }) {
             <View style={{ paddingTop: 30 }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.replace("HomeStack", { screen: "BottomTab" });
+                  // navigation.replace("HomeStack", { screen: "BottomTab" });
+                  navigation.navigate("MyBookingStack", {
+                    screen: "MyBooking",
+                  });
                 }}
                 style={{
                   width: "100%",
@@ -42,7 +45,7 @@ export default function ThankyouPayment({ navigation }) {
                 }}
               >
                 <Text style={{ color: "#fff", lineHeight: 27, fontSize: 12 }}>
-                  होम पेज <Icon name="arrowright" type="AntDesign" />
+                  बुकिंग पेज <Icon name="arrowright" type="AntDesign" />
                 </Text>
               </TouchableOpacity>
             </View>

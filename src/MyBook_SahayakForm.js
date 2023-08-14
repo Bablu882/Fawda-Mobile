@@ -924,7 +924,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     />
                     <Text style={{ color: "#0099FF" }}>₹ </Text>
                     <TextInput
-                      editable={editmale}
+                      editable={item?.count_male === "0" ? false : editmale}
                       keyboardType="numeric"
                       ref={textInputRef}
                       onChangeText={(amountMale) => setAmountMale(amountMale)}
@@ -960,7 +960,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                     />
                     <Text style={{ color: "#0099FF" }}>₹ </Text>
                     <TextInput
-                      editable={edit}
+                      editable={item?.count_female === "0" ? false : edit}
                       keyboardType="numeric"
                       ref={textInputRef}
                       onChangeText={(amountFemale) =>

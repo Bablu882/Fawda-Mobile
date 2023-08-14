@@ -391,7 +391,9 @@ function MachineWork2({ navigation, route }) {
               </View>
 
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text style={styles.sahayakDetails}>गाँव</Text>
+                <Text style={[styles.sahayakDetails, { width: "10%" }]}>
+                  गाँव
+                </Text>
                 <Text style={styles.TextInput}>
                   {item?.machine_malik_village}
                 </Text>

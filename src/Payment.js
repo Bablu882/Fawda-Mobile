@@ -66,11 +66,17 @@ export default function Payment({ route, navigation }) {
 
       const data = response.data;
       if (item.job_type === "individuals_sahayak") {
-        navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       } else if (item.job_type === "theke_pe_kam") {
-        navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       } else if (item.job_type === "machine_malik") {
-        navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       }
 
       // Toast.show("भुगतान सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
@@ -190,8 +196,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus();
+              // fetchPaymentHtml();
+              paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -208,8 +214,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -222,8 +228,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         }
       }
@@ -271,7 +277,8 @@ export default function Payment({ route, navigation }) {
         console.log("status", status);
         if (status === "Success") {
           setWebViewLoaded(false);
-          navigation.replace("ThankyouPayment");
+          // navigation.replace("ThankyouPayment");
+          navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
         } else {
           setWebViewLoaded(false);
           navigation.replace("HomeStack", { screen: "BottomTab" });

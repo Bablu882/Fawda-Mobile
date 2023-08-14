@@ -153,6 +153,20 @@ export default function Homepage({ navigation, route }) {
     fetchExpoToken();
   }, []);
 
+  useEffect(() => {
+    getKey();
+  });
+  const getKey = async () => {
+    const Key = await AsyncStorage.getItem("key");
+    console.log(Key);
+    if (Key === "Booked" || Key === "Grahak") {
+      navigation.navigate("MyBookingStack", {
+        screen: "MyBooking",
+      });
+      await AsyncStorage.removeItem("key");
+    }
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -252,15 +266,15 @@ export default function Homepage({ navigation, route }) {
                                 </Text>
                               </View>
                             </View>
-                            <View
-                              style={[styles.DoubleView,]}
-                            >
-                              <View style={{ flexDirection: "row" ,marginLeft: 20}}>
+                            <View style={[styles.DoubleView]}>
+                              <View
+                                style={{ flexDirection: "row", marginLeft: 20 }}
+                              >
                                 <View
                                   style={[
                                     styles.bookingButton,
                                     {
-                                      marginRight: 10
+                                      marginRight: 10,
                                     },
                                   ]}
                                 >

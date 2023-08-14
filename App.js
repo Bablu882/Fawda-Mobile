@@ -115,12 +115,11 @@ export default function App() {
       });
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
+      Notifications.addNotificationResponseReceivedListener(async (response) => {
         console.log(response.notification.request.content);
         const { data } = response.notification.request.content;
-        const keyData = data.data;
-        console.log("notification Data ", data);
-        console.log("Key data", keyData);
+        console.log("notification Data ", data.key);
+        await AsyncStorage.setItem("key",data.key)
       });
 
     return () => {
