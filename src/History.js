@@ -37,6 +37,7 @@ export default function History({ navigation, route }) {
   const [totalPages, setTotalPages] = useState(0);
   const [machineCancelled, setMachineCancelled] = useState([]);
   const [sahayakCancelled, setSahayakCancelled] = useState([]);
+  // console.log(sahayakCancelled[0].sahayaks);
   const [indvidualSahayakCancelled, setIndvidualSahayakCancelled] = useState(
     []
   );
@@ -90,6 +91,7 @@ export default function History({ navigation, route }) {
       setSahayakCompleted(data?.sahayak_booking_details[0].bookings_completed);
       setMachineBooking(data?.machine_malik_booking_details);
       setMachineCancelled(data?.machine_malik_job_details);
+      console.log(data?.machine_malik_job_details);
       setIndvidualSahayakCancelled(data?.sahayak_job_details);
       setIsLoading(false);
       setRefreshing(false);
@@ -214,117 +216,115 @@ export default function History({ navigation, route }) {
                             flexDirection: "row",
                             width: "100%",
                             justifyContent: "space-between",
-                            marginTop: 50,
+                            marginTop: 20,
                           }}
                         >
-                          <View style={{ marginLeft: 30 }}>
-                            <Text
-                              style={{
-                                fontWeight: "600",
-                                fontSize: 18,
-                                color: "#000",
-                                fontFamily: "Devanagari-bold",
-                              }}
-                            >
-                              {sahayak.job_type === "individuals_sahayak"
-                                ? "सहायक  "
-                                : sahayak.job_type === "theke_pe_kam"
-                                ? "ठेके पर काम"
-                                : ""}
-                            </Text>
-
-                            <Text
-                              style={{
-                                color: "black",
-                                fontFamily: "Devanagari-regular",
-                              }}
-                            >
-                              {moment(firstSahayak?.datetime).format(
-                                "DD/MM/YYYY"
-                              )}
-                            </Text>
-                          </View>
-                          {/* <View
-                            style={[
-                              styles.jobStatusButton,
-                              {
-                                backgroundColor: getJobStatusColor(
-                                  firstSahayak.status
-                                ),
-                                marginRight:
-                                  firstSahayak.job_type ===
-                                  "individuals_sahayak"
-                                    ? -105
-                                    : -90,
-                              },
-                            ]}
-                          > */}
-                          {firstSahayak?.status === "Completed" ? (
-                            <>
-                              <View
-                                style={[
-                                  styles.jobStatusButton,
-                                  {
-                                    backgroundColor: getJobStatusColor(
-                                      firstSahayak.status
-                                    ),
-                                    marginRight:
-                                      firstSahayak.job_type ===
-                                      "individuals_sahayak"
-                                        ? -105
-                                        : -90,
-                                  },
-                                ]}
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ marginLeft: 20 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                  fontFamily: "Devanagari-bold",
+                                }}
                               >
-                                <View>
-                                  <Text
+                                {sahayak.job_type === "individuals_sahayak"
+                                  ? "सहायक  "
+                                  : sahayak.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment(firstSahayak?.datetime).format(
+                                  "DD/MM/YYYY"
+                                )}
+                              </Text>
+                            </View>
+                          </View>
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ flexDirection: "row" }}>
+                              {firstSahayak?.status === "Completed" ? (
+                                <>
+                                  <View
+                                    style={[
+                                      styles.jobStatusButton,
+                                      {
+                                        backgroundColor: getJobStatusColor(
+                                          firstSahayak.status
+                                        ),
+                                        width: "60%",
+                                      },
+                                    ]}
+                                  >
+                                    <View>
+                                      <Text
+                                        style={{
+                                          textAlign: "center",
+                                          marginTop: 7,
+                                          color: "#fff",
+                                          fontSize: 15,
+                                          fontFamily: "Devanagari-bold",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        {firstSahayak?.status === "Completed"
+                                          ? "समाप्त"
+                                          : null}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      if (
+                                        firstSahayak?.job_type ===
+                                        "individuals_sahayak"
+                                      ) {
+                                        navigation.navigate(
+                                          "MyBook_SahayakForm",
+                                          {
+                                            id: firstSahayak?.job_id,
+                                            item: sahayak.sahayaks[0],
+                                            totalamount: sahayak?.total_amount,
+                                            fawdafee: sahayak?.fawda_fee,
+                                            useramount:
+                                              sahayak?.total_amount_sahayak,
+                                          }
+                                        );
+                                      } else if (
+                                        firstSahayak.job_type === "theke_pe_kam"
+                                      ) {
+                                        navigation.navigate(
+                                          "Theke_MachineForm",
+                                          {
+                                            item: sahayak.sahayaks[0],
+                                            id: firstSahayak?.job_id,
+                                            totalamount: sahayak?.total_amount,
+                                            fawdafee: sahayak?.fawda_fee,
+                                            useramount:
+                                              sahayak?.total_amount_sahayak,
+                                          }
+                                        );
+                                      }
+                                    }}
                                     style={{
-                                      textAlign: "center",
-                                      marginTop: 7,
-                                      color: "#fff",
-                                      fontSize: 15,
-                                      fontFamily: "Devanagari-bold",
-                                      fontWeight: "600",
+                                      marginTop: 15,
+                                      marginRight: 15,
+                                      marginLeft: 10,
                                     }}
                                   >
-                                    {firstSahayak?.status === "Completed"
-                                      ? "समाप्त"
-                                      : null}
-                                  </Text>
-                                </View>
-                              </View>
-                              <TouchableOpacity
-                                onPress={() => {
-                                  if (
-                                    firstSahayak?.job_type ===
-                                    "individuals_sahayak"
-                                  ) {
-                                    navigation.navigate("MyBook_SahayakForm", {
-                                      id: firstSahayak?.job_id,
-                                      item: sahayak.sahayaks[0],
-                                      totalamount: sahayak?.total_amount,
-                                      fawdafee: sahayak?.fawda_fee,
-                                      useramount: sahayak?.total_amount_sahayak,
-                                    });
-                                  } else if (
-                                    firstSahayak.job_type === "theke_pe_kam"
-                                  ) {
-                                    navigation.navigate("Theke_MachineForm", {
-                                      item: sahayak.sahayaks[0],
-                                      id: firstSahayak?.job_id,
-                                      totalamount: sahayak?.total_amount,
-                                      fawdafee: sahayak?.fawda_fee,
-                                      useramount: sahayak?.total_amount_sahayak,
-                                    });
-                                  }
-                                }}
-                                style={{ marginTop: 15, marginRight: 15 }}
-                              >
-                                <Icon name="right" size={20}></Icon>
-                              </TouchableOpacity>
-                            </>
-                          ) : null}
-                          {/* </View> */}
+                                    <Icon name="right" size={20}></Icon>
+                                  </TouchableOpacity>
+                                </>
+                              ) : null}
+                            </View>
+                          </View>
                         </View>
                       );
                     })}
@@ -338,141 +338,11 @@ export default function History({ navigation, route }) {
                             flexDirection: "row",
                             width: "100%",
                             justifyContent: "space-between",
-                            marginTop: 50,
+                            marginTop: 20,
                           }}
                         >
-                          <View style={{ marginLeft: 30 }}>
-                            <Text
-                              style={{
-                                fontWeight: "600",
-                                fontSize: 18,
-                                color: "#000",
-                                fontFamily: "Devanagari-bold",
-                              }}
-                            >
-                              {firstSahayak.job_type === "individuals_sahayak"
-                                ? "सहायक"
-                                : firstSahayak.job_type === "theke_pe_kam"
-                                ? "ठेके पर काम"
-                                : ""}
-                            </Text>
-
-                            <Text
-                              style={{
-                                color: "black",
-                                fontFamily: "Devanagari-regular",
-                              }}
-                            >
-                              {moment(firstSahayak?.datetime).format(
-                                "DD/MM/YYYY"
-                              )}
-                            </Text>
-                          </View>
-                          <View
-                            style={{
-                              width: "30%",
-                              height: 33,
-                              backgroundColor: "#dc3545",
-                              marginRight: 20,
-                              marginTop: 10,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
-                                fontFamily: "Devanagari-bold",
-                              }}
-                            >
-                              रद्द
-                            </Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                    {sahakCancelledAfterPayment?.map((sahayak, index) => {
-                      const firstSahayak = sahayak.sahayaks[0];
-                      return (
-                        <View
-                          key={index}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                            marginTop: 50,
-                          }}
-                        >
-                          <View style={{ marginLeft: 30 }}>
-                            <Text
-                              style={{
-                                fontWeight: "600",
-                                fontSize: 18,
-                                color: "#000",
-                                fontFamily: "Devanagari-bold",
-                              }}
-                            >
-                              {firstSahayak.job_type === "individuals_sahayak"
-                                ? "सहायक"
-                                : firstSahayak.job_type === "theke_pe_kam"
-                                ? "ठेके पर काम"
-                                : ""}
-                            </Text>
-
-                            <Text
-                              style={{
-                                color: "black",
-                                fontFamily: "Devanagari-regular",
-                              }}
-                            >
-                              {moment(firstSahayak?.datetime).format(
-                                "DD/MM/YYYY"
-                              )}
-                            </Text>
-                          </View>
-                          <View
-                            style={{
-                              width: "30%",
-                              height: 33,
-                              backgroundColor: "#dc3545",
-                              marginRight: 20,
-                              marginTop: 10,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                textAlign: "center",
-                                marginTop: 7,
-                                color: "#fff",
-                                fontSize: 15,
-                                fontWeight: "600",
-                                fontFamily: "Devanagari-bold",
-                              }}
-                            >
-                              रद्द
-                            </Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                    {sahayakCancelled?.map((sahayak, index) => {
-                      const firstSahayak = sahayak.sahayaks[0];
-                      if (firstSahayak.job_type !== "individuals_sahayak") {
-                        return (
-                          <View
-                            key={firstSahayak.id}
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              width: "100%",
-                              justifyContent: "space-between",
-                              marginTop: 50,
-                            }}
-                          >
-                            <View style={{ marginLeft: 30 }}>
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ marginLeft: 20 }}>
                               <Text
                                 style={{
                                   fontWeight: "600",
@@ -487,6 +357,7 @@ export default function History({ navigation, route }) {
                                   ? "ठेके पर काम"
                                   : ""}
                               </Text>
+
                               <Text
                                 style={{
                                   color: "black",
@@ -498,31 +369,179 @@ export default function History({ navigation, route }) {
                                 )}
                               </Text>
                             </View>
-                            <View
-                              style={{
-                                width: "30%",
-                                height: 33,
-                                backgroundColor: "#dc3545",
-                                marginRight: 20,
-                                marginTop: 10,
-                              }}
-                            >
-                              <TouchableOpacity>
+                          </View>
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ flexDirection: "row" }}>
+                              <View
+                                style={{
+                                  width: "60%",
+                                  height: 33,
+                                  backgroundColor: "#dc3545",
+                                  marginRight: 20,
+                                  marginTop: 10,
+                                }}
+                              >
                                 <Text
                                   style={{
                                     textAlign: "center",
                                     marginTop: 7,
                                     color: "#fff",
                                     fontSize: 15,
-                                    fontFamily: "Devanagari-bold",
                                     fontWeight: "600",
+                                    fontFamily: "Devanagari-bold",
                                   }}
                                 >
-                                  {firstSahayak?.status === "Cancelled"
-                                    ? "रद्द"
-                                    : null}
+                                  रद्द
                                 </Text>
-                              </TouchableOpacity>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                    {sahakCancelledAfterPayment?.map((sahayak, index) => {
+                      const firstSahayak = sahayak.sahayaks[0];
+                      return (
+                        <View
+                          key={index}
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            marginTop: 20,
+                          }}
+                        >
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ marginLeft: 20 }}>
+                              <Text
+                                style={{
+                                  fontWeight: "600",
+                                  fontSize: 18,
+                                  color: "#000",
+                                  fontFamily: "Devanagari-bold",
+                                }}
+                              >
+                                {firstSahayak.job_type === "individuals_sahayak"
+                                  ? "सहायक"
+                                  : firstSahayak.job_type === "theke_pe_kam"
+                                  ? "ठेके पर काम"
+                                  : ""}
+                              </Text>
+
+                              <Text
+                                style={{
+                                  color: "black",
+                                  fontFamily: "Devanagari-regular",
+                                }}
+                              >
+                                {moment(firstSahayak?.datetime).format(
+                                  "DD/MM/YYYY"
+                                )}
+                              </Text>
+                            </View>
+                          </View>
+                          <View style={[styles.DoubleView]}>
+                            <View style={{ flexDirection: "row" }}>
+                              <View
+                                style={{
+                                  width: "60%",
+                                  height: 33,
+                                  backgroundColor: "#dc3545",
+                                  marginRight: 20,
+                                  marginTop: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    textAlign: "center",
+                                    marginTop: 7,
+                                    color: "#fff",
+                                    fontSize: 15,
+                                    fontWeight: "600",
+                                    fontFamily: "Devanagari-bold",
+                                  }}
+                                >
+                                  रद्द
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                    {sahayakCancelled?.map((sahayak, index) => {
+                      const firstSahayak = sahayak.sahayaks[0];
+                      if (firstSahayak.job_type === "individuals_sahayak") {
+                        return (
+                          <View
+                            key={firstSahayak.id}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              width: "100%",
+                              justifyContent: "space-between",
+                              marginTop: 20,
+                            }}
+                          >
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ marginLeft: 20 }}>
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 18,
+                                    color: "#000",
+                                    fontFamily: "Devanagari-bold",
+                                  }}
+                                >
+                                  {firstSahayak.job_type ===
+                                  "individuals_sahayak"
+                                    ? "सहायक"
+                                    : firstSahayak.job_type === "theke_pe_kam"
+                                    ? "ठेके पर काम"
+                                    : ""}
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontFamily: "Devanagari-regular",
+                                  }}
+                                >
+                                  {moment(firstSahayak?.datetime).format(
+                                    "DD/MM/YYYY"
+                                  )}
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ flexDirection: "row" }}>
+                                <View
+                                  style={{
+                                    width: "60%",
+                                    height: 33,
+                                    backgroundColor: "#dc3545",
+                                    marginRight: 20,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  <View>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 7,
+                                        color: "#fff",
+                                        fontSize: 15,
+                                        fontFamily: "Devanagari-bold",
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      {firstSahayak?.status === "Cancelled"
+                                        ? "रद्द"
+                                        : null}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
                             </View>
                           </View>
                         );
@@ -532,7 +551,7 @@ export default function History({ navigation, route }) {
                     })}
                     {indvidualSahayakCancelled?.map((item, index) => {
                       if (
-                        item?.job_type === "individuals_sahayak" &&
+                        item?.job_type !== "individuals_sahayak" &&
                         item?.status === "Cancelled"
                       ) {
                         return (
@@ -543,37 +562,242 @@ export default function History({ navigation, route }) {
                               flexDirection: "row",
                               width: "100%",
                               justifyContent: "space-between",
-                              marginTop: 50,
+                              marginTop: 20,
                             }}
                           >
-                            <View style={{ marginLeft: 30 }}>
-                              <Text
-                                style={{
-                                  fontWeight: "600",
-                                  fontSize: 18,
-                                  color: "#000",
-                                  fontFamily: "Devanagari-bold",
-                                }}
-                              >
-                                {item.job_type === "individuals_sahayak"
-                                  ? "सहायक"
-                                  : null}
-                              </Text>
-                              <Text
-                                style={{
-                                  color: "black",
-                                  fontFamily: "Devanagari-regular",
-                                }}
-                              >
-                                {moment(item?.datetime).format("DD/MM/YYYY")}
-                              </Text>
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ marginLeft: 20 }}>
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 18,
+                                    color: "#000",
+                                    fontFamily: "Devanagari-bold",
+                                  }}
+                                >
+                                  {item.job_type === "individuals_sahayak"
+                                    ? "सहायक"
+                                    : item.job_type === "theke_pe_kam"
+                                    ? "ठेके पर काम"
+                                    : null}
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontFamily: "Devanagari-regular",
+                                  }}
+                                >
+                                  {moment(item?.datetime).format("DD/MM/YYYY")}
+                                </Text>
+                              </View>
                             </View>
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ flexDirection: "row" }}>
+                                <View
+                                  style={{
+                                    width: "60%",
+                                    height: 33,
+                                    backgroundColor: "#dc3545",
+                                    marginRight: 20,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      textAlign: "center",
+                                      marginTop: 7,
+                                      color: "#fff",
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                      fontFamily: "Devanagari-bold",
+                                    }}
+                                  >
+                                    रद्द
+                                  </Text>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        );
+                      }
+                      return null;
+                    })}
+                    {machineBooking?.map((item, index) => (
+                      <View
+                        key={item.id}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          marginTop: 20,
+                        }}
+                      >
+                        <View style={[styles.DoubleView]}>
+                          <View style={{ marginLeft: 20 }}>
+                            <Text
+                              style={{
+                                fontWeight: "600",
+                                fontSize: 18,
+                                color: "#000",
+                                fontFamily: "Devanagari-bold",
+                              }}
+                            >
+                              {item.job_type === "machine_malik"
+                                ? `${item.machine}`
+                                : null}
+                            </Text>
+                            <Text
+                              style={{
+                                color: "black",
+                                fontFamily: "Devanagari-regular",
+                              }}
+                            >
+                              {moment(item?.datetime).format("DD/MM/YYYY")}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={[styles.DoubleView]}>
+                          <View style={{ flexDirection: "row" }}>
+                            {item?.status === "Completed" ? (
+                              <>
+                                <View
+                                  style={[
+                                    styles.jobStatusButton,
+                                    {
+                                      backgroundColor: getJobStatusColor(
+                                        item.status
+                                      ),
+                                      width: "60%",
+                                      // marginRight: -105,
+                                    },
+                                  ]}
+                                >
+                                  <View>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 7,
+                                        color: "#fff",
+                                        fontSize: 15,
+                                        fontWeight: "600",
+                                        fontFamily: "Devanagari-bold",
+                                      }}
+                                    >
+                                      {item?.status === "Completed"
+                                        ? "समाप्त"
+                                        : null}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    navigation.navigate("MachineWork", {
+                                      id: item?.job_id,
+                                      item,
+                                      jobtype: item?.job_type,
+                                    });
+                                  }}
+                                  style={{
+                                    marginTop: 15,
+                                    marginRight: 15,
+                                    marginLeft: 10,
+                                  }}
+                                >
+                                  <Icon name="right" size={20}></Icon>
+                                </TouchableOpacity>
+                              </>
+                            ) : item?.status === "Rejected" ||
+                              item?.status === "Rejected-After-Payment" ||
+                              item?.status === "Cancelled" ||
+                              item?.status === "Cancelled-After-Payment" ? (
+                              <>
+                                <View
+                                  style={[
+                                    styles.jobStatusButton,
+                                    {
+                                      backgroundColor: getJobStatusColor(
+                                        item.status
+                                      ),
+                                      // marginRight: 20,
+                                      width: "60%",
+                                    },
+                                  ]}
+                                >
+                                  <View>
+                                    <Text
+                                      style={{
+                                        textAlign: "center",
+                                        marginTop: 7,
+                                        color: "#fff",
+                                        fontSize: 15,
+                                        fontWeight: "600",
+                                        fontFamily: "Devanagari-bold",
+                                      }}
+                                    >
+                                      {item.status === "Rejected"
+                                        ? "रद्द"
+                                        : item.status ===
+                                          "Rejected-After-Payment"
+                                        ? "रद्द"
+                                        : item.status === "Cancelled"
+                                        ? "रद्द"
+                                        : item.status ===
+                                          "Cancelled-After-Payment"
+                                        ? "रद्द"
+                                        : null}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </>
+                            ) : null}
+                          </View>
+                        </View>
+                      </View>
+                    ))}
+                    {machineCancelled?.map((item, index) => (
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          marginTop: 20,
+                        }}
+                      >
+                        <View style={[styles.DoubleView]}>
+                          <View style={{ marginLeft: 20 }}>
+                            <Text
+                              style={{
+                                fontWeight: "600",
+                                fontSize: 18,
+                                color: "#000",
+                                fontFamily: "Devanagari-bold",
+                              }}
+                            >
+                              {item.job_type === "machine_malik"
+                                ? `${item.machine}`
+                                : null}
+                            </Text>
+
+                            <Text
+                              style={{
+                                color: "black",
+                                fontFamily: "Devanagari-regular",
+                              }}
+                            >
+                              {moment(item?.datetime).format("DD/MM/YYYY")}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={[styles.DoubleView]}>
+                          <View style={{ flexDirection: "row" }}>
                             <View
                               style={{
-                                width: "30%",
+                                width: "60%",
                                 height: 33,
                                 backgroundColor: "#dc3545",
-                                marginRight: 20,
+                                // marginLeft: -50,
                                 marginTop: 10,
                               }}
                             >
@@ -591,193 +815,6 @@ export default function History({ navigation, route }) {
                               </Text>
                             </View>
                           </View>
-                        );
-                      }
-                      return null;
-                    })}
-                    {machineBooking?.map((item, index) => (
-                      <View
-                        key={item.id}
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          justifyContent: "space-between",
-                          marginTop: 50,
-                        }}
-                      >
-                        <View style={{ marginLeft: 30 }}>
-                          <Text
-                            style={{
-                              fontWeight: "600",
-                              fontSize: 18,
-                              color: "#000",
-                              fontFamily: "Devanagari-bold",
-                            }}
-                          >
-                            {item.job_type === "machine_malik"
-                              ? "मशीनरी"
-                              : null}
-                          </Text>
-                          <Text
-                            style={{
-                              color: "black",
-                              fontFamily: "Devanagari-regular",
-                            }}
-                          >
-                            {moment(item?.datetime).format("DD/MM/YYYY")}
-                          </Text>
-                        </View>
-                        {/* <View
-                          style={[
-                            styles.jobStatusButton,
-                            {
-                              backgroundColor: getJobStatusColor(item.status),
-                              marginRight: -105,
-                            },
-                          ]}
-                        > */}
-                        {item?.status === "Completed" ? (
-                          <>
-                            <View
-                              style={[
-                                styles.jobStatusButton,
-                                {
-                                  backgroundColor: getJobStatusColor(
-                                    item.status
-                                  ),
-                                  marginRight: -105,
-                                },
-                              ]}
-                            >
-                              <View>
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                    fontFamily: "Devanagari-bold",
-                                  }}
-                                >
-                                  {item?.status === "Completed"
-                                    ? "समाप्त"
-                                    : null}
-                                </Text>
-                              </View>
-                            </View>
-                            <TouchableOpacity
-                              onPress={() => {
-                                navigation.navigate("MachineWork", {
-                                  id: item?.job_id,
-                                  item,
-                                  jobtype: item?.job_type,
-                                });
-                              }}
-                              style={{ marginTop: 15, marginRight: 15 }}
-                            >
-                              <Icon name="right" size={20}></Icon>
-                            </TouchableOpacity>
-                          </>
-                        ) : item?.status === "Rejected" ||
-                          item?.status === "Rejected-After-Payment" ||
-                          item?.status === "Cancelled" ||
-                          item?.status === "Cancelled-After-Payment" ? (
-                          <>
-                            <View
-                              style={[
-                                styles.jobStatusButton,
-                                {
-                                  backgroundColor: getJobStatusColor(
-                                    item.status
-                                  ),
-                                  marginRight: 20,
-                                },
-                              ]}
-                            >
-                              <TouchableOpacity>
-                                <Text
-                                  style={{
-                                    textAlign: "center",
-                                    marginTop: 7,
-                                    color: "#fff",
-                                    fontSize: 15,
-                                    fontWeight: "600",
-                                    fontFamily: "Devanagari-bold",
-                                  }}
-                                >
-                                  {item.status === "Rejected"
-                                    ? "रद्द"
-                                    : item.status === "Rejected-After-Payment"
-                                    ? "रद्द"
-                                    : item.status === "Cancelled"
-                                    ? "रद्द"
-                                    : item.status === "Cancelled-After-Payment"
-                                    ? "रद्द"
-                                    : null}
-                                </Text>
-                              </TouchableOpacity>
-                            </View>
-                          </>
-                        ) : null}
-                        {/* </View> */}
-                      </View>
-                    ))}
-                    {machineCancelled?.map((item, index) => (
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "100%",
-                          justifyContent: "space-between",
-                          marginTop: 50,
-                        }}
-                      >
-                        <View style={{ marginLeft: 30 }}>
-                          <Text
-                            style={{
-                              fontWeight: "600",
-                              fontSize: 18,
-                              color: "#000",
-                              fontFamily: "Devanagari-bold",
-                            }}
-                          >
-                            {item.job_type === "machine_malik"
-                              ? "मशीनरी"
-                              : null}
-                          </Text>
-
-                          <Text
-                            style={{
-                              color: "black",
-                              fontFamily: "Devanagari-regular",
-                            }}
-                          >
-                            {moment(item?.datetime).format("DD/MM/YYYY")}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: "30%",
-                            height: 33,
-                            backgroundColor: "#dc3545",
-                            marginRight: 20,
-                            marginTop: 10,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "center",
-                              marginTop: 7,
-                              color: "#fff",
-                              fontSize: 15,
-                              fontWeight: "600",
-                              fontFamily: "Devanagari-bold",
-                            }}
-                          >
-                            रद्द
-                          </Text>
                         </View>
                       </View>
                     ))}
@@ -830,190 +867,148 @@ export default function History({ navigation, route }) {
                               flexDirection: "row",
                               width: "100%",
                               justifyContent: "space-between",
-                              marginTop: 50,
+                              marginTop: 20,
                             }}
                           >
-                            <View style={{ marginLeft: 30 }}>
-                              <Text
-                                style={{
-                                  fontWeight: "600",
-                                  fontSize: 18,
-                                  fontFamily: "Devanagari-bold",
-                                }}
-                              >
-                                {item.job_type === "individuals_sahayak"
-                                  ? "सहायक  "
-                                  : item.job_type === "theke_pe_kam"
-                                  ? "ठेके पर काम"
-                                  : item.job_type === "machine_malik"
-                                  ? "मशीनरी"
-                                  : null}
-                              </Text>
-                              <Text
-                                style={{
-                                  color: "black",
-                                  fontFamily: "Devanagari-regular",
-                                }}
-                              >
-                                {moment(item?.datetime).format("DD/MM/YYYY")}
-                              </Text>
-                            </View>
-                            {/* <View
-                              style={[
-                                styles.jobStatusButton,
-                                {
-                                  backgroundColor: getJobStatusColor(
-                                    item.status
-                                  ),
-                                  marginLeft:
-                                    item.job_type === "individuals_sahayak"
-                                      ? 90
-                                      : 105,
-                                },
-                              ]}
-                            > */}
-                            {item.status === "Completed" ? (
-                              <>
-                                <View
-                                  style={[
-                                    styles.jobStatusButton,
-                                    {
-                                      backgroundColor: getJobStatusColor(
-                                        item.status
-                                      ),
-                                      marginLeft:
-                                        item.job_type === "individuals_sahayak"
-                                          ? 105
-                                          : item.job_type === "machine_malik"
-                                          ? 105
-                                          : 90,
-                                    },
-                                  ]}
-                                >
-                                  <View
-                                  // onPress={() => {
-                                  //   if (
-                                  //     item.job_type === "individuals_sahayak"
-                                  //   ) {
-                                  //     navigation.navigate(
-                                  //       "MyBook_SahayakForm",
-                                  //       {
-                                  //         id: item.id,
-                                  //         item,
-                                  //         usertype,
-                                  //       }
-                                  //     );
-                                  //   } else if (
-                                  //     item.job_type === "theke_pe_kam"
-                                  //   ) {
-                                  //     navigation.navigate(
-                                  //       "Theke_MachineForm",
-                                  //       {
-                                  //         id: item.id,
-                                  //         item,
-                                  //         usertype,
-                                  //       }
-                                  //     );
-                                  //   } else {
-                                  //     navigation.navigate("MachineWork", {
-                                  //       id: item.id,
-                                  //       item,
-                                  //       usertype,
-                                  //     });
-                                  //   }
-                                  // }}
-                                  >
-                                    <Text
-                                      style={{
-                                        textAlign: "center",
-                                        marginTop: 7,
-                                        color: "#fff",
-                                        fontSize: 15,
-                                        fontWeight: "600",
-                                        fontFamily: "Devanagari-bold",
-                                      }}
-                                    >
-                                      {/* विवरण देखे */}
-                                      {item?.status === "Accepted"
-                                        ? "स्वीकृत "
-                                        : item?.status === "Booked"
-                                        ? "बुक "
-                                        : item?.status === "Completed"
-                                        ? "समाप्त"
-                                        : null}
-                                    </Text>
-                                  </View>
-                                </View>
-                                <TouchableOpacity
-                                  onPress={() => {
-                                    if (
-                                      item.job_type === "individuals_sahayak"
-                                    ) {
-                                      navigation.navigate(
-                                        "MyBook_SahayakForm",
-                                        {
-                                          id: item.id,
-                                          item,
-                                          usertype,
-                                        }
-                                      );
-                                    } else if (
-                                      item.job_type === "theke_pe_kam"
-                                    ) {
-                                      navigation.navigate("Theke_MachineForm", {
-                                        id: item.id,
-                                        item,
-                                        usertype,
-                                      });
-                                    } else {
-                                      navigation.navigate("MachineWork", {
-                                        id: item.id,
-                                        item,
-                                        usertype,
-                                      });
-                                    }
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ marginLeft: 20 }}>
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 18,
+                                    fontFamily: "Devanagari-bold",
                                   }}
-                                  style={{ marginTop: 15, marginRight: 15 }}
                                 >
-                                  <Icon name="right" size={20}></Icon>
-                                </TouchableOpacity>
-                              </>
-                            ) : (
-                              <>
-                                <View
-                                  style={[
-                                    styles.jobStatusButton,
-                                    {
-                                      backgroundColor: getJobStatusColor(
-                                        item.status
-                                      ),
-                                      marginRight:
-                                        item.job_type === "individuals_sahayak"
-                                          ? 45
-                                          : item.job_type === "theke_pe_kam"
-                                          ? 35
-                                          : 45,
-                                    },
-                                  ]}
+                                  {item.job_type === "individuals_sahayak"
+                                    ? "सहायक  "
+                                    : item.job_type === "theke_pe_kam"
+                                    ? "ठेके पर काम"
+                                    : item.job_type === "machine_malik"
+                                    ? `${item.machine}`
+                                    : null}
+                                </Text>
+                                <Text
+                                  style={{
+                                    color: "black",
+                                    fontFamily: "Devanagari-regular",
+                                  }}
                                 >
-                                  <TouchableOpacity>
-                                    <Text
+                                  {moment(item?.datetime).format("DD/MM/YYYY")}
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={[styles.DoubleView]}>
+                              <View style={{ flexDirection: "row" }}>
+                                {item.status === "Completed" ? (
+                                  <>
+                                    <View
+                                      style={[
+                                        styles.jobStatusButton,
+                                        {
+                                          backgroundColor: getJobStatusColor(
+                                            item.status
+                                          ),
+                                          width: "60%",
+                                        },
+                                      ]}
+                                    >
+                                      <View>
+                                        <Text
+                                          style={{
+                                            textAlign: "center",
+                                            marginTop: 7,
+                                            color: "#fff",
+                                            fontSize: 15,
+                                            fontWeight: "600",
+                                            fontFamily: "Devanagari-bold",
+                                          }}
+                                        >
+                                          {/* विवरण देखे */}
+                                          {item?.status === "Accepted"
+                                            ? "स्वीकृत "
+                                            : item?.status === "Booked"
+                                            ? "बुक "
+                                            : item?.status === "Completed"
+                                            ? "समाप्त"
+                                            : null}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        if (
+                                          item.job_type ===
+                                          "individuals_sahayak"
+                                        ) {
+                                          navigation.navigate(
+                                            "MyBook_SahayakForm",
+                                            {
+                                              id: item.id,
+                                              item,
+                                              usertype,
+                                            }
+                                          );
+                                        } else if (
+                                          item.job_type === "theke_pe_kam"
+                                        ) {
+                                          navigation.navigate(
+                                            "Theke_MachineForm",
+                                            {
+                                              id: item.id,
+                                              item,
+                                              usertype,
+                                            }
+                                          );
+                                        } else {
+                                          navigation.navigate("MachineWork", {
+                                            id: item.id,
+                                            item,
+                                            usertype,
+                                          });
+                                        }
+                                      }}
                                       style={{
-                                        textAlign: "center",
-                                        marginTop: 7,
-                                        color: "#fff",
-                                        fontSize: 15,
-                                        fontWeight: "600",
-                                        fontFamily: "Devanagari-bold",
+                                        marginTop: 15,
+                                        marginRight: 15,
+                                        marginLeft: 10,
                                       }}
                                     >
-                                      {/* विवरण देखे */}
-                                      रद्द
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </>
-                            )}
+                                      <Icon name="right" size={20}></Icon>
+                                    </TouchableOpacity>
+                                  </>
+                                ) : (
+                                  <>
+                                    <View
+                                      style={[
+                                        styles.jobStatusButton,
+                                        {
+                                          backgroundColor: getJobStatusColor(
+                                            item.status
+                                          ),
+                                          width: "60%",
+                                        },
+                                      ]}
+                                    >
+                                      <View>
+                                        <Text
+                                          style={{
+                                            textAlign: "center",
+                                            marginTop: 7,
+                                            color: "#fff",
+                                            fontSize: 15,
+                                            fontWeight: "600",
+                                            fontFamily: "Devanagari-bold",
+                                          }}
+                                        >
+                                          {/* विवरण देखे */}
+                                          रद्द
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  </>
+                                )}
+                              </View>
+                            </View>
                             {/* </View> */}
                           </View>
                         ))}
@@ -1097,5 +1092,19 @@ const styles = StyleSheet.create({
     width: "30%",
     height: 33,
     marginTop: 10,
+  },
+  DoubleView: {
+    // borderColor: "#0099FF",
+    // borderRadius: 7,
+    // borderBottomRightRadius: 7,
+    width: "50%",
+    height: 48,
+    marginHorizontal: 10,
+    marginTop: 30,
+    // borderWidth: 1,
+  },
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
 });

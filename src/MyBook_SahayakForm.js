@@ -843,10 +843,10 @@ export default function MyBook_SahayakForm({ navigation, route }) {
               <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                 {item?.description}
               </Text>
-              <Image
+              {/* <Image
                 source={require("../assets/image/edit.png")}
                 style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-              />
+              /> */}
             </View>
             {usertype &&
               (usertype === "Sahayak" || usertype === "MachineMalik") && (
@@ -2005,18 +2005,18 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                   alignItems: "center",
                                 }}
                               >
-                                <TouchableOpacity
+                                <View
                                   style={[
                                     styles.BhuktanBtn,
                                     { width: "95%", marginBottom: 10 },
                                   ]}
-                                  onPress={() => {
-                                    if (itemStatus !== "Completed") {
-                                      navigation.replace("HomeStack", {
-                                        screen: "BottomTab",
-                                      });
-                                    }
-                                  }}
+                                  // onPress={() => {
+                                  //   if (itemStatus !== "Completed") {
+                                  //     navigation.replace("HomeStack", {
+                                  //       screen: "BottomTab",
+                                  //     });
+                                  //   }
+                                  // }}
                                 >
                                   <Text
                                     style={[
@@ -2029,7 +2029,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                   >
                                     समाप्त
                                   </Text>
-                                </TouchableOpacity>
+                                </View>
                                 <View
                                   style={{
                                     flexDirection: "row",
@@ -2293,7 +2293,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       )} */}
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
-                        {"\n"}कृपया आगे बढ़ने के लिए "समाप्त" पर क्लिक करें!
+                        {"\n"}कृपया आगे बढ़ने के लिए होम पेज पर जाएँ!
                       </Text>
                     </View>
                   </>

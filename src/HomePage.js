@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   BackHandler,
+  AppState,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/AntDesign";

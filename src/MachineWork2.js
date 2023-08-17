@@ -35,6 +35,7 @@ function MachineWork2({ navigation, route }) {
   const [complete, setCompleted] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [numbers, setNumber] = useState(0);
+  const [jobCurentStatus, setJobCurrentStatus] = useState("");
 
   const number = [1, 2, 3, 4];
 
@@ -73,9 +74,11 @@ function MachineWork2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("Thankyou");
+          console.log(data?.message);
+          // navigation.replace("Thankyou");
         } else {
           console.log("error message");
+          console.log("message", data?.message);
         }
       })
       .catch((error) => {
@@ -86,6 +89,10 @@ function MachineWork2({ navigation, route }) {
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
+  };
+
+  const handleStatus = () => {
+    setJobCurrentStatus("Completed");
   };
 
   const renderButton = (index) => {
@@ -135,6 +142,7 @@ function MachineWork2({ navigation, route }) {
       });
   };
   const bookingcompleted = () => {
+    RatingApi();
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -151,7 +159,9 @@ function MachineWork2({ navigation, route }) {
         let data = res?.data;
         setCompleted(data["booking-status"]);
         setResponse(data["booking-status"]);
-
+        if (data["booking-status"] === "Completed") {
+          navigation.replace("Thankyou");
+        }
         console.log("jdjjdd", data);
       })
       .catch((error) => {
@@ -352,7 +362,7 @@ function MachineWork2({ navigation, route }) {
                     ? "स्वीकार"
                     : response === "Ongoing"
                     ? "जारी है"
-                    : response === "Completed"
+                    : jobCurentStatus === "Completed"
                     ? "समाप्त"
                     : ""}
                 </Text>
@@ -380,7 +390,7 @@ function MachineWork2({ navigation, route }) {
             </View>
           </View>
 
-          {complete === "Completed" ? (
+          {jobCurentStatus === "Completed" ? (
             ""
           ) : (
             <>
@@ -423,7 +433,7 @@ function MachineWork2({ navigation, route }) {
             </>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <View
               style={{
                 width: "100%",
@@ -466,13 +476,13 @@ function MachineWork2({ navigation, route }) {
             </View>
           )}
 
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <TouchableOpacity
               style={[styles.BhuktanBtn, { marginTop: 20 }]}
               onPress={
                 response === "Ongoing" || item?.status === "Ongoing"
-                  ? bookingcompleted
-                  : response === "Completed"
+                  ? () => handleStatus()
+                  : jobCurentStatus === "Completed"
                   ? () => RatingApi()
                   : () => Ongoing()
               }
@@ -485,7 +495,7 @@ function MachineWork2({ navigation, route }) {
               >
                 {complete && complete["booking-status"] === "Ongoing"
                   ? "रेटिंग दें जारी है"
-                  : complete && complete["booking-status"] === "Completed"
+                  : jobCurentStatus === "Completed" // : complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
                   : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
@@ -494,11 +504,12 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => {
-                RatingApi();
+                // RatingApi();
+                bookingcompleted();
               }}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
@@ -528,12 +539,12 @@ function MachineWork2({ navigation, route }) {
                       </Text>
                     )}
                     {(response === "Ongoing" || item.status === "Ongoing") &&
-                      response !== "Completed" && (
+                      jobCurentStatus !== "Completed" && (
                         <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                           कार्य पूरा होने के बाद "काम पूरा हुआ" दबाएँ !
                         </Text>
                       )}
-                    {response === "Completed" && (
+                    {jobCurentStatus === "Completed" && (
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         कृपया रेटिंग दें! यदि आपका कोई सुझाव है तो कृपया लिखें
                         और फिर "समाप्त" बटन दबाएँ
@@ -546,7 +557,7 @@ function MachineWork2({ navigation, route }) {
 
           {item?.status != "Completed" &&
             response != "Ongoing" &&
-            response !== "Completed" && (
+            jobCurentStatus !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
                   onPress={() => {

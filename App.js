@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
   Button,
+  AppState,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -115,12 +116,20 @@ export default function App() {
       });
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener(async (response) => {
-        console.log(response.notification.request.content);
-        const { data } = response.notification.request.content;
-        console.log("notification Data ", data.key);
-        await AsyncStorage.setItem("key",data.key)
-      });
+      Notifications.addNotificationResponseReceivedListener(
+        async (response) => {
+          console.log(response.notification.request.content);
+          const { data } = response.notification.request.content;
+          console.log("notification Data ", data.key);
+          console.log("state", AppState.currentState);
+          if (data.key !== undefined) {
+            await AsyncStorage.setItem("key", data.key);
+            if (AppState.currentState === "background") {
+              await AsyncStorage.removeItem("key");
+            }
+          }
+        }
+      );
 
     return () => {
       Notifications.removeNotificationSubscription(

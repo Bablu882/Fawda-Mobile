@@ -185,78 +185,78 @@ export default function UserRegistration({ navigation, route }) {
 
   const RegisterServices = async () => {
     // if (isLocationGranted) {
-      let upi = "";
-      let refer_code = "";
-      if (user !== "Grahak") {
-        upi = upiId;
-      } else {
-        upi = "None";
-      }
-      if (referCode !== "") {
-        refer_code = referCode;
-      } else {
-        refer_code = "";
-      }
-      try {
-        const params = {
-          name,
-          gender,
-          phone: phone,
-          village,
-          mohalla,
-          state: selectedState,
-          district: selectedDistrict,
-          user_type: user,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          age: age,
-          pincode: pincode,
-          upiid: upi,
-          refer_code: refer_code,
-        };
-        console.log("params", params);
-        const response = await Service.post("/api/register/", params, {
-          headers: {
-            "Content-Type": "application/json",
-          },
+    let upi = "";
+    let refer_code = "";
+    if (user !== "Grahak") {
+      upi = upiId;
+    } else {
+      upi = "None";
+    }
+    if (referCode !== "") {
+      refer_code = referCode;
+    } else {
+      refer_code = "";
+    }
+    try {
+      const params = {
+        name,
+        gender,
+        phone: phone,
+        village,
+        mohalla,
+        state: selectedState,
+        district: selectedDistrict,
+        user_type: user,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        age: age,
+        pincode: pincode,
+        upiid: upi,
+        refer_code: refer_code,
+      };
+      console.log("params", params);
+      const response = await Service.post("/api/register/", params, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = response?.data;
+      if (data?.status == 201) {
+        console.log(data, "data");
+        // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
+        navigation.replace("Verification", {
+          user_type: data?.user_type,
+          phone,
         });
-        const data = response?.data;
-        if (data?.status == 201) {
-          console.log(data, "data");
-          // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
-          navigation.replace("Verification", {
-            user_type: data?.user_type,
-            phone,
-          });
-        } else if (data?.status === 0) {
-          console.log("error", data);
-          Toast.show("अमान्य रेफर कोड", Toast.LONG);
-        } else if (data?.status === 1) {
-          console.log("error", data);
-          Toast.show("रेफर कोड समान यूजर प्रकार का होना चाहिए", Toast.LONG);
-        } else if (data?.status === 2) {
-          console.log("error", data);
-          Toast.show("यह रेफर कोड अपनी उपयोग सीमा तक पहुंच गया है", Toast.LONG);
-        } else if (data?.status === 3) {
-          console.log("error", data);
-          Toast.show(
-            "रेफर कोड का उपयोग एक ही उपयोगकर्ता द्वारा दो बार नहीं किया जा सकता",
-            Toast.LONG
-          );
-        } else {
-          console.log("error", data);
-          Toast.show(
-            "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
-            Toast.LONG
-          );
-        }
-      } catch (error) {
-        console.log(error.data);
+      } else if (data?.status === 0) {
+        console.log("error", data);
+        Toast.show("अमान्य रेफर कोड", Toast.LONG);
+      } else if (data?.status === 1) {
+        console.log("error", data);
+        Toast.show("रेफर कोड समान यूजर प्रकार का होना चाहिए", Toast.LONG);
+      } else if (data?.status === 2) {
+        console.log("error", data);
+        Toast.show("यह रेफर कोड अपनी उपयोग सीमा तक पहुंच गया है", Toast.LONG);
+      } else if (data?.status === 3) {
+        console.log("error", data);
+        Toast.show(
+          "रेफर कोड का उपयोग एक ही उपयोगकर्ता द्वारा दो बार नहीं किया जा सकता",
+          Toast.LONG
+        );
+      } else {
+        console.log("error", data);
         Toast.show(
           "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
           Toast.LONG
         );
       }
+    } catch (error) {
+      console.log(error.data);
+      Toast.show(
+        "कुछ समस्या आ रही है, कृपया बाद में पुनः प्रयास करें!",
+        Toast.LONG
+      );
+    }
     // } else {
     //   // Toast.show("स्थान की अनुमति आवश्यक है!", Toast.LONG);
     //   handlePermissionAlert();
@@ -339,7 +339,7 @@ export default function UserRegistration({ navigation, route }) {
 
       let { coords } = await Location.getCurrentPositionAsync({});
       setLocation(coords);
-      console.log("location",location);
+      console.log("location", location);
     })();
   }, []);
 
@@ -351,18 +351,24 @@ export default function UserRegistration({ navigation, route }) {
       handlePermissionAlert();
       return;
     } else {
-      setIsLocationGranted(true);
+      // setIsLocationGranted(true);
       console.log("Permission to access location was granted");
       let { coords } = await Location.getCurrentPositionAsync({});
       setLocation(coords);
+      // console.log(coords);
+      if (coords.latitude !== "" && coords.longitude !== "") {
+        setIsLocationGranted(true);
+        RegisterServices();
+      }
+      // RegisterServices();
     }
     // let { coords } = await Location.getCurrentPositionAsync({});
     // setLocation(coords);
     // console.log(coords);
-    if (location.latitude !== "" && location.longitude !== "") {
-      setIsLocationGranted(true);
-      RegisterServices();
-    }
+    // if (location.latitude !== "" && location.longitude !== "") {
+    //   setIsLocationGranted(true);
+    //   // RegisterServices();
+    // }
     // RegisterServices();
   };
 
@@ -601,7 +607,7 @@ export default function UserRegistration({ navigation, route }) {
               borderWidth: 1,
             }}
           >
-            <Text style={styles.label}>Upi Id:</Text>
+            <Text style={styles.label}>UPI ID:</Text>
             <TextInput
               style={styles.TextInput}
               placeholder=""

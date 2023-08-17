@@ -294,8 +294,7 @@ export default function ThekeParKaam_Form({ navigation }) {
       errorMessages.description = "कृपया विवरण दर्ज करें!";
       valid = false;
     } else if (!/^[^0-9]+$/.test(description.trim())) {
-      errorMessages.description =
-        "कृपया एक वैध विवरण दर्ज करें (केवल अक्षरों में लिखें)!";
+      errorMessages.description = "केवल अक्षरों में लिखें!";
       valid = false;
     }
 

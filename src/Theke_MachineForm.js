@@ -641,10 +641,10 @@ function Theke_MachineForm({ navigation, route }) {
                 <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                   {item.description}
                 </Text>
-                <Image
+                {/* <Image
                   source={require("../assets/image/edit.png")}
                   style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-                />
+                /> */}
               </View>
               {usertype &&
                 (usertype === "Sahayak" || usertype === "MachineMalik") && (
@@ -686,7 +686,9 @@ function Theke_MachineForm({ navigation, route }) {
                       placeholderTextColor="#848484"
                       placeholder=""
                     />
-                    <Text style={{ marginTop: 15, right: 10, color: "#0070C0" }}>
+                    <Text
+                      style={{ marginTop: 15, right: 10, color: "#0070C0" }}
+                    >
                       {item?.land_area}
                       {item?.land_type == "Bigha"
                         ? " बीघा"
@@ -1180,18 +1182,18 @@ function Theke_MachineForm({ navigation, route }) {
                                     alignItems: "center",
                                   }}
                                 >
-                                  <TouchableOpacity
+                                  <View
                                     style={[
                                       styles.BhuktanBtn,
                                       { width: "95%", marginBottom: 10 },
                                     ]}
-                                    onPress={() => {
-                                      if (itemStatus !== "Completed") {
-                                        navigation.replace("HomeStack", {
-                                          screen: "BottomTab",
-                                        });
-                                      }
-                                    }}
+                                    // onPress={() => {
+                                    //   if (itemStatus !== "Completed") {
+                                    //     navigation.replace("HomeStack", {
+                                    //       screen: "BottomTab",
+                                    //     });
+                                    //   }
+                                    // }}
                                   >
                                     <Text
                                       style={[
@@ -1201,7 +1203,7 @@ function Theke_MachineForm({ navigation, route }) {
                                     >
                                       समाप्त
                                     </Text>
-                                  </TouchableOpacity>
+                                  </View>
                                   <View
                                     style={{
                                       flexDirection: "row",
@@ -1284,8 +1286,8 @@ function Theke_MachineForm({ navigation, route }) {
                                         { maxWidth: "98%" },
                                       ]}
                                     >
-                                      कृपया ऊपर दिए गए नंबर पर बात करें और
-                                      कृपया नौकरी के लिए समय पर पहुंचें!
+                                      कृपया ऊपर दिए गए नंबर पर बात करें और कृपया
+                                      नौकरी के लिए समय पर पहुंचें!
                                     </Text>
                                   </View>
                                 </View>
@@ -1434,7 +1436,7 @@ function Theke_MachineForm({ navigation, route }) {
                       <Text style={styles.label}>टिप्पणी</Text>
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
-                        {"\n"}कृपया आगे बढ़ने के लिए "समाप्त" पर क्लिक करें!
+                        {"\n"}कृपया आगे बढ़ने के लिए होम पेज पर जाएँ!
                       </Text>
                     </View>
                   </>

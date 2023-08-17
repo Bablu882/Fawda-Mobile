@@ -775,7 +775,12 @@ export default function MachineWork({ navigation, route }) {
                         />
                       ) : (
                         <View>
-                          <Text style={[styles.Text, { marginRight: 10, color: "#0099FF" }]}>
+                          <Text
+                            style={[
+                              styles.Text,
+                              { marginRight: 10, color: "#0099FF" },
+                            ]}
+                          >
                             ₹ {item?.total_amount_machine}
                           </Text>
                         </View>
@@ -1078,18 +1083,18 @@ export default function MachineWork({ navigation, route }) {
                                         alignItems: "center",
                                       }}
                                     >
-                                      <TouchableOpacity
+                                      <View
                                         style={[
                                           styles.BhuktanBtn,
                                           { width: "95%", marginBottom: 10 },
                                         ]}
-                                        onPress={() => {
-                                          if (itemStatus !== "Completed") {
-                                            navigation.replace("HomeStack", {
-                                              screen: "BottomTab",
-                                            });
-                                          }
-                                        }}
+                                        // onPress={() => {
+                                        //   if (itemStatus !== "Completed") {
+                                        //     navigation.replace("HomeStack", {
+                                        //       screen: "BottomTab",
+                                        //     });
+                                        //   }
+                                        // }}
                                       >
                                         <Text
                                           style={[
@@ -1099,7 +1104,7 @@ export default function MachineWork({ navigation, route }) {
                                         >
                                           समाप्त
                                         </Text>
-                                      </TouchableOpacity>
+                                      </View>
                                       <View
                                         style={{
                                           flexDirection: "row",
@@ -1342,7 +1347,7 @@ export default function MachineWork({ navigation, route }) {
 
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
-                        {"\n"}कृपया आगे बढ़ने के लिए "समाप्त" पर क्लिक करें!
+                        {"\n"}कृपया आगे बढ़ने के लिए होम पेज पर जाएँ!
                       </Text>
                     </View>
                   </>

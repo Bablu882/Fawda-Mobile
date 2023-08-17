@@ -46,6 +46,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const [selectedJob, setSelectedJob] = useState(null);
   const [countMale, setCountMale] = useState(0);
   const [countFemale, setCountFemale] = useState(0);
+  const [jobCurentStatus, setJobCurrentStatus] = useState("");
 
   console.log("Count", countFemale, "  ", countMale);
 
@@ -109,6 +110,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   };
 
   const RatingApi = () => {
+    console.log("getting hit")
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -127,10 +129,11 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("Thankyou");
+          // navigation.replace("Thankyou");
           console.log("fjfjf", data);
         } else {
           console.log("error message");
+          console.log("message", data?.message);
         }
       })
       .catch((error) => {
@@ -148,6 +151,10 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
   const handleModalClose = () => {
     setModalVisible(false);
     setSelectedBooking(null); // Reset selectedBooking when the modal is closed
+  };
+
+  const handleStatus = () => {
+    setJobCurrentStatus("Completed");
   };
 
   const renderButton = (index) => {
@@ -194,6 +201,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
       });
   };
   const bookingcompleted = () => {
+    RatingApi();
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -211,6 +219,9 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
         let data = res?.data;
         setCompleted(data["booking-status"]);
         setResponse(data["booking-status"]);
+        if (data["booking-status"] === "Completed") {
+          navigation.replace("Thankyou");
+        }
       })
       .catch((error) => {
         console.log("error", error);
@@ -316,10 +327,10 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
           >
             <Text style={styles.label}>काम का विवरण</Text>
             <Text style={[styles.TextInput]}>{item?.description}</Text>
-            <Image
+            {/* <Image
               source={require("../assets/image/edit.png")}
               style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-            />
+            /> */}
           </View>
 
           <View
@@ -496,7 +507,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                     ? "स्वीकार"
                     : response === "Ongoing"
                     ? "जारी है"
-                    : response === "Completed"
+                    : jobCurentStatus === "Completed"
                     ? "समाप्त"
                     : ""}
                 </Text>
@@ -524,7 +535,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               )}
             </View>
           </View>
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <>
               <View
                 style={[
@@ -646,7 +657,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -686,13 +697,13 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               </TouchableOpacity>
             </View>
           )}
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
                 response === "Ongoing" || item?.status === "Ongoing"
-                  ? bookingcompleted
-                  : response === "Completed"
+                  ? () => handleStatus()
+                  : jobCurentStatus === "Completed"
                   ? () => RatingApi()
                   : () => checkSahayakCount()
               }
@@ -700,7 +711,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
               <Text style={[styles.loginText, { color: "#fff" }]}>
                 {complete && complete["booking-status"] === "Ongoing"
                   ? "रेटिंग दें जारी है"
-                  : complete && complete["booking-status"] === "Completed"
+                  : jobCurentStatus === "Completed" //complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
                   : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
@@ -709,11 +720,12 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={() => {
-                RatingApi();
+                // RatingApi();
+                bookingcompleted();
               }}
             >
               <Text
@@ -750,12 +762,12 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
                       </Text>
                     )}
                     {(response === "Ongoing" || item.status === "Ongoing") &&
-                      response !== "Completed" && (
+                      jobCurentStatus !== "Completed" && (
                         <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                           कार्य पूरा होने के बाद "काम पूरा हुआ" दबाएँ !
                         </Text>
                       )}
-                    {response === "Completed" && (
+                    {jobCurentStatus === "Completed" && (
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         कृपया रेटिंग दें! यदि आपका कोई सुझाव है तो कृपया लिखें
                         और फिर "समाप्त" बटन दबाएँ
@@ -768,7 +780,7 @@ export default function Mybooking_Sahayak2({ navigation, route }) {
 
           {item?.status != "Completed" &&
             response != "Ongoing" &&
-            response !== "Completed" && (
+            jobCurentStatus !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
                   onPress={() => {

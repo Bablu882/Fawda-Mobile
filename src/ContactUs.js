@@ -271,7 +271,11 @@ export default function ContactUs({ navigation, route }) {
                 placeholder=""
                 placeholderTextColor={"#848484"}
               >
-                {state.gender}
+                {state.gender === "Male"
+                  ? "पुरुष"
+                  : state.gender === "Female"
+                  ? "महिला"
+                  : null}
               </Text>
             </View>
             <View style={[styles.inputView, { position: "relative" }]}>

@@ -53,7 +53,7 @@ export default function MachineBooking({ navigation }) {
   const [other, setOther] = useState("");
   const [description, setDescriptions] = useState("");
   const [sowing, setSowing] = useState([]);
-  const [displayDate , setDisplayDate] = useState("")
+  const [displayDate, setDisplayDate] = useState("");
   const [errors, setErrors] = useState({
     showDate: "",
     time: "",
@@ -333,8 +333,7 @@ export default function MachineBooking({ navigation }) {
       errorMessages.description = "कृपया विवरण दर्ज करें!";
       valid = false;
     } else if (!/^[^0-9]+$/.test(description.trim())) {
-      errorMessages.description =
-        "कृपया एक वैध विवरण दर्ज करें (केवल अक्षरों में लिखें)!";
+      errorMessages.description = "केवल अक्षरों में लिखें!";
       valid = false;
     }
 

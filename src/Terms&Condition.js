@@ -57,12 +57,15 @@ export function Terms_Condition({ route, navigation }) {
               height: 120,
               marginLeft: "auto",
               marginRight: "auto",
-              marginBottom: "auto",
             }}
           />
 
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+            style={{
+              textAlign: "center",
+              fontSize: 30,
+              fontWeight: "600",
+            }}
           >
             नियम और शर्तें
           </Text>
@@ -72,7 +75,7 @@ export function Terms_Condition({ route, navigation }) {
             paddingHorizontal: 20,
             paddingTop: 20,
             backgroundColor: "#fff",
-            marginTop: "auto",
+            marginTop: 15,
           }}
         >
           <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>

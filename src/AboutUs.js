@@ -31,12 +31,15 @@ export function About_us({ route, navigation }) {
               height: 120,
               marginLeft: "auto",
               marginRight: "auto",
-              marginBottom: "auto",
             }}
           />
 
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600" }}
+            style={{
+              textAlign: "center",
+              fontSize: 30,
+              fontWeight: "600",
+            }}
           >
             हमारे बारे में
           </Text>
@@ -46,7 +49,7 @@ export function About_us({ route, navigation }) {
             paddingHorizontal: 20,
             paddingTop: 20,
             backgroundColor: "#fff",
-            marginTop: "auto",
+            marginTop: 18,
           }}
         >
           {/* <Text style={{fontSize:18, textAlign:"justify"}}>{terms?.client_info?.privacy_policy}</Text> */}
