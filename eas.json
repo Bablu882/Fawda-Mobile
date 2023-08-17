@@ -13,12 +13,7 @@
     "preview": {
       "distribution": "internal",
        "android": {
-        "buildType": "apk",
-        "extraPackageJson": {
-          "expo": {
-            "modules": ["expo-linking"]
-          }
-        }
+        "buildType": "apk"
         },
       "ios": {
         "resourceClass": "m-medium"
@@ -26,14 +21,6 @@
     },
     
     "production": {
-      "android": {
-        "buildType":"aab",
-        "extraPackageJson": {
-          "expo": {
-            "modules": ["expo-linking"]
-          }
-        }
-      },
       "ios": {
         "resourceClass": "m-medium"
       }
