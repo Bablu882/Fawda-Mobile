@@ -39,18 +39,19 @@ export default function ContactUs({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [appVersion, setAppVersion] = useState(0);
 
-  function handleCallPress() {
+  const handleCallPress = async () => {
     const url = `tel:${phoneno}`;
-    Linking.canOpenURL(url)
-      ?.then((supported) => {
+    await Linking.canOpenURL(url)
+      ?.then(async (supported) => {
         if (!supported) {
           console.log("Phone number is not available");
         } else {
-          return Linking.openURL(url);
+          await Linking.openURL(url);
+          // return Linking.openURL(url);
         }
       })
       .catch((err) => console.error("An error occurred", err));
-  }
+  };
 
   const validatePhone = () => {
     const phoneRegex = /^\d{10}$/;

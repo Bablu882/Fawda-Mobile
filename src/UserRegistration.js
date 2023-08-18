@@ -351,25 +351,14 @@ export default function UserRegistration({ navigation, route }) {
       handlePermissionAlert();
       return;
     } else {
-      // setIsLocationGranted(true);
       console.log("Permission to access location was granted");
-      let { coords } = await Location.getCurrentPositionAsync({});
-      setLocation(coords);
-      // console.log(coords);
-      if (coords.latitude !== "" && coords.longitude !== "") {
-        setIsLocationGranted(true);
-        RegisterServices();
-      }
-      // RegisterServices();
     }
-    // let { coords } = await Location.getCurrentPositionAsync({});
-    // setLocation(coords);
-    // console.log(coords);
-    // if (location.latitude !== "" && location.longitude !== "") {
-    //   setIsLocationGranted(true);
-    //   // RegisterServices();
-    // }
-    // RegisterServices();
+    let { coords } = await Location.getCurrentPositionAsync({});
+    setLocation(coords);
+    if (location.latitude !== "" && location.longitude !== "") {
+      setIsLocationGranted(true);
+      RegisterServices();
+    }
   };
 
   return (

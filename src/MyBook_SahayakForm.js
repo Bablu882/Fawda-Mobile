@@ -75,14 +75,15 @@ export default function MyBook_SahayakForm({ navigation, route }) {
     setEditMale(true);
     textInputRef.current.focus();
   };
-  const handleCallPress = (phone) => {
+  const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    Linking.canOpenURL(url)
-      ?.then((supported) => {
+    await Linking.canOpenURL(url)
+      ?.then(async (supported) => {
         if (!supported) {
           console.log("Phone number is not available");
         } else {
-          return Linking.openURL(url);
+          await Linking.openURL(url);
+          // return Linking.openURL(url);
         }
       })
       .catch((err) => console.error("An error occurred", err));

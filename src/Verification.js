@@ -153,7 +153,7 @@ export default function Verification({ navigation, route }) {
             placeholderTextColor={"#848484"}
             secureTextEntry={true}
             keyboardType="numeric"
-            maxLength={6}
+            maxLength={4}
             onChangeText={(text) => setOtp(text, "otp")}
           />
         </View>
