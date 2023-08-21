@@ -55,16 +55,17 @@ export default function MachineWork({ navigation, route }) {
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    await Linking.canOpenURL(url)
-      ?.then(async (supported) => {
-        if (!supported) {
-          console.log("Phone number is not available");
-        } else {
-          await Linking.openURL(url);
-          // return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    await Linking.openURL(url);
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
   };
 
   const onAcceptPress = async () => {
@@ -822,12 +823,14 @@ export default function MachineWork({ navigation, route }) {
                             <TouchableOpacity
                               onPress={() => {
                                 checkSahayakStatus();
+                                setEdit(false);
                               }}
                               style={{
                                 backgroundColor: "#44A347",
                                 paddingHorizontal: 10,
                                 padding: 5,
                               }}
+                              disabled={!edit}
                             >
                               <Text
                                 style={[styles.TextWhite, { fontSize: 10 }]}

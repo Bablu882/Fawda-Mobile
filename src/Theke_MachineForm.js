@@ -840,12 +840,16 @@ function Theke_MachineForm({ navigation, route }) {
                                 </Text>
                               </TouchableOpacity>
                               <TouchableOpacity
-                                onPress={() => checkSahayakStatus()}
+                                onPress={() => {
+                                  checkSahayakStatus();
+                                  setEdit(false);
+                                }}
                                 style={{
                                   backgroundColor: "#44A347",
                                   paddingHorizontal: 10,
                                   paddingTop: 4,
                                 }}
+                                disabled={!edit}
                               >
                                 <Text
                                   style={[

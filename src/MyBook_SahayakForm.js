@@ -77,16 +77,17 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    await Linking.canOpenURL(url)
-      ?.then(async (supported) => {
-        if (!supported) {
-          console.log("Phone number is not available");
-        } else {
-          await Linking.openURL(url);
-          // return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    await Linking.openURL(url)
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
   };
 
   const handleCountSahayak = () => {
@@ -1036,6 +1037,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                   paddingHorizontal: 10,
                                   padding: 5,
                                 }}
+                                disabled={!edit || !editmale}
                               >
                                 <Text
                                   style={[styles.TextWhite, { fontSize: 10 }]}

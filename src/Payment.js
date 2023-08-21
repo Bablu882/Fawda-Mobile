@@ -45,6 +45,7 @@ export default function Payment({ route, navigation }) {
   const [webViewLoaded, setWebViewLoaded] = useState(false);
   const [htmlResponse, setHtmlResponse] = useState(null);
   const usertype = useSelector(selectUserType);
+  const [loadingError, setLoadingError] = useState(false);
   const numBookings = route?.params?.bookings;
 
   const paymentStatus = async () => {
@@ -113,12 +114,37 @@ export default function Payment({ route, navigation }) {
       setFawdaFee(data?.fawda_fee);
       setUserAmount(data?.user_amount);
       setTotalAmount(data?.total_amount);
-      setIsLoading(false);
+      // setIsLoading(false);
       encryptedParams(data?.total_amount.toString());
     } catch (error) {
       console.log("error", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // const handleUrlLoading = async (event) => {
+  //   const url = event.url;
+  //   console.log(event);
+
+  //   if (url.includes("upi://pay?pa")) {
+  //     await Linking.canOpenURL(url)
+  //       .then(async (supported) => {
+  //         if (supported) {
+  //           await Linking.openURL(url);
+  //         } else {
+  //           Toast.show("UPI supported applications not found", Toast.LONG);
+  //         }
+  //       })
+  //       .catch(() => {
+  //         Toast.show("An error occurred", Toast.LONG);
+  //       });
+
+  //     return true; // Prevent the WebView from loading the URL
+  //   }
+
+  //   return false; // Continue loading the URL in the WebView
+  // };
 
   const encryptedParams = async (Amount) => {
     setIsLoading(true);
@@ -196,8 +222,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              // fetchPaymentHtml();
-              paymentStatus();
+              fetchPaymentHtml();
+              // paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -214,8 +240,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            // fetchPaymentHtml();
-            paymentStatus();
+            fetchPaymentHtml();
+            // paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -228,8 +254,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            // fetchPaymentHtml();
-            paymentStatus();
+            fetchPaymentHtml();
+            // paymentStatus();
           }
         }
       }
@@ -309,6 +335,13 @@ export default function Payment({ route, navigation }) {
           onLoad={handleWebViewLoad}
           injectedJavaScript={`window.ReactNativeWebView.postMessage(JSON.stringify(document.body.innerHTML));`}
           onMessage={onWebViewMessage}
+          // onError={() => setLoadingError(true)}
+          // onShouldStartLoadWithRequest={handleUrlLoading}
+          // renderError={() => {
+          //   if (loadingError) {
+          //     return console.log("error");
+          //   }
+          // }}
         />
       </View>
     );

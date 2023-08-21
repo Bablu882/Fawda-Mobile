@@ -335,51 +335,53 @@ export default function Homepage({ navigation, route }) {
                   }}
                 />
               </View>
-              <View
-                style={{
-                  marginVertical: 20,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginHorizontal: 10,
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity
-                    style={[
-                      styles.button,
-                      activeButtons === 1 && styles.activeButton,
-                    ]}
-                    onPress={() => {
-                      handlePress(1), handlePrevPage();
-                    }}
-                  >
-                    <Icon
-                      name="left"
-                      size={20}
-                      color={"#fff"}
-                      style={{ lineHeight: 30 }}
-                    />
-                  </TouchableOpacity>
+              {totalPages > 1 && (
+                <View
+                  style={{
+                    marginVertical: 20,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginHorizontal: 10,
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity
+                      style={[
+                        styles.button,
+                        activeButtons === 1 && styles.activeButton,
+                      ]}
+                      onPress={() => {
+                        handlePress(1), handlePrevPage();
+                      }}
+                    >
+                      <Icon
+                        name="left"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={[
-                      { marginLeft: 10 },
-                      styles.button,
-                      activeButtons === 2 && styles.activeButton,
-                    ]}
-                    onPress={() => {
-                      handlePress(2), handleNextPage();
-                    }}
-                  >
-                    <Icon
-                      name="right"
-                      size={20}
-                      color={"#fff"}
-                      style={{ lineHeight: 30 }}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        { marginLeft: 10 },
+                        styles.button,
+                        activeButtons === 2 && styles.activeButton,
+                      ]}
+                      onPress={() => {
+                        handlePress(2), handleNextPage();
+                      }}
+                    >
+                      <Icon
+                        name="right"
+                        size={20}
+                        color={"#fff"}
+                        style={{ lineHeight: 30 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
+              )}
             </>
           ) : (
             <>

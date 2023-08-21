@@ -943,48 +943,50 @@ export default function MyBooking({ navigation, route }) {
                       }}
                     />
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      marginTop: 20,
-                      marginLeft: 10,
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={[
-                        styles.button,
-                        activeButton === 1 && styles.activeButton,
-                      ]}
-                      onPress={() => {
-                        handlePress(1), handlePrevPage();
+                  {totalPages > 1 && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 20,
+                        marginLeft: 10,
                       }}
                     >
-                      <Icon
-                        name="left"
-                        size={20}
-                        color={"#fff"}
-                        style={{ lineHeight: 30 }}
-                      />
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.button,
+                          activeButton === 1 && styles.activeButton,
+                        ]}
+                        onPress={() => {
+                          handlePress(1), handlePrevPage();
+                        }}
+                      >
+                        <Icon
+                          name="left"
+                          size={20}
+                          color={"#fff"}
+                          style={{ lineHeight: 30 }}
+                        />
+                      </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[
-                        { marginLeft: 10 },
-                        styles.button,
-                        activeButton === 2 && styles.activeButton,
-                      ]}
-                      onPress={() => {
-                        handlePress(2), handleNextPage();
-                      }}
-                    >
-                      <Icon
-                        name="right"
-                        size={20}
-                        color={"#fff"}
-                        style={{ lineHeight: 30 }}
-                      />
-                    </TouchableOpacity>
-                  </View>
+                      <TouchableOpacity
+                        style={[
+                          { marginLeft: 10 },
+                          styles.button,
+                          activeButton === 2 && styles.activeButton,
+                        ]}
+                        onPress={() => {
+                          handlePress(2), handleNextPage();
+                        }}
+                      >
+                        <Icon
+                          name="right"
+                          size={20}
+                          color={"#fff"}
+                          style={{ lineHeight: 30 }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                   <View
                     style={{
                       marginVertical: 20,

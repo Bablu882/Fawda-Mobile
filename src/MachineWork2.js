@@ -45,16 +45,17 @@ function MachineWork2({ navigation, route }) {
 
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    await Linking.canOpenURL(url)
-      ?.then(async (supported) => {
-        if (!supported) {
-          console.log("Phone number is not available");
-        } else {
-          await Linking.openURL(url);
-          // return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    await Linking.openURL(url);
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
   };
 
   const RatingApi = () => {
