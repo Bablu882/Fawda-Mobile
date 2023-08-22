@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Toast from "react-native-simple-toast";
@@ -21,7 +22,7 @@ import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
 import CustomComponent from "../Component/CustomComponent";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 function Theke_MachineForm({ navigation, route }) {
   const dispatch = useDispatch();
@@ -60,16 +61,17 @@ function Theke_MachineForm({ navigation, route }) {
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    await Linking.canOpenURL(url)
-      ?.then(async (supported) => {
-        if (!supported) {
-          console.log("Phone number is not available");
-        } else {
-          await Linking.openURL(url);
-          // return Linking.openURL(url);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+    await Linking.openURL(url);
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
   };
 
   const accptThekha = async () => {

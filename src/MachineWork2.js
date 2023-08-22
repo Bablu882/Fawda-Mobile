@@ -9,6 +9,7 @@ import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +17,7 @@ import service from "../service";
 import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
 import Toast from "react-native-simple-toast";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";

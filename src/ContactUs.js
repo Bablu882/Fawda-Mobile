@@ -9,6 +9,7 @@ import {
   ScrollView,
   Button,
   Alert,
+  Linking,
   //   RadioButton
 } from "react-native";
 
@@ -21,7 +22,7 @@ import {
   clearAuth,
 } from "../slices/authSlice";
 import Service from "../service/index";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 import Toast from "react-native-simple-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";

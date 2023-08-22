@@ -9,6 +9,7 @@ import {
   Image,
   ScrollView,
   Modal,
+  Linking
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
@@ -18,7 +19,7 @@ import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-simple-toast";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();

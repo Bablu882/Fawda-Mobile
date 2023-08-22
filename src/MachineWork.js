@@ -10,6 +10,7 @@ import {
   RefreshControl,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
@@ -19,7 +20,7 @@ import Toast from "react-native-simple-toast";
 import CustomComponent from "../Component/CustomComponent";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 export default function MachineWork({ navigation, route }) {
   const [thekeperKam, setThekeperKam] = useState([]);

@@ -144,10 +144,11 @@ export default function UserRegistration({ navigation, route }) {
       if (referCode.trim().length > 6) {
         errorMessages.refercode = "कृपया एक वैध रेफरकोड दर्ज करें!";
         valid = false;
-      } else if (!/^(?=.*[a-zA-Z])(?=.*\d).+$/.test(referCode)) {
-        errorMessages.refercode = "कृपया एक वैध रेफरकोड दर्ज करें!";
-        valid = false;
       }
+      //  else if (!/^(?=.*[a-zA-Z])(?=.*\d).+$/.test(referCode)) {
+      //   errorMessages.refercode = "कृपया एक वैध रेफरकोड दर्ज करें!";
+      //   valid = false;
+      // }
     }
 
     if (mohalla.trim() === "") {

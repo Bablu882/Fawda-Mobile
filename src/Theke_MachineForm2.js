@@ -9,6 +9,7 @@ import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +19,7 @@ import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-simple-toast";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 function Theke_MachineForm2({ navigation, route }) {
   const dispatch = useDispatch();

@@ -11,6 +11,7 @@ import {
   Button,
   RefreshControl,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
@@ -21,7 +22,7 @@ import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import CustomComponent from "../Component/CustomComponent";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 export default function MyBook_SahayakForm({ navigation, route }) {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [showSecondView, setShowSecondView] = useState(false);
   const [thekeperKams, setThekeperKams] = useState([]);
   const [thekeparpending, setThekeperKamPending] = useState([]);
+  // console.log(thekeparpending);
   const [thekeperKam, setThekeperKam] = useState([]);
   const [totalFemaleAccepted, setTotalFemaleAccepted] = useState(0);
   const [acceptedCount, setAcceptedCount] = useState(null);
@@ -55,8 +57,8 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const [jobsData, setJobsData] = useState([]);
   const [countAcceptedJobs, setCountAcceptedJobs] = useState();
   const [acceptedStatus, setAcceptedStatus] = useState();
-  const [pendingmale, setPendingMale] = useState();
-  const [pendingfemales, setPendingFemale] = useState();
+  const [pendingmale, setPendingMale] = useState(0);
+  const [pendingfemales, setPendingFemale] = useState(0);
   const [acceptmale, setAcceptMale] = useState();
   const [acceptfemale, setAcceptFemale] = useState();
   const [countprice, setCountPrice] = useState();
@@ -77,7 +79,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
-    await Linking.openURL(url)
+    await Linking.openURL(url);
     // await Linking.canOpenURL(url)
     //   ?.then(async (supported) => {
     //     if (!supported) {
@@ -1724,19 +1726,32 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                                       ]}
                                     >
                                       <Text style={styles.label}>टिप्पणी</Text>
-                                      {statusAccept === "Accepted" && (
-                                        <Text
-                                          style={[
-                                            styles.TextInput,
-                                            { maxWidth: "98%" },
-                                          ]}
-                                        >
-                                          जितने सहायक हैं उतने स्वीकार करें या
-                                          सभी सहायकों के आने की प्रतीक्षा करें!
-                                          फिर आपको भुगतान के लिए सूचित किया
-                                          जाएगा!
-                                        </Text>
-                                      )}
+                                      {thekeparpending[0] === undefined &&
+                                        statusAccept === "Accepted" && (
+                                          <Text
+                                            style={[
+                                              styles.TextInput,
+                                              { maxWidth: "98%" },
+                                            ]}
+                                          >
+                                            काम स्वीकृत!{`\n`}कृपया सभी सहायक
+                                            स्वीकार करें!
+                                          </Text>
+                                        )}
+                                      {statusAccept === "Accepted" &&
+                                        thekeparpending[0] !== undefined && (
+                                          <Text
+                                            style={[
+                                              styles.TextInput,
+                                              { maxWidth: "98%" },
+                                            ]}
+                                          >
+                                            जितने सहायक हैं उतने स्वीकार करें या
+                                            सभी सहायकों के आने की प्रतीक्षा
+                                            करें! फिर आपको भुगतान के लिए सूचित
+                                            किया जाएगा!
+                                          </Text>
+                                        )}
                                     </View>
                                   </>
                                 )}

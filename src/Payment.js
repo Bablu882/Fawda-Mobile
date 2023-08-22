@@ -96,8 +96,14 @@ export default function Payment({ route, navigation }) {
 
   const paymentDetails = async () => {
     setIsLoading(true);
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
     let params = {
-      job_id: JSON.stringify(item?.job_id),
+      job_id: Job_id,
       job_number: item?.job_number,
     };
 
@@ -123,34 +129,41 @@ export default function Payment({ route, navigation }) {
     }
   };
 
-  // const handleUrlLoading = async (event) => {
-  //   const url = event.url;
-  //   console.log(event);
+  const handleUrlLoading = (event) => {
+    const url = event.url;
+    console.log(event);
+    console.log(url);
 
-  //   if (url.includes("upi://pay?pa")) {
-  //     await Linking.canOpenURL(url)
-  //       .then(async (supported) => {
-  //         if (supported) {
-  //           await Linking.openURL(url);
-  //         } else {
-  //           Toast.show("UPI supported applications not found", Toast.LONG);
-  //         }
-  //       })
-  //       .catch(() => {
-  //         Toast.show("An error occurred", Toast.LONG);
-  //       });
+    if (url.includes("upi://pay?pa")) {
+      Linking.canOpenURL(url)
+        .then((supported) => {
+          if (supported) {
+            Linking.openURL(url);
+          } else {
+            Toast.show("UPI supported applications not found", Toast.LONG);
+          }
+        })
+        .catch(() => {
+          Toast.show("An error occurred", Toast.LONG);
+        });
 
-  //     return true; // Prevent the WebView from loading the URL
-  //   }
+      return true; // Prevent the WebView from loading the URL
+    }
 
-  //   return false; // Continue loading the URL in the WebView
-  // };
+    return false; // Continue loading the URL in the WebView
+  };
 
   const encryptedParams = async (Amount) => {
     setIsLoading(true);
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
 
     let params = {
-      job_id: JSON.stringify(item?.job_id),
+      job_id: Job_id,
       job_number: item?.job_number,
       amount: Amount,
     };
@@ -335,13 +348,7 @@ export default function Payment({ route, navigation }) {
           onLoad={handleWebViewLoad}
           injectedJavaScript={`window.ReactNativeWebView.postMessage(JSON.stringify(document.body.innerHTML));`}
           onMessage={onWebViewMessage}
-          // onError={() => setLoadingError(true)}
-          // onShouldStartLoadWithRequest={handleUrlLoading}
-          // renderError={() => {
-          //   if (loadingError) {
-          //     return console.log("error");
-          //   }
-          // }}
+          onShouldStartLoadWithRequest={handleUrlLoading}
         />
       </View>
     );
