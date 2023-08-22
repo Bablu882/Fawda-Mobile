@@ -46,6 +46,7 @@ export default function Payment({ route, navigation }) {
   const [htmlResponse, setHtmlResponse] = useState(null);
   const usertype = useSelector(selectUserType);
   const [loadingError, setLoadingError] = useState(false);
+  const [isDiscount, setIsDiscount] = useState(false);
   const numBookings = route?.params?.bookings;
 
   const paymentStatus = async () => {
@@ -120,6 +121,12 @@ export default function Payment({ route, navigation }) {
       setFawdaFee(data?.fawda_fee);
       setUserAmount(data?.user_amount);
       setTotalAmount(data?.total_amount);
+      const FeesAmount = data?.fawda_fee;
+      const CalculatedFee = (data?.user_amount * 2.5) / 100;
+      console.log(CalculatedFee);
+      if (FeesAmount != CalculatedFee) {
+        setIsDiscount(true);
+      }
       // setIsLoading(false);
       encryptedParams(data?.total_amount.toString());
     } catch (error) {
@@ -177,7 +184,7 @@ export default function Payment({ route, navigation }) {
         },
       });
       const data = response?.data;
-      console.log("response", response);
+      // console.log("response", response);
       console.log("encrypted data", data);
       setPaymentEncryptedParams(data);
     } catch (error) {
@@ -235,8 +242,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus();
+              // fetchPaymentHtml();
+              paymentStatus();
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -253,8 +260,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -267,8 +274,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();
+            // fetchPaymentHtml();
+            paymentStatus();
           }
         }
       }
@@ -425,7 +432,11 @@ export default function Payment({ route, navigation }) {
                 </View>
               )}
               <View style={styles.flex}>
-                <Text>फावड़ा की फीस</Text>
+                {isDiscount ? (
+                  <Text>फावड़ा की फीस (50% छूट)</Text>
+                ) : (
+                  <Text>फावड़ा की फीस</Text>
+                )}
                 {fawdaFee === 0 ? (
                   <Text>पहली बुकिंग मुफ़्त</Text>
                 ) : (
