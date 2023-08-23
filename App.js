@@ -51,6 +51,7 @@ import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import Homepage from "./src/HomePage";
+import * as firebase from "@react-native-firebase/app";
 
 let persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
@@ -103,6 +104,17 @@ export default function App() {
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+
+  // const firebaseConfig = {
+  //   apiKey: "AIzaSyDCvLcOzuq_MxpYWqKOtAfGrGx4csEYuMA",
+  //   authDomain: "fawda-webpage.firebaseapp.com",
+  //   databaseURL: "https://fawda-webpage.firebaseio.com",
+  //   projectId: "fawda-webpage",
+  //   storageBucket: "fawda-webpage.appspot.com",
+  //   messagingSenderId: "954820127502",
+  //   appId: "1:954820127502:android:6fb96e64d865651bcc455f",
+  //   measurementId: "G-BJBESTJNZ5",
+  // };
 
   useEffect(() => {
     //registerForPushNotificationsAsync().then(token => console.log(token));

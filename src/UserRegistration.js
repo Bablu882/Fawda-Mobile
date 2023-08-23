@@ -23,6 +23,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Picker } from "@react-native-picker/picker";
 import { RadioButton } from "react-native-paper";
 const { height } = Dimensions.get("window");
+import { firebase } from "@react-native-firebase/analytics";
 
 import * as Location from "expo-location";
 
@@ -47,6 +48,12 @@ export default function UserRegistration({ navigation, route }) {
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
   const [isLocationGranted, setIsLocationGranted] = useState(false);
   // const [permissionAsked, setPermissionAsked] = useState(false);
+
+  // const testAnalytics = async () => {
+  //   await firebase.analytics().logEvent("testing", {
+  //     additionaParam: "test",
+  //   });
+  // };
 
   const ageArray = Array.from(
     { length: 70 - 18 + 1 },
@@ -219,6 +226,10 @@ export default function UserRegistration({ navigation, route }) {
       const data = response?.data;
       if (data?.status == 201) {
         console.log(data, "data");
+        // firebase.analytics().logEvent("user_registered", {
+        //   user_type: user,
+        //   phone: phone,
+        // });
         // Toast.show("नया उपयोगकर्ता पंजीकरण सफल है", Toast.LONG);
         navigation.replace("Verification", {
           user_type: data?.user_type,

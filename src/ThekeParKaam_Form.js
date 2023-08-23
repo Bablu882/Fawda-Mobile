@@ -35,6 +35,7 @@ import Toast from "react-native-simple-toast";
 
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import { firebase } from "@react-native-firebase/analytics";
 
 export default function ThekeParKaam_Form({ navigation }) {
   const dispatch = useDispatch();
@@ -99,6 +100,13 @@ export default function ThekeParKaam_Form({ navigation }) {
       return true;
     }
   };
+
+  // const testAnalytics = async () => {
+  //   await firebase.analytics().logEvent("testing", {
+  //     additionaParam: "test",
+  //   });
+  // };
+
   useEffect(() => {
     const backAction = () => {
       navigation.goBack();
