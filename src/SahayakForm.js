@@ -234,7 +234,7 @@ export default function SahayakForm({ navigation }) {
     }
 
     // if (landType.trim() === "") {
-    //   errorMessages.landType = "कृपया भूमि का प्रकार चुनें!";
+    //   errorMessages.landType = "कृपया भूमि का माप चुनें!";
     //   valid = false;
     // }
 
@@ -582,7 +582,7 @@ export default function SahayakForm({ navigation }) {
                   styles.justifyContentBetween,
                 ]}
               >
-                <Text style={styles.label}>भूमि का प्रकार</Text>
+                <Text style={styles.label}>भूमि का माप</Text>
                 <Picker
                   style={{ width: "100%" }}
                   ref={pickerRef}
@@ -731,7 +731,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={styles.label}>पुरुष वेतन</Text>
                 <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
                 <TextInput
-                  style={[styles.TextInput, { right: 30 }]}
+                  style={[styles.TextInput, { right: 20 }]}
                   keyboardType="numeric"
                   placeholder="एक पुरुष का वेतन "
                   placeholderTextColor={"#ccc"}
@@ -760,7 +760,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={styles.label}>महिला वेतन</Text>
                 <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
                 <TextInput
-                  style={[styles.TextInput, { right: 30 }]}
+                  style={[styles.TextInput, { right: 20 }]}
                   placeholder="एक महिला का वेतन"
                   keyboardType="numeric"
                   placeholderTextColor={"#ccc"}

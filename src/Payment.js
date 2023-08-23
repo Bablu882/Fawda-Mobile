@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
@@ -121,10 +122,7 @@ export default function Payment({ route, navigation }) {
       setFawdaFee(data?.fawda_fee);
       setUserAmount(data?.user_amount);
       setTotalAmount(data?.total_amount);
-      const FeesAmount = data?.fawda_fee;
-      const CalculatedFee = (data?.user_amount * 2.5) / 100;
-      console.log(CalculatedFee);
-      if (FeesAmount != CalculatedFee) {
+      if (data?.is_discount === true) {
         setIsDiscount(true);
       }
       // setIsLoading(false);
@@ -142,17 +140,18 @@ export default function Payment({ route, navigation }) {
     console.log(url);
 
     if (url.includes("upi://pay?pa")) {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (supported) {
-            Linking.openURL(url);
-          } else {
-            Toast.show("UPI supported applications not found", Toast.LONG);
-          }
-        })
-        .catch(() => {
-          Toast.show("An error occurred", Toast.LONG);
-        });
+      Linking.openURL(url);
+      // Linking.canOpenURL(url)
+      //   .then((supported) => {
+      //     if (supported) {
+      //       Linking.openURL(url);
+      //     } else {
+      //       Toast.show("UPI supported applications not found", Toast.LONG);
+      //     }
+      //   })
+      //   .catch(() => {
+      //     Toast.show("An error occurred", Toast.LONG);
+      //   });
 
       return true; // Prevent the WebView from loading the URL
     }
@@ -195,11 +194,17 @@ export default function Payment({ route, navigation }) {
   };
 
   const checkStatus = async () => {
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
     setIsLoading(true);
     let params = {};
     if (item?.job_type !== "machine_type") {
       params = {
-        sahayak_job_id: JSON.stringify(item?.job_id),
+        sahayak_job_id: Job_id,
         sahayak_job_number: item?.job_number,
       };
     } else {
@@ -242,8 +247,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus();     // uncomment it will testing
+              // fetchPaymentHtml();
+              paymentStatus(); // uncomment it will testing
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -260,8 +265,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();            // uncomment it will testing
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -274,8 +279,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus();                     // uncomment it will testing
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
           }
         }
       }

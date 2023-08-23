@@ -1205,7 +1205,7 @@ export default function MachineWork({ navigation, route }) {
                                           ]}
                                         >
                                           कृपया ऊपर दिए गए नंबर पर बात करें और
-                                          कृपया नौकरी के लिए समय पर पहुंचें!
+                                          कृपया काम के लिए समय पर पहुंचें!
                                         </Text>
                                       </View>
                                     </View>
@@ -1352,7 +1352,7 @@ export default function MachineWork({ navigation, route }) {
 
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
-                        {"\n"}कृपया आगे बढ़ने के लिए होम पेज पर जाएँ!
+                        {"\n"}और काम ढूंढ़ने के लिए होम पेज पर जाएं!
                       </Text>
                     </View>
                   </>

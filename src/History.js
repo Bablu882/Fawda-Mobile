@@ -1020,49 +1020,51 @@ export default function History({ navigation, route }) {
                       }}
                     />
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      marginRight: 20,
-                      marginVertical: 20,
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={[
-                        styles.button,
-                        activeButton === 1 && styles.activeButton,
-                      ]}
-                      onPress={() => {
-                        handlePress(1), handlePrevPage();
+                  {totalPages > 1 && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        marginRight: 20,
+                        marginVertical: 20,
                       }}
                     >
-                      <Icon
-                        name="left"
-                        size={20}
-                        color={"#fff"}
-                        style={{ lineHeight: 30 }}
-                      />
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.button,
+                          activeButton === 1 && styles.activeButton,
+                        ]}
+                        onPress={() => {
+                          handlePress(1), handlePrevPage();
+                        }}
+                      >
+                        <Icon
+                          name="left"
+                          size={20}
+                          color={"#fff"}
+                          style={{ lineHeight: 30 }}
+                        />
+                      </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[
-                        { marginLeft: 10 },
-                        styles.button,
-                        activeButton === 2 && styles.activeButton,
-                      ]}
-                      onPress={() => {
-                        handlePress(2), handleNextPage();
-                      }}
-                    >
-                      <Icon
-                        name="right"
-                        size={20}
-                        color={"#fff"}
-                        style={{ lineHeight: 30 }}
-                      />
-                    </TouchableOpacity>
-                  </View>
+                      <TouchableOpacity
+                        style={[
+                          { marginLeft: 10 },
+                          styles.button,
+                          activeButton === 2 && styles.activeButton,
+                        ]}
+                        onPress={() => {
+                          handlePress(2), handleNextPage();
+                        }}
+                      >
+                        <Icon
+                          name="right"
+                          size={20}
+                          color={"#fff"}
+                          style={{ lineHeight: 30 }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </>
               )}
           </View>

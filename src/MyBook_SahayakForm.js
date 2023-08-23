@@ -2311,7 +2311,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       )} */}
                       <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
                         धन्यवाद! कुछ देर बाद भुगतान आपके खाते में आ जाएगा!
-                        {"\n"}कृपया आगे बढ़ने के लिए होम पेज पर जाएँ!
+                        {"\n"}और काम ढूंढ़ने के लिए होम पेज पर जाएं!
                       </Text>
                     </View>
                   </>

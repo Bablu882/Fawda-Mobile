@@ -299,7 +299,7 @@ export default function ThekeParKaam_Form({ navigation }) {
     }
 
     // if (landType.trim() === "") {
-    //   errorMessages.landType = "कृपया भूमि का प्रकार चुनें!";
+    //   errorMessages.landType = "कृपया भूमि का माप चुनें!";
     //   valid = false;
     // }
 
@@ -525,7 +525,7 @@ export default function ThekeParKaam_Form({ navigation }) {
                         // styles.justifyContentBetween,
                       ]}
                     >
-                      <Text style={styles.label}>भूमि का प्रकार</Text>
+                      <Text style={styles.label}>भूमि का माप</Text>
                       <Picker
                         style={{ width: "100%" }}
                         ref={pickerRef}

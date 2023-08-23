@@ -186,13 +186,8 @@ export default function UserRegistration({ navigation, route }) {
 
   const RegisterServices = async () => {
     // if (isLocationGranted) {
-    let upi = "";
+    let upi = upiId;
     let refer_code = "";
-    if (user !== "Grahak") {
-      upi = upiId;
-    } else {
-      upi = "None";
-    }
     if (referCode !== "") {
       refer_code = referCode;
     } else {
