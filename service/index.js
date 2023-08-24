@@ -7,6 +7,7 @@ import { navigate } from "./NavigationService";
 
 class Service {
   baseUrl = "https://fawda.demoserver.in/";
+  // baseUrl = "https://app.fawda.in/";
 
   constructor() {
     let service = axios.create({

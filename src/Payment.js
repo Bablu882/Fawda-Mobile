@@ -51,9 +51,15 @@ export default function Payment({ route, navigation }) {
   const numBookings = route?.params?.bookings;
 
   const paymentStatus = async () => {
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
     try {
       const params = {
-        job_id: JSON.stringify(item?.job_id),
+        job_id: Job_id,
         job_number: item?.job_number,
         amount: totalAmount,
         upi_id: upiId,
@@ -209,7 +215,7 @@ export default function Payment({ route, navigation }) {
       };
     } else {
       params = {
-        machine_job_id: JSON.stringify(item?.job_id),
+        machine_job_id: Job_id,
         machine_job_number: item?.job_number,
       };
     }
@@ -247,8 +253,8 @@ export default function Payment({ route, navigation }) {
                 Toast.LONG
               );
             } else if (numBookings === bookingsNumber) {
-              fetchPaymentHtml();
-              // paymentStatus(); // uncomment it will testing
+              // fetchPaymentHtml();
+              paymentStatus(); // uncomment it will testing
             }
           } else {
             navigation.replace("HomeStack", { screen: "BottomTab" });
@@ -265,8 +271,8 @@ export default function Payment({ route, navigation }) {
             navigation.replace("HomeStack", { screen: "BottomTab" });
             Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
           } else {
-            fetchPaymentHtml();
-            // paymentStatus(); // uncomment it will testing
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
           }
         } else if (item?.job_type === "machine_malik") {
           const statusCheck =
@@ -279,8 +285,8 @@ export default function Payment({ route, navigation }) {
               Toast.LONG
             );
           } else {
-            fetchPaymentHtml();
-            // paymentStatus(); // uncomment it will testing
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
           }
         }
       }

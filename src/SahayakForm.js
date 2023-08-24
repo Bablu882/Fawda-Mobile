@@ -729,7 +729,14 @@ export default function SahayakForm({ navigation }) {
                 ]}
               >
                 <Text style={styles.label}>पुरुष वेतन</Text>
-                <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
+                <Text
+                  style={{
+                    color: "#0099FF",
+                    left: 10,
+                  }}
+                >
+                  ₹
+                </Text>
                 <TextInput
                   style={[styles.TextInput, { right: 20 }]}
                   keyboardType="numeric"
@@ -760,7 +767,7 @@ export default function SahayakForm({ navigation }) {
                 <Text style={styles.label}>महिला वेतन</Text>
                 <Text style={{ color: "#0099FF", left: 10 }}>₹</Text>
                 <TextInput
-                  style={[styles.TextInput, { right: 20 }]}
+                  style={[styles.TextInput, { right: 16 }]}
                   placeholder="एक महिला का वेतन"
                   keyboardType="numeric"
                   placeholderTextColor={"#ccc"}
