@@ -57,7 +57,8 @@ function Theke_MachineForm({ navigation, route }) {
 
   const textInputRef = useRef(null);
   const handleClick = () => {
-    textInputRef.current.focus();
+    setEdit(true);
+    textInputRef?.current?.focus();
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
@@ -769,7 +770,36 @@ function Theke_MachineForm({ navigation, route }) {
                           >
                             ₹
                           </Text>
-                          <TextInput
+                          {edit ? (
+                            <TextInput
+                              // editable={edit}
+                              ref={textInputRef}
+                              onChangeText={(amount) => setAmount(amount)}
+                              value={amount}
+                              keyboardType="numeric"
+                              style={{
+                                paddingRight: 10,
+                                fontFamily: "Devanagari-regular",
+                                color: "#0099FF",
+                              }}
+                              defaultValue={item?.total_amount_theka}
+                            />
+                          ) : (
+                            <View>
+                              <Text
+                                style={{
+                                  paddingRight: 15,
+                                  fontFamily: "Devanagari-regular",
+                                  color: "#0099FF",
+                                  marginTop: 12,
+                                }}
+                              >
+                                {item?.total_amount_theka}
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* <TextInput
                             editable={edit}
                             ref={textInputRef}
                             onChangeText={(amount) => setAmount(amount)}
@@ -781,7 +811,7 @@ function Theke_MachineForm({ navigation, route }) {
                               color: "#0099FF",
                             }}
                             defaultValue={item?.total_amount_theka}
-                          />
+                          /> */}
                         </>
                       ) : (
                         <>

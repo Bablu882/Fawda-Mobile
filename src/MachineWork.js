@@ -767,8 +767,8 @@ export default function MachineWork({ navigation, route }) {
                       {edit ? (
                         <TextInput
                           style={[
-                            styles.TextInput,
-                            { marginRight: 10, color: "#0099FF" },
+                            // styles.TextInput,
+                            { marginRight: 10, color: "#0099FF", padding: 10 },
                           ]}
                           ref={textInputRef}
                           onChangeText={(amount) => setAmount(amount)}
@@ -780,8 +780,12 @@ export default function MachineWork({ navigation, route }) {
                         <View>
                           <Text
                             style={[
-                              styles.Text,
-                              { marginRight: 10, color: "#0099FF" },
+                              // styles.TextInput,
+                              {
+                                marginRight: 10,
+                                color: "#0099FF",
+                                padding: 10,
+                              },
                             ]}
                           >
                             ₹ {item?.total_amount_machine}

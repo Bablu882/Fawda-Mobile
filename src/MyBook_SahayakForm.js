@@ -75,7 +75,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
   const handleClick = () => {
     setEdit(true);
     setEditMale(true);
-    textInputRef.current.focus();
+    textInputRef?.current?.focus();
   };
   const handleCallPress = async (phone) => {
     const url = `tel:${phone}`;
@@ -927,7 +927,24 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       placeholderTextColor={"#000"}
                     />
                     <Text style={{ color: "#0099FF" }}>₹ </Text>
-                    <TextInput
+                    {editmale ? (
+                      <TextInput
+                        editable={item?.count_male === "0" ? false : editmale}
+                        keyboardType="numeric"
+                        ref={textInputRef}
+                        onChangeText={(amountMale) => setAmountMale(amountMale)}
+                        value={amountMale}
+                        style={{ paddingRight: 10, color: "#0099FF" }}
+                        defaultValue={item?.pay_amount_male}
+                      />
+                    ) : (
+                      <View>
+                        <Text style={{ paddingRight: 10, color: "#0099FF" }}>
+                          {item?.pay_amount_male}
+                        </Text>
+                      </View>
+                    )}
+                    {/* <TextInput
                       editable={item?.count_male === "0" ? false : editmale}
                       keyboardType="numeric"
                       ref={textInputRef}
@@ -935,7 +952,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       value={amountMale}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_male}
-                    />
+                    /> */}
                   </>
                 ) : (
                   <>
@@ -963,7 +980,26 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       placeholderTextColor={"#000"}
                     />
                     <Text style={{ color: "#0099FF" }}>₹ </Text>
-                    <TextInput
+                    {edit ? (
+                      <TextInput
+                        editable={item?.count_female === "0" ? false : edit}
+                        keyboardType="numeric"
+                        ref={textInputRef}
+                        onChangeText={(amountFemale) =>
+                          setAmountFemale(amountFemale)
+                        }
+                        value={amountFemale}
+                        style={{ paddingRight: 10, color: "#0099FF" }}
+                        defaultValue={item?.pay_amount_female}
+                      />
+                    ) : (
+                      <View>
+                        <Text style={{ paddingRight: 10, color: "#0099FF" }}>
+                          {item?.pay_amount_female}
+                        </Text>
+                      </View>
+                    )}
+                    {/* <TextInput
                       editable={item?.count_female === "0" ? false : edit}
                       keyboardType="numeric"
                       ref={textInputRef}
@@ -973,7 +1009,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                       value={amountFemale}
                       style={{ paddingRight: 10, color: "#0099FF" }}
                       defaultValue={item?.pay_amount_female}
-                    />
+                    /> */}
                   </>
                 ) : (
                   <>
@@ -1691,9 +1727,7 @@ export default function MyBook_SahayakForm({ navigation, route }) {
                           <View style={{ marginRight: 10 }}>
                             <View style={{ width: "100%" }}>
                               <TouchableOpacity key={item.id}>
-                                <Text style={styles.accepted}>
-                                  {countAcceptedJobs} सहायक समाप्त करे
-                                </Text>
+                                <Text style={styles.accepted}> समाप्त </Text>
                               </TouchableOpacity>
                             </View>
                           </View>
