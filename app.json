@@ -20,9 +20,6 @@
       "package": "in.fawda.app",
       "googleServicesFile": "./google-services.json"
     },
-    "plugins": [
-      "@react-native-firebase/app"
-    ],
     "notification": {
       "icon": "./assets/image/Fawda-logo-notification.png",
       "color": "#FF5733",
