@@ -45,8 +45,8 @@ export default function SahayakForm({ navigation }) {
   const [selectedDates, setSelectedDates] = useState("");
   const [landArea, setLandAreas] = useState("");
   const [showDate, setShowDate] = useState("");
-  const [malepayamount, setMalepayamount] = useState(0);
-  const [femalepayamount, setFemalepayamount] = useState(0);
+  const [malepayamount, setMalepayamount] = useState("");
+  const [femalepayamount, setFemalepayamount] = useState("");
   const [description, setDescriptions] = useState("");
   const [displayDate, setDisplayDate] = useState("");
   const [days, setDays] = useState(0);
@@ -255,18 +255,18 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      !femalepayamount &&
+      femalepayamount.toString().trim() === "" &&
       (maleCounts === 0 || maleCounts.toString().trim() === "0") &&
-      !malepayamount
+      malepayamount.toString().trim() === ""
     ) {
       errorMessages.femalepayamount = "कृपया महिला वेतन राशि दर्ज करें!";
       valid = false;
     }
     if (
       (femaleCounts === 0 || femaleCounts.toString().trim() === "0") &&
-      !femalepayamount &&
+      femalepayamount.toString().trim() === "" &&
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
-      !malepayamount
+      malepayamount.toString().trim() === ""
     ) {
       errorMessages.malepayamount = "कृपया पुरुष वेतन राशि दर्ज करें!";
       valid = false;
@@ -274,9 +274,9 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (femaleCounts === 0 || femaleCounts.toString().trim() === "0") &&
-      femalepayamount &&
+      femalepayamount.toString().trim() !== "" &&
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
-      malepayamount
+      malepayamount.toString().trim() !== ""
     ) {
       errorMessages.femaleCounts = "कृपया महिला की संख्या चुनें!";
       valid = false;
@@ -284,9 +284,9 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      femalepayamount &&
+      femalepayamount.toString().trim() !== "" &&
       (maleCounts === 0 || maleCounts.toString().trim() === "0") &&
-      malepayamount
+      malepayamount.toString().trim() !== ""
     ) {
       errorMessages.maleCounts = "कृपया पुरुष की संख्या चुनें!";
       valid = false;
@@ -294,18 +294,18 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      !femalepayamount &&
+      femalepayamount.toString().trim() === "" &&
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
-      malepayamount
+      malepayamount.toString().trim() !== ""
     ) {
       errorMessages.femalepayamount = "कृपया महिला वेतन राशि दर्ज करें!";
       valid = false;
     }
     if (
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      femalepayamount &&
+      femalepayamount.toString().trim() !== "" &&
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
-      !malepayamount
+      malepayamount.toString().trim() === ""
     ) {
       errorMessages.malepayamount = "कृपया पुरुष वेतन राशि दर्ज करें!";
       valid = false;
@@ -320,8 +320,8 @@ export default function SahayakForm({ navigation }) {
     if (
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      !malepayamount &&
-      !femalepayamount
+      malepayamount.toString().trim() === "" &&
+      femalepayamount.toString().trim() === ""
     ) {
       errorMessages.malepayamount = "कृपया पुरुष वेतन राशि दर्ज करें!";
       errorMessages.femalepayamount = "कृपया महिला वेतन राशि दर्ज करें!";
@@ -330,7 +330,7 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (femaleCounts !== 0 || femaleCounts.toString().trim() !== "0") &&
-      (femalepayamount < 5 || femalepayamount == 5)
+      (femalepayamount.trim() < 5 || femalepayamount.trim() == 5)
     ) {
       errorMessages.femalepayamount =
         "कृपया वैध महिला वेतन राशि दर्ज करें (5 से अधिक)!";
@@ -339,7 +339,7 @@ export default function SahayakForm({ navigation }) {
 
     if (
       (maleCounts !== 0 || maleCounts.toString().trim() !== "0") &&
-      (malepayamount < 5 || malepayamount == 5)
+      (malepayamount.trim() < 5 || malepayamount.trim() == 5)
     ) {
       errorMessages.malepayamount =
         "कृपया वैध पुरुष वेतन राशि दर्ज करें (5 से अधिक)";

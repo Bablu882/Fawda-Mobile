@@ -218,7 +218,8 @@ export default function Login({ navigation }) {
             >
               <Image
                 source={require("../assets/image/Flag.png")}
-                style={[styles.codeText, { width: 30, height: 22 }]}
+                // style={[styles.codeText, { width: 30, height: 22 }]}
+                style={{ width: 30, height: 22 }}
               />
             </View>
             <TextInput
@@ -248,8 +249,8 @@ export default function Login({ navigation }) {
             <Text style={styles.label}>टिप्पणी</Text>
 
             <Text style={styles.commentText}>
-              फ़ोन नंबर UPI से लिंक होना चाहिए!{"\n"}आप Google Pay, Phone Pay
-              या Paytm या किसी अन्य UPI ऐप का उपयोग कर सकते हैं!
+              फ़ोन नंबर UPI से लिंक होना चाहिए!{"\n"}आप Google Pay, Phone Pay या
+              Paytm या किसी अन्य UPI ऐप का उपयोग कर सकते हैं!
             </Text>
           </View>
           <TouchableOpacity
@@ -361,8 +362,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   codeText: {
-    color: "#000",
-    textAlign: "center",
+    // color: "#000",
+    // textAlign: "center",
     justifyContent: "center",
     lineHeight: 44,
     fontWeight: "600",

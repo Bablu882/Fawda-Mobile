@@ -143,8 +143,10 @@ export default function History({ navigation, route }) {
     });
   }, []);
   useEffect(() => {
-    if (isFocused) {
-      booking();
+    if (usertype === "Grahak") {
+      if (isFocused) {
+        booking();
+      }
     }
   }, [isFocused]);
 
