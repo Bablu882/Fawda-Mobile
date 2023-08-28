@@ -62,9 +62,17 @@ export default function Homepage({ navigation, route }) {
       if (status.status !== "granted") {
         console.log("Permission is not granted");
       } else {
-        const etoken = (await Notifications.getExpoPushTokenAsync()).data;
-        setExpoToken(etoken);
-        return etoken;
+        try {
+          const expoPushToken = await Notifications.getExpoPushTokenAsync({
+            projectId: "748e67ac-6fec-4f34-99b6-aa8198d3adc4",
+          });
+          const etoken = expoPushToken.data;
+          setExpoToken(etoken);
+          return etoken;
+        } catch (error) {
+          console.log("Error", error);
+          console.log("Error message", error.message);
+        }
       }
     } else {
       console.log("Must use physical device for Push Notifications");
@@ -73,10 +81,10 @@ export default function Homepage({ navigation, route }) {
   };
 
   const fetchExpoToken = async () => {
-    const etoken = await registerForPushNotificationsAsync();
-    if (etoken) {
+    await registerForPushNotificationsAsync();
+    if (expotoken) {
       const tokenData = {
-        push_token: etoken,
+        push_token: expotoken,
       };
       try {
         const response = await service.post("/api/expotoken-save/", tokenData, {
