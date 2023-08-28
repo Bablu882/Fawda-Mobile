@@ -81,10 +81,10 @@ export default function Homepage({ navigation, route }) {
   };
 
   const fetchExpoToken = async () => {
-    await registerForPushNotificationsAsync();
-    if (expotoken) {
+    const expoToken = await registerForPushNotificationsAsync();
+    if (expoToken) {
       const tokenData = {
-        push_token: expotoken,
+        push_token: expoToken,
       };
       try {
         const response = await service.post("/api/expotoken-save/", tokenData, {
