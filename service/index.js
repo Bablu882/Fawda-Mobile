@@ -6,8 +6,8 @@ import { navigate } from "./NavigationService";
 // import { DevSettings } from 'react-native';
 
 class Service {
-  baseUrl = "https://fawda.demoserver.in/";
-  // baseUrl = "https://app.fawda.in/";
+  // baseUrl = "https://fawda.demoserver.in/";
+  baseUrl = "https://app.fawda.in/";
 
   constructor() {
     let service = axios.create({
