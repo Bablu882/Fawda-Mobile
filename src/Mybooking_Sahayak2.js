@@ -9,42 +9,111 @@ import {
   Image,
   ScrollView,
   Modal,
+  Linking
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import service from "../service";
-import { selectToken } from "../slices/authSlice";
+import { selectToken, selectUserType } from "../slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-simple-toast";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+// import * as Linking from "expo-linking";
 
 export default function Mybooking_Sahayak2({ navigation, route }) {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const ReviewInput = useRef(null);
+  const usertype = useSelector(selectUserType);
   const [numbers, setNumber] = useState(0);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
-  const { data, payment_status, amount, item, useramount ,male_count, female_count} = route.params ?? {};
-console.log('+++++pluss++++', item, male_count, female_count)
+  const {
+    data,
+    payment_status,
+    amount,
+    item,
+    useramount,
+    male_count,
+    female_count,
+  } = route.params ?? {};
+  console.log("+++++pluss++++", item, male_count, female_count);
   const [colors, setColors] = useState(Array(10).fill("white"));
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState("");
   const [complete, setCompleted] = useState(null);
   const [bookingss, setBookings] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [countMale, setCountMale] = useState(0);
+  const [countFemale, setCountFemale] = useState(0);
+  const [jobCurentStatus, setJobCurrentStatus] = useState("");
+
+  console.log("Count", countFemale, "  ", countMale);
 
   const [thekeperKams, setThekeperKams] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-
-
-   const handlebutton = () => {
+  const handlebutton = () => {
     ReviewInput.current.focus();
-   }
+  };
+
+  const handleCallPress = async (phone) => {
+    const url = `tel:${phone}`;
+    await Linking.openURL(url);
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
+  };
+
+  const checkSahayakCount = async () => {
+    let params = {
+      sahayak_job_id: JSON.stringify(item.job_id),
+      sahayak_job_number: item?.job_number,
+    };
+
+    try {
+      const response = await service.post(`api/refresh-my-booking/`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
+        const maleCount = data?.sahayk_booking_details?.count_male;
+        const femaleCount = data?.sahayk_booking_details?.count_female;
+
+        if (femaleCount !== countFemale || maleCount !== countMale) {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show(
+            "भुगतान के बाद सहायक द्वारा यह बुकिंग रद्द कर दी गई है।कृपया बुकिंग पुनः लोड करें!",
+            Toast.LONG
+          );
+        } else {
+          Ongoing();
+        }
+      } else {
+        navigation.replace("HomeStack", { screen: "BottomTab" });
+        Toast.show(
+          "भुगतान के बाद सहायक द्वारा यह बुकिंग रद्द कर दी गई है।कृपया बुकिंग पुनः लोड करें!",
+          Toast.LONG
+        );
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
   const RatingApi = () => {
+    console.log("getting hit");
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -63,10 +132,11 @@ console.log('+++++pluss++++', item, male_count, female_count)
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("Thankyou");
+          // navigation.replace("Thankyou");
           console.log("fjfjf", data);
         } else {
           console.log("error message");
+          console.log("message", data?.message);
         }
       })
       .catch((error) => {
@@ -80,6 +150,14 @@ console.log('+++++pluss++++', item, male_count, female_count)
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
+  };
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedBooking(null); // Reset selectedBooking when the modal is closed
+  };
+
+  const handleStatus = () => {
+    setJobCurrentStatus("Completed");
   };
 
   const renderButton = (index) => {
@@ -104,7 +182,6 @@ console.log('+++++pluss++++', item, male_count, female_count)
   // end
 
   const Ongoing = () => {
-    setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -119,17 +196,15 @@ console.log('+++++pluss++++', item, male_count, female_count)
       })
       .then((res) => {
         let data = res?.data;
-        setIsLoading(false);
         setResponse(data["booking-status"]);
         console.log("jdjjdd", data);
       })
       .catch((error) => {
-        setIsLoading(false);
         console.log("error", error);
       });
   };
   const bookingcompleted = () => {
-    setIsLoading(true);
+    RatingApi();
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -145,12 +220,13 @@ console.log('+++++pluss++++', item, male_count, female_count)
       })
       .then((res) => {
         let data = res?.data;
-        setIsLoading(false);
         setCompleted(data["booking-status"]);
         setResponse(data["booking-status"]);
+        if (data["booking-status"] === "Completed") {
+          navigation.replace("Thankyou");
+        }
       })
       .catch((error) => {
-        setIsLoading(false);
         console.log("error", error);
       });
   };
@@ -172,10 +248,10 @@ console.log('+++++pluss++++', item, male_count, female_count)
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.navigate("HomeStack", { screen: "HomePage" });
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       console.log("fjfjf", data);
       // setStatus(data.status);
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
     } catch (error) {
       console.log("Error:", error);
     }
@@ -190,7 +266,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
       sahayak_job_number: item?.job_number,
     };
     console.log("jfjgjg", params);
-   
+
     try {
       const response = await service.post(`api/refresh-my-booking/`, params, {
         headers: {
@@ -202,6 +278,8 @@ console.log('+++++pluss++++', item, male_count, female_count)
       console.log("datadata", data);
       if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
         setBookings(data?.sahayk_booking_details?.bookings);
+        setCountMale(data?.sahayk_booking_details?.count_male);
+        setCountFemale(data?.sahayk_booking_details?.count_female);
       }
       console.log(
         "data?.sahayk_booking_details?.bookings",
@@ -223,7 +301,14 @@ console.log('+++++pluss++++', item, male_count, female_count)
     <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
       <View style={{ padding: 20, marginTop: 25 }}></View>
       <View style={{ justifyContent: "center" }}>
-        <Text style={{ textAlign: "center", fontSize: 30, fontWeight: "600"  ,fontFamily:'Devanagari-bold',}}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 30,
+            fontWeight: "600",
+            fontFamily: "Devanagari-bold",
+          }}
+        >
           {item?.job_type === "individuals_sahayak" && "सहायक"}
         </Text>
       </View>
@@ -243,11 +328,12 @@ console.log('+++++pluss++++', item, male_count, female_count)
               styles.justifyContentBetween,
             ]}
           >
+            <Text style={styles.label}>काम का विवरण</Text>
             <Text style={[styles.TextInput]}>{item?.description}</Text>
-            <Image
+            {/* <Image
               source={require("../assets/image/edit.png")}
               style={{ width: 20, height: 20, marginTop: 10, right: 10 }}
-            />
+            /> */}
           </View>
 
           <View
@@ -258,10 +344,10 @@ console.log('+++++pluss++++', item, male_count, female_count)
             ]}
           >
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("l")}
+              {moment(item?.datetime).format("DD/MM/YYYY")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("LT")}
+              {moment(item?.datetime).format("LT")}
             </Text>
           </View>
 
@@ -286,9 +372,19 @@ console.log('+++++pluss++++', item, male_count, female_count)
                 editable={false}
                 placeholderTextColor={"#000"}
               />
-              <Text style={{ marginRight: 8, color: "#0099FF" ,   fontFamily:'Devanagari-regular',}}>
+              <Text
+                style={{
+                  marginRight: 8,
+                  color: "#0099FF",
+                  fontFamily: "Devanagari-regular",
+                }}
+              >
                 {item?.land_area}
-                {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                {item?.land_type == "Bigha"
+                  ? " बीघा"
+                  : item?.land_type == "Killa"
+                  ? " किल्ला"
+                  : " "}
               </Text>
             </View>
             <View
@@ -321,7 +417,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
               flexWrap: "wrap",
             }}
           >
-            {[...Array(male_count).keys()].map((index) => (
+            {[...Array(countMale).keys()].map((index) => (
               <View
                 style={{
                   paddingHorizontal: 5,
@@ -338,13 +434,13 @@ console.log('+++++pluss++++', item, male_count, female_count)
                 <TextInput
                   style={styles.CheckTextInput}
                   placeholder="पुरषो"
-                  editable ={false}
+                  editable={false}
                   placeholderTextColor={"#000"}
-                  name={`Male${index + 1}`}
+                  name={`Male${index}`}
                 />
               </View>
             ))}
-            {[...Array(female_count).keys()].map((index) => (
+            {[...Array(countFemale).keys()].map((index) => (
               <View
                 style={{
                   paddingHorizontal: 5,
@@ -363,7 +459,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                   editable={false}
                   placeholder="महिला"
                   placeholderTextColor={"#101010"}
-                  name={`Female${index + 1}`}
+                  name={`Female${index}`}
                 />
               </View>
             ))}
@@ -387,9 +483,6 @@ console.log('+++++pluss++++', item, male_count, female_count)
               placeholder="काम की स्थिति"
               editable={false}
               placeholderTextColor={"#000"}
-              // onChangeText={(email) => setEmail(email)}
-              // defaultValue={email}
-              // value={email}
             />
             <View
               style={{
@@ -408,7 +501,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: "600",
-                    fontFamily:'Devanagari-bold',
+                    fontFamily: "Devanagari-bold",
                   }}
                 >
                   {response === "Booked"
@@ -417,7 +510,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                     ? "स्वीकार"
                     : response === "Ongoing"
                     ? "जारी है"
-                    : response === "Completed"
+                    : jobCurentStatus === "Completed"
                     ? "समाप्त"
                     : ""}
                 </Text>
@@ -429,7 +522,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                     color: "#fff",
                     fontSize: 15,
                     fontWeight: "600",
-                    fontFamily:'Devanagari-bold',
+                    fontFamily: "Devanagari-bold",
                   }}
                 >
                   {item?.status === "Booked"
@@ -445,7 +538,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
               )}
             </View>
           </View>
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <>
               <View
                 style={[
@@ -475,17 +568,16 @@ console.log('+++++pluss++++', item, male_count, female_count)
                 <Modal
                   visible={modalVisible}
                   animationType="slide"
-                  onRequestClose={() => setModalVisible(false)}
+                  onRequestClose={handleModalClose}
                   transparent={true}
                 >
                   <TouchableOpacity
                     style={{ flex: 1 }}
-                    onPress={() => setModalVisible(false)}
+                    onPress={handleModalClose}
                   >
                     <View style={[styles.modalContainer, styles.modalRight]}>
-                      <TouchableOpacity onPress={() => setModalVisible(false)}>
+                      <TouchableOpacity onPress={handleModalClose}>
                         <Text style={{ textAlign: "right", marginBottom: 10 }}>
-                       
                           <Icon name="close" size={20} color="#000" />
                         </Text>
                       </TouchableOpacity>
@@ -505,11 +597,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                                   { position: "relative" },
                                 ]}
                               >
-                                 <Text
-                                  style={styles.sahaykdetails}
-                                >
-                                  सहायक
-                                </Text>
+                                <Text style={styles.sahaykdetails}>सहायक</Text>
                                 <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_name}
                                 </Text>
@@ -521,11 +609,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
                                   { position: "relative" },
                                 ]}
                               >
-                             <Text
-                                  style={styles.sahaykdetails}
-                                >
-                                  गाँव
-                                </Text>
+                                <Text style={styles.sahaykdetails}>गाँव</Text>
                                 <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_village}
                                 </Text>
@@ -537,14 +621,33 @@ console.log('+++++pluss++++', item, male_count, female_count)
                                   { position: "relative" },
                                 ]}
                               >
-                                <Text
-                                  style={styles.sahaykdetails}
-                                >
+                                <Text style={styles.sahaykdetails}>
                                   मोबाइल नंबर
                                 </Text>
                                 <Text style={styles.TextInput} editable={false}>
                                   {selectedBooking?.sahayak_mobile_no}
                                 </Text>
+                              </View>
+                              <View style={[styles.CallBtn]}>
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    handleCallPress(
+                                      selectedBooking?.sahayak_mobile_no
+                                    )
+                                  }
+                                >
+                                  <Text
+                                    style={[
+                                      styles.loginText,
+                                      {
+                                        color: "#fff",
+                                        fontFamily: "Devanagari-bold",
+                                      },
+                                    ]}
+                                  >
+                                    कॉल करें
+                                  </Text>
+                                </TouchableOpacity>
                               </View>
                             </View>
                           </View>
@@ -557,7 +660,7 @@ console.log('+++++pluss++++', item, male_count, female_count)
             </>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <View
               style={{
                 width: "90%",
@@ -568,15 +671,18 @@ console.log('+++++pluss++++', item, male_count, female_count)
               }}
             >
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ textAlign: "center",fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
+                <Text
+                  style={{ textAlign: "center", fontFamily: "Devanagari-bold" }}
+                >
+                  रेटिंग दें{" "}
+                </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
               </View>
-              <Text style={{fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
+              <Text style={{ fontFamily: "Devanagari-bold" }}>कोई सुझाव</Text>
               <TouchableOpacity
-              onPress={handlebutton}
-               
+                onPress={handlebutton}
                 style={{
                   height: 100,
                   borderWidth: 1,
@@ -589,28 +695,26 @@ console.log('+++++pluss++++', item, male_count, female_count)
                 <TextInput
                   onChangeText={setComment}
                   value={comments}
-                 
                   ref={ReviewInput}
                 />
               </TouchableOpacity>
             </View>
           )}
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
               onPress={
                 response === "Ongoing" || item?.status === "Ongoing"
-                  ? bookingcompleted
-                  : response === "Completed"
+                  ? () => handleStatus()
+                  : jobCurentStatus === "Completed"
                   ? () => RatingApi()
-                  : () => Ongoing()
+                  : () => checkSahayakCount()
               }
-              disabled={isLoading}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>
                 {complete && complete["booking-status"] === "Ongoing"
                   ? "रेटिंग दें जारी है"
-                  : complete && complete["booking-status"] === "Completed"
+                  : jobCurentStatus === "Completed" //complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
                   : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
@@ -619,21 +723,72 @@ console.log('+++++pluss++++', item, male_count, female_count)
             </TouchableOpacity>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => RatingApi()}
+              onPress={() => {
+                // RatingApi();
+                bookingcompleted();
+              }}
             >
-              <Text style={[styles.loginText, { color: "#fff",fontFamily:'Devanagari-bold', }]}>समाप्त</Text>
+              <Text
+                style={[
+                  styles.loginText,
+                  { color: "#fff", fontFamily: "Devanagari-bold" },
+                ]}
+              >
+                समाप्त
+              </Text>
             </TouchableOpacity>
           )}
 
+          <View style={{ marginTop: "auto", padding: 5 }}>
+            {usertype &&
+              usertype === "Grahak" &&
+              item.status !== "Completed" && (
+                <>
+                  <View
+                    style={[
+                      styles.inputView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      {
+                        height: 90,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.label}>टिप्पणी</Text>
+                    {response === "" && item.status === "Booked" && (
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        ऊपर दिए गए नंबर पर संपर्क करें।{"\n"} जब काम शुरू करना
+                        हो, तभी "काम शुरू करें" दबायें
+                      </Text>
+                    )}
+                    {(response === "Ongoing" || item.status === "Ongoing") &&
+                      jobCurentStatus !== "Completed" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          कार्य पूरा होने के बाद "काम पूरा हुआ" दबाएँ !
+                        </Text>
+                      )}
+                    {jobCurentStatus === "Completed" && (
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        कृपया रेटिंग दें! यदि आपका कोई सुझाव है तो कृपया लिखें
+                        और फिर "समाप्त" बटन दबाएँ
+                      </Text>
+                    )}
+                  </View>
+                </>
+              )}
+          </View>
+
           {item?.status != "Completed" &&
             response != "Ongoing" &&
-            response !== "Completed" && (
+            jobCurentStatus !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
-                  onPress={() => cancel()}
+                  onPress={() => {
+                    cancel();
+                  }}
                   style={{
                     backgroundColor: "#D9D9D9",
                     alignSelf: "center",
@@ -642,7 +797,13 @@ console.log('+++++pluss++++', item, male_count, female_count)
                     borderRadius: 5,
                   }}
                 >
-                  <Text style={{ textAlign: "center", color: "#fff", fontFamily:'Devanagari-bold', }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "#fff",
+                      fontFamily: "Devanagari-bold",
+                    }}
+                  >
                     रद्द करें
                   </Text>
                 </TouchableOpacity>
@@ -665,16 +826,16 @@ const styles = StyleSheet.create({
     //   margin:20,
     //   padding:20
   },
-sahaykdetails: {
-  position: "absolute",
-  top: -10,
-  left: 30,
-  width: "auto",
-  textAlign: "center",
-  backgroundColor: "#fff",
-  fontFamily:'Devanagari-bold',
-  paddingHorizontal:10
-},
+  sahaykdetails: {
+    position: "absolute",
+    top: -10,
+    left: 30,
+    width: "auto",
+    textAlign: "center",
+    backgroundColor: "#fff",
+    fontFamily: "Devanagari-bold",
+    paddingHorizontal: 10,
+  },
   sahayak: {
     width: "40%",
     // flexDirection:"column",
@@ -752,7 +913,16 @@ sahaykdetails: {
     justifyContent: "center",
     alignItems: "center",
   },
-
+  CallBtn: {
+    width: "25%",
+    borderRadius: 7,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    color: "#fff",
+    backgroundColor: "#0099FF",
+  },
   // FemalecheckView:{
   //     borderColor: "#0070C0",
   //     borderRadius: 7,
@@ -767,7 +937,7 @@ sahaykdetails: {
   loginText: {
     color: "#000",
     fontSize: 16,
-    fontFamily:'Devanagari-bold',
+    fontFamily: "Devanagari-bold",
     //   flexDirection:"column",
   },
 
@@ -810,7 +980,7 @@ sahaykdetails: {
   TextInput: {
     // height: 50,
     padding: 10,
-    fontFamily:'Devanagari-regular',
+    fontFamily: "Devanagari-regular",
     // fontFamily: "Poppin-Light"
   },
 
@@ -912,5 +1082,16 @@ sahaykdetails: {
   },
   TextWhite: {
     color: "#fff",
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 30,
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
+
+    textAlign: "center",
+    backgroundColor: "#fff",
   },
 });

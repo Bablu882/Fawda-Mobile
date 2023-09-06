@@ -1,15 +1,14 @@
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import Toast from 'react-native-simple-toast';
-import { CommonActions, navigation } from '@react-navigation/native';
-import { navigate } from './NavigationService';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import Toast from "react-native-simple-toast";
+import { CommonActions, navigation } from "@react-navigation/native";
+import { navigate } from "./NavigationService";
 // import { DevSettings } from 'react-native';
 
-
 class Service {
-  baseUrl = 'https://fawda.demoserver.in/';
- 
+  // baseUrl = "https://fawda.demoserver.in/";
+  baseUrl = "https://app.fawda.in/";
+
   constructor() {
     let service = axios.create({
       baseURL: this.baseUrl,
@@ -19,16 +18,17 @@ class Service {
   }
 
   isLoggedIn = async () => {
-    const valueString = await AsyncStorage.getItem('@storage_Key');
+    const valueString = await AsyncStorage.getItem("@storage_Key");
 
-    if (valueString == null || valueString == undefined || valueString == '') {
+    if (valueString == null || valueString == undefined || valueString == "") {
+      console.log("this is for test");
       return false;
     } else {
       return valueString;
     }
   };
 
-  toFixed = number => {
+  toFixed = (number) => {
     number = parseFloat(number);
     return number.toFixed(2);
   };
@@ -37,16 +37,16 @@ class Service {
     return response;
   }
 
-  handleError = async error => {
+  handleError = async (error) => {
     console.log("Error object:", error);
     console.log("Error message:", error.message);
-    console.log("Error status:", error.status);
+    console.log("Error status:", error.response.status);
     switch (error.response.status) {
       case 401:
         console.log("hsdfdsfdsfdsfdsfsdf");
         await AsyncStorage.clear();
-        console.log('AsyncStorage successfully cleared.');
-        navigate('Login');
+        console.log("AsyncStorage successfully cleared.");
+        navigate("Login");
         break;
       case 404:
         Toast.show(error.toString(), Toast.LONG);
@@ -61,32 +61,32 @@ class Service {
   };
 
   async get(path, params = {}) {
-    return this.service.get(path, {...params});
+    return this.service.get(path, { ...params });
   }
 
   async patch(path, payload, callback) {
     return this.service
       .request({
-        method: 'PATCH',
+        method: "PATCH",
         url: path,
-        responseType: 'json',
+        responseType: "json",
         data: payload,
       })
-      .then(response => callback(response.data, response.status));
+      .then((response) => callback(response.data, response.status));
   }
 
   async post(path, payload, config = {}) {
     return this.service.request({
-      method: 'POST',
+      method: "POST",
       url: path,
-      responseType: 'json',
+      responseType: "json",
       data: payload,
       headers: {
-        'channel-type': 'mobile',
-        'Content-Type': 'application/json;',
-        identified: 'costipro-app',
-        version: '1.4.1.01.01',
-        'zone-offset': '+05:30',
+        "channel-type": "mobile",
+        "Content-Type": "application/json;",
+        identified: "costipro-app",
+        version: "1.4.1.01.01",
+        "zone-offset": "+05:30",
       },
       ...config,
     });
@@ -94,20 +94,19 @@ class Service {
 
   async put(path, payload, config = {}) {
     return this.service.request({
-      method: 'PUT',
+      method: "PUT",
       url: path,
-      responseType: 'json',
+      responseType: "json",
       data: payload,
       ...config,
     });
   }
 
-  customConsole = obj => {
+  customConsole = (obj) => {
     if (debug) {
-      console.log('console log=>', obj);
+      console.log("console log=>", obj);
     }
   };
 }
-
 
 export default new Service();

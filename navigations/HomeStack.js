@@ -1,5 +1,5 @@
 import React from "react";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Verification from "../src/Verification";
 
 import MyBooking from "../src/MyBooking";
@@ -16,34 +16,35 @@ import MachineWork from "../src/MachineWork";
 import Homepage from "../src/HomePage";
 import MyBookingStack from "./MyBookingStack";
 import History from "../src/History";
+import BottomTab from "../Component/BottomTab";
 
 const goToMyBookingStack = () => {
-  navigation.navigate('MyBookingStack');
+  navigation.navigate("MyBookingStack");
 };
-export default function HomeStack () {
-    const Stack = createNativeStackNavigator();
-    return(
-        <>
-         <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
+export default function HomeStack() {
+  const Stack = createNativeStackNavigator();
+  return (
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
           
         <Stack.Screen name="HomePage" component={Homepage} />
-        <Stack.Screen name="MyBooking" component={MyBookingStack} /> 
+        <Stack.Screen name="BottomTab" component={BottomTab} />
+        <Stack.Screen name="MyBooking" component={MyBooking} />
         <Stack.Screen name="SahayakForm" component={SahayakForm} />
         <Stack.Screen name="Thekeparkaam" component={ThekeParKaam_Form} />
         <Stack.Screen name="MachineBooking" component={MachineBooking} />
         <Stack.Screen name="Theke_MachineForm" component={Theke_MachineForm} />
         {/* <Stack.Screen name="Theke_MachineForm2" component={Theke_MachineForm2} /> */}
-        <Stack.Screen name="MyBook_SahayakForm" component={MyBook_SahayakForm} />
+        <Stack.Screen
+          name="MyBook_SahayakForm"
+          component={MyBook_SahayakForm}
+        />
         <Stack.Screen name="MachineWork" component={MachineWork} />
-
-          
-
-         </Stack.Navigator>
-        
-        </>
-    )
+      </Stack.Navigator>
+    </>
+  );
 }

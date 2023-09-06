@@ -40,12 +40,6 @@ const acceptThekha = async () => {
   }
 };
 
-
-
-
-
-
-
 export default function Theke_k_Kaam({ navigation, route }) {
   const {thekejobs} = route?.params?.item;
   console.log("params:::::", thekejobs, thekejobs.datetime,);
@@ -53,9 +47,9 @@ export default function Theke_k_Kaam({ navigation, route }) {
     <>
       <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
         <View style={{ padding: 20, marginTop: 25 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrowleft" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{ justifyContent: "center" }}>
           <Text
@@ -78,11 +72,6 @@ export default function Theke_k_Kaam({ navigation, route }) {
             <View style={[styles.inputView, { height: 40 }]}>
               <Text style={styles.label}>गाँव</Text>
               <Text  style={[styles.TextInput,{color:'#848484'}]}>{thekejobs?.village}</Text>
-              {/* <TextInput
-                style={styles.TextInput}
-                placeholderTextColor="#848484"
-                placeholder={thekejobs?.village}
-              /> */}
             </View>
 
             <View
@@ -92,7 +81,7 @@ export default function Theke_k_Kaam({ navigation, route }) {
               ]}
             >
               <Text style={styles.TextInput}>
-                {moment(thekejobs?.date).format("l")}
+                {moment(thekejobs?.date).format("DD/MM/YYYY")}
               </Text>
               <Text style={styles.TextInput}>
                 {moment(thekejobs?.time).format("HH:mm")}

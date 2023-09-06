@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,39 +7,61 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
+  ActivityIndicator,
+  Linking,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
 
 import Icon from "react-native-vector-icons/AntDesign";
-import { selectToken } from "../slices/authSlice";
+import { selectToken, selectUserType } from "../slices/authSlice";
+import { WebView } from "react-native-webview";
 
 export default function Payment({ route, navigation }) {
   const token = useSelector(selectToken);
-  const { totalamount, fawdafee, useramount, item, countprice, acceptmale, acceptfemale,fawdafees, totalamounts } =
-    route.params ?? {};
-
-  console.log(
-    "payment page",
+  const {
     totalamount,
-    fawdafees,
+    fawdafee,
     useramount,
     item,
     countprice,
-    acceptmale, acceptfemale ,totalamounts
-  );
+    acceptmale,
+    acceptfemale,
+    fawdafees,
+    totalamounts,
+  } = route.params ?? {};
+
+  console.log("params", route.params);
 
   const [amount, setAmount] = useState(route?.params?.totalamount?.toString());
+  const [fawdaFee, setFawdaFee] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [userAmount, setUserAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [upiId, setUpiId] = useState("");
   const [name, setName] = useState("");
+  const [paymentEncryptedParams, setPaymentEncryptedParams] = useState("");
+  console.log("encrypted params", paymentEncryptedParams);
+  const [webViewLoaded, setWebViewLoaded] = useState(false);
+  const [htmlResponse, setHtmlResponse] = useState(null);
+  const usertype = useSelector(selectUserType);
+  const [loadingError, setLoadingError] = useState(false);
+  const [isDiscount, setIsDiscount] = useState(false);
+  const numBookings = route?.params?.bookings;
 
   const paymentStatus = async () => {
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
     try {
       const params = {
-        job_id: JSON.stringify(item?.job_id),
+        job_id: Job_id,
         job_number: item?.job_number,
-        amount: amount,
+        amount: totalAmount,
         upi_id: upiId,
         beneficiary_name: name,
       };
@@ -53,77 +75,336 @@ export default function Payment({ route, navigation }) {
 
       const data = response.data;
       if (item.job_type === "individuals_sahayak") {
-        navigation.replace("Mybooking_Sahayak2", {
-          data: item.booking_id,
-          payment_status: data.payment_status,
-          item,
-          amount: amount,
-          useramount: countprice,
-          male_count: acceptmale,
-          female_count: acceptfemale,
-        });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       } else if (item.job_type === "theke_pe_kam") {
-        navigation.replace("Theke_MachineForm2", {
-          data: data.booking_id,
-          payment_status: data.payment_status,
-          item,
-          amount: amount,
-          useramount: useramount,
-        });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       } else if (item.job_type === "machine_malik") {
-        navigation.replace("MachineWork2", {
-          data: data.booking_id,
-          payment_status: data.payment_status,
-          item,
-          amount: amount,
-          useramount: useramount,
-        });
+        // navigation.replace("HomeStack", { screen: "BottomTab" });
+        // navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        navigation.replace("ThankYouPayment");
       }
 
-      Toast.show("Payment Updated Successfully!!!", Toast.SHORT);
+      // Toast.show("भुगतान सफलतापूर्वक अपडेट किया गया है!", Toast.LONG);
     } catch (error) {
       console.error("Error: ", error);
-      throw new Error("Unable to process payment");
+      navigation.replace("HomeStack", { screen: "BottomTab" });
+      Toast.show("भुगतान विफल हो गया है! कृपया पुन: प्रयास करें !", Toast.LONG);
+      // throw new Error("Unable to process payment");
     }
   };
 
+  useEffect(() => {
+    // encryptedParams();
+    paymentDetails();
+  }, []);
+
+  const paymentDetails = async () => {
+    setIsLoading(true);
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
+    let params = {
+      job_id: Job_id,
+      job_number: item?.job_number,
+    };
+
+    console.log("params", params);
+    try {
+      const response = await service.post("/api/payment-details/", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      console.log("Data", data);
+      setFawdaFee(data?.fawda_fee);
+      setUserAmount(data?.user_amount);
+      setTotalAmount(data?.total_amount);
+      if (data?.is_discount === true) {
+        setIsDiscount(true);
+      }
+      // setIsLoading(false);
+      encryptedParams(data?.total_amount.toString());
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUrlLoading = (event) => {
+    const url = event.url;
+    console.log(event);
+    console.log(url);
+
+    if (url.includes("upi://pay?pa")) {
+      Linking.openURL(url);
+      // Linking.canOpenURL(url)
+      //   .then((supported) => {
+      //     if (supported) {
+      //       Linking.openURL(url);
+      //     } else {
+      //       Toast.show("UPI supported applications not found", Toast.LONG);
+      //     }
+      //   })
+      //   .catch(() => {
+      //     Toast.show("An error occurred", Toast.LONG);
+      //   });
+
+      return true; // Prevent the WebView from loading the URL
+    }
+
+    return false; // Continue loading the URL in the WebView
+  };
+
+  const encryptedParams = async (Amount) => {
+    setIsLoading(true);
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
+
+    let params = {
+      job_id: Job_id,
+      job_number: item?.job_number,
+      amount: Amount,
+    };
+    console.log(params);
+
+    try {
+      const response = await service.post(`/api/payment/`, params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response?.data;
+      // console.log("response", response);
+      console.log("encrypted data", data);
+      setPaymentEncryptedParams(data);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkStatus = async () => {
+    let Job_id = "";
+    if (JSON.stringify(item?.job_id) === undefined) {
+      Job_id = JSON.stringify(item?.id);
+    } else {
+      Job_id = JSON.stringify(item?.job_id);
+    }
+    setIsLoading(true);
+    let params = {};
+    if (item?.job_type !== "machine_type") {
+      params = {
+        sahayak_job_id: Job_id,
+        sahayak_job_number: item?.job_number,
+      };
+    } else {
+      params = {
+        machine_job_id: Job_id,
+        machine_job_number: item?.job_number,
+      };
+    }
+
+    try {
+      const cacheBuster = new Date().getTime();
+      const response = await service.post(
+        `api/refresh-my-booking/?cacheBuster=${cacheBuster}`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response?.data;
+
+      if (usertype && usertype === "Grahak") {
+        if (item?.job_type === "individuals_sahayak") {
+          if (response?.data?.sahayk_booking_details?.bookings.length > 0) {
+            const bookingsNumber =
+              response?.data?.sahayk_booking_details?.bookings.length;
+
+            if (numBookings > bookingsNumber) {
+              navigation.replace("HomeStack", { screen: "BottomTab" });
+              Toast.show(
+                "यह बुकिंग सहायक द्वारा रद्द कर दी गई है।कृपया बुकिंग पुनः लोड करें!",
+                Toast.LONG
+              );
+            } else if (numBookings < bookingsNumber) {
+              navigation.replace("HomeStack", { screen: "BottomTab" });
+              Toast.show(
+                "यह बुकिंग एक अन्य सहायक द्वारा स्वीकार की गई है। कृपया बुकिंग पुनः लोड करें!",
+                Toast.LONG
+              );
+            } else if (numBookings === bookingsNumber) {
+              // fetchPaymentHtml();
+              paymentStatus(); // uncomment it will testing
+            }
+          } else {
+            navigation.replace("HomeStack", { screen: "BottomTab" });
+            Toast.show(
+              "यह बुकिंग सहायक द्वारा रद्द कर दी गई है।कृपया नौकारी पुनः लोड करें!",
+              Toast.LONG
+            );
+          }
+        } else if (item?.job_type === "theke_pe_kam") {
+          const statusCheck =
+            data?.sahayak_pending_booking_details[0]?.status || "";
+          const accept_data = data?.booking_theke_pe_kam[0] || {};
+          if (statusCheck === "Pending") {
+            navigation.replace("HomeStack", { screen: "BottomTab" });
+            Toast.show("यह बुकिंग सहायक द्वारा रद्द कर दी गई है।", Toast.LONG);
+          } else {
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
+          }
+        } else if (item?.job_type === "machine_malik") {
+          const statusCheck =
+            data?.machine_malik_pending_booking_details[0]?.status || "";
+          const accept_data = data?.machine_malik_booking_details[0] || {};
+          if (statusCheck === "Pending") {
+            navigation.replace("HomeStack", { screen: "BottomTab" });
+            Toast.show(
+              "यह बुकिंग मशीन मलिक द्वारा रद्द कर दी गई है।",
+              Toast.LONG
+            );
+          } else {
+            // fetchPaymentHtml();
+            paymentStatus(); // uncomment it will testing
+          }
+        }
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const fetchPaymentHtml = async () => {
+    setIsLoading(true);
+    let params = {
+      merchant_data: paymentEncryptedParams,
+    };
+    try {
+      const response = await service.post("/ccavRequestHandler/", params, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const html = response.data;
+      // console.log("HTML", html);
+      setHtmlResponse(html);
+      setWebViewLoaded(true);
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onWebViewMessage = (event) => {
+    setIsLoading(true);
+    const html = event.nativeEvent.data;
+    const sanitizedHtml = html.replace(/\\/g, "");
+
+    // Extract the JSON string from the HTML within the <pre> tag
+    const jsonMatch = sanitizedHtml.match(/<pre[^>]*>(.*?)<\/pre>/s);
+    if (jsonMatch) {
+      try {
+        const jsonString = jsonMatch[1];
+        const jsonData = JSON.parse(jsonString);
+        console.log(jsonData.message);
+        const status = jsonData.data.order_status;
+        console.log("status", status);
+        if (status === "Success") {
+          setWebViewLoaded(false);
+          // navigation.replace("ThankyouPayment");
+          navigation.replace("MyBookingStack", { screen: "ThankYouPayment" });
+        } else {
+          setWebViewLoaded(false);
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show(
+            "भुगतान विफल हो गया है! कृपया पुन: प्रयास करें !",
+            Toast.LONG
+          );
+        }
+        // Use the jsonData object as needed
+      } catch (err) {
+        console.warn("Error:", err);
+        setWebViewLoaded(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleWebViewLoad = () => {
+    setWebViewLoaded(true);
+  };
+
+  if (webViewLoaded && htmlResponse) {
+    return (
+      <View style={{ flex: 1 }}>
+        <WebView
+          source={{ html: htmlResponse }}
+          onLoad={handleWebViewLoad}
+          injectedJavaScript={`window.ReactNativeWebView.postMessage(JSON.stringify(document.body.innerHTML));`}
+          onMessage={onWebViewMessage}
+          onShouldStartLoadWithRequest={handleUrlLoading}
+        />
+      </View>
+    );
+  }
+
   return (
-    <>
-      <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
-        <View style={{ padding: 20, marginTop: 25 }}>
-          {/* <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrowleft" size={25} />
-          </TouchableOpacity> */}
-        </View>
-
+    <SafeAreaView style={{ backgroundColor: "#fff", flex: 1 }}>
+      <View style={{ padding: 20, marginTop: 25 }}>
         <View>
-          <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <View style={{ justifyContent: "center" }}>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 30,
-                    fontWeight: "600",
-                  }}
-                >
-                  भुगतान का विवरण
-                </Text>
-              </View>
-
-              <View
+          {isLoading && <ActivityIndicator size="small" color="#black" />}
+        </View>
+        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View style={{ justifyContent: "center" }}>
+              <Text
                 style={{
-                  borderWidth: 1,
-                  width: "90%",
-                  paddingHorizontal: 10,
-                  height: "auto",
-                  borderColor: "#0099FF",
-                  marginTop: 30,
-                  borderWidth: 0.6,
-                  borderRadius: 4,
+                  textAlign: "center",
+                  fontSize: 30,
+                  fontWeight: "600",
                 }}
               >
-                <View style={styles.flex}>
+                भुगतान का विवरण
+              </Text>
+            </View>
+
+            <View
+              style={{
+                borderWidth: 1,
+                width: "90%",
+                paddingHorizontal: 10,
+                height: "auto",
+                borderColor: "#0099FF",
+                marginTop: 30,
+                borderWidth: 0.6,
+                borderRadius: 4,
+              }}
+            >
+              {/* <View style={styles.flex}>
                   <Text>Upi Id</Text>
 
                   <TextInput
@@ -132,81 +413,71 @@ export default function Payment({ route, navigation }) {
                     value={upiId}
                     onChangeText={setUpiId}
                   />
-                </View>
-                {item?.job_type === "theke_pe_kam" ||
-                item?.job_type === "individuals_sahayak" ? (
-                  <View style={styles.flex}>
-                    <Text>
-                      {item?.job_type === "theke_pe_kam"
-                        ? "ठेकेदार को वेतन"
-                        : "सहायक या सहायकों को वेतन "}{" "}
-                    </Text>
+                </View> */}
+              {item?.job_type === "theke_pe_kam" ||
+              item?.job_type === "individuals_sahayak" ? (
+                <View style={styles.flex}>
+                  <Text>
+                    {item?.job_type === "theke_pe_kam"
+                      ? "ठेकेदार को वेतन"
+                      : "सहायक या सहायकों को वेतन "}{" "}
+                  </Text>
+                  <Text>₹{userAmount}</Text>
 
-                    {item.job_type === "theke_pe_kam" ? (
-                      <Text>₹{useramount}</Text>
-                    ) : (
-                      <Text>₹{countprice}</Text>
-                    )}
-                  </View>
+                  {/* {item.job_type === "theke_pe_kam" ? (
+                    <Text>₹{userAmount}</Text>
+                  ) : (
+                    <Text>₹{countprice}</Text>
+                  )} */}
+                </View>
+              ) : (
+                <View style={styles.flex}>
+                  <Text>मशीन मालिक को वेतन</Text>
+
+                  {/* {item.job_type === "theke_pe_kam" ? (
+                    <Text>₹ {useramount}</Text>
+                  ) : (
+                    <Text>₹ {useramount}</Text>
+                  )} */}
+                  <Text>₹ {userAmount}</Text>
+                </View>
+              )}
+              <View style={styles.flex}>
+                {isDiscount ? (
+                  <Text>फावड़ा की फीस (50% छूट)</Text>
                 ) : (
-                  <View style={styles.flex}>
-                    <Text>मशीन मालिक को वेतन</Text>
-
-                    {item.job_type === "theke_pe_kam" ? (
-                      <Text>₹{useramount}</Text>
-                    ) : (
-                      <Text>₹{totalamount}</Text>
-                    )}
-                  </View>
-                )}
-
-                <View style={styles.flex}>
-                  <Text>ठेकेदार/सहायक</Text>
-
-                  <TextInput
-                    placeholder="लाभार्थी का नाम"
-                    autoCapitalize="none"
-                    value={name}
-                    onChangeText={setName}
-                  />
-                </View>
-
-                <View style={styles.flex}>
                   <Text>फावड़ा की फीस</Text>
-                  {/* <Text style={{ color: "#0099FF" }}>₹{[fawdafee,fawdafees]}</Text> */}
-                  {item.job_type === "theke_pe_kam" ? (
-                      <Text>₹{fawdafee}</Text>
-                    ) : (
-                      <Text>₹{fawdafees}</Text>
-                    )}
-                </View>
+                )}
+                {fawdaFee === 0 ? (
+                  <Text>पहली बुकिंग मुफ़्त</Text>
+                ) : (
+                  <Text>₹ {fawdaFee}</Text>
+                )}
+              </View>
 
-                <View style={styles.flex}>
-                  <Text>कुल भुगतान</Text>
-                  <TextInput
-                    placeholder="राशि"
-                    keyboardType="numeric"
-                    autoCapitalize="none"
-                    value={amount}
-                    onChangeText={setAmount}
-                  />
-                </View>
+              <View style={styles.flex}>
+                <Text>कुल भुगतान</Text>
+                {/* {item.job_type === "theke_pe_kam" ? (
+                  <Text>₹ {amount}</Text>
+                ) : (
+                  <Text>₹ {amount}</Text>
+                )} */}
+                <Text>₹ {totalAmount}</Text>
               </View>
             </View>
+          </View>
+          {!isLoading && (
             <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <TouchableOpacity
-                style={styles.BhuktanBtn}
-                onPress={paymentStatus}
-              >
+              <TouchableOpacity style={styles.BhuktanBtn} onPress={checkStatus}>
                 <Text style={[styles.loginText, { color: "#fff" }]}>
                   अभी भुगतान करें
                 </Text>
               </TouchableOpacity>
             </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
-    </>
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

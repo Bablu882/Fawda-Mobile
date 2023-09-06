@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import ContactUs from "../src/ContactUs";
 import Thankyou from "../src/Thankyou";
 import HomeStack from "../navigations/HomeStack";
+import MyBooking from "../src/MyBooking";
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
@@ -33,16 +34,6 @@ export default function BottomTab() {
       <Tab.Screen
         name="HomeStack"
         component={HomeStack}
-        // listeners={({ navigation, route }) => ({
-        //   tabPress: (e) => {
-        //     e.preventDefault();
-        //     if (isLoggedIn == true) {
-        //       navigation.nav("HomePage", usertype);
-        //     } else {
-        //       navigation.navigate("Login", usertype);
-        //     }
-        //   },
-        // })}
         options={{
           tabBarIcon: ({ focused, color, size, user }) => (
             <View style={{ alignItems: "center" }}>
@@ -57,13 +48,6 @@ export default function BottomTab() {
                   height: 20,
                   marginBottom: 6,
                   resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
                 }}
               />
               <Text
@@ -84,7 +68,6 @@ export default function BottomTab() {
             name="MyBookingStack"
             component={MyBookingStack}
             options={{
-              
               tabBarIcon: ({ focused, color, size }) => (
                 <View style={{ alignItems: "center" }}>
                   <Image
@@ -99,13 +82,6 @@ export default function BottomTab() {
                       height: 20,
                       marginBottom: 6,
                       resizeMode: "contain",
-                      // tintColor: darkMode
-                      //   ? focused
-                      //     ? "#fff"
-                      //     : "#888888"
-                      //   : focused
-                      //   ? "#000"
-                      //   : "#888888",
                     }}
                   />
                   <Text
@@ -141,13 +117,6 @@ export default function BottomTab() {
                       height: 20,
                       marginBottom: 6,
                       resizeMode: "contain",
-                      // tintColor: darkMode
-                      //   ? focused
-                      //     ? "#fff"
-                      //     : "#888888"
-                      //   : focused
-                      //   ? "#000"
-                      //   : "#888888",
                     }}
                   />
                   <Text
@@ -156,7 +125,7 @@ export default function BottomTab() {
                       color: "#000",
                     }}
                   >
-                    नौकरियां
+                    मेरे काम
                   </Text>
                 </View>
               ),
@@ -164,126 +133,43 @@ export default function BottomTab() {
           />
         </>
       )}
-
-      {/* <Tab.Screen
-        name="MyNaukariStack"
-        component={MyNaukariStack}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View style={{ alignItems: "center" }}>
-              <Image
-                source={require('../assets/image/open-book.png')
-                  // focused
-                  //   ? require("../assets/imgs/home-active.png")
-                  //    : require("../assets/imgs/home.png")
-                }
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginBottom: 6,
-                  resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: focused ? 'red':'blue',
-                }}
-              >
-                नौकरियां 
-              </Text>
-            </View>
-          ),
-        }}
-      /> */}
-      <Tab.Screen
-        name="Refer"
-        component={Refer}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View style={{ alignItems: "center" }}>
-              <Image
-                source={
-                  // require("../assets/image/refer.png")
-                  focused
-                    ? require("../assets/image/refer.png")
-                    : require("../assets/image/refer-active.png")
-                }
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginBottom: 6,
-                  resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#000",
-                }}
-              >
-                रेफर
-              </Text>
-            </View>
-          ),
-        }}
-      />
-      {/* <Tab.Screen
-        name="Thankyou"
-        component={Thankyou}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <View style={{ alignItems: "center" }}>
-              <Image
-                source={
-                  // require("../assets/image/refer.png")
-                  focused
-                    ? require("../assets/image/refer.png")
-                     : require("../assets/image/refer-active.png")
-                }
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginBottom: 6,
-                  resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#000",
-                }}
-              >
-               Thank you
-              </Text>
-            </View>
-          ),
-        }}
-      /> */}
+      {usertype !== "MachineMalik" ? (
+        <Tab.Screen
+          name="Refer"
+          component={Refer}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <View style={{ alignItems: "center" }}>
+                <Image
+                  source={
+                    // require("../assets/image/refer.png")
+                    focused
+                      ? require("../assets/image/refer.png")
+                      : require("../assets/image/refer-active.png")
+                  }
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginBottom: 6,
+                    resizeMode: "contain",
+                  }}
+                />
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "#000",
+                  }}
+                >
+                  रेफर
+                </Text>
+              </View>
+            ),
+          }}
+        />
+      ) : null}
       <Tab.Screen
         name="ContactUs"
-      component={ContactUs}
+        component={ContactUs}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <View style={{ alignItems: "center" }}>
@@ -299,13 +185,6 @@ export default function BottomTab() {
                   height: 20,
                   marginBottom: 6,
                   resizeMode: "contain",
-                  // tintColor: darkMode
-                  //   ? focused
-                  //     ? "#fff"
-                  //     : "#888888"
-                  //   : focused
-                  //   ? "#000"
-                  //   : "#888888",
                 }}
               />
               <Text

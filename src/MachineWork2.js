@@ -9,13 +9,15 @@ import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
+  Linking,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import service from "../service";
-import { selectToken } from "../slices/authSlice";
+import { selectToken, selectUserType } from "../slices/authSlice";
 import moment from "moment";
-import Toast from "react-native-root-toast";
+import Toast from "react-native-simple-toast";
+// import * as Linking from "expo-linking";
 
 import { Picker } from "@react-native-picker/picker";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -24,23 +26,39 @@ function MachineWork2({ navigation, route }) {
   const dispatch = useDispatch();
   const ReviewInput = useRef(null);
   const token = useSelector(selectToken);
+  const usertype = useSelector(selectUserType);
   const { data, payment_status, amount, item, useramount } = route.params ?? {};
-  console.log("fjkfkfkff", amount, item, useramount);
+  console.log("fjkfkfkff", item, useramount);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(-1);
   const [ratings, setRating] = useState(0);
   const [comments, setComment] = useState("");
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState("");
   const [complete, setCompleted] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [numbers, setNumber] = useState(0);
+  const [jobCurentStatus, setJobCurrentStatus] = useState("");
 
   const number = [1, 2, 3, 4];
 
+  const handleReviewbutton = () => {
+    ReviewInput.current.focus();
+  };
 
+  const handleCallPress = async (phone) => {
+    const url = `tel:${phone}`;
+    await Linking.openURL(url);
+    // await Linking.canOpenURL(url)
+    //   ?.then(async (supported) => {
+    //     if (!supported) {
+    //       console.log("Phone number is not available");
+    //     } else {
+    //       await Linking.openURL(url);
+    //       // return Linking.openURL(url);
+    //     }
+    //   })
+    //   .catch((err) => console.error("An error occurred", err));
+  };
 
-  const handleReviewbutton = ()  => {
-    ReviewInput.current.focus()
-  }
   const RatingApi = () => {
     let params = {
       job_id: JSON.stringify(item?.job_id),
@@ -59,10 +77,11 @@ function MachineWork2({ navigation, route }) {
       .then((res) => {
         let data = res?.data;
         if (data?.status === 201) {
-          navigation.replace("Thankyou");
-          
+          console.log(data?.message);
+          // navigation.replace("Thankyou");
         } else {
           console.log("error message");
+          console.log("message", data?.message);
         }
       })
       .catch((error) => {
@@ -73,6 +92,10 @@ function MachineWork2({ navigation, route }) {
   const handleClick = (index) => {
     setRating(index + 1);
     setSelectedButtonIndex(index);
+  };
+
+  const handleStatus = () => {
+    setJobCurrentStatus("Completed");
   };
 
   const renderButton = (index) => {
@@ -89,7 +112,6 @@ function MachineWork2({ navigation, route }) {
   };
 
   const Ongoing = () => {
-    setIsLoading(true);
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -104,17 +126,26 @@ function MachineWork2({ navigation, route }) {
       })
       .then((res) => {
         let data = res?.data;
-        setIsLoading(false);
-        setResponse(data["booking-status"]);
-        console.log("jdjjdd", data);
+        if (
+          data["booking-status"] !== "Ongoing" ||
+          data["booking-status"] === undefined
+        ) {
+          navigation.replace("HomeStack", { screen: "BottomTab" });
+          Toast.show(
+            "भुगतान के बाद सहायक द्वारा यह बुकिंग रद्द कर दी गई है।कृपया बुकिंग पुनः लोड करें!",
+            Toast.LONG
+          );
+        } else {
+          setResponse(data["booking-status"]);
+          console.log("jdjjdd", data);
+        }
       })
       .catch((error) => {
-        setIsLoading(false);
         console.log("error", error);
       });
   };
   const bookingcompleted = () => {
-    setIsLoading(true);
+    RatingApi();
     let params = {
       job_id: JSON.stringify(item?.job_id),
       job_number: item?.job_number,
@@ -129,14 +160,14 @@ function MachineWork2({ navigation, route }) {
       })
       .then((res) => {
         let data = res?.data;
-        setIsLoading(false);
         setCompleted(data["booking-status"]);
         setResponse(data["booking-status"]);
-
+        if (data["booking-status"] === "Completed") {
+          navigation.replace("Thankyou");
+        }
         console.log("jdjjdd", data);
       })
       .catch((error) => {
-        setIsLoading(false);
         console.log("error", error);
       });
   };
@@ -157,9 +188,9 @@ function MachineWork2({ navigation, route }) {
       });
       console.log(token?.access, "token");
       const data = response?.data;
-      navigation.navigate("HomeStack", { screen: "HomePage" });
+      navigation.replace("HomeStack", { screen: "BottomTab" });
       // setStatus(data.status);
-      Toast.show("Job रद्द कर दी गई है", Toast.LONG);
+      Toast.show("काम रद्द किया गया है !", Toast.LONG);
       console.log("fjfjf", data);
     } catch (error) {
       console.log("Error:", error);
@@ -177,7 +208,12 @@ function MachineWork2({ navigation, route }) {
       <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: "center", flex: 1, marginHorizontal: 10 }}>
           <Text
-            style={{ textAlign: "center", fontSize: 30, fontWeight: "600", fontFamily:'Devanagari-bold', }}
+            style={{
+              textAlign: "center",
+              fontSize: 30,
+              fontWeight: "600",
+              fontFamily: "Devanagari-bold",
+            }}
           >
             {item.job_type === "machine_malik"
               ? " मशीन का काम "
@@ -193,6 +229,9 @@ function MachineWork2({ navigation, route }) {
               },
             ]}
           >
+            <Text style={[styles.label, { marginLeft: 10 }]}>
+              मशीन का प्रकार
+            </Text>
             <Text style={[styles.TextInput]}>{item?.machine}</Text>
           </View>
 
@@ -204,12 +243,29 @@ function MachineWork2({ navigation, route }) {
             ]}
           >
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("l")}
+              {moment(item?.datetime).format("DD/MM/YYYY")}
             </Text>
             <Text style={styles.TextInput}>
-              {moment.utc(item?.datetime).format("LT")}
+              {moment(item?.datetime).format("LT")}
             </Text>
           </View>
+          {item?.description !== "" && (
+            <View
+              style={[
+                styles.inputView,
+                styles.flex,
+                styles.justifyContentBetween,
+                {
+                  height: 45,
+                },
+              ]}
+            >
+              <Text style={[styles.label, { marginLeft: 10 }]}>
+                काम का विवरण
+              </Text>
+              <Text style={[styles.TextInput]}>{item?.description}</Text>
+            </View>
+          )}
 
           <View
             style={[
@@ -242,7 +298,11 @@ function MachineWork2({ navigation, route }) {
                 }}
               >
                 {item?.land_area}
-                {item?.land_type == "Bigha" ? "बीघा" : "किल्ला"}
+                {item?.land_type == "Bigha"
+                  ? " बीघा"
+                  : item?.land_type == "Killa"
+                  ? " किल्ला"
+                  : " "}
               </Text>
             </View>
 
@@ -262,7 +322,7 @@ function MachineWork2({ navigation, route }) {
               <Text
                 style={{ marginTop: 13, color: "#0099FF", paddingRight: 10 }}
               >
-                ₹ {useramount}
+                ₹ {item.total_amount_machine}
               </Text>
             </View>
           </View>
@@ -305,7 +365,7 @@ function MachineWork2({ navigation, route }) {
                     ? "स्वीकार"
                     : response === "Ongoing"
                     ? "जारी है"
-                    : response === "Completed"
+                    : jobCurentStatus === "Completed"
                     ? "समाप्त"
                     : ""}
                 </Text>
@@ -333,24 +393,18 @@ function MachineWork2({ navigation, route }) {
             </View>
           </View>
 
-          {complete === "Completed" ? (
+          {jobCurentStatus === "Completed" ? (
             ""
           ) : (
             <>
               <View style={[styles.inputView, { position: "relative" }]}>
-              <Text
-                  style={styles.sahayakDetails}
-                >
-                  मशीन मालिक
-                </Text>
+                <Text style={styles.sahayakDetails}>मशीन मालिक</Text>
                 <Text style={styles.TextInput}>{item?.machine_malik_name}</Text>
                 {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
               </View>
 
               <View style={[styles.inputView, { position: "relative" }]}>
-                <Text
-                  style={styles.sahayakDetails}
-                >
+                <Text style={[styles.sahayakDetails, { width: "10%" }]}>
                   गाँव
                 </Text>
                 <Text style={styles.TextInput}>
@@ -360,20 +414,29 @@ function MachineWork2({ navigation, route }) {
               </View>
 
               <View style={[styles.inputView, { position: "relative" }]}>
-              <Text
-                  style={styles.sahayakDetails}
-                >
-                  मोबाइल नंबर
-                </Text>
+                <Text style={styles.sahayakDetails}>मोबाइल नंबर</Text>
                 <Text style={styles.TextInput}>
                   {item?.machine_malik_mobile_no}
                 </Text>
-                {/* {!!errors.name && <Text style={styles.error}>{errors.name}</Text>} */}
+              </View>
+              <View style={[styles.CallBtn]}>
+                <TouchableOpacity
+                  onPress={() => handleCallPress(item?.machine_malik_mobile_no)}
+                >
+                  <Text
+                    style={[
+                      styles.loginText,
+                      { color: "#fff", fontFamily: "Devanagari-bold" },
+                    ]}
+                  >
+                    कॉल करें
+                  </Text>
+                </TouchableOpacity>
               </View>
             </>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <View
               style={{
                 width: "100%",
@@ -384,49 +447,58 @@ function MachineWork2({ navigation, route }) {
               }}
             >
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ textAlign: "center", fontFamily:'Devanagari-bold', }}>रेटिंग दें </Text>
+                <Text
+                  style={{ textAlign: "center", fontFamily: "Devanagari-bold" }}
+                >
+                  रेटिंग दें{" "}
+                </Text>
                 <View style={{ display: "flex", flexDirection: "row" }}>
                   {[...Array(5).keys()].map(renderButton)}
                 </View>
               </View>
-              <Text style={{ fontFamily:'Devanagari-bold',}}>कोई सुझाव</Text>
+              <Text style={{ fontFamily: "Devanagari-bold" }}>कोई सुझाव</Text>
               <View style={{ width: "100%" }}>
-                <TouchableOpacity onPress={handleReviewbutton}
-                 style={{  height: 100,
+                <TouchableOpacity
+                  onPress={handleReviewbutton}
+                  style={{
+                    height: 100,
                     borderWidth: 1,
                     borderRadius: 10,
                     width: "100%",
                     marginTop: 20,
-                    borderColor: "#0099FF",}}>
-
-              
-                <TextInput
-                ref={ReviewInput}
-                  onChangeText={setComment}
-                  value={comments}
-                
-                />
-                  </TouchableOpacity>
+                    borderColor: "#0099FF",
+                  }}
+                >
+                  <TextInput
+                    ref={ReviewInput}
+                    onChangeText={setComment}
+                    value={comments}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           )}
 
-          {complete !== "Completed" && (
+          {jobCurentStatus !== "Completed" && (
             <TouchableOpacity
-              style={styles.BhuktanBtn}
+              style={[styles.BhuktanBtn, { marginTop: 20 }]}
               onPress={
                 response === "Ongoing" || item?.status === "Ongoing"
-                  ? bookingcompleted
-                  : response === "Completed"
+                  ? () => handleStatus()
+                  : jobCurentStatus === "Completed"
                   ? () => RatingApi()
                   : () => Ongoing()
               }
-              disabled={isLoading}
             >
-              <Text style={[styles.loginText, { color: "#fff", fontFamily:'Devanagari-bold', }]}>
+              <Text
+                style={[
+                  styles.loginText,
+                  { color: "#fff", fontFamily: "Devanagari-bold" },
+                ]}
+              >
                 {complete && complete["booking-status"] === "Ongoing"
                   ? "रेटिंग दें जारी है"
-                  : complete && complete["booking-status"] === "Completed"
+                  : jobCurentStatus === "Completed" // : complete && complete["booking-status"] === "Completed"
                   ? "रेटिंग दें"
                   : response === "Ongoing" || item?.status === "Ongoing"
                   ? "काम पूरा हुआ"
@@ -435,21 +507,65 @@ function MachineWork2({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          {complete === "Completed" && (
+          {jobCurentStatus === "Completed" && (
             <TouchableOpacity
               style={styles.BhuktanBtn}
-              onPress={() => RatingApi()}
+              onPress={() => {
+                // RatingApi();
+                bookingcompleted();
+              }}
             >
               <Text style={[styles.loginText, { color: "#fff" }]}>समाप्त</Text>
             </TouchableOpacity>
           )}
 
+          <View style={{ marginTop: "auto", padding: 5 }}>
+            {usertype &&
+              usertype === "Grahak" &&
+              item.status !== "Completed" && (
+                <>
+                  <View
+                    style={[
+                      styles.inputView,
+                      styles.flex,
+                      styles.justifyContentBetween,
+                      {
+                        height: 90,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.label}>टिप्पणी</Text>
+                    {response === "" && item.status === "Booked" && (
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        कृपया ऊपर दिए गए नंबर पर संपर्क करें! काम शुरू करने के
+                        लिए कृपया "काम शुरू करें" दबाएँ !
+                      </Text>
+                    )}
+                    {(response === "Ongoing" || item.status === "Ongoing") &&
+                      jobCurentStatus !== "Completed" && (
+                        <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                          कार्य पूरा होने के बाद "काम पूरा हुआ" दबाएँ !
+                        </Text>
+                      )}
+                    {jobCurentStatus === "Completed" && (
+                      <Text style={[styles.TextInput, { maxWidth: "98%" }]}>
+                        कृपया रेटिंग दें! यदि आपका कोई सुझाव है तो कृपया लिखें
+                        और फिर "समाप्त" बटन दबाएँ
+                      </Text>
+                    )}
+                  </View>
+                </>
+              )}
+          </View>
+
           {item?.status != "Completed" &&
             response != "Ongoing" &&
-            response !== "Completed" && (
+            jobCurentStatus !== "Completed" && (
               <View style={{ marginTop: "auto", padding: 5 }}>
                 <TouchableOpacity
-                  onPress={() => cancel()}
+                  onPress={() => {
+                    cancel();
+                  }}
                   style={{
                     backgroundColor: "#D9D9D9",
                     alignSelf: "center",
@@ -458,7 +574,13 @@ function MachineWork2({ navigation, route }) {
                     borderRadius: 5,
                   }}
                 >
-                  <Text style={{ textAlign: "center", color: "#fff", fontFamily:'Devanagari-bold', }}>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "#fff",
+                      fontFamily: "Devanagari-bold",
+                    }}
+                  >
                     रद्द करें
                   </Text>
                 </TouchableOpacity>
@@ -539,15 +661,15 @@ const styles = StyleSheet.create({
     borderColor: "#505050",
     // backgroundColor: "#44A347",
   },
-sahayakDetails:{
-  position: "absolute",
-  top: -10,
-  left: 30,
-  width: "25%",
-  textAlign: "center",
-  backgroundColor: "#fff",
-  fontFamily:'Devanagari-bold',
-},
+  sahayakDetails: {
+    position: "absolute",
+    top: -10,
+    left: 30,
+    width: "25%",
+    textAlign: "center",
+    backgroundColor: "#fff",
+    fontFamily: "Devanagari-bold",
+  },
   machine: {
     width: "40%",
     flexDirection: "row",
@@ -567,7 +689,18 @@ sahayakDetails:{
   loginText: {
     color: "#000",
     fontSize: 16,
+    fontFamily: "Devanagari-regular",
     //   flexDirection:"column",
+  },
+  CallBtn: {
+    width: "25%",
+    borderRadius: 7,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    color: "#fff",
+    backgroundColor: "#0099FF",
   },
 
   BhuktanBtn: {
@@ -598,7 +731,7 @@ sahayakDetails:{
 
   TextInput: {
     padding: 10,
-    fontFamily:'Devanagari-bold',
+    fontFamily: "Devanagari-regular",
 
     // fontFamily: "Poppin-Light",
   },
@@ -624,5 +757,16 @@ sahayakDetails:{
   },
   TextWhite: {
     color: "#fff",
+  },
+  label: {
+    position: "absolute",
+    top: -10,
+    left: 30,
+    marginHorizontal: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Devanagari-bold",
+
+    textAlign: "center",
+    backgroundColor: "#fff",
   },
 });
